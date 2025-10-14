@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <!-- Add theme-specific blocks to header -->
+    <referenceContainer name="header">
+        <block name="navigation" class="Infinri\Theme\Block\Html\Header\Navigation" after="logo"/>
+    </referenceContainer>
+    
+    <!-- Add sidebar to main content area -->
+    <referenceContainer name="main">
+        <container name="sidebar" htmlTag="aside" htmlClass="sidebar" before="content">
+            <block name="sidebar.info" class="Infinri\Theme\Block\Sidebar\Info"/>
+        </container>
+    </referenceContainer>
+</layout>

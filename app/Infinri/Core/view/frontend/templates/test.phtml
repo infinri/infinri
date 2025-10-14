@@ -1,0 +1,10 @@
+<?php
+/**
+ * @var \Infinri\Core\Block\Template $block
+ */
+?>
+<div class="test-template">
+    <h1><?= $block->escapeHtml($block->getData('title') ?: 'Default Title') ?></h1>
+    <p><?= $block->escapeHtml($block->getData('content') ?: 'Default content') ?></p>
+    <?= $block->getChildrenHtml() ?>
+</div>

@@ -1,0 +1,30 @@
+# Dependencies
+/vendor/
+/node_modules/
+
+# Cache & Generated Files
+/var/cache/
+/var/log/
+/var/session/
+/var/tmp/
+/pub/static/
+
+# IDE
+/.idea/
+/.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+/app/etc/env.php
+
+# Composer
+composer.lock
+
+# NPM
+package-lock.json

@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <!-- Preferences (Interface -> Implementation mappings) -->
+    <preference for="Infinri\Core\Api\ConfigInterface" type="Infinri\Core\Model\Config\ScopeConfig"/>
+    <preference for="Infinri\Core\Api\ComponentRegistrarInterface" type="Infinri\Core\Model\ComponentRegistrar"/>
+</config>

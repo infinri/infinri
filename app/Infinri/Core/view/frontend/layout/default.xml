@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <container name="root" htmlTag="html" htmlClass="no-js">
+        <container name="head" htmlTag="head">
+            <block name="head.meta" class="Infinri\Core\Block\Html\Head\Meta"/>
+            <block name="head.title" class="Infinri\Core\Block\Html\Head\Title"/>
+        </container>
+        
+        <container name="body" htmlTag="body">
+            <container name="page.wrapper" htmlTag="div" htmlClass="page-wrapper">
+                <container name="header" htmlTag="header" htmlClass="page-header">
+                    <block name="logo" class="Infinri\Theme\Block\Html\Header\Logo"/>
+                </container>
+                
+                <container name="main" htmlTag="main" htmlClass="page-main">
+                    <container name="content" htmlTag="div" htmlClass="main-content"/>
+                </container>
+                
+                <container name="footer" htmlTag="footer" htmlClass="page-footer">
+                    <block name="copyright" class="Infinri\Theme\Block\Html\Footer\Copyright"/>
+                </container>
+            </container>
+        </container>
+    </container>
+</layout>

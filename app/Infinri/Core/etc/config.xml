@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<config>
+    <default>
+        <system>
+            <core>
+                <version>0.1.0</version>
+                <name>Infinri Core Framework</name>
+            </core>
+        </system>
+    </default>
+</config>

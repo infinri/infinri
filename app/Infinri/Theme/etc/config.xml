@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<config>
+    <default>
+        <theme>
+            <general>
+                <logo>Infinri_Theme::images/logo.svg</logo>
+                <favicon>Infinri_Theme::images/favicon.ico</favicon>
+                <copyright>© 2025 Infinri. All rights reserved.</copyright>
+            </general>
+            <layout>
+                <default_layout>1column</default_layout>
+                <container_width>1200px</container_width>
+            </layout>
+            <typography>
+                <body_font>system-ui, -apple-system, sans-serif</body_font>
+                <heading_font>inherit</heading_font>
+                <code_font>ui-monospace, monospace</code_font>
+            </typography>
+            <colors>
+                <primary>#0066cc</primary>
+                <secondary>#6c757d</secondary>
+                <accent>#ff6b6b</accent>
+            </colors>
+        </theme>
+    </default>
+</config>

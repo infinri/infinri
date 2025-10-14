@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <!-- Theme-specific DI configurations can go here -->
+    
+    <!-- Example: Virtual type for theme configuration -->
+    <virtualType name="ThemeConfig" type="Infinri\Core\Model\Config\ScopeConfig">
+        <arguments>
+            <argument name="configLoader" xsi:type="object">Infinri\Core\Model\Config\Loader</argument>
+        </arguments>
+    </virtualType>
+</config>
