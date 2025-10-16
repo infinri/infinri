@@ -1,0 +1,39 @@
+<?php
+/**
+ * Messages Template
+ * 
+ * Displays flash messages (success, error, warning, info)
+ * 
+ * @var \Infinri\Core\Block\Template $block
+ */
+
+// In a real implementation, messages would come from session or a MessageManager
+// For now, this is a placeholder structure
+$messages = [
+    // Example:
+    // ['type' => 'success', 'text' => 'Item added to cart successfully!'],
+    // ['type' => 'error', 'text' => 'An error occurred. Please try again.'],
+];
+
+if (empty($messages)) {
+    return;
+}
+?>
+<div class="messages">
+    <?php foreach ($messages as $message): ?>
+        <div class="message message-<?= $block->escapeHtmlAttr($message['type']) ?>" 
+             role="alert"
+             aria-live="polite">
+            <div class="message-content">
+                <span class="message-icon"></span>
+                <span class="message-text"><?= $block->escapeHtml($message['text']) ?></span>
+            </div>
+            <button type="button" 
+                    class="message-close" 
+                    aria-label="<?= $block->escapeHtmlAttr('Close message') ?>"
+                    data-dismiss="message">
+                ×
+            </button>
+        </div>
+    <?php endforeach; ?>
+</div>

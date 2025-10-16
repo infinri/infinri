@@ -1,0 +1,208 @@
+/**
+ * Variables
+ * Global CSS variables for the theme
+ */
+
+// ============================================================================
+// Colors
+// ============================================================================
+
+// Primary colors
+@primary-color: #0066cc;
+@primary-dark: darken(@primary-color, 10%);
+@primary-light: lighten(@primary-color, 10%);
+
+// Secondary colors
+@secondary-color: #6c757d;
+@secondary-dark: darken(@secondary-color, 10%);
+@secondary-light: lighten(@secondary-color, 10%);
+
+// Accent colors
+@accent-color: #ff6b6b;
+@accent-dark: darken(@accent-color, 10%);
+@accent-light: lighten(@accent-color, 10%);
+
+// Semantic colors
+@success-color: #28a745;
+@danger-color: #dc3545;
+@warning-color: #ffc107;
+@info-color: #17a2b8;
+
+// Grayscale
+@black: #000000;
+@gray-900: #212529;
+@gray-800: #343a40;
+@gray-700: #495057;
+@gray-600: #6c757d;
+@gray-500: #adb5bd;
+@gray-400: #ced4da;
+@gray-300: #dee2e6;
+@gray-200: #e9ecef;
+@gray-100: #f8f9fa;
+@white: #ffffff;
+
+// Text colors
+@text-color: @gray-900;
+@text-muted: @gray-600;
+@text-light: @gray-500;
+
+// Background colors
+@body-bg: @white;
+@card-bg: @white;
+@modal-bg: @white;
+
+// Border colors
+@border-color: @gray-300;
+@border-light: @gray-200;
+@border-dark: @gray-400;
+
+// ============================================================================
+// Typography
+// ============================================================================
+
+// Font families
+@font-family-base: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+@font-family-heading: inherit;
+@font-family-monospace: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+
+// Font sizes
+@font-size-base: 16px;
+@font-size-sm: 14px;
+@font-size-lg: 18px;
+@font-size-xl: 20px;
+
+// Heading sizes
+@font-size-h1: 2.5rem;   // 40px
+@font-size-h2: 2rem;     // 32px
+@font-size-h3: 1.75rem;  // 28px
+@font-size-h4: 1.5rem;   // 24px
+@font-size-h5: 1.25rem;  // 20px
+@font-size-h6: 1rem;     // 16px
+
+// Font weights
+@font-weight-light: 300;
+@font-weight-normal: 400;
+@font-weight-medium: 500;
+@font-weight-semibold: 600;
+@font-weight-bold: 700;
+
+// Line heights
+@line-height-base: 1.5;
+@line-height-sm: 1.25;
+@line-height-lg: 1.75;
+@line-height-heading: 1.2;
+
+// ============================================================================
+// Spacing
+// ============================================================================
+
+@spacing-xs: 4px;
+@spacing-sm: 8px;
+@spacing-md: 16px;
+@spacing-lg: 24px;
+@spacing-xl: 32px;
+@spacing-2xl: 48px;
+@spacing-3xl: 64px;
+
+// ============================================================================
+// Breakpoints
+// ============================================================================
+
+@breakpoint-xs: 0;
+@breakpoint-sm: 576px;
+@breakpoint-md: 768px;
+@breakpoint-lg: 992px;
+@breakpoint-xl: 1200px;
+@breakpoint-xxl: 1400px;
+
+// Breakpoint aliases
+@mobile: @breakpoint-sm;
+@tablet: @breakpoint-md;
+@desktop: @breakpoint-lg;
+@widescreen: @breakpoint-xl;
+
+// ============================================================================
+// Container
+// ============================================================================
+
+@container-max-width: 1200px;
+@container-padding: @spacing-md;
+
+// ============================================================================
+// Grid
+// ============================================================================
+
+@grid-columns: 12;
+@grid-gutter: @spacing-md;
+
+// ============================================================================
+// Z-index Scale
+// ============================================================================
+
+@z-index-dropdown: 1000;
+@z-index-sticky: 1020;
+@z-index-fixed: 1030;
+@z-index-modal-backdrop: 1040;
+@z-index-modal: 1050;
+@z-index-popover: 1060;
+@z-index-tooltip: 1070;
+
+// ============================================================================
+// Border Radius
+// ============================================================================
+
+@border-radius-sm: 2px;
+@border-radius: 4px;
+@border-radius-lg: 8px;
+@border-radius-xl: 12px;
+@border-radius-pill: 50rem;
+@border-radius-circle: 50%;
+
+// ============================================================================
+// Shadows
+// ============================================================================
+
+@shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+@shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+@shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+@shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+@shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+@shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+// ============================================================================
+// Transitions
+// ============================================================================
+
+@transition-base: all 0.2s ease-in-out;
+@transition-fast: all 0.15s ease-in-out;
+@transition-slow: all 0.3s ease-in-out;
+
+@transition-duration: 0.2s;
+@transition-timing: ease-in-out;
+
+// ============================================================================
+// Component-specific Variables
+// ============================================================================
+
+// Buttons
+@btn-padding-y: @spacing-sm;
+@btn-padding-x: @spacing-md;
+@btn-border-radius: @border-radius;
+@btn-font-weight: @font-weight-medium;
+
+// Forms
+@input-padding-y: @spacing-sm;
+@input-padding-x: @spacing-md;
+@input-border-color: @border-color;
+@input-border-radius: @border-radius;
+@input-focus-color: @primary-color;
+
+// Cards
+@card-padding: @spacing-lg;
+@card-border-radius: @border-radius-lg;
+@card-shadow: @shadow;
+
+// Modals
+@modal-padding: @spacing-lg;
+@modal-border-radius: @border-radius-lg;
+@modal-backdrop-bg: rgba(0, 0, 0, 0.5);

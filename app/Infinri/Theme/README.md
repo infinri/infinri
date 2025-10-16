@@ -87,7 +87,7 @@ Theme follows Magento's proven approach:
 - `_variables.less` - Colors, fonts, spacing, breakpoints, z-index
 - `_mixins.less` - Reusable mixins (responsive, flexbox, typography)
 - `_reset.less` - CSS reset/normalize
-- `_typography.less` - Font definitions and heading styles
+- `_typography.infinriless` - Font definitions and heading styles
 - `_layout.less` - Layout containers and wrappers
 - `_grid.less` - 12-column responsive grid system
 - `_utilities.less` - Utility classes (margin, padding, display)
@@ -619,7 +619,7 @@ When contributing to Theme module:
 - `Config System` - Read theme configuration
 - `URL Builder` - Generate URLs in templates
 
-**See:** [DEPENDENCIES.txt](DEPENDENCIES.txt) for complete breakdown.
+**See:** [DEPENDENCIES.txt](../../../DEPENDENCIES.txt) for complete breakdown.
 
 ---
 
@@ -710,4 +710,4 @@ Infinri Theme Module is open-source software licensed under the [MIT License](..
 ---
 
 **For technical implementation checklist, see [requirements.txt](requirements.txt).**  
-**For dependency breakdown, see [DEPENDENCIES.txt](DEPENDENCIES.txt).**
+**For dependency breakdown, see [DEPENDENCIES.txt](../../../DEPENDENCIES.txt).**

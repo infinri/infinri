@@ -1,0 +1,211 @@
+/**
+ * Form Styles
+ * Form elements and controls
+ */
+
+// ============================================================================
+// Form Groups
+// ============================================================================
+
+.form-group {
+    margin-bottom: @spacing-md;
+}
+
+.form-label {
+    display: inline-block;
+    margin-bottom: @spacing-xs;
+    font-weight: @font-weight-medium;
+    color: @text-color;
+}
+
+.form-text {
+    display: block;
+    margin-top: @spacing-xs;
+    font-size: @font-size-sm;
+    color: @text-muted;
+}
+
+// ============================================================================
+// Form Controls
+// ============================================================================
+
+.form-control {
+    .form-control();
+    
+    &.is-valid {
+        border-color: @success-color;
+        
+        &:focus {
+            border-color: @success-color;
+            box-shadow: 0 0 0 3px fade(@success-color, 25%);
+        }
+    }
+    
+    &.is-invalid {
+        border-color: @danger-color;
+        
+        &:focus {
+            border-color: @danger-color;
+            box-shadow: 0 0 0 3px fade(@danger-color, 25%);
+        }
+    }
+}
+
+// Form control sizes
+.form-control-sm {
+    padding: @spacing-xs @spacing-sm;
+    font-size: @font-size-sm;
+}
+
+.form-control-lg {
+    padding: @spacing-md @spacing-lg;
+    font-size: @font-size-lg;
+}
+
+// ============================================================================
+// Textarea
+// ============================================================================
+
+textarea.form-control {
+    min-height: 100px;
+    resize: vertical;
+}
+
+// ============================================================================
+// Select
+// ============================================================================
+
+select.form-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right @spacing-sm center;
+    background-size: 16px 12px;
+    padding-right: @spacing-xl;
+}
+
+// ============================================================================
+// Checkboxes & Radios
+// ============================================================================
+
+.form-check {
+    display: block;
+    margin-bottom: @spacing-sm;
+    padding-left: 1.5em;
+}
+
+.form-check-input {
+    float: left;
+    margin-left: -1.5em;
+    margin-top: 0.25em;
+    width: 1em;
+    height: 1em;
+    cursor: pointer;
+    
+    &:focus {
+        outline: 2px solid @primary-color;
+        outline-offset: 2px;
+    }
+}
+
+.form-check-label {
+    cursor: pointer;
+}
+
+.form-check-inline {
+    display: inline-block;
+    margin-right: @spacing-md;
+    padding-left: 0;
+    
+    .form-check-input {
+        float: none;
+        margin-left: 0;
+        margin-right: @spacing-xs;
+    }
+}
+
+// ============================================================================
+// Form Validation
+// ============================================================================
+
+.valid-feedback {
+    display: none;
+    margin-top: @spacing-xs;
+    font-size: @font-size-sm;
+    color: @success-color;
+}
+
+.invalid-feedback {
+    display: none;
+    margin-top: @spacing-xs;
+    font-size: @font-size-sm;
+    color: @danger-color;
+}
+
+.is-valid ~ .valid-feedback {
+    display: block;
+}
+
+.is-invalid ~ .invalid-feedback {
+    display: block;
+}
+
+// ============================================================================
+// Input Groups
+// ============================================================================
+
+.input-group {
+    display: flex;
+    width: 100%;
+    
+    .form-control {
+        flex: 1 1 auto;
+        width: 1%;
+        min-width: 0;
+    }
+}
+
+.input-group-text {
+    display: flex;
+    align-items: center;
+    padding: @input-padding-y @input-padding-x;
+    font-size: @font-size-base;
+    font-weight: @font-weight-normal;
+    line-height: @line-height-base;
+    color: @text-color;
+    text-align: center;
+    white-space: nowrap;
+    background-color: @gray-100;
+    border: 1px solid @input-border-color;
+}
+
+.input-group-prepend {
+    .input-group-text {
+        border-right: 0;
+        border-radius: @input-border-radius 0 0 @input-border-radius;
+    }
+}
+
+.input-group-append {
+    .input-group-text {
+        border-left: 0;
+        border-radius: 0 @input-border-radius @input-border-radius 0;
+    }
+}
+
+// ============================================================================
+// Form Row
+// ============================================================================
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -(@spacing-sm);
+    margin-right: -(@spacing-sm);
+    
+    > .col,
+    > [class*="col-"] {
+        padding-left: @spacing-sm;
+        padding-right: @spacing-sm;
+    }
+}

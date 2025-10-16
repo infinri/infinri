@@ -1,14 +1,65 @@
 <?xml version="1.0"?>
 <layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <!-- Add theme-specific blocks to header -->
-    <referenceContainer name="header">
-        <block name="navigation" class="Infinri\Theme\Block\Html\Header\Navigation" after="logo"/>
+    <!-- Extend base default layout -->
+    <update handle="base_default"/>
+    
+    <!-- Add assets to head -->
+    <referenceContainer name="head.styles">
+        <block class="Infinri\Core\Block\Text" name="theme.styles">
+            <arguments>
+                <argument name="text" xsi:type="string"><![CDATA[<link rel="stylesheet" href="/static/Infinri/Theme/css/styles.css">]]></argument>
+            </arguments>
+        </block>
     </referenceContainer>
     
-    <!-- Add sidebar to main content area -->
-    <referenceContainer name="main">
-        <container name="sidebar" htmlTag="aside" htmlClass="sidebar" before="content">
-            <block name="sidebar.info" class="Infinri\Theme\Block\Sidebar\Info"/>
+    <referenceContainer name="head.scripts">
+        <block class="Infinri\Core\Block\Text" name="theme.scripts">
+            <arguments>
+                <argument name="text" xsi:type="string"><![CDATA[<script src="/static/Infinri/Theme/js/app.js" defer></script>]]></argument>
+            </arguments>
+        </block>
+    </referenceContainer>
+    
+    <!-- Add header -->
+    <referenceContainer name="page.wrapper">
+        <block class="Infinri\Core\Block\Template" 
+               name="header" 
+               template="Infinri_Theme::html/header.phtml"
+               before="main.content">
+            <arguments>
+                <argument name="view_model" xsi:type="object">Infinri\Theme\ViewModel\Header</argument>
+            </arguments>
+        </block>
+    </referenceContainer>
+    
+    <!-- Add main content area -->
+    <referenceContainer name="main.content">
+        <container name="breadcrumbs" htmlTag="div" htmlClass="breadcrumbs-wrapper" before="-">
+            <block class="Infinri\Core\Block\Template" 
+                   name="breadcrumbs" 
+                   template="Infinri_Theme::html/breadcrumb.phtml">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Infinri\Theme\ViewModel\Breadcrumb</argument>
+                </arguments>
+            </block>
         </container>
+        
+        <container name="messages" htmlTag="div" htmlClass="messages-wrapper" after="breadcrumbs">
+            <block class="Infinri\Core\Block\Template" 
+                   name="messages" 
+                   template="Infinri_Theme::components/messages.phtml"/>
+        </container>
+    </referenceContainer>
+    
+    <!-- Add footer -->
+    <referenceContainer name="page.wrapper">
+        <block class="Infinri\Core\Block\Template" 
+               name="footer" 
+               template="Infinri_Theme::html/footer.phtml"
+               after="main.content">
+            <arguments>
+                <argument name="view_model" xsi:type="object">Infinri\Theme\ViewModel\Footer</argument>
+            </arguments>
+        </block>
     </referenceContainer>
 </layout>

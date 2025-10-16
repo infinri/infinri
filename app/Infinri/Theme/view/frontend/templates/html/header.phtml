@@ -1,0 +1,63 @@
+<?php
+/**
+ * Header Template
+ * 
+ * @var \Infinri\Core\Block\Template $block
+ * @var \Infinri\Theme\ViewModel\Header $viewModel
+ */
+$viewModel = $block->getViewModel();
+?>
+<header class="header" role="banner">
+    <div class="header-container container">
+        <div class="header-logo">
+            <a href="<?= $block->escapeUrl($viewModel->getLogoUrl()) ?>" 
+               class="logo" 
+               title="<?= $block->escapeHtmlAttr('Home') ?>">
+                <img src="<?= $block->escapeUrl($viewModel->getLogo()) ?>" 
+                     alt="<?= $block->escapeHtmlAttr('Infinri Logo') ?>"
+                     class="logo-image">
+            </a>
+        </div>
+        
+        <nav class="header-navigation" role="navigation" aria-label="Main navigation">
+            <button class="nav-toggle" 
+                    type="button" 
+                    aria-label="<?= $block->escapeHtmlAttr($viewModel->getMobileMenuLabel()) ?>"
+                    aria-expanded="false"
+                    aria-controls="main-nav">
+                <span class="nav-toggle-icon"></span>
+            </button>
+            
+            <ul class="nav-menu" id="main-nav">
+                <?php foreach ($viewModel->getNavigation() as $item): ?>
+                    <li class="nav-item <?= $item['active'] ? 'active' : '' ?>">
+                        <a href="<?= $block->escapeUrl($item['url']) ?>" 
+                           class="nav-link">
+                            <?= $block->escapeHtml($item['label']) ?>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </nav>
+        
+        <?php if ($viewModel->isSearchEnabled()): ?>
+            <div class="header-search">
+                <form action="<?= $block->escapeUrl($viewModel->getSearchUrl()) ?>" 
+                      method="get" 
+                      class="search-form"
+                      role="search">
+                    <input type="search" 
+                           name="q" 
+                           class="search-input" 
+                           placeholder="<?= $block->escapeHtmlAttr('Search...') ?>"
+                           aria-label="<?= $block->escapeHtmlAttr('Search') ?>">
+                    <button type="submit" 
+                            class="search-button"
+                            aria-label="<?= $block->escapeHtmlAttr('Submit search') ?>">
+                        <span class="search-icon">🔍</span>
+                    </button>
+                </form>
+            </div>
+        <?php endif; ?>
+    </div>
+</header>

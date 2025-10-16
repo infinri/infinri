@@ -1,0 +1,228 @@
+/**
+ * Component Styles
+ * Reusable UI components
+ */
+
+// ============================================================================
+// Breadcrumbs
+// ============================================================================
+
+.breadcrumbs {
+    background-color: @gray-100;
+    padding: @spacing-md 0;
+    margin-bottom: @spacing-lg;
+}
+
+.breadcrumbs-container {
+    .container();
+}
+
+.breadcrumb-list {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.breadcrumb-item {
+    font-size: @font-size-sm;
+    
+    &:not(:last-child)::after {
+        content: '/';
+        padding: 0 @spacing-sm;
+        color: @text-muted;
+    }
+}
+
+.breadcrumb-link {
+    color: @text-muted;
+    text-decoration: none;
+    
+    &:hover {
+        color: @primary-color;
+        text-decoration: underline;
+    }
+}
+
+.breadcrumb-current {
+    color: @text-color;
+}
+
+// ============================================================================
+// Messages
+// ============================================================================
+
+.messages {
+    margin-bottom: @spacing-lg;
+}
+
+.message {
+    padding: @spacing-md;
+    margin-bottom: @spacing-sm;
+    border: 1px solid transparent;
+    .border-radius(@border-radius);
+    position: relative;
+    
+    &-success {
+        background-color: fade(@success-color, 10%);
+        border-color: fade(@success-color, 30%);
+        color: darken(@success-color, 10%);
+    }
+    
+    &-error,
+    &-danger {
+        background-color: fade(@danger-color, 10%);
+        border-color: fade(@danger-color, 30%);
+        color: darken(@danger-color, 10%);
+    }
+    
+    &-warning {
+        background-color: fade(@warning-color, 10%);
+        border-color: fade(@warning-color, 30%);
+        color: darken(@warning-color, 40%);
+    }
+    
+    &-info {
+        background-color: fade(@info-color, 10%);
+        border-color: fade(@info-color, 30%);
+        color: darken(@info-color, 10%);
+    }
+}
+
+.message-content {
+    display: flex;
+    align-items: center;
+    padding-right: @spacing-xl;
+}
+
+.message-icon {
+    margin-right: @spacing-sm;
+}
+
+.message-close {
+    position: absolute;
+    top: @spacing-sm;
+    right: @spacing-sm;
+    background: none;
+    border: none;
+    font-size: @font-size-xl;
+    line-height: 1;
+    color: inherit;
+    opacity: 0.5;
+    cursor: pointer;
+    .transition();
+    
+    &:hover {
+        opacity: 1;
+    }
+}
+
+// ============================================================================
+// Pagination
+// ============================================================================
+
+.pagination {
+    margin: @spacing-xl 0;
+}
+
+.pagination-list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 @spacing-sm 0;
+    gap: @spacing-xs;
+}
+
+.pagination-item {
+    &.active .pagination-link {
+        background-color: @primary-color;
+        color: @white;
+        border-color: @primary-color;
+    }
+    
+    &.pagination-ellipsis .pagination-link {
+        border-color: transparent;
+        cursor: default;
+    }
+}
+
+.pagination-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: @spacing-xs @spacing-sm;
+    color: @text-color;
+    text-decoration: none;
+    background-color: @white;
+    border: 1px solid @border-color;
+    .border-radius(@border-radius);
+    .transition();
+    
+    &:hover:not(.pagination-current) {
+        background-color: @gray-100;
+        color: @primary-color;
+        text-decoration: none;
+    }
+    
+    &:focus {
+        outline: 2px solid @primary-color;
+        outline-offset: 2px;
+        z-index: 1;
+    }
+}
+
+.pagination-current {
+    cursor: default;
+}
+
+.pagination-info {
+    text-align: center;
+    font-size: @font-size-sm;
+    color: @text-muted;
+}
+
+// ============================================================================
+// Cards
+// ============================================================================
+
+.card {
+    background-color: @card-bg;
+    border: 1px solid @border-color;
+    .border-radius(@card-border-radius);
+    .box-shadow(@card-shadow);
+}
+
+.card-header {
+    padding: @spacing-md @card-padding;
+    border-bottom: 1px solid @border-color;
+    font-weight: @font-weight-semibold;
+}
+
+.card-body {
+    padding: @card-padding;
+}
+
+.card-footer {
+    padding: @spacing-md @card-padding;
+    border-top: 1px solid @border-color;
+    background-color: @gray-100;
+}
+
+.card-title {
+    margin: 0 0 @spacing-sm;
+    font-size: @font-size-lg;
+    font-weight: @font-weight-semibold;
+}
+
+.card-text {
+    margin-bottom: @spacing-md;
+    
+    &:last-child {
+        margin-bottom: 0;
+    }
+}

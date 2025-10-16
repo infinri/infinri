@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <!-- Extend frontend default -->
+    <update handle="default"/>
+    
+    <!-- Two column layout with left sidebar -->
+    <referenceContainer name="main.content">
+        <container name="columns" htmlTag="div" htmlClass="columns columns-2 columns-left">
+            <container name="sidebar.left" htmlTag="aside" htmlClass="sidebar sidebar-left">
+                <block class="Infinri\Core\Block\Text" name="sidebar.placeholder">
+                    <arguments>
+                        <argument name="text" xsi:type="string"><!-- Left Sidebar Content --></argument>
+                    </arguments>
+                </block>
+            </container>
+            
+            <referenceContainer name="content">
+                <argument name="htmlClass" xsi:type="string">column main</argument>
+            </referenceContainer>
+        </container>
+    </referenceContainer>
+</layout>

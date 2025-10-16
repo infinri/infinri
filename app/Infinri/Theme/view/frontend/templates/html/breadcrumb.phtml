@@ -1,0 +1,39 @@
+<?php
+/**
+ * Breadcrumb Template
+ * 
+ * @var \Infinri\Core\Block\Template $block
+ * @var \Infinri\Theme\ViewModel\Breadcrumb $viewModel
+ */
+$viewModel = $block->getViewModel();
+
+if (!$viewModel->hasBreadcrumbs()) {
+    return;
+}
+?>
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+    <div class="breadcrumbs-container container">
+        <ol class="breadcrumb-list" itemscope itemtype="https://schema.org/BreadcrumbList">
+            <?php $position = 1; ?>
+            <?php foreach ($viewModel->getBreadcrumbs() as $crumb): ?>
+                <li class="breadcrumb-item" 
+                    itemprop="itemListElement" 
+                    itemscope 
+                    itemtype="https://schema.org/ListItem">
+                    <?php if ($crumb['url']): ?>
+                        <a href="<?= $block->escapeUrl($crumb['url']) ?>" 
+                           class="breadcrumb-link"
+                           itemprop="item">
+                            <span itemprop="name"><?= $block->escapeHtml($crumb['label']) ?></span>
+                        </a>
+                    <?php else: ?>
+                        <span class="breadcrumb-current" itemprop="name">
+                            <?= $block->escapeHtml($crumb['label']) ?>
+                        </span>
+                    <?php endif; ?>
+                    <meta itemprop="position" content="<?= $position++ ?>">
+                </li>
+            <?php endforeach; ?>
+        </ol>
+    </div>
+</nav>

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <!-- Minimal layout for pages without chrome (popups, iframes, etc.) -->
+    <container name="root">
+        <container name="html" htmlTag="html">
+            <container name="head" htmlTag="head">
+                <block class="Infinri\Core\Block\Text" name="head.meta.charset">
+                    <arguments>
+                        <argument name="text" xsi:type="string"><![CDATA[<meta charset="UTF-8">]]></argument>
+                    </arguments>
+                </block>
+                <block class="Infinri\Core\Block\Text" name="head.title">
+                    <arguments>
+                        <argument name="text" xsi:type="string"><![CDATA[<title>Infinri</title>]]></argument>
+                    </arguments>
+                </block>
+            </container>
+            
+            <container name="body" htmlTag="body">
+                <container name="content"/>
+            </container>
+        </container>
+    </container>
+</layout>
