@@ -5,28 +5,32 @@
  * Displays flash messages (success, error, warning, info)
  * 
  * @var \Infinri\Core\Block\Template $block
+ * @var \Infinri\Theme\ViewModel\Messages $messagesViewModel
  */
 
-// In a real implementation, messages would come from session or a MessageManager
-// For now, this is a placeholder structure
-$messages = [
-    // Example:
-    // ['type' => 'success', 'text' => 'Item added to cart successfully!'],
-    // ['type' => 'error', 'text' => 'An error occurred. Please try again.'],
-];
+$messagesViewModel = $block->getData('view_model');
 
-if (empty($messages)) {
+if (!$messagesViewModel || !$messagesViewModel->hasMessages()) {
     return;
 }
+
+$messages = $messagesViewModel->getMessages();
 ?>
-<div class="messages">
+<div class="messages" data-auto-hide="5000">
     <?php foreach ($messages as $message): ?>
-        <div class="message message-<?= $block->escapeHtmlAttr($message['type']) ?>" 
-             role="alert"
-             aria-live="polite">
+        <?php
+        $type = $message['type'] ?? 'info';
+        $text = $message['text'] ?? '';
+        $iconClass = $messagesViewModel->getIconClass($type);
+        $ariaRole = $messagesViewModel->getAriaRole($type);
+        ?>
+        <div class="message message-<?= $block->escapeHtmlAttr($type) ?>" 
+             role="<?= $block->escapeHtmlAttr($ariaRole) ?>"
+             aria-live="polite"
+             data-message-type="<?= $block->escapeHtmlAttr($type) ?>">
             <div class="message-content">
-                <span class="message-icon"></span>
-                <span class="message-text"><?= $block->escapeHtml($message['text']) ?></span>
+                <span class="message-icon <?= $block->escapeHtmlAttr($iconClass) ?>" aria-hidden="true"></span>
+                <span class="message-text"><?= $block->escapeHtml($text) ?></span>
             </div>
             <button type="button" 
                     class="message-close" 

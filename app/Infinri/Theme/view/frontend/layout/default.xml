@@ -47,7 +47,14 @@
         <container name="messages" htmlTag="div" htmlClass="messages-wrapper" after="breadcrumbs">
             <block class="Infinri\Core\Block\Template" 
                    name="messages" 
-                   template="Infinri_Theme::components/messages.phtml"/>
+                   template="Infinri_Theme::components/messages.phtml"
+                   after="breadcrumbs">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">
+                        Infinri\Theme\ViewModel\Messages
+                    </argument>
+                </arguments>
+            </block>
         </container>
     </referenceContainer>
     
