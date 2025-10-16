@@ -1,0 +1,54 @@
+<?php
+/**
+ * Loading Component
+ * Displays loading spinner or skeleton screen
+ * 
+ * @var \Infinri\Core\Block\Template $block
+ */
+
+$type = $block->getData('type') ?: 'spinner'; // spinner, skeleton, dots
+$size = $block->getData('size') ?: 'md'; // sm, md, lg
+$text = $block->getData('text') ?: 'Loading...';
+?>
+
+<div class="loading loading-<?= $block->escapeHtmlAttr($type) ?> loading-<?= $block->escapeHtmlAttr($size) ?>" 
+     role="status" 
+     aria-live="polite" 
+     aria-busy="true">
+    
+    <?php if ($type === 'spinner'): ?>
+        <!-- Spinner Loader -->
+        <div class="spinner">
+            <div class="spinner-border" aria-hidden="true"></div>
+        </div>
+        <span class="sr-only"><?= $block->escapeHtml($text) ?></span>
+        
+    <?php elseif ($type === 'dots'): ?>
+        <!-- Dot Loader -->
+        <div class="loading-dots" aria-hidden="true">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+        <span class="sr-only"><?= $block->escapeHtml($text) ?></span>
+        
+    <?php elseif ($type === 'skeleton'): ?>
+        <!-- Skeleton Loader -->
+        <div class="skeleton-loader" aria-hidden="true">
+            <?php 
+            $lines = (int)($block->getData('lines') ?: 3);
+            for ($i = 0; $i < $lines; $i++): 
+            ?>
+                <div class="skeleton-line"></div>
+            <?php endfor; ?>
+        </div>
+        <span class="sr-only"><?= $block->escapeHtml($text) ?></span>
+        
+    <?php elseif ($type === 'bar'): ?>
+        <!-- Progress Bar Loader -->
+        <div class="loading-bar" aria-hidden="true">
+            <div class="loading-bar-inner"></div>
+        </div>
+        <span class="sr-only"><?= $block->escapeHtml($text) ?></span>
+    <?php endif; ?>
+</div>

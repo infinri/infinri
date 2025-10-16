@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:infinri:framework:Layout/etc/layout.xsd">
+    <!-- Three Column Layout (Both Sidebars) -->
+    <update handle="default"/>
+    
+    <referenceContainer name="main">
+        <container name="columns" htmlTag="div" htmlClass="columns columns-3">
+            <!-- Left Sidebar -->
+            <container name="sidebar.left" 
+                       htmlTag="aside" 
+                       htmlClass="sidebar sidebar-left" 
+                       htmlId="sidebar-left">
+                <arguments>
+                    <argument name="role" xsi:type="string">complementary</argument>
+                    <argument name="aria-label" xsi:type="string">Left Sidebar</argument>
+                </arguments>
+            </container>
+            
+            <!-- Main Content -->
+            <container name="content" 
+                       htmlTag="main" 
+                       htmlClass="main-content" 
+                       htmlId="maincontent">
+                <arguments>
+                    <argument name="role" xsi:type="string">main</argument>
+                </arguments>
+            </container>
+            
+            <!-- Right Sidebar -->
+            <container name="sidebar.right" 
+                       htmlTag="aside" 
+                       htmlClass="sidebar sidebar-right" 
+                       htmlId="sidebar-right">
+                <arguments>
+                    <argument name="role" xsi:type="string">complementary</argument>
+                    <argument name="aria-label" xsi:type="string">Right Sidebar</argument>
+                </arguments>
+            </container>
+        </container>
+    </referenceContainer>
+</layout>
