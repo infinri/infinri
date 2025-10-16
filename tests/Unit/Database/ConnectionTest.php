@@ -89,7 +89,7 @@ describe('Connection', function () {
         
         $count = $this->connection->fetchOne('SELECT COUNT(*) FROM test_table');
         
-        expect($count)->toBe('1');
+        expect($count)->toBe(1);
     });
     
     it('can update record', function () {
@@ -129,7 +129,7 @@ describe('Connection', function () {
         $this->connection->rollback();
         
         $count = $this->connection->fetchOne('SELECT COUNT(*) FROM test_table');
-        expect($count)->toBe('0');
+        expect($count)->toBe(0);
     });
     
     it('can commit transaction', function () {
@@ -139,7 +139,7 @@ describe('Connection', function () {
         $this->connection->commit();
         
         $count = $this->connection->fetchOne('SELECT COUNT(*) FROM test_table');
-        expect($count)->toBe('1');
+        expect($count)->toBe(1);
     });
     
     it('supports prepared statements with parameters', function () {

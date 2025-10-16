@@ -1,0 +1,47 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Infinri Console Application
+ * 
+ * CLI tool for managing the Infinri framework
+ * 
+ * Usage:
+ *   php bin/console [command] [options]
+ *   ./bin/console [command] [options]
+ * 
+ * Examples:
+ *   bin/console list
+ *   bin/console cache:clear
+ *   bin/console module:list
+ */
+
+// Load Composer autoloader
+require __DIR__ . '/../vendor/autoload.php';
+
+// Load application bootstrap (module registration)
+require __DIR__ . '/../app/autoload.php';
+
+use Symfony\Component\Console\Application;
+use Infinri\Core\Console\CommandLoader;
+
+// Create Symfony Console Application
+$console = new Application('Infinri Framework', '1.0.0');
+
+// Load and register all commands from modules
+$commandLoader = new CommandLoader();
+$commands = $commandLoader->loadCommands();
+
+foreach ($commands as $command) {
+    $console->add($command);
+}
+
+// Run the console application
+try {
+    $console->run();
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . PHP_EOL;
+    exit(1);
+}

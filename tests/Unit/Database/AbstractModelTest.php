@@ -99,7 +99,7 @@ describe('AbstractModel', function () {
         $model = new TestModel($this->resource);
         $model->load($id);
         
-        expect($model->getId())->toBe((string)$id);
+        expect($model->getId())->toBe($id);
         expect($model->getData('name'))->toBe('Loaded User');
     });
     
@@ -173,6 +173,7 @@ describe('AbstractModel', function () {
         $this->model->delete();
         
         $this->model->setData('name', 'Changed');
+        $this->model->save(); // Should throw exception
     })->throws(RuntimeException::class, 'Cannot save deleted model');
     
 });

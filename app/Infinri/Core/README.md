@@ -1,131 +1,91 @@
 # Infinri Core Framework
 
-**Version:** 0.1.0  
+**Version:** 1.0.0  
 **License:** MIT  
-**PHP Version:** ^8.4
+**PHP Version:** ^8.1
 
 ---
 
 ## Overview
 
-The **Infinri Core Framework** is the foundational module that powers the entire Infinri platform. It provides essential infrastructure services that all other modules depend on, implementing a proven, Magento-inspired modular architecture with modern PHP best practices.
+The **Infinri Core Framework** provides the foundational infrastructure for building modular, extensible PHP applications. Inspired by Magento's proven architecture and powered by modern PHP libraries, Core delivers enterprise-grade services for configuration, dependency injection, layouts, templating, asset management, caching, and more.
 
-Core Framework is pure infrastructure—it contains **no business logic**, **no UI components**, and **no database models**. Its sole responsibility is to provide robust, performant services that enable rapid development of feature modules.
-
----
-
-## Philosophy
-
-### Magento-Inspired, Modernized
-
-Infinri Core preserves the battle-tested architectural patterns from Magento while replacing legacy components with modern, focused libraries:
-
-**Keep:**
-- ✅ Modular architecture (registration.php, etc/module.xml)
-- ✅ Layout XML system (containers, blocks, handles)
-- ✅ Dependency injection configuration (etc/di.xml)
-- ✅ Event/Observer pattern (etc/events.xml)
-- ✅ Plugin/Interceptor pattern (AOP)
-- ✅ Multi-area support (base, frontend, adminhtml)
-- ✅ Template fallback mechanism
-- ✅ Asset merging and compilation
-
-**Replace:**
-- ❌ Magento's custom DI → **PHP-DI 7.1** (industry standard)
-- ❌ Custom event system → **Symfony EventDispatcher 7.3**
-- ❌ Zend_Cache → **Symfony Cache 7.3**
-- ❌ Custom CLI → **Symfony Console 7.3**
-- ❌ Complex routing → **nikic/fast-route 1.3**
-- ❌ PHP-based LESS compilation → **Node.js LESS 4.4**
-- ❌ RequireJS complexity → **Plain JavaScript + Terser 5.44**
-
-**Result:** The modularity and extensibility of Magento without the bloat.
+Core Framework contains **no business logic** or UI components—it's pure infrastructure designed to enable rapid development of feature-rich modules.
 
 ---
 
-## Core Responsibilities
+## Key Features
 
-### What Core Framework Provides
+### Component System
+- **Module Registration** - Auto-discovery and dependency resolution
+- **Multi-Type Components** - Support for modules, themes, libraries, language packs
+- **Dependency Management** - Module sequence and load ordering
 
-#### 1. **Component Registration System**
-- Module discovery and registration
-- Dependency resolution (module sequence)
-- Module enable/disable management
-- Support for modules, themes, libraries, and language packs
+### Configuration
+- **XML-Based Config** - Merge configurations from all modules
+- **Scope Support** - Default, store, and website-level configuration
+- **Environment Config** - Separate settings for dev/staging/production
+- **Configuration Cache** - Fast access to merged settings
 
-#### 2. **Configuration System**
-- XML-based configuration (etc/config.xml)
-- Scope-based config (default/store/website)
-- Configuration merging from all modules
-- Environment-specific settings (app/etc/env.php)
-- Configuration caching
+### Dependency Injection
+- **PHP-DI Integration** - Industry-standard DI container
+- **XML Configuration** - Define preferences and arguments in di.xml
+- **Plugin System (AOP)** - Method interception with before/around/after
+- **Virtual Types** - Create variations without new classes
 
-#### 3. **Dependency Injection Container**
-- PHP-DI integration with XML configuration
-- Interface → Implementation preferences
-- Constructor argument injection
-- Virtual types and factories
-- Plugin/Interceptor support (AOP)
+### Layout & Templating
+- **XML Layouts** - Define page structure declaratively
+- **Block Hierarchy** - Nested containers and blocks
+- **PHTML Templates** - PHP-based template rendering
+- **Template Fallback** - Module → Theme resolution chain
+- **ViewModel Pattern** - Separate presentation logic
 
-#### 4. **Layout System**
-- XML-based page structure definition
-- Multi-module layout merging
-- Container and block hierarchy
-- Layout handles (route-based, custom)
-- Area-specific layouts (base, frontend, adminhtml)
-- Layout caching
+### Asset Management
+- **LESS Compilation** - Automatic CSS generation
+- **JS Minification** - Terser-based optimization
+- **Asset Merging** - Combine and optimize resources
+- **Source Maps** - Debug compiled assets
+- **Cache Busting** - Version-based URLs
 
-#### 5. **Block System**
-- Base block classes (AbstractBlock, Template, Container)
-- Template rendering (PHTML)
-- Child block management
-- Block caching (HTML cache)
-- Output escaping utilities
+### Event System
+- **Observer Pattern** - Decouple modules via events
+- **Symfony EventDispatcher** - Battle-tested event handling
+- **20+ Core Events** - Hook into framework lifecycle
+- **Priority Support** - Control observer execution order
 
-#### 6. **Template Engine**
-- PHTML template rendering
-- Template resolution with fallback chain
-- Block context injection ($block variable)
-- ViewModel integration
-- Automatic output escaping
+### Caching
+- **Multi-Backend** - File, Redis, Memcached, APCu
+- **Cache Types** - Separate pools for config, layout, blocks, etc.
+- **PSR-6/PSR-16** - Standard cache interfaces
+- **Tag-Based Invalidation** - Smart cache clearing
 
-#### 7. **Asset Management**
-- CSS/JS registration and ordering
-- LESS → CSS compilation (via Node.js)
-- JavaScript minification (via Terser)
-- Asset publishing to pub/static/
-- Source map generation
-- Version-based cache busting
+### Routing & HTTP
+- **Fast-Route** - High-performance URL routing
+- **Controller Dispatch** - Route → Controller → Action pattern
+- **Multiple Response Types** - HTML, JSON, Redirect, Forward
+- **Parameter Extraction** - Clean URL parsing
 
-#### 8. **Event System**
-- Symfony EventDispatcher integration
-- Observer pattern (events.xml)
-- Core framework events
-- Event data passing
-- Disabled observer support
+### Console Commands
+- **Symfony Console** - Professional CLI interface
+- **Auto-Discovery** - Commands from all modules
+- **Built-in Commands** - Cache, modules, configuration management
 
-#### 9. **Cache System**
-- Symfony Cache integration
-- Multiple cache backends (file, Redis, Memcached, APCu)
-- Cache type management (config, layout, block_html)
-- Tag-based cache invalidation
-- Cache warming and clearing
+### Internationalization
+- **Translation System** - Multi-language support
+- **Locale Management** - Switch languages dynamically
+- **Pluralization** - Handle singular/plural forms
+- **File-Based Translations** - PHP or CSV format
 
-#### 10. **Routing System**
-- Fast-route integration
-- URL → Controller/Action mapping
-- Route parameter extraction
-- URL generation (route → URL)
+### Helper Utilities
+- **Data Helper** - Array/string manipulation, formatting
+- **Escaper Helper** - XSS protection, output sanitization
+- **URL Helper** - Route-based URL generation
+- **Translation Helper** - i18n functions
 
-#### 11. **HTTP Request/Response**
-- PSR-7 compatible (optional)
-- Request object abstraction
-- Response types (HTML, JSON, Redirect, Forward)
-
-#### 12. **Console Application**
-- Symfony Console integration
-- Command auto-discovery from modules
-- Core commands (module, cache, config, asset)
+### Plugin Manager
+- **Plugin System** - Extend any public method
+- **Plugin Registration** - Register plugins in di.xml
+- **Plugin Execution** - Before, around, and after original method
 
 ---
 
@@ -136,11 +96,18 @@ Infinri Core preserves the battle-tested architectural patterns from Magento whi
 ```
 app/Infinri/Core/
 ├── Api/                           # Service contracts (interfaces)
-│   ├── BlockInterface.php
+│   ├── AssetRepositoryInterface.php
+│   ├── CacheInterface.php
 │   ├── ComponentRegistrarInterface.php
 │   ├── ConfigInterface.php
-│   ├── LayoutInterface.php
-│   └── ObserverInterface.php
+│   ├── ObserverInterface.php
+│   └── RepositoryInterface.php
+│
+├── App/                           # Application components
+│   ├── FrontController.php
+│   ├── Request.php
+│   ├── Response.php
+│   └── Router.php
 │
 ├── Block/                         # Base block classes
 │   ├── AbstractBlock.php
@@ -149,137 +116,115 @@ app/Infinri/Core/
 │   └── Container.php
 │
 ├── Console/                       # CLI commands
+│   ├── CommandLoader.php
 │   └── Command/
-│       ├── ModuleListCommand.php
 │       ├── CacheClearCommand.php
-│       ├── ConfigShowCommand.php
-│       └── AssetDeployCommand.php
+│       ├── CacheStatusCommand.php
+│       ├── ModuleListCommand.php
+│       └── ModuleStatusCommand.php
 │
 ├── Controller/                    # Base controller classes
 │   ├── AbstractAction.php
+│   ├── AbstractController.php
 │   └── Result/
+│       ├── Forward.php
 │       ├── Json.php
-│       ├── Redirect.php
-│       └── Forward.php
+│       └── Redirect.php
 │
-├── Helper/                        # Helper utilities (minimal)
-│   ├── Url.php
-│   ├── Config.php
-│   └── Escaper.php
+├── Helper/                        # Utility helpers
+│   ├── Data.php
+│   ├── Escaper.php
+│   ├── Translation.php
+│   └── Url.php
 │
-├── Model/                         # Core framework services
+├── Model/                         # Core services
+│   ├── AbstractModel.php
 │   ├── ComponentRegistrar.php
-│   ├── ModuleList.php
-│   ├── ModuleLoader.php
 │   ├── ObjectManager.php
-│   ├── Application.php
-│   │
-│   ├── Config/
-│   │   ├── Reader.php
-│   │   ├── Loader.php
-│   │   ├── ScopeConfig.php
-│   │   └── Cache.php
-│   │
-│   ├── Di/
-│   │   ├── ContainerFactory.php
-│   │   ├── XmlReader.php
-│   │   ├── PluginManager.php
-│   │   └── Interceptor.php
-│   │
-│   ├── Layout/
-│   │   ├── Loader.php
-│   │   ├── Merger.php
-│   │   ├── Processor.php
-│   │   ├── Builder.php
-│   │   ├── Renderer.php
-│   │   └── Cache.php
-│   │
-│   ├── Template/
-│   │   ├── Engine.php
-│   │   └── Resolver.php
 │   │
 │   ├── Asset/
-│   │   ├── Repository.php
-│   │   ├── Builder.php
-│   │   ├── Publisher.php
-│   │   ├── UrlGenerator.php
-│   │   └── Cache.php
-│   │
-│   ├── Event/
-│   │   ├── Manager.php
-│   │   ├── Observer.php
-│   │   └── Config/Reader.php
+│   │   ├── Builder.php            # LESS/CSS/JS compilation
+│   │   ├── Publisher.php          # Deploy to pub/static
+│   │   ├── Repository.php         # Asset registration
+│   │   └── UrlGenerator.php       # Asset URLs
 │   │
 │   ├── Cache/
-│   │   ├── Factory.php
-│   │   ├── Pool.php
-│   │   └── TypeList.php
+│   │   ├── Factory.php            # Create cache pools
+│   │   ├── Pool.php               # PSR-6/16 implementation
+│   │   └── TypeList.php           # Cache type management
 │   │
-│   ├── Route/
-│   │   └── Router.php
+│   ├── Config/
+│   │   ├── Loader.php             # Load module configs
+│   │   ├── Reader.php             # Parse XML configs
+│   │   └── ScopeConfig.php        # Access configuration
 │   │
-│   └── Url/
-│       └── Builder.php
+│   ├── Di/
+│   │   ├── ContainerFactory.php   # PHP-DI setup
+│   │   ├── PluginManager.php      # AOP interceptors
+│   │   ├── XmlReader.php          # Parse di.xml
+│   │   └── Plugin/
+│   │       └── InterceptorInterface.php
+│   │
+│   ├── Event/
+│   │   ├── Manager.php            # Event dispatcher
+│   │   └── Config/Reader.php      # Parse events.xml
+│   │
+│   ├── Layout/
+│   │   ├── Builder.php            # Create block instances
+│   │   ├── Loader.php             # Load layout files
+│   │   ├── Merger.php             # Merge XML layouts
+│   │   ├── Processor.php          # Process directives
+│   │   └── Renderer.php           # Render blocks
+│   │
+│   ├── Module/
+│   │   ├── ModuleList.php         # Registered modules
+│   │   ├── ModuleManager.php      # Enable/disable modules
+│   │   └── ModuleReader.php       # Parse module.xml
+│   │
+│   ├── ResourceModel/
+│   │   ├── AbstractResource.php   # Base resource model
+│   │   └── Connection.php         # Database connections
+│   │
+│   ├── Url/
+│   │   └── Builder.php            # URL generation
+│   │
+│   └── View/
+│       ├── Engine.php             # Template rendering
+│       └── TemplateResolver.php   # Template resolution
 │
 ├── etc/
-│   ├── module.xml                 # Core module definition
 │   ├── config.xml                 # Default configuration
-│   ├── di.xml                     # DI container definitions
-│   └── events.xml                 # Event subscriptions
+│   ├── di.xml                     # DI definitions
+│   ├── events.xml                 # Event subscriptions
+│   └── module.xml                 # Module metadata
 │
 ├── registration.php               # Module registration
 ├── requirements.txt               # Implementation checklist
 └── README.md                      # This file
 ```
 
-### Application Bootstrap Flow
-
-```
-1. pub/index.php
-   └─> app/autoload.php
-       └─> vendor/autoload.php (Composer)
-       └─> app/etc/registration_globlist.php (auto-discover modules)
-           └─> app/Infinri/*/registration.php (register each module)
-
-2. app/bootstrap.php
-   └─> Load app/etc/env.php (database, cache config)
-   └─> Initialize error handling
-   └─> Create DI Container (PHP-DI)
-       └─> Load etc/di.xml from all modules
-   └─> Load module list (app/etc/config.php)
-   └─> Initialize ComponentRegistrar
-
-3. Application::run()
-   └─> Route request (Fast-route)
-   └─> Dispatch to controller
-   └─> Load layout XML (handle-based)
-   └─> Generate blocks
-   └─> Render templates
-   └─> Send response
-```
-
 ---
 
-## Installation & Setup
+## Installation
 
 ### Prerequisites
 
-- **PHP:** 8.4 or higher
+- **PHP:** 8.1 or higher
 - **Composer:** 2.x
 - **Node.js:** 18+ (for asset compilation)
-- **PostgreSQL:** 14+ (for database-backed features)
+- **Database:** PostgreSQL 14+, MySQL 8+, or SQLite 3
 
-### Installing Core Framework
+### Setup
 
-Core Framework is part of the Infinri project and is installed automatically via the root `composer.json`.
+Core Framework is installed as part of the Infinri project:
 
 ```bash
-# Install all dependencies
+# Install dependencies
 composer install
 npm install
 
-# Enable Core module (if not already enabled)
-# Edit app/etc/config.php:
+# Verify Core is enabled
+# In app/etc/config.php:
 return [
     'modules' => [
         'Infinri_Core' => 1,
@@ -287,51 +232,13 @@ return [
 ];
 ```
 
-### Bootstrap Configuration
-
-Create application bootstrap files (these are provided by Core Framework):
-
-**app/autoload.php:**
-```php
-<?php
-require __DIR__ . '/../vendor/autoload.php';
-require __DIR__ . '/etc/registration_globlist.php';
-```
-
-**app/bootstrap.php:**
-```php
-<?php
-require __DIR__ . '/autoload.php';
-
-// Load environment configuration
-$env = require __DIR__ . '/etc/env.php';
-
-// Initialize error handling
-error_reporting(E_ALL);
-ini_set('display_errors', $env['dev_mode'] ?? 0);
-
-// Create and return DI container
-return \Infinri\Core\Model\Di\ContainerFactory::create();
-```
-
-**app/etc/registration_globlist.php:**
-```php
-<?php
-$registrationFiles = glob(__DIR__ . '/../Infinri/*/registration.php');
-foreach ($registrationFiles as $file) {
-    require $file;
-}
-```
-
 ---
 
 ## Usage
 
-### For Module Developers
+### Creating a Module
 
-#### Registering a New Module
-
-**app/Infinri/YourModule/registration.php:**
+**1. Registration file** - `app/Infinri/YourModule/registration.php`:
 ```php
 <?php
 use Infinri\Core\Model\ComponentRegistrar;
@@ -343,144 +250,232 @@ ComponentRegistrar::register(
 );
 ```
 
-**app/Infinri/YourModule/etc/module.xml:**
+**2. Module definition** - `app/Infinri/YourModule/etc/module.xml`:
 ```xml
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <module name="Infinri_YourModule" setup_version="1.0.0">
         <sequence>
             <module name="Infinri_Core"/>
-            <module name="Infinri_Theme"/>
         </sequence>
     </module>
 </config>
 ```
 
-Enable your module in **app/etc/config.php:**
+**3. Enable module** - In `app/etc/config.php`:
 ```php
 return [
     'modules' => [
         'Infinri_Core' => 1,
-        'Infinri_Theme' => 1,
         'Infinri_YourModule' => 1,
     ]
 ];
 ```
 
-#### Using Configuration System
+### Configuration System
 
-**app/Infinri/YourModule/etc/config.xml:**
+**Define config** - `app/Infinri/YourModule/etc/config.xml`:
 ```xml
 <?xml version="1.0"?>
 <config>
     <default>
         <your_section>
             <your_group>
-                <field_name>default_value</field_name>
+                <enabled>1</enabled>
+                <api_key>default_key</api_key>
             </your_group>
         </your_section>
     </default>
 </config>
 ```
 
-**In PHP:**
+**Access config**:
 ```php
 use Infinri\Core\Model\Config\ScopeConfig;
 
-class YourClass {
+class YourService
+{
     public function __construct(
         private ScopeConfig $scopeConfig
     ) {}
     
-    public function getValue(): string {
-        return $this->scopeConfig->getValue('your_section/your_group/field_name');
+    public function isEnabled(): bool
+    {
+        return (bool)$this->scopeConfig->getValue(
+            'your_section/your_group/enabled'
+        );
     }
 }
 ```
 
-#### Using Dependency Injection
+### Dependency Injection
 
-**app/Infinri/YourModule/etc/di.xml:**
+**Configure DI** - `app/Infinri/YourModule/etc/di.xml`:
 ```xml
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <!-- Interface preference -->
-    <preference for="YourInterface" type="YourImplementation"/>
+    <preference for="Your\InterfaceName" type="Your\Implementation"/>
     
     <!-- Constructor arguments -->
-    <type name="YourClass">
+    <type name="Your\ClassName">
         <arguments>
-            <argument name="paramName" xsi:type="string">value</argument>
+            <argument name="config" xsi:type="string">value</argument>
             <argument name="service" xsi:type="object">ServiceClass</argument>
         </arguments>
-    </type>
-    
-    <!-- Plugin/Interceptor -->
-    <type name="TargetClass">
-        <plugin name="your_plugin" type="YourPlugin" sortOrder="10"/>
     </type>
 </config>
 ```
 
-#### Creating Layout XML
+### Plugin System (AOP)
 
-**app/Infinri/YourModule/view/frontend/layout/yourmodule_index_index.xml:**
+**Register plugin** - In `etc/di.xml`:
+```xml
+<type name="Infinri\Core\Model\User">
+    <plugin name="user_logger" type="YourModule\Plugin\UserLogger" sortOrder="10"/>
+</type>
+```
+
+**Create plugin**:
+```php
+namespace YourModule\Plugin;
+
+use Infinri\Core\Model\Di\Plugin\InterceptorInterface;
+
+class UserLogger implements InterceptorInterface
+{
+    // Runs before the original method
+    public function beforeSave($subject, array $data): array
+    {
+        error_log("Saving user: " . json_encode($data));
+        return [$data]; // Modified arguments
+    }
+    
+    // Runs after the original method
+    public function afterSave($subject, $result, array $data)
+    {
+        error_log("User saved successfully");
+        return $result; // Can modify result
+    }
+    
+    // Wraps the original method
+    public function aroundSave($subject, callable $proceed, array $data)
+    {
+        // Before
+        $startTime = microtime(true);
+        
+        // Execute original
+        $result = $proceed($data);
+        
+        // After
+        $duration = microtime(true) - $startTime;
+        error_log("Save took {$duration}s");
+        
+        return $result;
+    }
+}
+```
+
+### Layout XML
+
+**Create layout** - `app/Infinri/YourModule/view/frontend/layout/yourmodule_index_index.xml`:
 ```xml
 <?xml version="1.0"?>
 <layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <update handle="1column"/>
     
     <referenceContainer name="content">
-        <block class="Infinri\Core\Block\Template" name="yourmodule.content" template="Infinri_YourModule::content.phtml">
+        <block class="Infinri\Core\Block\Template" 
+               name="yourmodule.content" 
+               template="Infinri_YourModule::content.phtml">
             <arguments>
-                <argument name="view_model" xsi:type="object">Infinri\YourModule\ViewModel\Content</argument>
+                <argument name="title" xsi:type="string">Page Title</argument>
+                <argument name="view_model" xsi:type="object">
+                    Infinri\YourModule\ViewModel\Content
+                </argument>
             </arguments>
         </block>
     </referenceContainer>
 </layout>
 ```
 
-#### Creating Templates
+### Templates
 
-**app/Infinri/YourModule/view/frontend/templates/content.phtml:**
+**Create template** - `app/Infinri/YourModule/view/frontend/templates/content.phtml`:
 ```php
 <?php
 /** @var \Infinri\Core\Block\Template $block */
-/** @var \Infinri\YourModule\ViewModel\Content $viewModel */
 $viewModel = $block->getViewModel();
+$title = $block->getData('title');
 ?>
 <div class="content">
-    <h1><?= $block->escapeHtml($viewModel->getTitle()) ?></h1>
+    <h1><?= $block->escapeHtml($title) ?></h1>
     <p><?= $block->escapeHtml($viewModel->getDescription()) ?></p>
-    <?= $block->getChildHtml('additional_content') ?>
+    <?= $block->getChildHtml() ?>
 </div>
 ```
 
-#### Registering Event Observers
+### Event Observers
 
-**app/Infinri/YourModule/etc/events.xml:**
+**Register observer** - `app/Infinri/YourModule/etc/events.xml`:
 ```xml
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <event name="core_event_name">
-        <observer name="your_observer" instance="Infinri\YourModule\Observer\YourObserver"/>
+    <event name="model_save_after">
+        <observer name="your_observer" 
+                  instance="Infinri\YourModule\Observer\ModelSaveObserver"/>
     </event>
 </config>
 ```
 
-**Observer class:**
+**Create observer**:
 ```php
 namespace Infinri\YourModule\Observer;
 
 use Infinri\Core\Api\ObserverInterface;
-use Symfony\Component\EventDispatcher\Event;
 
-class YourObserver implements ObserverInterface
+class ModelSaveObserver implements ObserverInterface
 {
-    public function execute(Event $event): void
+    public function execute(array $data): void
     {
-        $data = $event->getData();
+        $model = $data['object'] ?? null;
         // Your logic here
+    }
+}
+```
+
+### Translation (i18n)
+
+**Add translations** - `app/Infinri/YourModule/i18n/fr_FR.php`:
+```php
+<?php
+return [
+    'Welcome' => 'Bienvenue',
+    'Hello %s' => 'Bonjour %s',
+    'item' => 'élément',
+    'items' => 'éléments',
+];
+```
+
+**Use in code**:
+```php
+use Infinri\Core\Helper\Translation;
+
+class YourClass
+{
+    public function __construct(
+        private Translation $translation
+    ) {
+        $this->translation->setLocale('fr_FR');
+        $this->translation->loadTranslationFile(
+            'fr_FR', 
+            __DIR__ . '/../i18n/fr_FR.php'
+        );
+    }
+    
+    public function getMessage(string $name): string
+    {
+        return $this->translation->__('Hello %s', $name);
     }
 }
 ```
@@ -489,355 +484,171 @@ class YourObserver implements ObserverInterface
 
 ## CLI Commands
 
-Core Framework provides essential CLI commands:
-
 ```bash
 # Module management
 php bin/console module:list                    # List all modules
-php bin/console module:enable Infinri_Module   # Enable a module
-php bin/console module:disable Infinri_Module  # Disable a module
+php bin/console module:status YourModule       # Check module status
 
 # Cache management
 php bin/console cache:clear                    # Clear all caches
-php bin/console cache:clear --type=config      # Clear specific cache type
-php bin/console cache:status                   # Show cache status
+php bin/console cache:clear --type=config      # Clear specific type
+php bin/console cache:status                   # Show cache information
 
-# Configuration
-php bin/console config:show                    # Show all configuration
-php bin/console config:show section/group      # Show specific path
-
-# Asset management
-php bin/console asset:deploy                   # Compile and deploy assets
-php bin/console asset:deploy --area=frontend   # Deploy for specific area
-php bin/console asset:cache:clear              # Clear asset cache
+# Development
+php -S localhost:8000 -t pub/                  # Start dev server
 ```
 
 ---
 
-## Development Workflow
-
-### Development Mode
-
-In **development mode**, Core Framework:
-- ✅ Disables all caching (layout, config, block HTML)
-- ✅ Generates CSS/JS source maps
-- ✅ Symlinks assets instead of copying
-- ✅ Shows detailed error pages with stack traces
-- ✅ Reloads configuration on every request
-
-**Enable development mode:**
-```php
-// app/etc/env.php
-return [
-    'dev_mode' => 1,
-    // ...
-];
-```
-
-### Production Mode
-
-In **production mode**, Core Framework:
-- ✅ Enables all caching
-- ✅ Minifies CSS/JS
-- ✅ Copies assets (no symlinks)
-- ✅ Shows user-friendly error pages
-- ✅ Caches configuration
-
-**Enable production mode:**
-```php
-// app/etc/env.php
-return [
-    'dev_mode' => 0,
-    // ...
-];
-```
-
----
-
-## Performance Considerations
+## Performance
 
 ### Caching Strategy
 
-Core Framework implements multi-layer caching:
+Core Framework uses multi-layer caching:
 
-1. **OPcache** - PHP bytecode caching (always on in production)
-2. **Configuration cache** - Merged XML cached after first load
-3. **Layout cache** - Processed layout structures cached per handle
-4. **Block HTML cache** - Individual block output cached (configurable)
-5. **Asset cache** - Compiled CSS/JS cached until source changes
+1. **OPcache** - PHP bytecode (enable in php.ini)
+2. **Config Cache** - Merged XML configurations
+3. **Layout Cache** - Processed layout structures
+4. **Block HTML Cache** - Rendered block output
+5. **Asset Cache** - Compiled CSS/JS files
 
-**Cache backends supported:**
-- File-based (default, no setup required)
-- Redis (recommended for production)
-- Memcached
-- APCu (for single-server deployments)
+**Recommended backends**:
+- **Development**: Filesystem
+- **Production**: Redis or Memcached
+- **Single Server**: APCu
 
-### Load Time Budget
+### Cache Configuration
 
-Core Framework initialization target: **< 100ms**
-
-- Module loading: < 10ms
-- Configuration loading: < 20ms
-- DI container setup: < 30ms
-- Layout processing: < 40ms
-
-**Measured in development mode with file cache and 10 modules.**
-
----
-
-## Extensibility
-
-### Plugin/Interceptor System
-
-Extend any public method without modifying source code:
-
-```xml
-<type name="Infinri\Core\Model\Config\ScopeConfig">
-    <plugin name="your_plugin" type="YourModule\Plugin\ScopeConfigPlugin"/>
-</type>
-```
-
+In `app/etc/env.php`:
 ```php
-class ScopeConfigPlugin
-{
-    // Before original method
-    public function beforeGetValue($subject, string $path)
-    {
-        // Modify arguments
-        return [$path];
-    }
-    
-    // After original method
-    public function afterGetValue($subject, $result, string $path)
-    {
-        // Modify return value
-        return strtoupper($result);
-    }
-    
-    // Around original method (full control)
-    public function aroundGetValue($subject, callable $proceed, string $path)
-    {
-        // Before
-        $result = $proceed($path);
-        // After
-        return $result;
-    }
-}
-```
-
-### Event System
-
-Emit and listen to events without tight coupling:
-
-```php
-// Dispatch event
-$eventManager->dispatch('custom_event_name', [
-    'data' => $someData,
-    'object' => $someObject
-]);
-```
-
-```xml
-<!-- Subscribe to event -->
-<event name="custom_event_name">
-    <observer name="your_listener" instance="YourModule\Observer\CustomListener"/>
-</event>
-```
-
----
-
-## Module Dependencies
-
-### Required Composer Packages
-
-```json
-{
-    "require": {
-        "php": "^8.4",
-        "php-di/php-di": "^7.1",
-        "symfony/event-dispatcher": "^7.3",
-        "symfony/cache": "^7.3",
-        "symfony/console": "^7.3",
-        "nikic/fast-route": "^1.3",
-        "monolog/monolog": "^3.9"
-    }
-}
-```
-
-### Required NPM Packages
-
-```json
-{
-    "devDependencies": {
-        "less": "^4.4.2",
-        "clean-css-cli": "^5.6.3",
-        "terser": "^5.44.0",
-        "chokidar-cli": "^3.0.0"
-    }
-}
+return [
+    'cache' => [
+        'frontend' => [
+            'default' => [
+                'backend' => 'redis',
+                'backend_options' => [
+                    'server' => '127.0.0.1',
+                    'port' => 6379,
+                ],
+            ],
+        ],
+    ],
+];
 ```
 
 ---
 
 ## Testing
 
-Core Framework follows rigorous testing standards:
+Core Framework includes comprehensive test coverage:
 
-### Unit Tests
 ```bash
-vendor/bin/phpunit tests/Unit/
+# Run all tests
+composer test
+
+# Run specific test suites
+vendor/bin/pest tests/Unit/
+vendor/bin/pest tests/Integration/
+
+# With coverage
+vendor/bin/pest --coverage
 ```
 
-Tests for:
-- ComponentRegistrar
-- ModuleList/ModuleLoader
-- Configuration system
-- DI container
-- Layout processing
-- Block rendering
-- Asset compilation
-
-### Integration Tests
-```bash
-vendor/bin/phpunit tests/Integration/
-```
-
-Tests for:
-- Module registration flow
-- Layout XML merging
-- Event dispatching
-- Cache operations
-- Full request/response cycle
-
-### Static Analysis
-```bash
-vendor/bin/phpstan analyse
-```
+**Test Structure**:
+- `tests/Unit/` - Isolated component tests
+- `tests/Integration/` - Multi-component tests
+- `tests/Pest.php` - Test configuration
 
 ---
 
-## Contributing
+## Core Events
 
-We welcome contributions to Core Framework! However, due to its critical nature, all changes must:
+Framework emits events at key lifecycle points:
 
-1. ✅ Maintain backward compatibility
-2. ✅ Include comprehensive tests (unit + integration)
-3. ✅ Follow PSR-12 coding standards
-4. ✅ Update this README if adding new features
-5. ✅ Not introduce business logic (infrastructure only)
-6. ✅ Not add dependencies without discussion
-
-**See:** [CONTRIBUTING.md](../../../CONTRIBUTING.md) for full guidelines.
-
----
-
-## Versioning
-
-Core Framework follows [Semantic Versioning 2.0.0](https://semver.org/):
-
-- **MAJOR:** Breaking changes (interface changes, removal of methods)
-- **MINOR:** New features (backward compatible)
-- **PATCH:** Bug fixes (backward compatible)
-
-**Current Version:** 0.1.0 (pre-release)
-
----
-
-## Roadmap
-
-### Version 0.1.0 (Current - Foundation)
-- ✅ Component registration system
-- ✅ Module discovery and loading
-- ✅ Configuration system
-- ✅ DI container integration
-- ✅ Layout XML system
-- ✅ Block and template rendering
-- ✅ Asset management
-- ✅ Event system
-- ✅ Cache system
-- ✅ Console commands
-
-### Version 0.2.0 (Optimization)
-- ⏳ Pre-compiled interceptors (no runtime proxy generation)
-- ⏳ Advanced layout caching strategies
-- ⏳ Asset bundling and HTTP/2 push
-- ⏳ Critical CSS extraction
-- ⏳ Database schema management (migrations via Phinx)
-
-### Version 0.3.0 (Developer Experience)
-- ⏳ Debug toolbar
-- ⏳ Code generation commands (module scaffolding)
-- ⏳ Hot module reload for development
-- ⏳ GraphQL API support
-- ⏳ REST API framework
-
-### Version 1.0.0 (Stable Release)
-- ⏳ Comprehensive documentation
-- ⏳ 100% test coverage
-- ⏳ Performance benchmarks
-- ⏳ Production-ready cache warming
-- ⏳ Multi-tenant support
+| Event | When | Data |
+|-------|------|------|
+| `module_load_before` | Before loading modules | `modules` |
+| `module_load_after` | After loading modules | `modules` |
+| `config_load_before` | Before loading config | `scope` |
+| `config_load_after` | After loading config | `config` |
+| `layout_load_before` | Before loading layout | `handle` |
+| `layout_generate_blocks_before` | Before generating blocks | `layout` |
+| `layout_generate_blocks_after` | After generating blocks | `layout` |
+| `block_html_before` | Before rendering block | `block` |
+| `block_html_after` | After rendering block | `block`, `html` |
+| `controller_dispatch_before` | Before controller exec | `controller` |
+| `controller_dispatch_after` | After controller exec | `controller`, `result` |
+| `model_save_before` | Before model save | `object` |
+| `model_save_after` | After model save | `object` |
+| `model_delete_before` | Before model delete | `object` |
+| `model_delete_after` | After model delete | `object` |
+| `model_load_after` | After model load | `object` |
+| `asset_publish_before` | Before publishing assets | `module`, `area` |
+| `asset_publish_after` | After publishing assets | `module`, `area` |
+| `request_before` | Before processing request | `request` |
+| `response_send_before` | Before sending response | `response` |
 
 ---
 
-## FAQ
+## Dependencies
 
-### Why not use Laravel/Symfony/other framework?
+### PHP Packages (Composer)
 
-We need Magento's modularity and extensibility patterns (layout XML, plugins, multi-module config merging) which don't exist in general-purpose frameworks. However, we **do** use Symfony components where appropriate (EventDispatcher, Console, Cache).
+- **php-di/php-di** ^7.1 - Dependency injection
+- **symfony/event-dispatcher** ^7.3 - Event system
+- **symfony/cache** ^7.3 - Caching
+- **symfony/console** ^7.3 - CLI commands
+- **nikic/fast-route** ^1.3 - Routing
+- **monolog/monolog** ^3.9 - Logging
+- **vlucas/phpdotenv** ^5.6 - Environment config
 
-### Can I use Core Framework outside of Infinri?
+### Node Packages (NPM)
 
-Yes! Core Framework is designed to be reusable. As long as you follow the module structure conventions, you can build any application on top of it.
+- **less** ^4.4.2 - LESS compilation
+- **clean-css-cli** ^5.6.3 - CSS minification
+- **terser** ^5.44.0 - JS minification
+- **chokidar-cli** ^3.0.0 - File watching
 
-### How is this different from Magento 2?
+---
 
-**Same:** Architectural patterns, XML-based configuration, modular structure  
-**Different:** Modern dependencies, no Zend Framework, no custom implementations of standard features, cleaner codebase, better performance
+## Best Practices
 
-### Is this compatible with Magento modules?
+### Module Development
 
-No. While the concepts are similar, the implementations differ. However, porting Magento modules is straightforward due to architectural similarities.
+1. **Keep modules focused** - One responsibility per module
+2. **Use DI** - Inject dependencies, don't create them
+3. **Leverage events** - Decouple modules via observer pattern
+4. **Cache expensive operations** - Use cache types appropriately
+5. **Follow naming conventions** - Infinri_ModuleName format
 
-### What's the performance impact?
+### Performance
 
-Core Framework adds **< 100ms** overhead compared to a raw PHP application. This includes module discovery, DI container setup, configuration loading, and layout processing. With proper caching, subsequent requests are **< 10ms** overhead.
+1. **Enable caching in production** - All cache types
+2. **Use Redis/Memcached** - Faster than filesystem
+3. **Minimize layout complexity** - Fewer blocks = faster rendering
+4. **Optimize assets** - Minify and merge CSS/JS
+5. **Use OPcache** - Always in production
+
+### Security
+
+1. **Escape output** - Always use `$block->escapeHtml()`
+2. **Validate input** - Use `Escaper` helper methods
+3. **Sanitize data** - `sanitizeInt()`, `sanitizeUrl()`, etc.
+4. **Use HTTPS** - Especially for production
+5. **Keep dependencies updated** - Run `composer update` regularly
 
 ---
 
 ## License
 
-Infinri Core Framework is open-source software licensed under the [MIT License](../../../LICENSE).
-
-```
-Copyright (c) 2025 Infinri
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-...
-```
+MIT License - See LICENSE file for details
 
 ---
 
-## Support
+## Contributing
 
-- **Documentation:** [https://docs.infinri.com](https://docs.infinri.com)
-- **Issues:** [GitHub Issues](https://github.com/infinri/infinri/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/infinri/infinri/discussions)
-- **Email:** core@infinri.com
+Contributions are welcome! Please follow PSR-12 coding standards and include tests for new features.
 
 ---
 
-## Credits
-
-**Inspired by:** Magento 2 Framework  
-**Built with:** PHP-DI, Symfony Components, Fast-route  
-**Maintained by:** Infinri Core Team
-
----
-
-**For technical implementation details, see [requirements.txt](requirements.txt).**
+*Infinri Core Framework - Modern PHP infrastructure for modular applications*

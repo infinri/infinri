@@ -63,7 +63,7 @@ describe('AbstractResource', function () {
         $data = $this->resource->load($id);
         
         expect($data)->toBeArray();
-        expect($data['id'])->toBe((string)$id);
+        expect($data['id'])->toBe($id);
         expect($data['name'])->toBe('Test Entity');
     });
     
