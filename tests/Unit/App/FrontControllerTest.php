@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Infinri\Core\App\FrontController;
-use Infinri\Core\App\Router;
+use Infinri\Core\App\FastRouter;
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
 use Infinri\Core\Model\ObjectManager;
@@ -51,7 +51,7 @@ describe('FrontController', function () {
         $this->objectManager = ObjectManager::setInstance($container);
         $this->container = $container;
         
-        $this->router = new Router();
+        $this->router = new FastRouter();
         $this->frontController = new FrontController(
             $this->router,
             $this->objectManager,

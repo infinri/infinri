@@ -26,12 +26,12 @@ class Connection
     public function __construct(array $config = [])
     {
         $this->config = array_merge([
-            'driver' => getenv('DB_DRIVER') ?: 'pgsql',
-            'host' => getenv('DB_HOST') ?: 'localhost',
-            'port' => (int)(getenv('DB_PORT') ?: 5432),
-            'database' => getenv('DB_NAME') ?: 'infinri_test',
-            'username' => getenv('DB_USER') ?: 'infinri',
-            'password' => getenv('DB_PASSWORD') ?: 'infinri',
+            'driver' => $_ENV['DB_DRIVER'] ?? getenv('DB_DRIVER') ?: 'pgsql',
+            'host' => $_ENV['DB_HOST'] ?? getenv('DB_HOST') ?: 'localhost',
+            'port' => (int)($_ENV['DB_PORT'] ?? getenv('DB_PORT') ?: 5432),
+            'database' => $_ENV['DB_NAME'] ?? getenv('DB_NAME') ?: 'infinri_test',
+            'username' => $_ENV['DB_USER'] ?? getenv('DB_USER') ?: 'infinri',
+            'password' => $_ENV['DB_PASSWORD'] ?? getenv('DB_PASSWORD') ?: 'infinri',
             'charset' => 'utf8',
             'options' => [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -39,6 +39,16 @@ class Connection
                 PDO::ATTR_EMULATE_PREPARES => false,
             ],
         ], $config);
+    }
+    
+    /**
+     * Get database driver name
+     *
+     * @return string
+     */
+    public function getDriver(): string
+    {
+        return $this->config['driver'];
     }
 
     /**

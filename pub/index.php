@@ -9,14 +9,28 @@ declare(strict_types=1);
 
 use Infinri\Core\App\Request;
 use Infinri\Core\Helper\Logger;
+use Dotenv\Dotenv;
 
 // Load autoloader FIRST - before using any classes
 require_once __DIR__ . '/../vendor/autoload.php';
 
-// Enable all error reporting during development
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
+// Load environment variables from .env file BEFORE checking APP_ENV
+$dotenv = Dotenv::createImmutable(__DIR__ . '/..');
+$dotenv->safeLoad();
+
+// Enable error reporting based on environment
+$env = getenv('APP_ENV') ?: $_ENV['APP_ENV'] ?? 'production';
+$isDevelopment = in_array($env, ['development', 'dev', 'local']);
+
+if ($isDevelopment) {
+    error_reporting(E_ALL);
+    ini_set('display_errors', '1');
+    ini_set('display_startup_errors', '1');
+} else {
+    error_reporting(E_ALL);
+    ini_set('display_errors', '0');
+    ini_set('display_startup_errors', '0');
+}
 
 // Initialize logger early
 Logger::init(__DIR__ . '/../var/log');

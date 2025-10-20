@@ -125,19 +125,4 @@ class ObjectManager
     {
         return $this->container;
     }
-
-    /**
-     * Configure container with definitions
-     *
-     * @param array<string, mixed> $definitions
-     * @return void
-     */
-    public function configure(array $definitions): void
-    {
-        // PHP-DI doesn't support runtime configuration after build
-        // This would need to be done at ContainerFactory level
-        throw new \RuntimeException(
-            'Runtime configuration not supported. Configure via di.xml files instead.'
-        );
-    }
 }

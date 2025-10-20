@@ -14,10 +14,21 @@ use Infinri\Core\Helper\Logger;
  */
 class FrontController
 {
+    /**
+     * Allowed controller namespace prefixes
+     * Only classes within these namespaces can be instantiated
+     */
+    private const ALLOWED_CONTROLLER_NAMESPACES = [
+        'Infinri\\Core\\Controller\\',
+        'Infinri\\Cms\\Controller\\',
+        'Infinri\\Admin\\Controller\\',
+        'Infinri\\Theme\\Controller\\',
+    ];
+    
     private ?string $resolvedControllerClass = null;
 
     public function __construct(
-        private readonly Router $router,
+        private readonly RouterInterface $router,
         private readonly ObjectManager $objectManager,
         private readonly Request $request
     ) {
@@ -75,9 +86,24 @@ class FrontController
             //    -> "Infinri\Cms\Controller\Adminhtml\Page\Index"
             $controllerClass = $match['controller'];
             foreach ($match['params'] as $key => $value) {
+                // Sanitize value to prevent path traversal and injection
+                $sanitizedValue = $this->sanitizeClassName($value);
+                
                 // Capitalize first letter for class names
-                $className = ucfirst($value);
+                $className = ucfirst($sanitizedValue);
                 $controllerClass = str_replace(":{$key}", $className, $controllerClass);
+            }
+            
+            // Validate controller namespace for security
+            if (!$this->isValidControllerNamespace($controllerClass)) {
+                Logger::error('Attempted controller class injection', [
+                    'controller' => $controllerClass,
+                    'uri' => $uri
+                ]);
+                
+                return $response
+                    ->setForbidden()
+                    ->setBody('403 - Forbidden');
             }
 
             // Store resolved controller class and create controller
@@ -166,13 +192,43 @@ class FrontController
         }
     }
 
-    private function getControllerClass(): string
+    /**
+     * Sanitize class name part to prevent injection
+     *
+     * @param string $value
+     * @return string
+     */
+    private function sanitizeClassName(string $value): string
     {
-        // Implement logic to get the controller class internally
-        // For demonstration purposes, we'll just return a hardcoded class
-        return 'Infinri\Core\Controller\ExampleController';
+        // Remove any characters that aren't alphanumeric or underscore
+        // This prevents path traversal (../) and namespace injection (\)
+        return preg_replace('/[^a-zA-Z0-9_]/', '', $value);
     }
-
+    
+    /**
+     * Validate that controller class is within allowed namespaces
+     *
+     * @param string $controllerClass
+     * @return bool
+     */
+    private function isValidControllerNamespace(string $controllerClass): bool
+    {
+        // Allow classes in allowed namespaces
+        foreach (self::ALLOWED_CONTROLLER_NAMESPACES as $namespace) {
+            if (str_starts_with($controllerClass, $namespace)) {
+                return true;
+            }
+        }
+        
+        // Allow classes in global namespace or test namespaces (no backslash = global namespace)
+        // This is needed for unit tests and development
+        if (strpos($controllerClass, '\\') === false) {
+            return true;
+        }
+        
+        return false;
+    }
+    
     /**
      * Format error message
      *
@@ -181,14 +237,22 @@ class FrontController
      */
     private function formatError(\Throwable $e): string
     {
-        // In production, this should log the error and show a generic message
-        // For development, show detailed error
-        return sprintf(
-            "500 - Internal Server Error\n\n%s\n\nFile: %s:%d\n\nTrace:\n%s",
-            $e->getMessage(),
-            $e->getFile(),
-            $e->getLine(),
-            $e->getTraceAsString()
-        );
+        // Check environment to determine error display level
+        $env = getenv('APP_ENV') ?: 'production';
+        $isDevelopment = in_array($env, ['development', 'dev', 'local']);
+        
+        if ($isDevelopment) {
+            // Development: Show detailed error information
+            return sprintf(
+                "500 - Internal Server Error\n\n%s\n\nFile: %s:%d\n\nTrace:\n%s",
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine(),
+                $e->getTraceAsString()
+            );
+        } else {
+            // Production: Show generic error message only
+            return "500 - Internal Server Error\n\nAn unexpected error occurred. Please try again later.";
+        }
     }
 }

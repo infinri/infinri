@@ -24,6 +24,11 @@ abstract class AbstractResource
      * @var string Primary key field
      */
     protected string $idFieldName = 'id';
+    
+    /**
+     * @var array<string>|null Cached table columns
+     */
+    private ?array $tableColumns = null;
 
     public function __construct(
         protected readonly Connection $connection
@@ -124,6 +129,9 @@ abstract class AbstractResource
         $params = [];
 
         foreach ($criteria as $field => $value) {
+            // Validate column name to prevent SQL injection
+            $this->validateColumnName($field);
+            
             if ($value === null) {
                 $where[] = "{$field} IS NULL";
             } else {
@@ -172,6 +180,9 @@ abstract class AbstractResource
         $params = [];
 
         foreach ($criteria as $field => $value) {
+            // Validate column name to prevent SQL injection
+            $this->validateColumnName($field);
+            
             if ($value === null) {
                 $where[] = "{$field} IS NULL";
             } else {
@@ -207,5 +218,62 @@ abstract class AbstractResource
     public function getPrimaryKey(): string
     {
         return $this->primaryKey;
+    }
+    
+    /**
+     * Get table columns from database schema
+     *
+     * @return array<string>
+     */
+    protected function getTableColumns(): array
+    {
+        if ($this->tableColumns === null) {
+            $driver = $this->connection->getDriver();
+            
+            // Use database-specific SQL to get column names
+            if ($driver === 'mysql') {
+                $sql = "SHOW COLUMNS FROM {$this->mainTable}";
+                $columns = $this->connection->fetchAll($sql);
+                $this->tableColumns = array_column($columns, 'Field');
+            } elseif ($driver === 'pgsql') {
+                $sql = "SELECT column_name FROM information_schema.columns WHERE table_name = ?";
+                $columns = $this->connection->fetchAll($sql, [$this->mainTable]);
+                $this->tableColumns = array_column($columns, 'column_name');
+            } else {
+                // Fallback: Use PDO's metadata (works for most databases but slower)
+                $sql = "SELECT * FROM {$this->mainTable} LIMIT 0";
+                $stmt = $this->connection->getConnection()->query($sql);
+                $this->tableColumns = [];
+                for ($i = 0; $i < $stmt->columnCount(); $i++) {
+                    $col = $stmt->getColumnMeta($i);
+                    $this->tableColumns[] = $col['name'];
+                }
+            }
+        }
+        
+        return $this->tableColumns;
+    }
+    
+    /**
+     * Validate that field name is a valid column in the table
+     *
+     * @param string $field
+     * @return void
+     * @throws \InvalidArgumentException
+     */
+    protected function validateColumnName(string $field): void
+    {
+        $validColumns = $this->getTableColumns();
+        
+        if (!in_array($field, $validColumns, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Invalid column name "%s" for table "%s". Valid columns: %s',
+                    $field,
+                    $this->mainTable,
+                    implode(', ', $validColumns)
+                )
+            );
+        }
     }
 }

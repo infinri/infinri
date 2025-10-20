@@ -88,8 +88,4 @@ describe('ObjectManager', function () {
         ObjectManager::getInstance();
     })->throws(RuntimeException::class, 'ObjectManager not configured');
     
-    it('throws exception for runtime configuration', function () {
-        $this->objectManager->configure([]);
-    })->throws(RuntimeException::class, 'Runtime configuration not supported');
-    
 });

@@ -54,8 +54,6 @@
         "symfony/cache": "^7.3",
         "symfony/console": "^7.3",
         "symfony/event-dispatcher": "^7.3",
-        "symfony/mailer": "^7.3",
-        "symfony/rate-limiter": "^7.3",
         "symfony/security-csrf": "^7.3",
         "vlucas/phpdotenv": "^5.6"
     },

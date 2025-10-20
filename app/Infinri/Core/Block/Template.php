@@ -33,6 +33,11 @@ class Template extends AbstractBlock
      * @var object|null Cached ViewModel instance
      */
     private ?object $resolvedViewModel = null;
+    
+    /**
+     * @var array<string, string|null> Static cache for resolved template paths
+     */
+    private static array $templatePathCache = [];
 
     /**
      * Set template file
@@ -142,7 +147,20 @@ class Template extends AbstractBlock
             }
         }
 
+        // Cache the result
+        self::$templatePathCache[$this->template] = null;
+        
         return null;
+    }
+    
+    /**
+     * Clear template path cache (useful for testing)
+     *
+     * @return void
+     */
+    public static function clearPathCache(): void
+    {
+        self::$templatePathCache = [];
     }
 
     /**
@@ -162,17 +180,17 @@ class Template extends AbstractBlock
             'template' => $this->template
         ]);
 
-        // Resolve template file path
+        // Resolve template file path (with caching)
         $templateFile = $this->resolveTemplateFile();
         
         Logger::debug('Template block: Resolved path', [
             'block_name' => $this->getName(),
             'template' => $this->template,
             'resolved_path' => $templateFile,
-            'file_exists' => $templateFile && file_exists($templateFile)
+            'cached' => isset(self::$templatePathCache[$this->template])
         ]);
         
-        if (!$templateFile || !file_exists($templateFile)) {
+        if (!$templateFile) {
             Logger::warning('Template block: Template file not found', [
                 'block_name' => $this->getName(),
                 'template' => $this->template,
@@ -199,12 +217,17 @@ class Template extends AbstractBlock
      */
     private function resolveTemplateFile(): ?string
     {
-        if ($this->templateResolver) {
-            return $this->templateResolver->resolve($this->template);
+        // Check static cache first
+        if (isset(self::$templatePathCache[$this->template])) {
+            return self::$templatePathCache[$this->template];
         }
-
-        // Fallback: try to resolve manually
-        if (str_contains($this->template, '::')) {
+        
+        $resolvedPath = null;
+        
+        if ($this->templateResolver) {
+            $resolvedPath = $this->templateResolver->resolve($this->template);
+        } elseif (str_contains($this->template, '::')) {
+            // Fallback: try to resolve manually
             [$moduleName, $filePath] = explode('::', $this->template, 2);
             
             // Try common paths
@@ -218,12 +241,16 @@ class Template extends AbstractBlock
             
             foreach ($possiblePaths as $path) {
                 if (file_exists($path)) {
-                    return $path;
+                    $resolvedPath = $path;
+                    break;
                 }
             }
         }
-
-        return null;
+        
+        // Cache the resolved path (even if null)
+        self::$templatePathCache[$this->template] = $resolvedPath;
+        
+        return $resolvedPath;
     }
 
     /**
@@ -234,11 +261,11 @@ class Template extends AbstractBlock
      */
     private function renderTemplate(string $templateFile): string
     {
-        // Extract block data as variables
-        extract($this->getData() ?: []);
-        
         // Make block available in template as $block
         $block = $this;
+        
+        // Extract block data as variables (EXTR_SKIP prevents overwriting $block and $templateFile)
+        extract($this->getData() ?: [], EXTR_SKIP);
 
         // Start output buffering
         ob_start();

@@ -2,7 +2,6 @@
 
 use Infinri\Cms\Model\Block;
 use Infinri\Cms\Model\ResourceModel\Block as BlockResource;
-use Mockery;
 
 function createBlock(array $data = []): Block
 {

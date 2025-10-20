@@ -130,6 +130,41 @@ class Response
     {
         return $this->setHeader('Content-Type', $contentType);
     }
+    
+    /**
+     * Set security headers
+     *
+     * @param bool $strict If true, sets stricter CSP and security policies
+     * @return $this
+     */
+    public function setSecurityHeaders(bool $strict = false): self
+    {
+        // Prevent clickjacking attacks
+        $this->setHeader('X-Frame-Options', 'SAMEORIGIN');
+        
+        // Prevent MIME type sniffing
+        $this->setHeader('X-Content-Type-Options', 'nosniff');
+        
+        // Enable XSS protection in older browsers
+        $this->setHeader('X-XSS-Protection', '1; mode=block');
+        
+        // Referrer policy - don't send full URL to external sites
+        $this->setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+        
+        // Content Security Policy
+        if ($strict) {
+            // Strict CSP - only same origin
+            $this->setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'self'");
+        } else {
+            // Lenient CSP - allows inline scripts/styles (for development)
+            $this->setHeader('Content-Security-Policy', "default-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: https:; font-src 'self' data:; frame-ancestors 'self'");
+        }
+        
+        // Permissions policy - disable unnecessary features
+        $this->setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+        
+        return $this;
+    }
 
     /**
      * Send redirect response
@@ -137,9 +172,17 @@ class Response
      * @param string $url
      * @param int $code
      * @return $this
+     * @throws \InvalidArgumentException If URL is not safe for redirect
      */
     public function setRedirect(string $url, int $code = 302): self
     {
+        // Validate URL to prevent open redirect attacks
+        if (!$this->isValidRedirectUrl($url)) {
+            throw new \InvalidArgumentException(
+                sprintf('Invalid redirect URL: %s. Only relative URLs or same-host URLs are allowed.', $url)
+            );
+        }
+        
         $this->setStatusCode($code);
         $this->setHeader('Location', $url);
         return $this;
@@ -184,10 +227,16 @@ class Response
     /**
      * Send response (headers + body)
      *
+     * @param bool $withSecurityHeaders If true, automatically adds security headers
      * @return void
      */
-    public function send(): void
+    public function send(bool $withSecurityHeaders = true): void
     {
+        // Automatically add security headers unless disabled
+        if ($withSecurityHeaders && !isset($this->headers['X-Frame-Options'])) {
+            $this->setSecurityHeaders();
+        }
+        
         $this->sendHeaders();
         echo $this->body;
     }
@@ -230,5 +279,46 @@ class Response
     public function setForbidden(): self
     {
         return $this->setStatusCode(403);
+    }
+    
+    /**
+     * Validate redirect URL to prevent open redirect attacks
+     *
+     * @param string $url
+     * @return bool
+     */
+    private function isValidRedirectUrl(string $url): bool
+    {
+        // Allow relative URLs (start with /)
+        if (str_starts_with($url, '/')) {
+            return true;
+        }
+        
+        // Parse the URL
+        $parsed = parse_url($url);
+        
+        // If parsing fails, reject
+        if ($parsed === false) {
+            return false;
+        }
+        
+        // If no host, it's a relative URL (e.g., "path/to/page")
+        if (!isset($parsed['host'])) {
+            return true;
+        }
+        
+        // Get current host from server variables
+        $currentHost = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? '';
+        
+        // Strip port from current host if present
+        $currentHost = explode(':', $currentHost)[0];
+        
+        // Allow same-host redirects
+        if (strcasecmp($parsed['host'], $currentHost) === 0) {
+            return true;
+        }
+        
+        // Reject external redirects
+        return false;
     }
 }

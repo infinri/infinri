@@ -14,56 +14,18 @@ use Infinri\Core\Model\Module\ModuleManager;
 use Infinri\Core\Model\Di\XmlReader;
 use Infinri\Core\Model\Di\ContainerFactory;
 use Infinri\Core\Model\ObjectManager;
-use Infinri\Core\App\Router;
+use Infinri\Core\App\FastRouter;
 use Infinri\Core\App\FrontController;
 use Infinri\Core\Model\Route\Loader as RouteLoader;
 use Infinri\Core\App\Request;
-
-/**
- * Load environment variables from .env file
- * 
- * @param string $envFile Path to .env file
- * @return void
- */
-function loadEnvFile(string $envFile): void
-{
-    if (!file_exists($envFile)) {
-        return;
-    }
-    
-    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    
-    foreach ($lines as $line) {
-        // Skip comments
-        if (strpos(trim($line), '#') === 0) {
-            continue;
-        }
-        
-        // Parse KEY=VALUE
-        if (strpos($line, '=') !== false) {
-            list($key, $value) = explode('=', $line, 2);
-            $key = trim($key);
-            $value = trim($value);
-            
-            // Remove quotes from value
-            $value = trim($value, '"\'');
-            
-            // Set environment variable
-            putenv("{$key}={$value}");
-            $_ENV[$key] = $value;
-            $_SERVER[$key] = $value;
-        }
-    }
-}
-
-// Load environment variables from .env file
-loadEnvFile(__DIR__ . '/../.env');
+use Dotenv\Dotenv;
 
 // Require Composer autoloader
 require_once __DIR__ . '/../vendor/autoload.php';
 
-// Load .env file
-loadEnvFile(__DIR__ . '/../.env');
+// Load environment variables from .env file using phpdotenv
+$dotenv = Dotenv::createImmutable(__DIR__ . '/..');
+$dotenv->safeLoad(); // safeLoad() won't throw if .env is missing
 
 /**
  * Initialize Application
@@ -91,21 +53,18 @@ function initApplication(): FrontController
     ObjectManager::reset();
     $objectManager = ObjectManager::setInstance($container);
     
-    // 5. Initialize Router
-    $router = new Router();
+    // 5. Initialize FastRouter (O(1) routing performance)
+    $router = new FastRouter();
     
     // 6. Load routes from modules' routes.xml files (automatic discovery)
     $routeLoader = new RouteLoader($moduleManager);
     $routeLoader->loadRoutes($router);
     
-    // 7. Create Request object from globals
-    $request = Request::createFromGlobals();
-    
-    // 8. Create Front Controller with singleton ObjectManager instance
+    // 7. Create Front Controller with singleton ObjectManager instance
     return new FrontController(
         $router, 
         ObjectManager::getInstance(),
-        $request
+        Request::createFromGlobals()
     );
 }
 

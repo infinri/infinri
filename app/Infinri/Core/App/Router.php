@@ -8,7 +8,7 @@ namespace Infinri\Core\App;
  * 
  * Registers routes and matches URLs to controllers/actions
  */
-class Router
+class Router implements RouterInterface
 {
     /**
      * @var array<string, array<string, mixed>> Registered routes

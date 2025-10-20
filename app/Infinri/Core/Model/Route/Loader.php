@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Infinri\Core\Model\Route;
 
-use Infinri\Core\App\Router;
+use Infinri\Core\App\RouterInterface;
 use Infinri\Core\Model\Module\ModuleManager;
 use Infinri\Core\Helper\Logger;
 
@@ -23,10 +23,10 @@ class Loader
     /**
      * Load routes from all enabled modules' routes.xml files
      *
-     * @param Router $router
+     * @param RouterInterface $router
      * @return void
      */
-    public function loadRoutes(Router $router): void
+    public function loadRoutes(RouterInterface $router): void
     {
         // Get all registered modules with full data
         $allModules = $this->moduleManager->getModuleList()->getAll();
@@ -57,12 +57,12 @@ class Loader
     /**
      * Load routes from a single module's routes.xml
      *
-     * @param Router $router
+     * @param RouterInterface $router
      * @param string $moduleName
      * @param array $moduleData
      * @return void
      */
-    private function loadModuleRoutes(Router $router, string $moduleName, array $moduleData): void
+    private function loadModuleRoutes(RouterInterface $router, string $moduleName, array $moduleData): void
     {
         // Check for both frontend and adminhtml routes.xml files
         $routePaths = [
@@ -102,13 +102,13 @@ class Loader
     /**
      * Parse routes.xml and register routes
      *
-     * @param Router $router
+     * @param RouterInterface $router
      * @param string $moduleName
      * @param \SimpleXMLElement $xml
      * @param array $moduleData
      * @return void
      */
-    private function parseRoutesXml(Router $router, string $moduleName, \SimpleXMLElement $xml, array $moduleData): void
+    private function parseRoutesXml(RouterInterface $router, string $moduleName, \SimpleXMLElement $xml, array $moduleData): void
     {
         // Parse routes from all routers (frontend, admin, etc.)
         // Process admin routes FIRST to ensure they take priority over catch-all routes
@@ -147,13 +147,13 @@ class Loader
     /**
      * Register a single route from XML configuration
      *
-     * @param Router $router
+     * @param RouterInterface $router
      * @param string $moduleName
      * @param \SimpleXMLElement $routeNode
      * @param string $routerId Router type (frontend, admin, etc.)
      * @return void
      */
-    private function registerRoute(Router $router, string $moduleName, \SimpleXMLElement $routeNode, string $routerId = 'frontend'): void
+    private function registerRoute(RouterInterface $router, string $moduleName, \SimpleXMLElement $routeNode, string $routerId = 'frontend'): void
     {
         $routeId = (string)($routeNode['id'] ?? '');
         $frontName = (string)($routeNode['frontName'] ?? '');
