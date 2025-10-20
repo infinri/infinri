@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Admin 1-Column Page Layout
+ * Defines the base structure for admin pages
+ */
+-->
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_layout.xsd">
+    
+    <container name="root" htmlTag="div" htmlClass="admin-wrapper">
+        
+        <!-- Admin Header Container -->
+        <container name="header" htmlTag="header" htmlClass="page-header" />
+        
+        <!-- Admin Main Wrapper -->
+        <container name="main.wrapper" htmlTag="div" htmlClass="page-main-wrapper">
+            
+            <!-- Admin Menu (Sidebar) -->
+            <container name="menu" htmlTag="aside" htmlClass="page-main-navigation" />
+            
+            <!-- Main Content Area -->
+            <container name="main" htmlTag="main" htmlClass="page-main-content">
+                
+                <!-- Page Title -->
+                <container name="page.title" htmlTag="div" htmlClass="page-header-wrapper" />
+                
+                <!-- Messages -->
+                <container name="messages" htmlTag="div" htmlClass="page-messages" />
+                
+                <!-- Main Content -->
+                <container name="content" htmlTag="div" htmlClass="admin-content-wrapper" />
+                
+            </container>
+            
+        </container>
+        
+        <!-- Admin Footer -->
+        <container name="footer" htmlTag="footer" htmlClass="page-footer" />
+        
+    </container>
+    
+</layout>

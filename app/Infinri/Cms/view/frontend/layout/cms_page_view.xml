@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <!-- 
+        CMS Page View Layout (Customer-facing)
+        Used for: /about, /contact, /portfolio, etc.
+        Inherits: base_default.xml → default.xml → cms_page_view.xml
+    -->
+    <update handle="default"/>
+    
+    <!-- Add CMS page content to the content container -->
+    <referenceContainer name="content">
+        <block class="Infinri\Core\Block\Template" 
+               name="cms.page.content" 
+               template="Infinri_Cms::page/view.phtml">
+            <arguments>
+                <argument name="page" xsi:type="object">page</argument>
+            </arguments>
+        </block>
+        
+        <!-- Page Widgets Renderer (for page-specific widgets) -->
+        <block class="Infinri\Cms\Block\PageRenderer" 
+               name="page.widgets.renderer"/>
+    </referenceContainer>
+</layout>

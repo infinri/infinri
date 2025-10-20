@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Infinri\Core\Block;
 
 use Infinri\Core\Model\View\TemplateResolver;
+use Infinri\Core\Helper\Logger;
+use Infinri\Core\Model\ObjectManager;
 
 /**
  * Template Block
@@ -21,6 +23,16 @@ class Template extends AbstractBlock
      * @var TemplateResolver|null Template resolver
      */
     private ?TemplateResolver $templateResolver = null;
+
+    /**
+     * @var object|null Layout instance
+     */
+    protected ?object $layout = null;
+
+    /**
+     * @var object|null Cached ViewModel instance
+     */
+    private ?object $resolvedViewModel = null;
 
     /**
      * Set template file
@@ -57,23 +69,127 @@ class Template extends AbstractBlock
     }
 
     /**
+     * Get template resolver
+     *
+     * @return TemplateResolver|null
+     */
+    public function getTemplateResolver(): ?TemplateResolver
+    {
+        return $this->templateResolver;
+    }
+
+    /**
+     * Set layout
+     *
+     * @param object $layout
+     * @return void
+     */
+    public function setLayout(object $layout): void
+    {
+        $this->layout = $layout;
+    }
+
+    /**
+     * Get layout
+     *
+     * @return object|null
+     */
+    public function getLayout(): ?object
+    {
+        return $this->layout;
+    }
+
+    /**
+     * Get ViewModel (stub - not yet implemented)
+     * 
+     * Templates that use ViewModels will get null for now.
+     * TODO: Implement ViewModel support
+     *
+     * @return mixed
+     */
+    public function getViewModel(): mixed
+    {
+        if ($this->resolvedViewModel !== null) {
+            return $this->resolvedViewModel;
+        }
+
+        $viewModel = $this->getData('view_model');
+
+        if (!$viewModel) {
+            return null;
+        }
+
+        if (is_object($viewModel)) {
+            $this->resolvedViewModel = $viewModel;
+            return $this->resolvedViewModel;
+        }
+
+        if (is_string($viewModel)) {
+            try {
+                $objectManager = ObjectManager::getInstance();
+                $resolved = $objectManager->get($viewModel);
+
+                if (is_object($resolved)) {
+                    $this->resolvedViewModel = $resolved;
+                    return $this->resolvedViewModel;
+                }
+            } catch (\Throwable $e) {
+                Logger::warning('Template block: Failed to instantiate view model', [
+                    'block_name' => $this->getName(),
+                    'view_model' => $viewModel,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @inheritDoc
      */
     public function toHtml(): string
     {
         if (!$this->template) {
+            Logger::debug('Template block: No template set', [
+                'block_name' => $this->getName()
+            ]);
             return '';
         }
+
+        Logger::debug('Template block: Rendering', [
+            'block_name' => $this->getName(),
+            'template' => $this->template
+        ]);
 
         // Resolve template file path
         $templateFile = $this->resolveTemplateFile();
         
+        Logger::debug('Template block: Resolved path', [
+            'block_name' => $this->getName(),
+            'template' => $this->template,
+            'resolved_path' => $templateFile,
+            'file_exists' => $templateFile && file_exists($templateFile)
+        ]);
+        
         if (!$templateFile || !file_exists($templateFile)) {
+            Logger::warning('Template block: Template file not found', [
+                'block_name' => $this->getName(),
+                'template' => $this->template,
+                'resolved_path' => $templateFile
+            ]);
             return '';
         }
 
         // Render template
-        return $this->renderTemplate($templateFile);
+        $html = $this->renderTemplate($templateFile);
+        
+        Logger::debug('Template block: Rendered', [
+            'block_name' => $this->getName(),
+            'html_length' => strlen($html)
+        ]);
+        
+        return $html;
     }
 
     /**

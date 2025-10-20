@@ -2,129 +2,117 @@
 
 declare(strict_types=1);
 
-use Infinri\Core\Model\ComponentRegistrar;
-use Infinri\Core\Model\Module\ModuleReader;
-use Infinri\Core\Model\Module\ModuleList;
-use Infinri\Core\Model\Module\ModuleManager;
-use Infinri\Core\Model\Config\Reader as ConfigReader;
-use Infinri\Core\Model\Config\Loader;
+use Infinri\Core\Model\Config;
 use Infinri\Core\Model\Config\ScopeConfig;
-use Infinri\Core\Api\ConfigInterface;
 
-// Static flag to avoid re-registering modules
-$modulesRegistered = false;
+beforeEach(function () {
+    // Create a mock Config object
+    $this->configMock = Mockery::mock(Config::class);
+    $this->scopeConfig = new ScopeConfig($this->configMock);
+});
 
-beforeEach(function () use (&$modulesRegistered) {
-    // Only register modules once
-    if (!$modulesRegistered) {
-        // Reset singleton
-        $reflection = new ReflectionClass(ComponentRegistrar::class);
-        $instance = $reflection->getProperty('instance');
-        $instance->setAccessible(true);
-        $instance->setValue(null, null);
-        
-        // Register modules
-        require __DIR__ . '/../../../app/etc/registration_globlist.php';
-        
-        $modulesRegistered = true;
-    }
-    
-    $this->registrar = ComponentRegistrar::getInstance();
-    $this->moduleReader = new ModuleReader();
-    $this->moduleList = new ModuleList($this->registrar, $this->moduleReader);
-    $this->moduleManager = new ModuleManager($this->moduleList);
-    $this->configReader = new ConfigReader();
-    $this->configLoader = new Loader($this->moduleManager, $this->configReader);
-    $this->scopeConfig = new ScopeConfig($this->configLoader);
+afterEach(function () {
+    Mockery::close();
 });
 
 describe('ScopeConfig', function () {
     
-    it('implements ConfigInterface', function () {
-        expect($this->scopeConfig)->toBeInstanceOf(ConfigInterface::class);
-    });
-    
-    it('can get configuration value by path', function () {
-        $logo = $this->scopeConfig->getValue('theme/general/logo');
+    it('can get configuration value as string', function () {
+        $this->configMock->shouldReceive('getValue')
+            ->with('web/site/name', 'default', 0)
+            ->once()
+            ->andReturn('Test Site');
         
-        expect($logo)->toBe('Infinri_Theme::images/logo.svg');
-    });
-    
-    it('can get nested configuration values', function () {
-        $primaryColor = $this->scopeConfig->getValue('theme/colors/primary');
+        $value = $this->scopeConfig->getValue('web/site/name');
         
-        expect($primaryColor)->toBe('#0066cc');
+        expect($value)->toBe('Test Site');
     });
     
-    it('returns null for non-existent path', function () {
-        $value = $this->scopeConfig->getValue('non/existent/path');
+    it('can check if flag is set', function () {
+        $this->configMock->shouldReceive('getValue')
+            ->with('dev/debug/enabled', 'default', 0)
+            ->once()
+            ->andReturn('1');
+        
+        $result = $this->scopeConfig->isSetFlag('dev/debug/enabled');
+        
+        expect($result)->toBeTrue();
+    });
+    
+    it('can get value as integer', function () {
+        $this->configMock->shouldReceive('getValue')
+            ->with('general/page/limit', 'default', 0)
+            ->once()
+            ->andReturn('25');
+        
+        $value = $this->scopeConfig->getInt('general/page/limit');
+        
+        expect($value)->toBe(25);
+    });
+    
+    it('can get value as float', function () {
+        $this->configMock->shouldReceive('getValue')
+            ->with('price/tax/rate', 'default', 0)
+            ->once()
+            ->andReturn('0.075');
+        
+        $value = $this->scopeConfig->getFloat('price/tax/rate');
+        
+        expect($value)->toBe(0.075);
+    });
+    
+    it('can get value as boolean', function () {
+        $this->configMock->shouldReceive('getValue')
+            ->with('feature/enabled', 'default', 0)
+            ->once()
+            ->andReturn('true');
+        
+        $value = $this->scopeConfig->getBool('feature/enabled');
+        
+        expect($value)->toBeTrue();
+    });
+    
+    it('can get value as array from JSON', function () {
+        $this->configMock->shouldReceive('getValue')
+            ->with('list/items', 'default', 0)
+            ->once()
+            ->andReturn('["item1","item2","item3"]');
+        
+        $value = $this->scopeConfig->getArray('list/items');
+        
+        expect($value)->toBe(['item1', 'item2', 'item3']);
+    });
+    
+    it('handles null values gracefully', function () {
+        $this->configMock->shouldReceive('getValue')
+            ->with('nonexistent/path', 'default', 0)
+            ->once()
+            ->andReturn(false);
+        
+        $value = $this->scopeConfig->getValue('nonexistent/path');
         
         expect($value)->toBeNull();
     });
     
-    it('can use simple get method with default', function () {
-        $value = $this->scopeConfig->get('theme/general/logo', 'default.svg');
+    it('supports custom scopes', function () {
+        $this->configMock->shouldReceive('getValue')
+            ->with('web/site/name', 'website', 1)
+            ->once()
+            ->andReturn('Website Specific Name');
         
-        expect($value)->toBe('Infinri_Theme::images/logo.svg');
+        $value = $this->scopeConfig->getValue('web/site/name', 'website', 1);
+        
+        expect($value)->toBe('Website Specific Name');
     });
     
-    it('returns default value when path not found', function () {
-        $value = $this->scopeConfig->get('non/existent', 'default_value');
+    it('returns empty array for invalid JSON', function () {
+        $this->configMock->shouldReceive('getValue')
+            ->with('invalid/json', 'default', 0)
+            ->once()
+            ->andReturn('not valid json');
         
-        expect($value)->toBe('default_value');
+        $value = $this->scopeConfig->getArray('invalid/json');
+        
+        expect($value)->toBe([]);
     });
-    
-    it('can check if flag is set (string true)', function () {
-        // Add a test config value
-        $config = $this->scopeConfig->getAllByScope();
-        
-        // For now, test with existing value converted to boolean
-        $isSet = $this->scopeConfig->isSetFlag('theme/general/logo');
-        
-        expect($isSet)->toBeBool();
-    });
-    
-    it('can get all config for default scope', function () {
-        $config = $this->scopeConfig->getAllByScope('default');
-        
-        expect($config)->toBeArray();
-        expect($config)->toHaveKey('system');
-        expect($config)->toHaveKey('theme');
-    });
-    
-    it('caches configuration after first load', function () {
-        // First call
-        $value1 = $this->scopeConfig->getValue('theme/general/logo');
-        
-        // Second call (should use cache)
-        $value2 = $this->scopeConfig->getValue('theme/colors/primary');
-        
-        expect($value1)->toBe('Infinri_Theme::images/logo.svg');
-        expect($value2)->toBe('#0066cc');
-    });
-    
-    it('can clear cache', function () {
-        $value1 = $this->scopeConfig->getValue('theme/general/logo');
-        
-        $this->scopeConfig->clearCache();
-        
-        $value2 = $this->scopeConfig->getValue('theme/general/logo');
-        
-        expect($value1)->toBe($value2);
-    });
-    
-    it('supports scope types', function () {
-        // Test with default scope
-        $value = $this->scopeConfig->getValue('theme/general/logo', ScopeConfig::SCOPE_DEFAULT);
-        
-        expect($value)->toBe('Infinri_Theme::images/logo.svg');
-    });
-    
-    it('converts various values to boolean for isSetFlag', function () {
-        // This tests the boolean conversion logic
-        // Since we don't have boolean config values yet, we test the method exists and is callable
-        expect(method_exists($this->scopeConfig, 'isSetFlag'))->toBeTrue();
-        expect(is_callable([$this->scopeConfig, 'isSetFlag']))->toBeTrue();
-    });
-    
 });

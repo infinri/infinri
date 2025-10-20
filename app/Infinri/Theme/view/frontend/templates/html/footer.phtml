@@ -3,41 +3,23 @@
  * Footer Template
  * 
  * @var \Infinri\Core\Block\Template $block
- * @var \Infinri\Theme\ViewModel\Footer $viewModel
  */
+
 $viewModel = $block->getViewModel();
+$currentYear = date('Y');
 ?>
-<footer class="footer" role="contentinfo">
-    <div class="footer-container container">
-        <div class="footer-content">
-            <!-- Footer Links -->
-            <div class="footer-section footer-links">
-                <h3 class="footer-heading">Quick Links</h3>
-                <ul class="footer-menu">
-                    <?php foreach ($viewModel->getLinks() as $link): ?>
-                        <li class="footer-menu-item">
-                            <a href="<?= $block->escapeUrl($link['url']) ?>" 
-                               class="footer-link">
-                                <?= $block->escapeHtml($link['label']) ?>
-                            </a>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-            
-            <!-- Social Links -->
-            <?php if (!empty($viewModel->getSocialLinks())): ?>
-                <div class="footer-section footer-social">
-                    <h3 class="footer-heading">Connect With Us</h3>
-                    <ul class="social-links">
-                        <?php foreach ($viewModel->getSocialLinks() as $social): ?>
-                            <li class="social-item">
-                                <a href="<?= $block->escapeUrl($social['url']) ?>" 
-                                   class="social-link social-link-<?= $block->escapeHtmlAttr($social['icon']) ?>"
-                                   target="_blank"
-                                   rel="noopener noreferrer"
-                                   aria-label="<?= $block->escapeHtmlAttr($social['platform']) ?>">
-                                    <?= $block->escapeHtml($social['platform']) ?>
+<footer class="page-footer" role="contentinfo">
+    <div class="footer-content">
+        <?php if ($viewModel !== null): ?>
+            <?php if (method_exists($viewModel, 'getLinks')): ?>
+                <?php $links = array_filter($viewModel->getLinks() ?? [], static function ($link) { return isset($link['url'], $link['label']); }); ?>
+                <div class="footer-links">
+                    <h3 class="footer-heading">Quick Links</h3>
+                    <ul class="footer-list">
+                        <?php foreach ($links as $link): ?>
+                            <li class="footer-item">
+                                <a href="<?= $block->escapeHtmlAttr($link['url']) ?>" class="footer-link">
+                                    <?= $block->escapeHtml($link['label']) ?>
                                 </a>
                             </li>
                         <?php endforeach; ?>
@@ -45,36 +27,31 @@ $viewModel = $block->getViewModel();
                 </div>
             <?php endif; ?>
             
-            <!-- Newsletter -->
-            <?php if ($viewModel->isNewsletterEnabled()): ?>
-                <div class="footer-section footer-newsletter">
-                    <h3 class="footer-heading">Newsletter</h3>
-                    <p class="newsletter-description">
-                        Subscribe to receive updates and special offers.
-                    </p>
-                    <form action="<?= $block->escapeUrl($viewModel->getNewsletterUrl()) ?>" 
-                          method="post" 
-                          class="newsletter-form">
-                        <input type="email" 
-                               name="email" 
-                               class="newsletter-input" 
-                               placeholder="<?= $block->escapeHtmlAttr('Your email address') ?>"
-                               required
-                               aria-label="<?= $block->escapeHtmlAttr('Email address') ?>">
-                        <button type="submit" 
-                                class="newsletter-button">
-                            <?= $block->escapeHtml('Subscribe') ?>
-                        </button>
-                    </form>
+            <?php if (method_exists($viewModel, 'getSocialLinks')): ?>
+                <?php $socialLinks = array_filter($viewModel->getSocialLinks() ?? [], static function ($link) { return isset($link['url'], $link['label']) || isset($link['url'], $link['platform']); }); ?>
+                <?php if (!empty($socialLinks)): ?>
+                <div class="footer-social">
+                    <h3 class="footer-heading">Follow Us</h3>
+                    <ul class="social-list">
+                        <?php foreach ($socialLinks as $social): ?>
+                            <?php $label = $social['label'] ?? $social['platform'] ?? 'Follow'; ?>
+                            <li class="social-item">
+                                <a href="<?= $block->escapeHtmlAttr($social['url']) ?>" 
+                                   class="social-link"
+                                   target="_blank"
+                                   rel="noopener noreferrer">
+                                    <?= $block->escapeHtml($label) ?>
+                                </a>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
                 </div>
+                <?php endif; ?>
             <?php endif; ?>
-        </div>
+        <?php endif; ?>
         
-        <!-- Copyright -->
-        <div class="footer-bottom">
-            <p class="footer-copyright">
-                <?= $block->escapeHtml($viewModel->getCopyright()) ?>
-            </p>
+        <div class="footer-copyright">
+            <p>&copy; <?= $currentYear ?> Infinri. Built with a proper Magento-style architecture.</p>
         </div>
     </div>
 </footer>

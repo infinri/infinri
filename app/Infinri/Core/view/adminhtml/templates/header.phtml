@@ -1,0 +1,50 @@
+<?php
+/**
+ * Admin Header Template
+ * 
+ * @var \Infinri\Core\Block\Template $block
+ */
+?>
+<div class="admin-header-container">
+    <div class="admin-header-left">
+        <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Menu">
+            <span class="menu-toggle-icon"></span>
+            <span class="menu-toggle-icon"></span>
+            <span class="menu-toggle-icon"></span>
+        </button>
+        
+        <a href="/admin/dashboard/index" class="admin-logo">
+            <span class="admin-logo-text">Infinri</span>
+            <span class="admin-logo-subtitle">Admin</span>
+        </a>
+    </div>
+    
+    <div class="admin-header-right">
+        <div class="admin-user-menu">
+            <button class="admin-user-toggle" aria-label="User Menu">
+                <span class="admin-user-name">Admin User</span>
+                <span class="admin-user-icon">▼</span>
+            </button>
+            <div class="admin-user-dropdown" hidden>
+                <a href="/admin/account/edit" class="admin-user-item">Account Settings</a>
+                <a href="/admin/auth/logout" class="admin-user-item">Sign Out</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Simple menu toggle
+document.getElementById('menu-toggle')?.addEventListener('click', function() {
+    document.querySelector('.page-main-navigation')?.classList.toggle('menu-collapsed');
+    document.querySelector('.page-main-content')?.classList.toggle('menu-collapsed');
+});
+
+// User menu toggle
+document.querySelector('.admin-user-toggle')?.addEventListener('click', function() {
+    const dropdown = document.querySelector('.admin-user-dropdown');
+    if (dropdown) {
+        dropdown.hidden = !dropdown.hidden;
+    }
+});
+</script>

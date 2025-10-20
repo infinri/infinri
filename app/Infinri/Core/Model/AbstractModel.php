@@ -28,6 +28,17 @@ abstract class AbstractModel
     protected bool $isDeleted = false;
 
     /**
+     * Constructor
+     *
+     * @param array<string, mixed> $data
+     */
+    public function __construct(array $data = [])
+    {
+        $this->data = $data;
+        $this->origData = $data;
+    }
+
+    /**
      * Get resource model
      *
      * @return AbstractResource

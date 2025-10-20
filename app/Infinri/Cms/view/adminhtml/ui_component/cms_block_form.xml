@@ -1,0 +1,138 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * CMS Block Form UI Component
+ * Admin form for creating/editing CMS blocks
+ */
+-->
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">cms_block_form.block_form_data_source</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Block Information</item>
+    </argument>
+
+    <settings>
+        <buttons>
+            <button name="back">
+                <url path="/admin/cms/block/index"/>
+                <class>back</class>
+                <label translate="true">Back</label>
+            </button>
+            <button name="save">
+                <url path="/admin/cms/block/save"/>
+                <class>primary</class>
+                <label translate="true">Save Block</label>
+            </button>
+            <button name="delete">
+                <url path="/admin/cms/block/delete"/>
+                <class>delete</class>
+                <label translate="true">Delete Block</label>
+            </button>
+        </buttons>
+        <namespace>cms_block_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>cms_block_form.block_form_data_source</dep>
+        </deps>
+    </settings>
+
+    <dataSource name="block_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="/admin/cms/block/save"/>
+        </settings>
+        <dataProvider class="Infinri\Cms\Ui\Component\Form\BlockDataProvider" name="block_form_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>block_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <fieldset name="general">
+        <settings>
+            <label translate="true">General Information</label>
+        </settings>
+
+        <field name="block_id" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <visible>false</visible>
+                <dataScope>block_id</dataScope>
+            </settings>
+        </field>
+
+        <field name="title" formElement="input">
+            <settings>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <dataType>text</dataType>
+                <label translate="true">Title</label>
+                <dataScope>title</dataScope>
+            </settings>
+        </field>
+
+        <field name="identifier" formElement="input">
+            <settings>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <dataType>text</dataType>
+                <label translate="true">Identifier</label>
+                <dataScope>identifier</dataScope>
+                <notice translate="true">Lowercase letters, numbers, hyphens, and underscores only.</notice>
+            </settings>
+        </field>
+
+        <field name="is_active" formElement="checkbox">
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Enable Block</label>
+                <dataScope>is_active</dataScope>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="boolean">false</map>
+                            <map name="true" xsi:type="boolean">true</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <fieldset name="content">
+        <settings>
+            <label translate="true">Content</label>
+            <collapsible>true</collapsible>
+            <opened>true</opened>
+        </settings>
+
+        <field name="content" formElement="textarea">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Content</label>
+                <dataScope>content</dataScope>
+            </settings>
+            <formElements>
+                <textarea>
+                    <settings>
+                        <rows>15</rows>
+                    </settings>
+                </textarea>
+            </formElements>
+        </field>
+    </fieldset>
+</form>

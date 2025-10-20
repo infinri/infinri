@@ -7,96 +7,153 @@ use Infinri\Core\Block\Text;
 
 describe('Container', function () {
     
-    it('renders empty container with div tag', function () {
+    it('renders children without wrapper when htmlTag not set', function () {
         $container = new Container();
+        
+        $text = new Text();
+        $text->setText('Hello World');
+        
+        $container->addChild($text);
         
         $html = $container->toHtml();
         
-        expect($html)->toBe('<div></div>');
+        // No wrapper div when htmlTag is not set
+        expect($html)->toBe('Hello World');
     });
     
-    it('renders with custom HTML tag', function () {
+    it('renders with HTML tag when htmlTag is set', function () {
         $container = new Container();
-        $container->setData('htmlTag', 'section');
-        
-        $html = $container->toHtml();
-        
-        expect($html)->toContain('<section>');
-        expect($html)->toContain('</section>');
-    });
-    
-    it('renders with HTML class', function () {
-        $container = new Container();
-        $container->setData('htmlClass', 'test-class');
-        
-        $html = $container->toHtml();
-        
-        expect($html)->toBe('<div class="test-class"></div>');
-    });
-    
-    it('renders with HTML ID', function () {
-        $container = new Container();
-        $container->setData('htmlId', 'test-id');
-        
-        $html = $container->toHtml();
-        
-        expect($html)->toBe('<div id="test-id"></div>');
-    });
-    
-    it('renders with both class and ID', function () {
-        $container = new Container();
-        $container->setData('htmlId', 'test-id');
-        $container->setData('htmlClass', 'test-class');
-        
-        $html = $container->toHtml();
-        
-        expect($html)->toContain('id="test-id"');
-        expect($html)->toContain('class="test-class"');
-    });
-    
-    it('renders children HTML', function () {
-        $container = new Container();
-        $child = new Text();
-        $child->setText('Hello World');
-        
-        $container->addChild($child);
-        
-        $html = $container->toHtml();
-        
-        expect($html)->toBe('<div>Hello World</div>');
-    });
-    
-    it('renders multiple children', function () {
-        $container = new Container();
-        $child1 = new Text();
-        $child1->setText('First');
-        $child2 = new Text();
-        $child2->setText('Second');
-        
-        $container->addChild($child1);
-        $container->addChild($child2);
-        
-        $html = $container->toHtml();
-        
-        expect($html)->toBe('<div>FirstSecond</div>');
-    });
-    
-    it('renders nested containers', function () {
-        $outer = new Container();
-        $outer->setData('htmlClass', 'outer');
-        
-        $inner = new Container();
-        $inner->setData('htmlClass', 'inner');
+        $container->setData('htmlTag', 'div');
         
         $text = new Text();
         $text->setText('Content');
         
-        $inner->addChild($text);
-        $outer->addChild($inner);
+        $container->addChild($text);
         
-        $html = $outer->toHtml();
+        $html = $container->toHtml();
         
-        expect($html)->toBe('<div class="outer"><div class="inner">Content</div></div>');
+        expect($html)->toBe('<div>Content</div>');
     });
     
+    it('renders with HTML tag and class', function () {
+        $container = new Container();
+        $container->setData('htmlTag', 'div');
+        $container->setData('htmlClass', 'my-class');
+        
+        $text = new Text();
+        $text->setText('Content');
+        
+        $container->addChild($text);
+        
+        $html = $container->toHtml();
+        
+        expect($html)->toContain('class="my-class"');
+        expect($html)->toContain('Content');
+    });
+    
+    it('renders with HTML tag and ID', function () {
+        $container = new Container();
+        $container->setData('htmlTag', 'section');
+        $container->setData('htmlId', 'main');
+        
+        $text = new Text();
+        $text->setText('Main Content');
+        
+        $container->addChild($text);
+        
+        $html = $container->toHtml();
+        
+        expect($html)->toContain('<section');
+        expect($html)->toContain('id="main"');
+        expect($html)->toContain('Main Content');
+    });
+    
+    it('renders with both class and ID', function () {
+        $container = new Container();
+        $container->setData('htmlTag', 'div');
+        $container->setData('htmlClass', 'wrapper');
+        $container->setData('htmlId', 'content');
+        
+        $html = $container->toHtml();
+        
+        expect($html)->toContain('class="wrapper"');
+        expect($html)->toContain('id="content"');
+    });
+    
+    it('renders children in order', function () {
+        $container = new Container();
+        // No htmlTag - renders children only
+        
+        $text1 = new Text();
+        $text1->setText('First');
+        
+        $text2 = new Text();
+        $text2->setText('Second');
+        
+        $container->addChild($text1);
+        $container->addChild($text2);
+        
+        $html = $container->toHtml();
+        
+        expect($html)->toBe('FirstSecond');
+    });
+    
+    it('renders multiple children with wrapper', function () {
+        $container = new Container();
+        $container->setData('htmlTag', 'div');
+        
+        $text1 = new Text();
+        $text1->setText('One');
+        
+        $text2 = new Text();
+        $text2->setText('Two');
+        
+        $container->addChild($text1);
+        $container->addChild($text2);
+        
+        $html = $container->toHtml();
+        
+        expect($html)->toBe('<div>OneTwo</div>');
+    });
+    
+    it('renders nested containers', function () {
+        $parent = new Container();
+        $parent->setData('htmlTag', 'div');
+        $parent->setData('htmlClass', 'parent');
+        
+        $child = new Container();
+        $child->setData('htmlTag', 'div');
+        $child->setData('htmlClass', 'child');
+        
+        $text = new Text();
+        $text->setText('Nested');
+        
+        $child->addChild($text);
+        $parent->addChild($child);
+        
+        $html = $parent->toHtml();
+        
+        expect($html)->toContain('class="parent"');
+        expect($html)->toContain('class="child"');
+        expect($html)->toContain('Nested');
+    });
+    
+    it('renders empty container with htmlTag', function () {
+        $container = new Container();
+        $container->setData('htmlTag', 'div');
+        
+        $html = $container->toHtml();
+        
+        // Empty container with htmlTag renders as empty paired tags
+        expect($html)->toBe('<div></div>');
+    });
+    
+    it('renders empty container without htmlTag as empty string', function () {
+        $container = new Container();
+        
+        $html = $container->toHtml();
+        
+        // Empty when no htmlTag and no children
+        expect($html)->toBe('');
+    });
 });

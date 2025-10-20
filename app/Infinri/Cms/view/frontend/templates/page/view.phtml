@@ -1,0 +1,42 @@
+<?php
+/**
+ * CMS Page View Template
+ * 
+ * @var \Infinri\Core\Block\Template $block
+ * @var \Infinri\Cms\Model\Page $page
+ */
+
+$page = $block->getData('page');
+
+if (!$page) {
+    echo '<p>Page not found</p>';
+    return;
+}
+?>
+<article class="cms-page" id="cms-page-<?= $block->escapeHtmlAttr($page->getPageId()) ?>">
+    <?php if ($page->getTitle()): ?>
+        <header class="page-header">
+            <h1 class="page-title"><?= $block->escapeHtml($page->getTitle()) ?></h1>
+        </header>
+    <?php endif; ?>
+    
+    <div class="page-content">
+        <?= /* Content is HTML from WYSIWYG, admin-controlled */ $page->getContent() ?>
+    </div>
+    
+    <!-- Widgets Section -->
+    <?php
+    // Only try to render widgets if we have a layout and the widget renderer block exists
+    $layout = $block->getLayout();
+    if ($layout) {
+        /** @var \Infinri\Cms\Block\PageRenderer $pageRenderer */
+        $pageRenderer = $layout->getBlock('page.widgets.renderer');
+        if ($pageRenderer && method_exists($pageRenderer, 'renderPageWidgets')) {
+            $widgets = $pageRenderer->renderPageWidgets($page->getPageId());
+            if ($widgets) {
+                echo '<div class="page-widgets">' . $widgets . '</div>';
+            }
+        }
+    }
+    ?>
+</article>

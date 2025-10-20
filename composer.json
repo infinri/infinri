@@ -7,7 +7,8 @@
         "psr-4": {
             "Modules\\": "modules/",
             "Infinri\\Core\\": "app/Infinri/Core",
-            "Infinri\\Theme\\": "app/Infinri/Theme"
+            "Infinri\\Theme\\": "app/Infinri/Theme",
+            "Infinri\\Cms\\": "app/Infinri/Cms"
         }
     },
     "autoload-dev": {
@@ -63,6 +64,7 @@
     "require-dev": {
         "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^12.4",
-        "pestphp/pest": "^4.1"
+        "pestphp/pest": "^4.1",
+        "mockery/mockery": "^1.6"
     }
 }

@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Admin Menu Configuration
+ * Defines the admin navigation structure (Magento-style)
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        
+        <!-- Dashboard -->
+        <add id="Infinri_Core::dashboard" 
+             title="Dashboard" 
+             module="Infinri_Core" 
+             sortOrder="10" 
+             action="admin/dashboard/index" 
+             resource="Infinri_Core::dashboard"/>
+        
+        <!-- Content Menu -->
+        <add id="Infinri_Cms::content" 
+             title="Content" 
+             module="Infinri_Cms" 
+             sortOrder="20" 
+             resource="Infinri_Cms::content"/>
+        
+        <!-- CMS Pages -->
+        <add id="Infinri_Cms::pages" 
+             title="Pages" 
+             module="Infinri_Cms" 
+             sortOrder="10" 
+             parent="Infinri_Cms::content" 
+             action="admin/cms/page/index" 
+             resource="Infinri_Cms::pages"/>
+        
+        <!-- CMS Blocks -->
+        <add id="Infinri_Cms::blocks" 
+             title="Blocks" 
+             module="Infinri_Cms" 
+             sortOrder="20" 
+             parent="Infinri_Cms::content" 
+             action="admin/cms/block/index" 
+             resource="Infinri_Cms::blocks"/>
+        
+        <!-- System Menu -->
+        <add id="Infinri_Core::system" 
+             title="System" 
+             module="Infinri_Core" 
+             sortOrder="90" 
+             resource="Infinri_Core::system"/>
+        
+        <!-- Configuration -->
+        <add id="Infinri_Core::config" 
+             title="Configuration" 
+             module="Infinri_Core" 
+             sortOrder="10" 
+             parent="Infinri_Core::system" 
+             action="admin/system/config/index" 
+             resource="Infinri_Core::config"/>
+        
+    </menu>
+</config>

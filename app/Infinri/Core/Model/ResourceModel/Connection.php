@@ -26,13 +26,13 @@ class Connection
     public function __construct(array $config = [])
     {
         $this->config = array_merge([
-            'driver' => 'mysql',
-            'host' => 'localhost',
-            'port' => 3306,
-            'database' => 'infinri',
-            'username' => 'root',
-            'password' => '',
-            'charset' => 'utf8mb4',
+            'driver' => getenv('DB_DRIVER') ?: 'pgsql',
+            'host' => getenv('DB_HOST') ?: 'localhost',
+            'port' => (int)(getenv('DB_PORT') ?: 5432),
+            'database' => getenv('DB_NAME') ?: 'infinri_test',
+            'username' => getenv('DB_USER') ?: 'infinri',
+            'password' => getenv('DB_PASSWORD') ?: 'infinri',
+            'charset' => 'utf8',
             'options' => [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -113,15 +113,111 @@ class Connection
     }
 
     /**
+     * Prepare a SQL statement
+     *
+     * @param string $sql
+     * @return \PDOStatement|false
+     */
+    public function prepare(string $sql): \PDOStatement|false
+    {
+        return $this->getConnection()->prepare($sql);
+    }
+    
+    /**
+     * Execute a SQL query
+     *
+     * @param string $sql
+     * @return \PDOStatement|false
+     */
+    public function query(string $sql): \PDOStatement|false
+    {
+        return $this->getConnection()->query($sql);
+    }
+    
+    /**
+     * Execute a SQL statement
+     *
+     * @param string $sql
+     * @return int|false Number of affected rows
+     */
+    public function exec(string $sql): int|false
+    {
+        return $this->getConnection()->exec($sql);
+    }
+    
+    /**
+     * Get the last inserted ID
+     *
+     * @param string|null $name
+     * @return string|false
+     */
+    public function lastInsertId(?string $name = null): string|false
+    {
+        return $this->getConnection()->lastInsertId($name);
+    }
+    
+    /**
+     * Begin a transaction
+     *
+     * @return bool
+     */
+    public function beginTransaction(): bool
+    {
+        return $this->getConnection()->beginTransaction();
+    }
+    
+    /**
+     * Commit a transaction
+     *
+     * @return bool
+     */
+    public function commit(): bool
+    {
+        return $this->getConnection()->commit();
+    }
+    
+    /**
+     * Rollback a transaction
+     *
+     * @return bool
+     */
+    public function rollBack(): bool
+    {
+        return $this->getConnection()->rollBack();
+    }
+    
+    /**
+     * Check if inside a transaction
+     *
+     * @return bool
+     */
+    public function inTransaction(): bool
+    {
+        return $this->getConnection()->inTransaction();
+    }
+    
+    /**
+     * Quote a string for use in a query
+     *
+     * @param string $string
+     * @param int $type
+     * @return string|false
+     */
+    public function quote(string $string, int $type = \PDO::PARAM_STR): string|false
+    {
+        return $this->getConnection()->quote($string, $type);
+    }
+
+    /**
      * Execute a query
      *
      * @param string $sql
      * @param array<mixed> $params
      * @return \PDOStatement
      */
-    public function query(string $sql, array $params = []): \PDOStatement
+    public function pdoQuery(string $sql, array $params = []): \PDOStatement
     {
-        $stmt = $this->getConnection()->prepare($sql);
+        $stmt = $this->prepare($sql);
         $stmt->execute($params);
         return $stmt;
     }
@@ -135,7 +231,7 @@ class Connection
      */
     public function fetchAll(string $sql, array $params = []): array
     {
-        return $this->query($sql, $params)->fetchAll();
+        return $this->pdoQuery($sql, $params)->fetchAll();
     }
 
     /**
@@ -147,7 +243,7 @@ class Connection
      */
     public function fetchRow(string $sql, array $params = []): array|false
     {
-        return $this->query($sql, $params)->fetch();
+        return $this->pdoQuery($sql, $params)->fetch();
     }
 
     /**
@@ -159,7 +255,7 @@ class Connection
      */
     public function fetchOne(string $sql, array $params = []): mixed
     {
-        return $this->query($sql, $params)->fetchColumn();
+        return $this->pdoQuery($sql, $params)->fetchColumn();
     }
 
     /**
@@ -181,9 +277,9 @@ class Connection
             implode(', ', $placeholders)
         );
 
-        $this->query($sql, array_values($data));
+        $this->pdoQuery($sql, array_values($data));
 
-        return (int) $this->getConnection()->lastInsertId();
+        return (int) $this->lastInsertId();
     }
 
     /**
@@ -209,7 +305,7 @@ class Connection
             $where
         );
 
-        $stmt = $this->query($sql, array_merge(array_values($data), $whereParams));
+        $stmt = $this->pdoQuery($sql, array_merge(array_values($data), $whereParams));
 
         return $stmt->rowCount();
     }
@@ -225,48 +321,8 @@ class Connection
     public function delete(string $table, string $where, array $whereParams = []): int
     {
         $sql = sprintf('DELETE FROM %s WHERE %s', $table, $where);
-        $stmt = $this->query($sql, $whereParams);
+        $stmt = $this->pdoQuery($sql, $whereParams);
         return $stmt->rowCount();
-    }
-
-    /**
-     * Begin transaction
-     *
-     * @return bool
-     */
-    public function beginTransaction(): bool
-    {
-        return $this->getConnection()->beginTransaction();
-    }
-
-    /**
-     * Commit transaction
-     *
-     * @return bool
-     */
-    public function commit(): bool
-    {
-        return $this->getConnection()->commit();
-    }
-
-    /**
-     * Rollback transaction
-     *
-     * @return bool
-     */
-    public function rollback(): bool
-    {
-        return $this->getConnection()->rollBack();
-    }
-
-    /**
-     * Check if in transaction
-     *
-     * @return bool
-     */
-    public function inTransaction(): bool
-    {
-        return $this->getConnection()->inTransaction();
     }
 
     /**
@@ -277,5 +333,15 @@ class Connection
     public function close(): void
     {
         $this->connection = null;
+    }
+
+    /**
+     * Get PDO connection
+     *
+     * @return \PDO
+     */
+    public function getPdo(): \PDO
+    {
+        return $this->getConnection();
     }
 }

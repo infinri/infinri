@@ -3,124 +3,110 @@ declare(strict_types=1);
 
 namespace Infinri\Core\Model\Config;
 
-use Infinri\Core\Api\ConfigInterface;
+use Infinri\Core\Model\Config;
 
 /**
  * Scope Configuration
  * 
- * Provides access to configuration values with scope support (default, website, store).
+ * Provides convenient methods for retrieving configuration values
+ * with proper type casting. Wraps the Config model.
  */
-class ScopeConfig implements ConfigInterface
+class ScopeConfig
 {
-    /**
-     * Scope types
-     */
-    public const SCOPE_DEFAULT = 'default';
-    public const SCOPE_WEBSITE = 'website';
-    public const SCOPE_STORE = 'store';
-
-    /**
-     * @var array<string, mixed>|null Cached configuration
-     */
-    private ?array $config = null;
-
-    public function __construct(
-        private readonly Loader $configLoader
-    ) {
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function get(string $path, mixed $default = null): mixed
+    private Config $config;
+    
+    public function __construct(Config $config)
     {
-        return $this->getValue($path, self::SCOPE_DEFAULT, null) ?? $default;
+        $this->config = $config;
     }
-
+    
     /**
-     * @inheritDoc
-     */
-    public function getValue(string $path, string $scope = self::SCOPE_DEFAULT, string|int|null $scopeCode = null): mixed
-    {
-        if ($this->config === null) {
-            $this->config = $this->configLoader->load();
-        }
-
-        // Navigate through the path
-        $value = $this->getValueByPath($this->config, $scope, $path);
-
-        return $value;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function isSetFlag(string $path, string $scope = self::SCOPE_DEFAULT, string|int|null $scopeCode = null): bool
-    {
-        $value = $this->getValue($path, $scope, $scopeCode);
-
-        // Convert to boolean
-        if (is_string($value)) {
-            return in_array(strtolower($value), ['1', 'true', 'yes', 'on'], true);
-        }
-
-        return (bool) $value;
-    }
-
-    /**
-     * Get value by navigating through config path
+     * Get configuration value as string
      *
-     * @param array<string, mixed> $config
-     * @param string $scope
-     * @param string $path
-     * @return mixed
+     * @param string $path Configuration path (e.g., 'web/site/name')
+     * @param string $scope Scope type (default, website, store)
+     * @param int $scopeId Scope ID
+     * @return string|null
      */
-    private function getValueByPath(array $config, string $scope, string $path): mixed
+    public function getValue(string $path, string $scope = 'default', int $scopeId = 0): ?string
     {
-        // Get scope config
-        if (!isset($config[$scope])) {
-            return null;
-        }
-
-        $scopeConfig = $config[$scope];
-
-        // Split path into parts (e.g., "theme/general/logo" -> ["theme", "general", "logo"])
-        $parts = explode('/', $path);
-
-        // Navigate through the array
-        $current = $scopeConfig;
-        foreach ($parts as $part) {
-            if (!is_array($current) || !isset($current[$part])) {
-                return null;
-            }
-            $current = $current[$part];
-        }
-
-        return $current;
+        $value = $this->config->getValue($path, $scope, $scopeId);
+        return $value !== false ? (string)$value : null;
     }
-
+    
     /**
-     * Clear cached configuration
+     * Check if configuration path is set
      *
-     * @return void
+     * @param string $path Configuration path
+     * @param string $scope Scope type
+     * @param int $scopeId Scope ID
+     * @return bool
      */
-    public function clearCache(): void
+    public function isSetFlag(string $path, string $scope = 'default', int $scopeId = 0): bool
     {
-        $this->config = null;
+        $value = $this->config->getValue($path, $scope, $scopeId);
+        return (bool)$value;
     }
-
+    
     /**
-     * Get all configuration for a scope
+     * Get configuration value as integer
      *
-     * @param string $scope
-     * @return array<string, mixed>
+     * @param string $path Configuration path
+     * @param string $scope Scope type
+     * @param int $scopeId Scope ID
+     * @return int
      */
-    public function getAllByScope(string $scope = self::SCOPE_DEFAULT): array
+    public function getInt(string $path, string $scope = 'default', int $scopeId = 0): int
     {
-        if ($this->config === null) {
-            $this->config = $this->configLoader->load();
+        $value = $this->config->getValue($path, $scope, $scopeId);
+        return (int)$value;
+    }
+    
+    /**
+     * Get configuration value as float
+     *
+     * @param string $path Configuration path
+     * @param string $scope Scope type
+     * @param int $scopeId Scope ID
+     * @return float
+     */
+    public function getFloat(string $path, string $scope = 'default', int $scopeId = 0): float
+    {
+        $value = $this->config->getValue($path, $scope, $scopeId);
+        return (float)$value;
+    }
+    
+    /**
+     * Get configuration value as boolean
+     *
+     * @param string $path Configuration path
+     * @param string $scope Scope type
+     * @param int $scopeId Scope ID
+     * @return bool
+     */
+    public function getBool(string $path, string $scope = 'default', int $scopeId = 0): bool
+    {
+        $value = $this->config->getValue($path, $scope, $scopeId);
+        return filter_var($value, FILTER_VALIDATE_BOOLEAN);
+    }
+    
+    /**
+     * Get configuration value as array (JSON decoded)
+     *
+     * @param string $path Configuration path
+     * @param string $scope Scope type
+     * @param int $scopeId Scope ID
+     * @return array
+     */
+    public function getArray(string $path, string $scope = 'default', int $scopeId = 0): array
+    {
+        $value = $this->config->getValue($path, $scope, $scopeId);
+        
+        if (empty($value)) {
+            return [];
         }
-
-        return $this->config[$scope] ?? [];
+        
+        $decoded = json_decode($value, true);
+        return is_array($decoded) ? $decoded : [];
     }
 }

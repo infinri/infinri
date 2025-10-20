@@ -1,0 +1,184 @@
+/**
+ * Admin Grid Styles
+ * Magento-inspired admin grid component styling
+ */
+
+.admin-grid {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+}
+
+/* Grid Toolbar */
+.grid-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.grid-toolbar-left,
+.grid-toolbar-right {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.grid-massactions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.grid-massactions select {
+    min-width: 200px;
+}
+
+/* Grid Table */
+.grid-container {
+    overflow-x: auto;
+}
+
+.admin-grid-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Inter', sans-serif;
+}
+
+.admin-grid-table thead {
+    background: #f1f5f9;
+    border-bottom: 2px solid #cbd5e1;
+}
+
+.admin-grid-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    color: #1e293b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.admin-grid-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 14px;
+    color: #475569;
+}
+
+.admin-grid-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.admin-grid-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Checkbox Column */
+.grid-th-checkbox,
+.grid-td-checkbox {
+    width: 40px;
+    text-align: center !important;
+}
+
+.grid-checkbox {
+    cursor: pointer;
+}
+
+/* Empty State */
+.grid-empty {
+    text-align: center !important;
+    padding: 48px 24px !important;
+    color: #94a3b8;
+    font-style: italic;
+}
+
+/* Grid Actions */
+.grid-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.action-link {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.action-link:hover {
+    color: #1e40af;
+    text-decoration: underline;
+}
+
+/* Status Badge */
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-enabled {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-disabled {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Grid Footer */
+.grid-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-top: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.grid-info {
+    font-size: 13px;
+    color: #64748b;
+}
+
+/* Sort Icon */
+.sort-icon {
+    margin-left: 4px;
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .grid-toolbar {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+    
+    .grid-toolbar-left,
+    .grid-toolbar-right {
+        justify-content: center;
+    }
+    
+    .admin-grid-table {
+        font-size: 13px;
+    }
+    
+    .admin-grid-table th,
+    .admin-grid-table td {
+        padding: 8px 12px;
+    }
+}

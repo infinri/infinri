@@ -1,16 +1,15 @@
 <?php
 /**
  * Messages Template
- * 
- * Displays flash messages (success, error, warning, info)
+ * Displays flash messages to the user
  * 
  * @var \Infinri\Core\Block\Template $block
- * @var \Infinri\Theme\ViewModel\Messages $messagesViewModel
  */
 
-$messagesViewModel = $block->getData('view_model');
+$messagesViewModel = $block->getViewModel();
 
-if (!$messagesViewModel || !$messagesViewModel->hasMessages()) {
+// Check if there are messages to display
+if (!$messagesViewModel || !method_exists($messagesViewModel, 'hasMessages') || !$messagesViewModel->hasMessages()) {
     return;
 }
 
@@ -21,22 +20,18 @@ $messages = $messagesViewModel->getMessages();
         <?php
         $type = $message['type'] ?? 'info';
         $text = $message['text'] ?? '';
-        $iconClass = $messagesViewModel->getIconClass($type);
-        $ariaRole = $messagesViewModel->getAriaRole($type);
         ?>
         <div class="message message-<?= $block->escapeHtmlAttr($type) ?>" 
-             role="<?= $block->escapeHtmlAttr($ariaRole) ?>"
-             aria-live="polite"
-             data-message-type="<?= $block->escapeHtmlAttr($type) ?>">
+             role="status"
+             aria-live="polite">
             <div class="message-content">
-                <span class="message-icon <?= $block->escapeHtmlAttr($iconClass) ?>" aria-hidden="true"></span>
                 <span class="message-text"><?= $block->escapeHtml($text) ?></span>
             </div>
             <button type="button" 
                     class="message-close" 
-                    aria-label="<?= $block->escapeHtmlAttr('Close message') ?>"
-                    data-dismiss="message">
-                ×
+                    aria-label="Close message"
+                    onclick="this.parentElement.remove()">
+                &times;
             </button>
         </div>
     <?php endforeach; ?>

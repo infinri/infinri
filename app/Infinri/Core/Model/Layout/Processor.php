@@ -175,8 +175,42 @@ class Processor
         // Remove from original parent
         $sourceDom->parentNode->removeChild($sourceDom);
         
-        // Add to destination (TODO: respect before/after)
-        $destDom->appendChild($importedNode);
+        // Handle positioning with before/after
+        if ($before !== null) {
+            // Insert before specific sibling
+            $siblings = $destDom->childNodes;
+            foreach ($siblings as $sibling) {
+                if ($sibling->nodeType === XML_ELEMENT_NODE && 
+                    $sibling->hasAttribute('name') && 
+                    $sibling->getAttribute('name') === $before) {
+                    $destDom->insertBefore($importedNode, $sibling);
+                    return;
+                }
+            }
+            // If before element not found, append to end
+            $destDom->appendChild($importedNode);
+        } elseif ($after !== null) {
+            // Insert after specific sibling
+            $siblings = $destDom->childNodes;
+            $found = false;
+            foreach ($siblings as $sibling) {
+                if ($found) {
+                    // Insert before the next sibling (which is after our target)
+                    $destDom->insertBefore($importedNode, $sibling);
+                    return;
+                }
+                if ($sibling->nodeType === XML_ELEMENT_NODE && 
+                    $sibling->hasAttribute('name') && 
+                    $sibling->getAttribute('name') === $after) {
+                    $found = true;
+                }
+            }
+            // If we found the after element and it's the last one, or didn't find it, append
+            $destDom->appendChild($importedNode);
+        } else {
+            // No positioning specified, append to end
+            $destDom->appendChild($importedNode);
+        }
     }
 
     /**

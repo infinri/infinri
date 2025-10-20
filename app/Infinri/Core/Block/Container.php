@@ -15,19 +15,27 @@ class Container extends AbstractBlock
      */
     public function toHtml(): string
     {
-        $htmlTag = $this->getData('htmlTag') ?: 'div';
+        $htmlTag = $this->getData('htmlTag');
         $htmlClass = $this->getData('htmlClass') ?: '';
         $htmlId = $this->getData('htmlId') ?: '';
         
-        // Build opening tag
+        // Get children HTML first
+        $childrenHtml = $this->getChildrenHtml();
+        
+        // If no HTML tag specified, just return children without wrapper
+        if (empty($htmlTag)) {
+            return $childrenHtml;
+        }
+        
+        // Build opening tag attributes
         $attributes = [];
         
         if ($htmlId) {
-            $attributes[] = sprintf('id="%s"', htmlspecialchars($htmlId));
+            $attributes[] = sprintf('id="%s"', htmlspecialchars($htmlId, ENT_QUOTES, 'UTF-8'));
         }
         
         if ($htmlClass) {
-            $attributes[] = sprintf('class="%s"', htmlspecialchars($htmlClass));
+            $attributes[] = sprintf('class="%s"', htmlspecialchars($htmlClass, ENT_QUOTES, 'UTF-8'));
         }
         
         $attributeString = $attributes ? ' ' . implode(' ', $attributes) : '';
@@ -37,10 +45,7 @@ class Container extends AbstractBlock
             return sprintf('<%s%s />', $htmlTag, $attributeString);
         }
         
-        // Get children HTML
-        $childrenHtml = $this->getChildrenHtml();
-        
-        // Build complete HTML
+        // Build complete HTML with wrapper tag
         return sprintf(
             '<%s%s>%s</%s>',
             $htmlTag,
@@ -49,4 +54,5 @@ class Container extends AbstractBlock
             $htmlTag
         );
     }
+
 }

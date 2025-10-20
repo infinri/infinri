@@ -1,0 +1,14 @@
+# Allow access to media files
+<IfModule mod_rewrite.c>
+    RewriteEngine Off
+</IfModule>
+
+# Allow images
+<FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|bmp)$">
+    Allow from all
+</FilesMatch>
+
+# Security: Deny execution of scripts
+<FilesMatch "\.(php|phtml|php3|php4|php5|pl|py|jsp|asp|sh|cgi)$">
+    Deny from all
+</FilesMatch>

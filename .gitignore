@@ -7,8 +7,15 @@
 /var/log/
 /var/session/
 /var/tmp/
+/app/var/
 /pub/static/
 /.phpunit.cache/
+.phpunit.cache/
+
+# Media uploads (user-generated content)
+/pub/media/*
+!/pub/media/.htaccess
+!/pub/media/.gitkeep
 
 # IDE
 /.idea/
@@ -56,5 +63,14 @@ phpunit.xml.dist
 # Temporary files
 *.tmp
 *.bak
+*.backup
 *.swp
 *~.nib
+
+# Built/Compiled Assets (if using build process)
+/pub/static/frontend/
+/pub/static/adminhtml/
+*.min.css
+*.min.js
+*.css.map
+*.js.map

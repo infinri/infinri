@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <!-- Base layout - defines root HTML structure -->
+    
+    <!-- Root container (HTML element) -->
+    <container name="root" htmlTag="html" htmlClass="no-js">
+        <!-- Head section -->
+        <container name="head" htmlTag="head">
+            <block class="Infinri\Core\Block\Template" 
+                   name="head.meta" 
+                   template="Infinri_Core::html/head/meta.phtml"/>
+            
+            <container name="head.styles"/>
+            <container name="head.scripts"/>
+        </container>
+        
+        <!-- Body section -->
+        <container name="body" htmlTag="body" htmlClass="page-wrapper">
+            <!-- Header -->
+            <container name="header.container"/>
+            
+            <!-- Breadcrumbs -->
+            <container name="breadcrumbs.wrapper"/>
+            
+            <!-- Main content area -->
+            <container name="main.content" htmlTag="main" htmlClass="page-main">
+                <!-- Content container - where page content goes -->
+                <container name="content" htmlTag="div" htmlClass="content-wrapper"/>
+            </container>
+            
+            <!-- Footer -->
+            <container name="footer.container"/>
+        </container>
+    </container>
+</layout>

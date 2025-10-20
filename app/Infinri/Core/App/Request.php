@@ -105,6 +105,26 @@ class Request
     }
 
     /**
+     * Get request URI
+     *
+     * @return string
+     */
+    public function getUri(): string
+    {
+        return $this->getPathInfo();
+    }
+    
+    /**
+     * Get request path (alias for getUri)
+     *
+     * @return string
+     */
+    public function getPath(): string
+    {
+        return $this->getUri();
+    }
+
+    /**
      * Get query parameter
      *
      * @param string $key

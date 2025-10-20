@@ -56,11 +56,11 @@ describe('Merger', function () {
     });
     
     it('preserves element structure during merge', function () {
-        $layouts = $this->loader->load('default');
+        $layouts = $this->loader->load('base_default');
         
         $merged = $this->merger->merge($layouts);
         
-        // Check for container from Core module
+        // Check for container from base_default layout
         $containers = $merged->xpath('//container[@name="root"]');
         expect($containers)->not->toBeEmpty();
     });

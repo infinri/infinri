@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:infinri:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    
+    <!-- CMS Page Table -->
+    <table name="cms_page" resource="default" engine="innodb" comment="CMS Page Table">
+        <column xsi:type="int" name="page_id" unsigned="true" nullable="false" identity="true" comment="Page ID"/>
+        <column xsi:type="varchar" name="title" nullable="false" length="255" comment="Page Title"/>
+        <column xsi:type="text" name="content" nullable="true" comment="Page Content"/>
+        <column xsi:type="varchar" name="url_key" nullable="false" length="255" comment="URL Key"/>
+        <column xsi:type="varchar" name="meta_title" nullable="true" length="255" comment="Meta Title"/>
+        <column xsi:type="text" name="meta_description" nullable="true" comment="Meta Description"/>
+        <column xsi:type="text" name="meta_keywords" nullable="true" comment="Meta Keywords"/>
+        <column xsi:type="boolean" name="is_active" nullable="false" default="true" comment="Is Active"/>
+        <column xsi:type="boolean" name="is_homepage" nullable="false" default="false" comment="Is Homepage"/>
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="true" comment="Update Time"/>
+        
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="page_id"/>
+        </constraint>
+        
+        <constraint xsi:type="unique" referenceId="CMS_PAGE_URL_KEY">
+            <column name="url_key"/>
+        </constraint>
+        
+        <index referenceId="CMS_PAGE_IS_ACTIVE" indexType="btree">
+            <column name="is_active"/>
+        </index>
+        
+        <index referenceId="CMS_PAGE_IS_HOMEPAGE" indexType="btree">
+            <column name="is_homepage"/>
+        </index>
+    </table>
+    
+    <!-- CMS Block Table -->
+    <table name="cms_block" resource="default" engine="innodb" comment="CMS Block Table">
+        <column xsi:type="int" name="block_id" unsigned="true" nullable="false" identity="true" comment="Block ID"/>
+        <column xsi:type="varchar" name="identifier" nullable="false" length="255" comment="Block Identifier"/>
+        <column xsi:type="varchar" name="title" nullable="false" length="255" comment="Block Title"/>
+        <column xsi:type="text" name="content" nullable="true" comment="Block Content"/>
+        <column xsi:type="boolean" name="is_active" nullable="false" default="true" comment="Is Active"/>
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="true" comment="Update Time"/>
+        
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="block_id"/>
+        </constraint>
+        
+        <constraint xsi:type="unique" referenceId="CMS_BLOCK_IDENTIFIER">
+            <column name="identifier"/>
+        </constraint>
+        
+        <index referenceId="CMS_BLOCK_IS_ACTIVE" indexType="btree">
+            <column name="is_active"/>
+        </index>
+    </table>
+    
+    <!-- CMS Page Widget Table (Drag-and-Drop Page Builder) -->
+    <table name="cms_page_widget" resource="default" engine="innodb" comment="CMS Page Widget Table">
+        <column xsi:type="int" name="widget_id" unsigned="true" nullable="false" identity="true" comment="Widget ID"/>
+        <column xsi:type="int" name="page_id" unsigned="true" nullable="false" comment="Page ID"/>
+        <column xsi:type="varchar" name="widget_type" nullable="false" length="50" comment="Widget Type"/>
+        <column xsi:type="text" name="widget_data" nullable="true" comment="Widget Configuration (JSON)"/>
+        <column xsi:type="int" name="sort_order" nullable="false" default="0" comment="Sort Order"/>
+        <column xsi:type="boolean" name="is_active" nullable="false" default="true" comment="Is Active"/>
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="true" comment="Update Time"/>
+        
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="widget_id"/>
+        </constraint>
+        
+        <constraint xsi:type="foreign" 
+                    referenceId="CMS_PAGE_WIDGET_PAGE_ID_CMS_PAGE_PAGE_ID" 
+                    table="cms_page_widget" 
+                    column="page_id" 
+                    referenceTable="cms_page" 
+                    referenceColumn="page_id" 
+                    onDelete="CASCADE"/>
+        
+        <index referenceId="CMS_PAGE_WIDGET_PAGE_ID" indexType="btree">
+            <column name="page_id"/>
+        </index>
+        
+        <index referenceId="CMS_PAGE_WIDGET_SORT_ORDER" indexType="btree">
+            <column name="sort_order"/>
+        </index>
+        
+        <index referenceId="CMS_PAGE_WIDGET_IS_ACTIVE" indexType="btree">
+            <column name="is_active"/>
+        </index>
+    </table>
+</schema>

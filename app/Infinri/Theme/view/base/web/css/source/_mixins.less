@@ -3,6 +3,9 @@
  * Reusable LESS mixins for common patterns
  */
 
+// Import variables so mixins can use them
+@import '_variables.less';
+
 // ============================================================================
 // Responsive Mixins
 // ============================================================================
@@ -20,19 +23,19 @@
 }
 
 .mobile-only(@rules) {
-    @media (max-width: (@tablet - 1)) {
+    @media (max-width: 767px) {
         @rules();
     }
 }
 
 .tablet-up(@rules) {
-    @media (min-width: @tablet) {
+    @media (min-width: 768px) {
         @rules();
     }
 }
 
 .desktop-up(@rules) {
-    @media (min-width: @desktop) {
+    @media (min-width: 768px) {
         @rules();
     }
 }
@@ -120,7 +123,7 @@
 // Visual Mixins
 // ============================================================================
 
-.box-shadow(@shadow: @shadow) {
+.box-shadow(@shadow: 0 2px 4px rgba(0, 0, 0, 0.1)) {
     box-shadow: @shadow;
 }
 
@@ -128,7 +131,7 @@
     transition: @property @duration @timing;
 }
 
-.border-radius(@radius: @border-radius) {
+.border-radius(@radius: 4px) {
     border-radius: @radius;
 }
 
@@ -147,7 +150,7 @@
     user-select: none;
     border: 1px solid transparent;
     border-radius: @btn-border-radius;
-    .transition(all, 0.15s, ease-in-out);
+    .transition(all, @transition-duration, @transition-timing);
     cursor: pointer;
     
     &:hover {
@@ -165,7 +168,7 @@
     }
 }
 
-.button-variant(@bg, @border: @bg, @color: @white) {
+.button-variant(@bg, @border: @bg, @color: #ffffff) {
     background-color: @bg;
     border-color: @border;
     color: @color;
@@ -190,7 +193,7 @@
     &:hover {
         background-color: @color;
         border-color: @color;
-        color: @white;
+        color: #ffffff;
     }
 }
 
@@ -208,7 +211,7 @@
     background-color: @white;
     border: 1px solid @input-border-color;
     border-radius: @input-border-radius;
-    .transition(border-color, 0.15s, ease-in-out);
+    .transition(border-color, @transition-duration, @transition-timing);
     
     &:focus {
         border-color: @input-focus-color;

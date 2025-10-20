@@ -75,16 +75,19 @@ class Footer
         return [
             [
                 'platform' => 'Twitter',
+                'label' => 'Twitter',
                 'url' => 'https://twitter.com/infinri',
                 'icon' => 'twitter',
             ],
             [
                 'platform' => 'GitHub',
+                'label' => 'GitHub',
                 'url' => 'https://github.com/infinri',
                 'icon' => 'github',
             ],
             [
                 'platform' => 'LinkedIn',
+                'label' => 'LinkedIn',
                 'url' => 'https://linkedin.com/company/infinri',
                 'icon' => 'linkedin',
             ],

@@ -9,8 +9,12 @@ use Infinri\Core\Model\ResourceModel\AbstractResource;
 // Test resource
 class ModelTestResource extends AbstractResource
 {
-    protected string $mainTable = 'model_test';
-    protected string $idFieldName = 'id';
+    public function __construct(Connection $connection)
+    {
+        parent::__construct($connection);
+        $this->mainTable = 'model_test';
+        $this->primaryKey = 'id';  // Set primary key for load() method
+    }
 }
 
 // Test model

@@ -5,65 +5,63 @@
     
     <!-- Add assets to head -->
     <referenceContainer name="head.styles">
-        <block class="Infinri\Core\Block\Text" name="theme.styles">
+        <block class="Infinri\Core\Block\Css" name="theme.styles">
             <arguments>
-                <argument name="text" xsi:type="string"><![CDATA[<link rel="stylesheet" href="/static/Infinri/Theme/css/styles.css">]]></argument>
+                <argument name="href" xsi:type="string">/static/frontend/css/styles.min.css</argument>
+                <argument name="media" xsi:type="string">all</argument>
             </arguments>
         </block>
     </referenceContainer>
     
     <referenceContainer name="head.scripts">
-        <block class="Infinri\Core\Block\Text" name="theme.scripts">
+        <block class="Infinri\Core\Block\Js" name="theme.scripts">
             <arguments>
-                <argument name="text" xsi:type="string"><![CDATA[<script src="/static/Infinri/Theme/js/app.js" defer></script>]]></argument>
+                <argument name="src" xsi:type="string">/static/frontend/js/scripts.min.js</argument>
+                <argument name="defer" xsi:type="boolean">true</argument>
             </arguments>
         </block>
     </referenceContainer>
     
-    <!-- Add header -->
-    <referenceContainer name="page.wrapper">
+    <!-- Header -->
+    <referenceContainer name="header.container">
         <block class="Infinri\Core\Block\Template" 
                name="header" 
-               template="Infinri_Theme::html/header.phtml"
-               before="main.content">
+               template="Infinri_Theme::html/header.phtml">
             <arguments>
                 <argument name="view_model" xsi:type="object">Infinri\Theme\ViewModel\Header</argument>
             </arguments>
         </block>
     </referenceContainer>
     
-    <!-- Add main content area -->
+    <!-- Breadcrumbs (global - available on all pages) -->
+    <referenceContainer name="breadcrumbs.wrapper">
+        <block class="Infinri\Core\Block\Template" 
+               name="breadcrumbs" 
+               template="Infinri_Theme::html/breadcrumb.phtml">
+            <arguments>
+                <argument name="view_model" xsi:type="object">Infinri\Theme\ViewModel\Breadcrumb</argument>
+            </arguments>
+        </block>
+    </referenceContainer>
+    
+    <!-- Messages block - testing ViewModel instantiation -->
     <referenceContainer name="main.content">
-        <container name="breadcrumbs" htmlTag="div" htmlClass="breadcrumbs-wrapper" before="-">
-            <block class="Infinri\Core\Block\Template" 
-                   name="breadcrumbs" 
-                   template="Infinri_Theme::html/breadcrumb.phtml">
-                <arguments>
-                    <argument name="view_model" xsi:type="object">Infinri\Theme\ViewModel\Breadcrumb</argument>
-                </arguments>
-            </block>
-        </container>
-        
-        <container name="messages" htmlTag="div" htmlClass="messages-wrapper" after="breadcrumbs">
+        <container name="messages" htmlTag="div" htmlClass="messages-wrapper" before="-">
             <block class="Infinri\Core\Block\Template" 
                    name="messages" 
-                   template="Infinri_Theme::components/messages.phtml"
-                   after="breadcrumbs">
+                   template="Infinri_Theme::components/messages.phtml">
                 <arguments>
-                    <argument name="view_model" xsi:type="object">
-                        Infinri\Theme\ViewModel\Messages
-                    </argument>
+                    <argument name="view_model" xsi:type="object">Infinri\Theme\ViewModel\Messages</argument>
                 </arguments>
             </block>
         </container>
     </referenceContainer>
     
-    <!-- Add footer -->
-    <referenceContainer name="page.wrapper">
+    <!-- Footer -->
+    <referenceContainer name="footer.container">
         <block class="Infinri\Core\Block\Template" 
                name="footer" 
-               template="Infinri_Theme::html/footer.phtml"
-               after="main.content">
+               template="Infinri_Theme::html/footer.phtml">
             <arguments>
                 <argument name="view_model" xsi:type="object">Infinri\Theme\ViewModel\Footer</argument>
             </arguments>

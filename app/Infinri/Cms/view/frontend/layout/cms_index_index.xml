@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <!-- 
+        Homepage Layout (Customer-facing)
+        Inherits: base_default.xml → default.xml → cms_index_index.xml
+    -->
+    <update handle="default"/>
+    
+    <!-- Add homepage content to the content container -->
+    <referenceContainer name="content">
+        <block class="Infinri\Core\Block\Template" 
+               name="cms.page.content" 
+               template="Infinri_Cms::page/view.phtml">
+            <arguments>
+                <argument name="page" xsi:type="object">page</argument>
+            </arguments>
+        </block>
+        
+        <!-- Page Widgets Renderer (for homepage widgets) -->
+        <block class="Infinri\Cms\Block\PageRenderer" 
+               name="page.widgets.renderer"/>
+    </referenceContainer>
+</layout>

@@ -1,0 +1,22 @@
+<?php
+/**
+ * Head Meta Template
+ * 
+ * @var \Infinri\Core\Block\Template $block
+ */
+
+// Get page data if available
+$page = $block->getData('page');
+$metaTitle = $page ? $block->escapeHtml($page->getMetaTitle() ?: $page->getTitle() ?: 'Infinri') : 'Infinri';
+$metaDescription = $page && $page->getMetaDescription() ? $block->escapeHtml($page->getMetaDescription()) : '';
+$metaKeywords = $page && $page->getMetaKeywords() ? $block->escapeHtml($page->getMetaKeywords()) : '';
+?>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><?= $metaTitle ?></title>
+<?php if ($metaDescription): ?>
+<meta name="description" content="<?= $metaDescription ?>">
+<?php endif; ?>
+<?php if ($metaKeywords): ?>
+<meta name="keywords" content="<?= $metaKeywords ?>">
+<?php endif; ?>

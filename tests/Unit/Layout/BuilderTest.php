@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 use Infinri\Core\Model\Layout\Builder;
 use Infinri\Core\Block\Container;
+use Infinri\Core\Block\Template;
+use Infinri\Core\Block\Text;
+use Infinri\Core\Model\View\TemplateResolver;
 
 beforeEach(function () {
-    // Create builder without ObjectManager for simple tests
-    $this->builder = new Builder();
+    $this->templateResolver = Mockery::mock(TemplateResolver::class);
+    $this->builder = new Builder($this->templateResolver);
 });
 
 describe('Builder', function () {

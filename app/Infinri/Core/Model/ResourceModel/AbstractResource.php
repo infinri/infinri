@@ -11,10 +11,15 @@ namespace Infinri\Core\Model\ResourceModel;
 abstract class AbstractResource
 {
     /**
-     * @var string Main table name
+     * @var string Main database table name
      */
     protected string $mainTable;
-
+    
+    /**
+     * @var string Primary key field name
+     */
+    protected string $primaryKey;
+    
     /**
      * @var string Primary key field
      */
@@ -46,17 +51,17 @@ abstract class AbstractResource
     }
 
     /**
-     * Load entity by ID
+     * Load entity data by ID
      *
      * @param int|string $id
-     * @return array<string, mixed>|false
+     * @return array|false
      */
     public function load(int|string $id): array|false
     {
         $sql = sprintf(
             'SELECT * FROM %s WHERE %s = ? LIMIT 1',
             $this->mainTable,
-            $this->idFieldName
+            $this->primaryKey
         );
 
         return $this->connection->fetchRow($sql, [$id]);
@@ -192,5 +197,15 @@ abstract class AbstractResource
     public function getConnection(): Connection
     {
         return $this->connection;
+    }
+
+    /**
+     * Get primary key
+     *
+     * @return string
+     */
+    public function getPrimaryKey(): string
+    {
+        return $this->primaryKey;
     }
 }

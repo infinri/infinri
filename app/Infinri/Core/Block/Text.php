@@ -42,6 +42,13 @@ class Text extends AbstractBlock
      */
     public function toHtml(): string
     {
-        return htmlspecialchars($this->text);
+        // Check data array first (set from XML arguments)
+        $dataText = $this->getData('text');
+        if ($dataText !== null) {
+            return $dataText;
+        }
+        
+        // Fall back to text property
+        return $this->text;
     }
 }

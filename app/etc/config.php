@@ -12,5 +12,6 @@ return [
     'modules' => [
         'Infinri_Core' => 1,
         'Infinri_Theme' => 1,
+        'Infinri_Cms' => 1,
     ]
 ];

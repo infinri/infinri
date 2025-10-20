@@ -7,7 +7,27 @@
  */
 $viewModel = $block->getViewModel();
 
-if (!$viewModel->hasBreadcrumbs()) {
+// Only render if ViewModel exists and has breadcrumbs
+if (!$viewModel || !method_exists($viewModel, 'getBreadcrumbs')) {
+    ?>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <div class="breadcrumbs-container container">
+            <ol class="breadcrumb-list">
+                <li class="breadcrumb-item">
+                    <a href="<?= $block->escapeUrl('/') ?>">
+                        <?= $block->escapeHtml('Home') ?>
+                    </a>
+                </li>
+            </ol>
+        </div>
+    </nav>
+    <?php
+    return;
+}
+
+$breadcrumbs = $viewModel->getBreadcrumbs();
+
+if (empty($breadcrumbs)) {
     return;
 }
 ?>
@@ -15,12 +35,12 @@ if (!$viewModel->hasBreadcrumbs()) {
     <div class="breadcrumbs-container container">
         <ol class="breadcrumb-list" itemscope itemtype="https://schema.org/BreadcrumbList">
             <?php $position = 1; ?>
-            <?php foreach ($viewModel->getBreadcrumbs() as $crumb): ?>
+            <?php foreach ($breadcrumbs as $crumb): ?>
                 <li class="breadcrumb-item" 
                     itemprop="itemListElement" 
                     itemscope 
                     itemtype="https://schema.org/ListItem">
-                    <?php if ($crumb['url']): ?>
+                    <?php if (isset($crumb['url'])): ?>
                         <a href="<?= $block->escapeUrl($crumb['url']) ?>" 
                            class="breadcrumb-link"
                            itemprop="item">

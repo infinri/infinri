@@ -7,6 +7,11 @@ namespace Infinri\Core\Console;
 use Symfony\Component\Console\Command\Command;
 use Infinri\Core\Model\ComponentRegistrar;
 use Infinri\Core\Api\ComponentRegistrarInterface;
+use Infinri\Core\Console\Command\CacheClearCommand;
+use Infinri\Core\Console\Command\CacheStatusCommand;
+use Infinri\Core\Console\Command\ModuleListCommand;
+use Infinri\Core\Console\Command\ModuleStatusCommand;
+use Infinri\Core\Console\Command\SetupUpgradeCommand;
 
 /**
  * Command Loader
@@ -63,10 +68,11 @@ class CommandLoader
     private function loadCoreCommands(): void
     {
         $coreCommandClasses = [
-            Command\CacheClearCommand::class,
-            Command\CacheStatusCommand::class,
-            Command\ModuleListCommand::class,
-            Command\ModuleStatusCommand::class,
+            CacheClearCommand::class,
+            CacheStatusCommand::class,
+            ModuleListCommand::class,
+            ModuleStatusCommand::class,
+            SetupUpgradeCommand::class,
         ];
 
         foreach ($coreCommandClasses as $commandClass) {

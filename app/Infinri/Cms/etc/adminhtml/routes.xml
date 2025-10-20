@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <!-- Routes:
+        - /admin/cms/page/index    - List all pages
+        - /admin/cms/page/edit     - Create/edit page
+        - /admin/cms/page/save     - Save page
+        - /admin/cms/page/delete   - Delete page
+        - /admin/cms/block/index   - List all blocks
+        - /admin/cms/block/edit    - Edit block
+        - /admin/cms/widget/index  - List/assign widgets
+    -->
+    <router id="admin">
+        <route id="cms_admin" frontName="cms" module="Infinri_Cms">
+            <module name="Infinri_Cms"/>
+        </route>
+    </router>
+</config>

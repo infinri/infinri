@@ -21,14 +21,43 @@
 // Page Structure
 // ============================================================================
 
-.page-wrapper {
+body.page-wrapper {
+    margin: 0;
+    padding: 0;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
-.main-content {
-    flex: 1 0 auto;
+.page-main {
+    flex: 1;
+    width: 100%;
+    padding: @spacing-lg 0;
+}
+
+.content-wrapper {
+    .container();
+    padding-top: @spacing-lg;
+    padding-bottom: @spacing-lg;
+}
+
+// ============================================================================
+// Header & Footer Spacing
+// ============================================================================
+
+.header {
+    margin-bottom: 0; // Remove default margin
+}
+
+.breadcrumbs {
+    margin-bottom: @spacing-lg;
+}
+
+.page-footer {
+    margin-top: auto; // Push to bottom
+    background-color: @gray-100;
+    padding: @spacing-xl 0;
+    border-top: 1px solid @border-color;
 }
 
 // ============================================================================
