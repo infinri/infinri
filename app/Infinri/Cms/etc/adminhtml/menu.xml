@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:infinri:framework:Admin/etc/menu.xsd">
+    <menu>
+        <!-- Inject Pages into Content section -->
+        <add id="Infinri_Cms::pages" 
+             title="Pages" 
+             module="Infinri_Cms" 
+             parent="Infinri_Admin::content"
+             sortOrder="10" 
+             action="admin/cms/page/index" 
+             resource="Infinri_Cms::pages"/>
+        
+        <!-- Inject Blocks into Content section -->
+        <add id="Infinri_Cms::blocks" 
+             title="Blocks" 
+             module="Infinri_Cms" 
+             parent="Infinri_Admin::content"
+             sortOrder="20" 
+             action="admin/cms/block/index" 
+             resource="Infinri_Cms::blocks"/>
+    </menu>
+</config>

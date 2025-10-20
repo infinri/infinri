@@ -1,0 +1,35 @@
+<?php
+/**
+ * Admin Footer Template
+ * 
+ * @var $block Infinri\Core\Block\Template
+ */
+?>
+<div class="admin-footer-bar">
+    <div class="admin-footer-content">
+        <div class="copyright">
+            © <?= date('Y') ?> Infinri. All rights reserved.
+        </div>
+        <div class="version">
+            Version 1.0.0-dev
+        </div>
+    </div>
+</div>
+
+<style>
+.admin-footer-bar {
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    margin-top: auto;
+}
+.admin-footer-content {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #64748b;
+    font-size: 13px;
+}
+</style>

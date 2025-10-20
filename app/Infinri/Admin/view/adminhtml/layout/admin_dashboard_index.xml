@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:infinri:framework:View/Layout/etc/page.xsd">
+    
+    <!-- Extend base admin layout -->
+    <update handle="admin_default"/>
+    
+    <body>
+        <referenceContainer name="content">
+            <!-- Dashboard Content -->
+            <block class="Infinri\Admin\Block\Dashboard" 
+                   name="admin.dashboard" 
+                   template="Infinri_Admin::dashboard/index.phtml"/>
+        </referenceContainer>
+    </body>
+</page>

@@ -13,5 +13,6 @@ return [
         'Infinri_Core' => 1,
         'Infinri_Theme' => 1,
         'Infinri_Cms' => 1,
+        'Infinri_Admin' => 1,
     ]
 ];

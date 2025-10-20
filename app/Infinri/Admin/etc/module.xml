@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:infinri:framework:etc/module.xsd">
+    <module name="Infinri_Admin" setup_version="1.0.0">
+        <sequence>
+            <module name="Infinri_Core"/>
+        </sequence>
+    </module>
+</config>

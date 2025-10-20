@@ -1,62 +1,64 @@
 # Infinri Framework
 
-**A Complete, Test-Driven PHP MVC Framework**
+**A Modular CMS Platform with Magento-Inspired Architecture**
 
 [![PHP Version](https://img.shields.io/badge/php-%5E8.1-blue)](https://www.php.net/)
-[![Tests](https://img.shields.io/badge/tests-237%20passing-brightgreen)](tests/)
+[![Tests](https://img.shields.io/badge/tests-640%20passing-brightgreen)](tests/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Status](https://img.shields.io/badge/status-production%20ready-brightgreen)](https://github.com/infinri/infinri)
+[![Status](https://img.shields.io/badge/status-in%20development-yellow)](https://github.com/infinri/infinri)
 
 ---
 
 ## Overview
 
-**Infinri** is a complete, production-ready MVC framework built with Test-Driven Development. Featuring a modular architecture inspired by Magento, it provides everything needed to build modern web applications with 237 passing tests covering all core functionality.
+**Infinri** is a modular content management platform built with PHP 8.1+, featuring a Magento-inspired architecture. With 640 passing tests and a complete admin interface, it provides a solid foundation for building portfolio websites and content-driven applications.
 
 ### Key Features
 
-- ✅ **Modular Architecture** - Module system with dependency resolution
-- ✅ **Dependency Injection** - PHP-DI 7.1 with autowiring
-- ✅ **Configuration System** - XML-based with scope support
-- ✅ **Layout System** - XML layouts with directives (remove, move, reference)
-- ✅ **Template Engine** - PHTML with XSS protection
-- ✅ **Routing** - URL pattern matching with parameters
-- ✅ **HTTP Layer** - Request/Response wrappers
-- ✅ **Database Layer** - Active Record & Repository patterns (PostgreSQL, MySQL, SQLite)
-- ✅ **MVC Pattern** - Complete Model-View-Controller architecture
-- ✅ **Test Coverage** - 237 tests covering all components
+**Core Framework:**
+- ✅ **Modular Architecture** - Module system with dependency management
+- ✅ **XML-Based Layouts** - Layout inheritance and composition
+- ✅ **Template Engine** - PHTML templates with block system
+- ✅ **Routing System** - Frontend and admin route separation
+- ✅ **Configuration** - Database-backed config with scopes
+- ✅ **Database Layer** - PDO with PostgreSQL, migrations, data patches
+- ✅ **Error Handling** - Custom 404/500 pages with logging
+
+**CMS Module:**
+- ✅ **Pages & Blocks** - Full CRUD with UI Component grids/forms
+- ✅ **Media Manager** - Folder organization, drag-drop upload, image picker
+- ✅ **Widget System** - HTML, Block Reference, Image, Video widgets
+- ✅ **SEO Support** - Meta tags, URL keys, homepage protection
+- ✅ **Content Editor** - Integrated image picker with cursor insertion
+
+**Admin Module:**
+- ✅ **Dashboard** - Statistics and quick actions
+- ✅ **Menu System** - XML-based, extensible navigation
+- ✅ **Unified Layout** - Consistent admin interface across all pages
+- ✅ **Module Injection** - Any module can add menu items
 
 ---
 
 ## Project Status
 
-**Current Version:** 1.0.0-beta
+**Current Version:** 1.0.0-dev  
+**Target:** Portfolio website CMS  
+**Tests:** 640 passing (1298 assertions)
 
-**Framework Status:** ✅ Production Ready - All core components implemented and tested
+### Completed Modules
 
-### Completed (8 Phases)
+- ✅ **Infinri_Core** - Framework foundation
+- ✅ **Infinri_Theme** - Frontend styling and layouts
+- ✅ **Infinri_Cms** - Content management (pages, blocks, widgets)
+- ✅ **Infinri_Admin** - Admin panel with dashboard and navigation
 
-- ✅ **Phase 1:** Component Registration (36 tests)
-- ✅ **Phase 2:** Configuration System (25 tests)
-- ✅ **Phase 3:** DI Container Integration (23 tests)
-- ✅ **Phase 4:** Layout System (51 tests)
-- ✅ **Phase 5:** Template & View System (18 tests)
-- ✅ **Phase 6:** Routing & HTTP Layer (40 tests)
-- ✅ **Phase 7:** End-to-End Integration (8 tests)
-- ✅ **Phase 8:** Database Layer (36 tests)
+### Current Focus
 
-**Total: 237 tests passing**
-
-### Ready to Build
-
-The framework core is complete! You can now:
-- Build web applications
-- Create RESTful APIs
-- Develop custom modules
-- Add business logic
-
-See [`PROGRESS.md`](PROGRESS.md) for detailed development history.  
-See [`RESUME_DEVELOPMENT.md`](RESUME_DEVELOPMENT.md) for setup instructions.
+Building a portfolio website with:
+- Dynamic page management
+- Image gallery with media manager
+- Content blocks for reusable components
+- SEO-optimized pages
 
 ---
 
@@ -86,11 +88,10 @@ Infinri preserves Magento's battle-tested architectural patterns while replacing
 infinri/
 ├── app/
 │   ├── Infinri/
-│   │   ├── Core/              # Core Framework (foundation services)
-│   │   ├── Theme/             # Base UI/UX theme
-│   │   ├── Admin/             # Admin panel (planned)
-│   │   ├── Customer/          # Customer management (planned)
-│   │   ├── Content/           # CMS functionality (planned)
+│   │   ├── Core/              # Core framework (routing, layouts, DI)
+│   │   ├── Theme/             # Frontend theme and styling
+│   │   ├── Admin/             # Admin panel and dashboard
+│   │   ├── Cms/               # Content management (pages, blocks)
 │   │   └── [CustomModules]/   # Your modules here
 │   │
 │   ├── etc/
@@ -178,75 +179,63 @@ Visit: `http://localhost:8000/`
 
 ### Detailed Setup
 
-For complete setup instructions on Ubuntu, see:
-- **[RESUME_DEVELOPMENT.md](RESUME_DEVELOPMENT.md)** - Complete setup checklist
-- **[DATABASE_SETUP.md](DATABASE_SETUP.md)** - Database configuration guide
-- **[PROGRESS.md](PROGRESS.md)** - Development history and architecture
+For complete setup instructions, see module-specific README files listed above.
 
 ---
 
 ## Project Structure
 
-### Core Modules
+### Implemented Modules
 
 #### [Infinri_Core](app/Infinri/Core/)
-The foundation framework providing essential services:
-- Component registration and module management
-- Configuration system (XML-based, scope-aware)
-- Dependency injection container (PHP-DI)
-- Layout system (XML-based page structure)
-- Block and template rendering (PHTML)
-- Asset management (LESS/JS compilation)
-- Event system (Symfony EventDispatcher)
-- Cache system (Symfony Cache)
-- Routing and controllers
-- Console commands
+Foundation framework:
+- Module system with dependency resolution
+- XML-based layout system with inheritance
+- Template rendering engine (PHTML)
+- Frontend and admin routing
+- Database layer (PDO, migrations, data patches)
+- Configuration system (database-backed)
+- Media Manager (folder-based, upload, image picker)
+- Error handling and logging
 
-**Status:** 📝 Requirements defined, implementation in progress  
-**See:** [app/Infinri/Core/README.md](app/Infinri/Core/README.md)
+**Documentation:** [app/Infinri/Core/README.md](app/Infinri/Core/README.md)
 
 #### [Infinri_Theme](app/Infinri/Theme/)
-Base presentation layer providing:
-- Layout XML files (default, 1column, 2column, 3column)
-- PHTML templates (header, footer, breadcrumb, pagination)
-- LESS stylesheets (variables, grid, components)
-- JavaScript components (navigation, modals, forms)
-- ViewModels (Header, Footer, Breadcrumb)
+Frontend presentation layer:
+- Layout XML files (base_default, default)
+- PHTML templates (header, footer, messages)
+- LESS stylesheets (responsive, modern)
+- ViewModels for data presentation
 
-**Status:** 📝 Requirements defined, awaiting Core implementation  
-**See:** [app/Infinri/Theme/README.md](app/Infinri/Theme/README.md)
+**Documentation:** [app/Infinri/Theme/README.md](app/Infinri/Theme/README.md)
 
-### Planned Modules
+#### [Infinri_Cms](app/Infinri/Cms/)
+Content management system:
+- Pages with full CRUD (admin grids and forms)
+- Blocks for reusable content
+- Widget system (HTML, Block Reference, Image, Video)
+- SEO fields (meta title, description, keywords)
+- Homepage protection
+- URL key management
 
-#### Infinri_Admin *(Planned)*
-Administration panel:
-- Admin authentication and authorization
-- Grid component for data tables
-- Form builder for CRUD operations
-- Dashboard and widgets
-- System configuration UI
+**Documentation:** [app/Infinri/Cms/README.md](app/Infinri/Cms/README.md)
 
-#### Infinri_Content *(Planned)*
-Content management:
-- Pages (CMS pages with WYSIWYG)
-- Blocks (reusable content snippets)
-- Media library
-- Page builder
+#### [Infinri_Admin](app/Infinri/Admin/)
+Admin panel foundation:
+- Dashboard with statistics
+- XML-based menu system
+- Extensible navigation (modules inject menu items)
+- Unified admin layout (header, navigation, footer)
+- Menu Builder with auto-discovery
 
-#### Infinri_Customer *(Planned)*
-Customer management:
-- Registration and login
-- Customer accounts
-- Profile management
-- Authentication system
+**Documentation:** [app/Infinri/Admin/README.md](app/Infinri/Admin/README.md)
 
-#### Infinri_SEO *(Planned)*
-Search engine optimization:
-- Meta tags (title, description, keywords)
-- OpenGraph and Twitter Cards
-- Structured data (Schema.org JSON-LD)
-- XML sitemaps
-- robots.txt management
+### Future Modules
+
+- **Navigation** - Frontend menu system with show_in_nav flag
+- **SEO** - URL rewrites and sitemap generation  
+- **Customer** - User accounts and authentication (if needed)
+- **Search** - Site-wide search functionality
 
 ---
 
@@ -570,41 +559,38 @@ We welcome contributions! Please follow these guidelines:
 
 ## Roadmap
 
-### Phase 1: Foundation (Q1 2025) - Current
-- ✅ Project structure
-- ✅ Core requirements definition
-- ✅ Theme requirements definition
-- ⏳ Core Framework implementation
-- ⏳ Bootstrap and entry points
-- ⏳ Theme module implementation
+### Phase 1: Foundation ✅ COMPLETE
+- ✅ Core framework (layouts, routing, templates)
+- ✅ Theme module (frontend styling)
+- ✅ CMS module (pages, blocks, widgets)
+- ✅ Admin module (dashboard, menu system)
+- ✅ Media Manager (upload, folders, image picker)
+- ✅ Database layer (migrations, data patches)
 
-### Phase 2: Core Features (Q2 2025)
-- 🔲 Admin module
-- 🔲 Content management module
-- 🔲 Customer module
-- 🔲 Database migrations
-- 🔲 Authentication/authorization
+### Phase 2: Navigation & SEO (In Progress)
+- ⏳ Frontend navigation system
+- ⏳ URL rewrite system
+- 🔲 Sitemap generation
+- 🔲 Structured data (Schema.org)
 
-### Phase 3: Enhancement (Q3 2025)
-- 🔲 SEO module
-- 🔲 Email module
-- 🔲 API framework (REST/GraphQL)
+### Phase 3: Enhancement (Future)
+- 🔲 Frontend menu builder
+- 🔲 Contact form module
 - 🔲 Search functionality
-- 🔲 Media management
+- 🔲 Email notifications
 
-### Phase 4: Optimization (Q4 2025)
-- 🔲 Performance module
-- 🔲 CDN integration
-- 🔲 Redis caching
-- 🔲 Full-page caching
-- 🔲 Service worker/PWA
-
-### Version 1.0.0 (Target: Q4 2025)
-- 🔲 Stable API
-- 🔲 Complete documentation
-- 🔲 Production-ready
-- 🔲 Performance benchmarks
+### Phase 4: Optimization (Future)
+- 🔲 Asset compilation pipeline
+- 🔲 Cache system improvements
+- 🔲 Performance optimization
 - 🔲 Security audit
+
+### MVP Target: Portfolio Website
+Current focus is building a complete portfolio website with:
+- Dynamic page management
+- Image galleries
+- Content blocks
+- SEO optimization
 
 ---
 
@@ -660,4 +646,4 @@ SOFTWARE.
 
 ---
 
-*Last updated: 2025-10-14*
+*Last updated: 2025-10-19*
