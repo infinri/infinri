@@ -6,6 +6,8 @@ namespace Infinri\Core\Controller\Adminhtml\Media;
 
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
+use Infinri\Core\Controller\Adminhtml\Media\CsrfTokenIds;
+use Infinri\Core\Security\CsrfGuard;
 
 /**
  * Create New Folder
@@ -14,7 +16,7 @@ class Createfolder
 {
     private string $mediaPath;
     
-    public function __construct()
+    public function __construct(private readonly CsrfGuard $csrfGuard)
     {
         $this->mediaPath = dirname(__DIR__, 6) . '/pub/media';
     }
@@ -22,9 +24,18 @@ class Createfolder
     public function execute(Request $request): Response
     {
         $response = new Response();
-        
+
         try {
             $response->setHeader('Content-Type', 'application/json');
+
+            if (!$request->isPost() || !$this->csrfGuard->validateToken(CsrfTokenIds::CREATE_FOLDER, $request->getParam('_csrf_token'))) {
+                $response->setForbidden();
+                return $response->setBody(json_encode([
+                    'success' => false,
+                    'error' => 'Invalid CSRF token'
+                ]));
+            }
+
             $parent = $request->getParam('parent', '');
             $name = $request->getParam('name', '');
             

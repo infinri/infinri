@@ -16,6 +16,7 @@ use Infinri\Core\Model\Di\ContainerFactory;
 use Infinri\Core\Model\ObjectManager;
 use Infinri\Core\App\FastRouter;
 use Infinri\Core\App\FrontController;
+use Infinri\Core\App\Middleware\SecurityHeadersMiddleware;
 use Infinri\Core\Model\Route\Loader as RouteLoader;
 use Infinri\Core\App\Request;
 use Dotenv\Dotenv;
@@ -47,7 +48,10 @@ function initApplication(): FrontController
     // 3. Build DI Container
     $xmlReader = new XmlReader();
     $containerFactory = new ContainerFactory($moduleManager, $xmlReader);
-    $container = $containerFactory->create();
+    
+    // Enable compilation in production for 100-200ms faster bootstrap
+    $useCache = ($_ENV['APP_ENV'] ?? 'development') === 'production';
+    $container = $containerFactory->create($useCache);
     
     // 4. Initialize ObjectManager (DI facade)
     ObjectManager::reset();
@@ -64,7 +68,8 @@ function initApplication(): FrontController
     return new FrontController(
         $router, 
         ObjectManager::getInstance(),
-        Request::createFromGlobals()
+        Request::createFromGlobals(),
+        new SecurityHeadersMiddleware()
     );
 }
 

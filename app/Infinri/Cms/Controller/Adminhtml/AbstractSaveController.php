@@ -6,6 +6,7 @@ namespace Infinri\Cms\Controller\Adminhtml;
 
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
+use Infinri\Core\Security\CsrfGuard;
 use Infinri\Cms\Model\Repository\AbstractContentRepository;
 
 /**
@@ -14,6 +15,13 @@ use Infinri\Cms\Model\Repository\AbstractContentRepository;
  */
 abstract class AbstractSaveController
 {
+    private const CSRF_FIELD = '_csrf_token';
+
+    public function __construct(
+        private readonly CsrfGuard $csrfGuard
+    ) {
+    }
+
     // ==================== ABSTRACT METHODS ====================
 
     /**
@@ -74,6 +82,12 @@ abstract class AbstractSaveController
         $response = new Response();
 
         try {
+            if (!$this->isValidCsrf($request)) {
+                $response->setForbidden();
+                $response->setBody('<h1>Forbidden</h1><p>Invalid or missing CSRF token.</p>');
+                return $response;
+            }
+
             // Get entity ID (0 for new entities)
             $entityId = (int) $request->getParam($this->getIdParam(), 0);
 
@@ -121,5 +135,16 @@ abstract class AbstractSaveController
         }
 
         return $response;
+    }
+
+    protected function getCsrfTokenId(): string
+    {
+        return 'admin_cms_' . $this->getEntityName() . '_form';
+    }
+
+    private function isValidCsrf(Request $request): bool
+    {
+        $token = $request->getParam(self::CSRF_FIELD);
+        return $this->csrfGuard->validateToken($this->getCsrfTokenId(), is_string($token) ? $token : null);
     }
 }

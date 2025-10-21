@@ -4,17 +4,25 @@ declare(strict_types=1);
 namespace Infinri\Core\Model\Layout;
 
 use Infinri\Core\Model\Module\ModuleManager;
+use Infinri\Core\Model\Cache\Pool;
 use SimpleXMLElement;
 
 /**
  * Layout Loader
  * 
  * Loads layout XML files from modules based on handles (e.g., 'default', 'cms_index_index').
+ * Supports caching for improved performance.
  */
 class Loader
 {
+    /**
+     * Cache TTL in seconds (1 hour)
+     */
+    private const CACHE_TTL = 3600;
+
     public function __construct(
-        private readonly ModuleManager $moduleManager
+        private readonly ModuleManager $moduleManager,
+        private readonly ?Pool $cachePool = null
     ) {
     }
 
@@ -25,6 +33,40 @@ class Loader
      * @return array<string, SimpleXMLElement> Array of module name => XML content
      */
     public function load(string $handle): array
+    {
+        // Check cache if available
+        if ($this->isCacheEnabled()) {
+            $cacheKey = $this->getCacheKey($handle);
+            $cached = $this->cachePool->get($cacheKey);
+            
+            if ($cached !== null && is_array($cached)) {
+                // Reconstruct SimpleXMLElement objects from cached XML strings
+                return $this->unserializeLayouts($cached);
+            }
+        }
+        
+        // Load from files
+        $layouts = $this->loadFromFiles($handle);
+        
+        // Store in cache
+        if ($this->isCacheEnabled() && !empty($layouts)) {
+            $this->cachePool->set(
+                $this->getCacheKey($handle),
+                $this->serializeLayouts($layouts),
+                self::CACHE_TTL
+            );
+        }
+        
+        return $layouts;
+    }
+
+    /**
+     * Load layouts from files
+     *
+     * @param string $handle
+     * @return array<string, SimpleXMLElement>
+     */
+    private function loadFromFiles(string $handle): array
     {
         $layouts = [];
         
@@ -47,6 +89,64 @@ class Loader
         }
         
         return $layouts;
+    }
+
+    /**
+     * Serialize layouts for caching
+     *
+     * @param array<string, SimpleXMLElement> $layouts
+     * @return array<string, string>
+     */
+    private function serializeLayouts(array $layouts): array
+    {
+        $serialized = [];
+        foreach ($layouts as $moduleName => $xml) {
+            $serialized[$moduleName] = $xml->asXML();
+        }
+        return $serialized;
+    }
+
+    /**
+     * Unserialize layouts from cache
+     *
+     * @param array<string, string> $serialized
+     * @return array<string, SimpleXMLElement>
+     */
+    private function unserializeLayouts(array $serialized): array
+    {
+        $layouts = [];
+        foreach ($serialized as $moduleName => $xmlString) {
+            if ($xmlString !== false) {
+                $xml = simplexml_load_string($xmlString);
+                if ($xml !== false) {
+                    $layouts[$moduleName] = $xml;
+                }
+            }
+        }
+        return $layouts;
+    }
+
+    /**
+     * Check if caching is enabled
+     *
+     * @return bool
+     */
+    private function isCacheEnabled(): bool
+    {
+        return $this->cachePool !== null 
+            && filter_var($_ENV['CACHE_LAYOUT_ENABLED'] ?? 'true', FILTER_VALIDATE_BOOLEAN);
+    }
+
+    /**
+     * Get cache key for handle
+     *
+     * @param string $handle
+     * @return string
+     */
+    private function getCacheKey(string $handle): string
+    {
+        $modules = $this->moduleManager->getModulesInOrder();
+        return 'layout_' . $handle . '_' . md5(implode('|', $modules));
     }
 
     /**

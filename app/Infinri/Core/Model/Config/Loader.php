@@ -4,17 +4,25 @@ declare(strict_types=1);
 namespace Infinri\Core\Model\Config;
 
 use Infinri\Core\Model\Module\ModuleManager;
+use Infinri\Core\Model\Cache\Pool;
 
 /**
  * Config Loader
  * 
  * Loads and merges configuration from all enabled modules.
+ * Supports caching for improved performance.
  */
 class Loader
 {
+    /**
+     * Cache TTL in seconds (1 hour)
+     */
+    private const CACHE_TTL = 3600;
+
     public function __construct(
         private readonly ModuleManager $moduleManager,
-        private readonly Reader $configReader
+        private readonly Reader $configReader,
+        private readonly ?Pool $cachePool = null
     ) {
     }
 
@@ -24,6 +32,34 @@ class Loader
      * @return array<string, mixed> Merged configuration array
      */
     public function load(): array
+    {
+        // Check cache if available
+        if ($this->isCacheEnabled()) {
+            $cacheKey = $this->getCacheKey();
+            $cached = $this->cachePool->get($cacheKey);
+            
+            if ($cached !== null) {
+                return $cached;
+            }
+        }
+        
+        // Load from files
+        $config = $this->loadFromFiles();
+        
+        // Store in cache
+        if ($this->isCacheEnabled()) {
+            $this->cachePool->set($this->getCacheKey(), $config, self::CACHE_TTL);
+        }
+        
+        return $config;
+    }
+
+    /**
+     * Load configuration from files
+     *
+     * @return array<string, mixed>
+     */
+    private function loadFromFiles(): array
     {
         $config = [];
         
@@ -45,6 +81,28 @@ class Loader
         }
         
         return $config;
+    }
+
+    /**
+     * Check if caching is enabled
+     *
+     * @return bool
+     */
+    private function isCacheEnabled(): bool
+    {
+        return $this->cachePool !== null 
+            && filter_var($_ENV['CACHE_CONFIG_ENABLED'] ?? 'true', FILTER_VALIDATE_BOOLEAN);
+    }
+
+    /**
+     * Get cache key
+     *
+     * @return string
+     */
+    private function getCacheKey(): string
+    {
+        $modules = $this->moduleManager->getModulesInOrder();
+        return 'config_merged_' . md5(implode('|', $modules));
     }
 
     /**

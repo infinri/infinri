@@ -6,6 +6,8 @@ namespace Infinri\Core\Controller\Adminhtml\Media;
 
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
+use Infinri\Core\Controller\Adminhtml\Media\CsrfTokenIds;
+use Infinri\Core\Security\CsrfGuard;
 
 /**
  * Upload Multiple Images
@@ -13,8 +15,9 @@ use Infinri\Core\App\Response;
 class Uploadmultiple
 {
     private string $mediaPath;
+    private const CSRF_TOKEN_ID = CsrfTokenIds::UPLOAD;
     
-    public function __construct()
+    public function __construct(private readonly CsrfGuard $csrfGuard)
     {
         $this->mediaPath = dirname(__DIR__, 6) . '/pub/media';
     }
@@ -25,6 +28,14 @@ class Uploadmultiple
         $response->setHeader('Content-Type', 'application/json');
 
         try {
+            if (!$request->isPost() || !$this->csrfGuard->validateToken(self::CSRF_TOKEN_ID, $request->getParam('_csrf_token'))) {
+                $response->setForbidden();
+                return $response->setBody(json_encode([
+                    'success' => false,
+                    'error' => 'Invalid CSRF token',
+                ]));
+            }
+
             error_log('UploadMultiple called');
             error_log('$_FILES: ' . print_r($_FILES, true));
             error_log('$_POST: ' . print_r($_POST, true));

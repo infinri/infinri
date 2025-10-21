@@ -1,0 +1,12 @@
+# Ignore all files in cache directories
+*
+
+# But keep the directory structure
+!.gitignore
+!.gitkeep
+!*/
+
+# Keep subdirectory .gitkeep files
+!*/.gitkeep
+!*/proxies/
+!*/proxies/.gitkeep

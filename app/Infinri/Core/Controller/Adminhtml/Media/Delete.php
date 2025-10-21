@@ -6,6 +6,8 @@ namespace Infinri\Core\Controller\Adminhtml\Media;
 
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
+use Infinri\Core\Controller\Adminhtml\Media\CsrfTokenIds;
+use Infinri\Core\Security\CsrfGuard;
 
 /**
  * Delete Image
@@ -14,7 +16,7 @@ class Delete
 {
     private string $mediaPath;
     
-    public function __construct()
+    public function __construct(private readonly CsrfGuard $csrfGuard)
     {
         $this->mediaPath = dirname(__DIR__, 6) . '/pub/media';
     }
@@ -25,9 +27,18 @@ class Delete
         $response->setHeader('Content-Type', 'application/json');
 
         try {
-            $input = json_decode(file_get_contents('php://input'), true);
+            $input = json_decode(file_get_contents('php://input'), true, 512, JSON_THROW_ON_ERROR);
             $file = $input['file'] ?? '';
             $folder = $input['folder'] ?? '';
+            $token = $input['_csrf_token'] ?? null;
+
+            if (!$request->isPost() || !$this->csrfGuard->validateToken(CsrfTokenIds::DELETE, is_string($token) ? $token : null)) {
+                $response->setForbidden();
+                return $response->setBody(json_encode([
+                    'success' => false,
+                    'error' => 'Invalid CSRF token'
+                ]));
+            }
             
             if (empty($file)) {
                 throw new \RuntimeException('File name is required');
@@ -50,6 +61,12 @@ class Delete
                 'success' => true
             ]));
 
+        } catch (\JsonException $e) {
+            $response->setServerError();
+            $response->setBody(json_encode([
+                'success' => false,
+                'error' => 'Invalid JSON payload'
+            ]));
         } catch (\Throwable $e) {
             $response->setServerError();
             $response->setBody(json_encode([

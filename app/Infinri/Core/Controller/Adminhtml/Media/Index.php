@@ -6,6 +6,8 @@ namespace Infinri\Core\Controller\Adminhtml\Media;
 
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
+use Infinri\Core\Controller\Adminhtml\Media\CsrfTokenIds;
+use Infinri\Core\Security\CsrfGuard;
 
 /**
  * Media Manager - Main Gallery View
@@ -17,7 +19,7 @@ class Index
     private string $mediaPath;
     private string $baseUrl = '/media';
     
-    public function __construct()
+    public function __construct(private readonly CsrfGuard $csrfGuard)
     {
         $this->mediaPath = dirname(__DIR__, 6) . '/pub/media';
         
@@ -119,6 +121,26 @@ class Index
         $breadcrumbs = $this->generateBreadcrumbs($currentFolder);
         $foldersHtml = $this->renderFolders($folders, $currentFolder);
         $imagesHtml = $this->renderImages($images);
+
+        $uploadTokenValue = $this->csrfGuard->generateToken(CsrfTokenIds::UPLOAD);
+        $createFolderTokenValue = $this->csrfGuard->generateToken(CsrfTokenIds::CREATE_FOLDER);
+        $deleteTokenValue = $this->csrfGuard->generateToken(CsrfTokenIds::DELETE);
+
+        $uploadTokenField = sprintf(
+            '<input type="hidden" name="_csrf_token" value="%s" />',
+            htmlspecialchars($uploadTokenValue, ENT_QUOTES, 'UTF-8')
+        );
+
+        $createFolderTokenField = sprintf(
+            '<input type="hidden" name="_csrf_token" value="%s" />',
+            htmlspecialchars($createFolderTokenValue, ENT_QUOTES, 'UTF-8')
+        );
+
+        $csrfTokensJson = json_encode([
+            'upload' => $uploadTokenValue,
+            'createFolder' => $createFolderTokenValue,
+            'delete' => $deleteTokenValue,
+        ], JSON_THROW_ON_ERROR);
         
         return <<<HTML
 <!DOCTYPE html>
@@ -192,6 +214,7 @@ class Index
             <h2>Upload Images</h2>
             <form id="upload-form" enctype="multipart/form-data">
                 <input type="hidden" name="folder" value="{$currentFolder}">
+                {$uploadTokenField}
                 <div id="upload-area">
                     <p style="margin-bottom: 10px;">📤 Drag & drop images here</p>
                     <p style="color: #666; font-size: 14px;">or click to browse</p>
@@ -211,6 +234,7 @@ class Index
             <h2>Create New Folder</h2>
             <form id="folder-form">
                 <input type="hidden" name="parent" value="{$currentFolder}">
+                {$createFolderTokenField}
                 <input type="text" name="name" placeholder="Folder name" required>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" onclick="hideFolderModal()">Cancel</button>
@@ -221,6 +245,7 @@ class Index
     </div>
     
     <script>
+        const csrfTokens = {$csrfTokensJson};
         // Define functions immediately in global scope
         function showUploadModal() { 
             document.getElementById('upload-modal').classList.add('show'); 
@@ -245,7 +270,7 @@ class Index
             fetch('/admin/infinri_media/media/delete', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ file: name, folder: '{$currentFolder}' })
+                body: JSON.stringify({ file: name, folder: '{$currentFolder}', _csrf_token: csrfTokens.delete })
             }).then(() => location.reload());
         }
         
@@ -294,6 +319,7 @@ class Index
             
             const formData = new FormData();
             formData.append('folder', document.querySelector('input[name="folder"]').value);
+            formData.append('_csrf_token', csrfTokens.upload);
             
             // Add all files
             for (let i = 0; i < fileInput.files.length; i++) {
@@ -342,6 +368,7 @@ class Index
         document.getElementById('folder-form').onsubmit = async (e) => {
             e.preventDefault();
             const formData = new FormData(e.target);
+            formData.set('_csrf_token', csrfTokens.createFolder);
             
             try {
                 const response = await fetch('/admin/infinri_media/media/createfolder', {

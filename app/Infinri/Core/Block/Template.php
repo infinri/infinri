@@ -261,30 +261,32 @@ class Template extends AbstractBlock
      */
     private function renderTemplate(string $templateFile): string
     {
-        // Make block available in template as $block
-        $block = $this;
-        
-        // Extract block data as variables (EXTR_SKIP prevents overwriting $block and $templateFile)
-        extract($this->getData() ?: [], EXTR_SKIP);
+        // Create scoped renderer to avoid variable extraction
+        $renderer = new class($this, $templateFile) {
+            public function __construct(private Template $block, private string $templateFile) {}
 
-        // Start output buffering
-        ob_start();
+            public function render(): string
+            {
+                ob_start();
 
-        try {
-            // Include template file
-            include $templateFile;
-            
-            return ob_get_clean() ?: '';
-        } catch (\Throwable $e) {
-            ob_end_clean();
-            
-            // Return error message in development
-            return sprintf(
-                '<!-- Template Error: %s in %s -->',
-                htmlspecialchars($e->getMessage()),
-                htmlspecialchars($templateFile)
-            );
-        }
+                try {
+                    $block = $this->block;
+                    include $this->templateFile;
+
+                    return ob_get_clean() ?: '';
+                } catch (\Throwable $e) {
+                    ob_end_clean();
+
+                    return sprintf(
+                        '<!-- Template Error: %s in %s -->',
+                        htmlspecialchars($e->getMessage()),
+                        htmlspecialchars($this->templateFile)
+                    );
+                }
+            }
+        };
+
+        return $renderer->render();
     }
 
     /**

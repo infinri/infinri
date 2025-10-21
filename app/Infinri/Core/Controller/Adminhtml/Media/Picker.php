@@ -6,19 +6,17 @@ namespace Infinri\Core\Controller\Adminhtml\Media;
 
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
+use Infinri\Core\Security\CsrfGuard;
 
-/**
- * Media Picker - Selection Mode for embedding in page editor
- */
 class Picker
 {
     private string $mediaPath;
     private string $baseUrl = '/media';
-    
-    public function __construct()
+
+    public function __construct(private readonly CsrfGuard $csrfGuard)
     {
         $this->mediaPath = dirname(__DIR__, 6) . '/pub/media';
-        
+
         if (!is_dir($this->mediaPath)) {
             mkdir($this->mediaPath, 0755, true);
         }
@@ -27,93 +25,102 @@ class Picker
     public function execute(Request $request): Response
     {
         $response = new Response();
-        
+
         $currentFolder = $request->getParam('folder', '');
         $currentPath = $this->mediaPath . ($currentFolder ? '/' . $currentFolder : '');
-        
-        // Security check
+
         if (strpos(realpath($currentPath), realpath($this->mediaPath)) !== 0) {
             $currentPath = $this->mediaPath;
             $currentFolder = '';
         }
-        
+
         $folders = $this->getFolders($currentPath);
         $images = $this->getImages($currentPath);
-        
+
         $html = $this->renderPicker($currentFolder, $folders, $images);
-        
+
         return $response->setBody($html);
     }
-    
+
     private function getFolders(string $path): array
     {
         if (!is_dir($path)) {
             return [];
         }
-        
+
         $folders = [];
-        $items = scandir($path);
-        
-        foreach ($items as $item) {
+        foreach (scandir($path) ?: [] as $item) {
             if ($item === '.' || $item === '..') {
                 continue;
             }
-            
+
             $fullPath = $path . '/' . $item;
             if (is_dir($fullPath)) {
                 $folders[] = [
                     'name' => $item,
-                    'count' => count(glob($fullPath . '/*'))
+                    'count' => count(glob($fullPath . '/*')),
                 ];
             }
         }
-        
+
         return $folders;
     }
-    
+
     private function getImages(string $path): array
     {
         if (!is_dir($path)) {
             return [];
         }
-        
+
         $images = [];
         $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
-        $items = scandir($path);
-        
-        foreach ($items as $item) {
+
+        foreach (scandir($path) ?: [] as $item) {
             if ($item === '.' || $item === '..') {
                 continue;
             }
-            
+
             $fullPath = $path . '/' . $item;
-            if (is_file($fullPath)) {
-                $ext = strtolower(pathinfo($item, PATHINFO_EXTENSION));
-                if (in_array($ext, $allowedExtensions)) {
-                    $relativePath = str_replace($this->mediaPath, '', $fullPath);
-                    $images[] = [
-                        'name' => $item,
-                        'url' => $this->baseUrl . $relativePath,
-                        'modified' => filemtime($fullPath)
-                    ];
-                }
+            if (!is_file($fullPath)) {
+                continue;
             }
+
+            $ext = strtolower(pathinfo($item, PATHINFO_EXTENSION));
+            if (!in_array($ext, $allowedExtensions, true)) {
+                continue;
+            }
+
+            $relativePath = str_replace($this->mediaPath, '', $fullPath);
+            $images[] = [
+                'name' => $item,
+                'url' => $this->baseUrl . $relativePath,
+                'modified' => filemtime($fullPath),
+            ];
         }
-        
-        usort($images, fn($a, $b) => $b['modified'] - $a['modified']);
-        
+
+        usort($images, static fn(array $a, array $b) => $b['modified'] <=> $a['modified']);
+
         return $images;
     }
-    
+
     private function renderPicker(string $currentFolder, array $folders, array $images): string
     {
         $breadcrumbs = $this->generateBreadcrumbs($currentFolder);
         $foldersHtml = $this->renderFolders($folders, $currentFolder);
         $imagesHtml = $this->renderImages($images);
-        
+
+        $uploadTokenValue = $this->csrfGuard->generateToken(CsrfTokenIds::UPLOAD);
+        $uploadTokenField = sprintf(
+            '<input type="hidden" name="_csrf_token" value="%s" />',
+            htmlspecialchars($uploadTokenValue, ENT_QUOTES, 'UTF-8')
+        );
+        $csrfTokensJson = json_encode([
+            'upload' => $uploadTokenValue,
+        ], JSON_THROW_ON_ERROR | JSON_HEX_APOS | JSON_HEX_QUOT);
+
         return <<<HTML
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Select Image</title>
     <style>
@@ -149,8 +156,8 @@ class Picker
     <div class="header">
         <div class="breadcrumbs">{$breadcrumbs}</div>
         <div class="toolbar">
-            <button class="btn btn-primary" onclick="showUploadModal()">📤 Upload</button>
-            <button id="select-btn" class="btn btn-success" onclick="selectImage()">✓ Select Image</button>
+            <button class="btn btn-primary" onclick="showUploadModal()">Upload</button>
+            <button id="select-btn" class="btn btn-success" onclick="selectImage()">Select Image</button>
         </div>
     </div>
     
@@ -163,6 +170,7 @@ class Picker
             <h2>Upload Images</h2>
             <form id="upload-form" enctype="multipart/form-data">
                 <input type="hidden" name="folder" value="{$currentFolder}">
+                {$uploadTokenField}
                 <input type="file" id="file-input" name="files[]" multiple accept="image/*" required>
                 <div class="modal-actions">
                     <button type="button" class="btn" onclick="hideUploadModal()">Cancel</button>
@@ -173,59 +181,59 @@ class Picker
     </div>
     
     <script>
+        const csrfTokens = {$csrfTokensJson};
         let selectedImageUrl = null;
-        
-        function showUploadModal() { document.getElementById('upload-modal').classList.add('show'); }
-        function hideUploadModal() { document.getElementById('upload-modal').classList.remove('show'); }
-        
+
+        function showUploadModal() {
+            document.getElementById('upload-modal').classList.add('show');
+        }
+
+        function hideUploadModal() {
+            document.getElementById('upload-modal').classList.remove('show');
+        }
+
         function selectImageCard(url, element) {
-            // Deselect all
             document.querySelectorAll('.image-card').forEach(card => card.classList.remove('selected'));
-            
-            // Select clicked
             element.classList.add('selected');
             selectedImageUrl = url;
-            
-            // Show select button
-            document.getElementById('select-btn').style.display = 'block';
+            document.getElementById('select-btn').style.display = 'inline-block';
         }
-        
+
         function selectImage() {
-            if (selectedImageUrl) {
-                // Send to parent window
-                window.parent.postMessage({
-                    type: 'imageSelected',
-                    url: selectedImageUrl
-                }, '*');
+            if (!selectedImageUrl) {
+                return;
             }
+
+            window.parent.postMessage({
+                type: 'imageSelected',
+                url: selectedImageUrl
+            }, '*');
         }
-        
-        // Handle upload
-        document.getElementById('upload-form').onsubmit = async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            
+
+        document.getElementById('upload-form').onsubmit = async (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            formData.set('_csrf_token', csrfTokens.upload);
+
             try {
                 const response = await fetch('/admin/infinri_media/media/uploadmultiple', {
                     method: 'POST',
                     body: formData
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success && result.uploaded.length > 0) {
-                    // Auto-select first uploaded image
                     const folder = formData.get('folder');
                     const firstImage = result.uploaded[0];
                     const imageUrl = '/media' + (folder ? '/' + folder : '') + '/' + firstImage;
-                    
-                    // Send to parent immediately
+
                     window.parent.postMessage({
                         type: 'imageSelected',
                         url: imageUrl
                     }, '*');
                 } else {
-                    alert('Upload failed: ' + (result.error || 'Unknown error'));
+                    alert('Upload failed: ' + (result.error ?? 'Unknown error'));
                 }
             } catch (err) {
                 alert('Upload error: ' + err.message);
@@ -236,32 +244,32 @@ class Picker
 </html>
 HTML;
     }
-    
+
     private function generateBreadcrumbs(string $currentFolder): string
     {
         $html = '<a href="/admin/infinri_media/media/picker">Home</a>';
-        
+
         if ($currentFolder) {
             $parts = explode('/', $currentFolder);
             $path = '';
-            
+
             foreach ($parts as $part) {
                 $path .= ($path ? '/' : '') . $part;
                 $html .= ' <span>›</span> <a href="/admin/infinri_media/media/picker?folder=' . urlencode($path) . '">' . htmlspecialchars($part) . '</a>';
             }
         }
-        
+
         return $html;
     }
-    
+
     private function renderFolders(array $folders, string $currentFolder): string
     {
         if (empty($folders)) {
             return '';
         }
-        
+
         $html = '<div class="folders">';
-        
+
         foreach ($folders as $folder) {
             $folderPath = $currentFolder ? $currentFolder . '/' . $folder['name'] : $folder['name'];
             $html .= sprintf(
@@ -273,12 +281,12 @@ HTML;
                 htmlspecialchars($folder['name'])
             );
         }
-        
+
         $html .= '</div>';
-        
+
         return $html;
     }
-    
+
     private function renderImages(array $images): string
     {
         if (empty($images)) {
@@ -287,9 +295,9 @@ HTML;
                 <p>No images here. Upload some!</p>
             </div>';
         }
-        
+
         $html = '<div class="images">';
-        
+
         foreach ($images as $image) {
             $html .= sprintf(
                 '<div class="image-card" onclick="selectImageCard(\'%s\', this)">
@@ -302,9 +310,9 @@ HTML;
                 htmlspecialchars($image['name'])
             );
         }
-        
+
         $html .= '</div>';
-        
+
         return $html;
     }
 }

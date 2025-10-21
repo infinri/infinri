@@ -6,6 +6,7 @@ namespace Infinri\Cms\Controller\Adminhtml\Page;
 use Infinri\Core\App\Request;
 use Infinri\Cms\Controller\Adminhtml\AbstractSaveController;
 use Infinri\Cms\Model\Repository\PageRepository;
+use Infinri\Core\Security\CsrfGuard;
 
 /**
  * Handles POST request to save page data.
@@ -16,8 +17,10 @@ class Save extends AbstractSaveController
      * @param PageRepository $pageRepository
      */
     public function __construct(
-        private readonly PageRepository $pageRepository
+        private readonly PageRepository $pageRepository,
+        CsrfGuard $csrfGuard
     ) {
+        parent::__construct($csrfGuard);
     }
 
     // ==================== REQUIRED ABSTRACT METHODS ====================

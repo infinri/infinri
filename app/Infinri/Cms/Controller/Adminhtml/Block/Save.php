@@ -7,6 +7,7 @@ namespace Infinri\Cms\Controller\Adminhtml\Block;
 use Infinri\Core\App\Request;
 use Infinri\Cms\Controller\Adminhtml\AbstractSaveController;
 use Infinri\Cms\Model\Repository\BlockRepository;
+use Infinri\Core\Security\CsrfGuard;
 
 /**
  * Handles POST request to save block data.
@@ -17,8 +18,10 @@ class Save extends AbstractSaveController
      * @param BlockRepository $blockRepository
      */
     public function __construct(
-        private readonly BlockRepository $blockRepository
+        private readonly BlockRepository $blockRepository,
+        CsrfGuard $csrfGuard
     ) {
+        parent::__construct($csrfGuard);
     }
 
     // ==================== REQUIRED ABSTRACT METHODS ====================

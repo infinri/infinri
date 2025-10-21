@@ -6,6 +6,7 @@ use Infinri\Core\App\FrontController;
 use Infinri\Core\App\FastRouter;
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
+use Infinri\Core\App\Middleware\SecurityHeadersMiddleware;
 use Infinri\Core\Model\ObjectManager;
 use Infinri\Core\Controller\AbstractController;
 use Psr\Container\ContainerInterface;
@@ -55,7 +56,8 @@ describe('FrontController', function () {
         $this->frontController = new FrontController(
             $this->router,
             $this->objectManager,
-            new Request()  // Add mock Request as third argument
+            new Request(),
+            new SecurityHeadersMiddleware()
         );
     });
     

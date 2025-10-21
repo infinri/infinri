@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Infinri\Core\View\Element;
 
 use Infinri\Core\Model\ObjectManager;
+use Infinri\Core\Security\CsrfGuard;
 use SimpleXMLElement;
 
 /**
@@ -12,6 +13,11 @@ use SimpleXMLElement;
  */
 class UiFormRenderer
 {
+    public function __construct(
+        private readonly CsrfGuard $csrfGuard
+    ) {
+    }
+
     /**
      * Render a UI form by name
      */
@@ -256,8 +262,15 @@ class UiFormRenderer
         string $primaryField
     ): string
     {
+        $csrfField = $this->csrfGuard->getHiddenField($this->buildTokenId($entityType));
+        $csrfFieldName = '_csrf_token';
         ob_start();
         include __DIR__ . '/../../../Core/view/adminhtml/templates/form.phtml';
         return ob_get_clean();
+    }
+
+    private function buildTokenId(string $entityType): string
+    {
+        return 'admin_cms_' . $entityType . '_form';
     }
 }

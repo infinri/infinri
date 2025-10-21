@@ -96,6 +96,7 @@ $primaryIdValue = $data[$primaryFieldName] ?? null;
     
     <div class="form-container">
         <form action="<?= htmlspecialchars($formAction) ?>" method="POST" id="<?= htmlspecialchars($formIdAttr) ?>">
+            <?= $csrfField ?? '' ?>
             <?php if ($primaryIdValue !== null): ?>
                 <input type="hidden" name="<?= htmlspecialchars($primaryFieldName) ?>" value="<?= htmlspecialchars((string)$primaryIdValue) ?>">
             <?php endif; ?>

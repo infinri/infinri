@@ -37,6 +37,11 @@ class Connection
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES => false,
+                // Enable persistent connections for 20-50ms performance boost
+                PDO::ATTR_PERSISTENT => filter_var(
+                    $_ENV['DB_PERSISTENT'] ?? getenv('DB_PERSISTENT') ?: 'false',
+                    FILTER_VALIDATE_BOOLEAN
+                ),
             ],
         ], $config);
     }

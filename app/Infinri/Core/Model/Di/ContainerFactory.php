@@ -34,8 +34,19 @@ class ContainerFactory
 
         // Enable compilation for production
         if ($useCache) {
-            $builder->enableCompilation(__DIR__ . '/../../../../../var/cache/di');
-            $builder->writeProxiesToFile(true, __DIR__ . '/../../../../../var/cache/di/proxies');
+            $cacheDir = __DIR__ . '/../../../../../var/cache/di';
+            $proxiesDir = $cacheDir . '/proxies';
+            
+            // Ensure cache directories exist
+            if (!is_dir($cacheDir)) {
+                mkdir($cacheDir, 0755, true);
+            }
+            if (!is_dir($proxiesDir)) {
+                mkdir($proxiesDir, 0755, true);
+            }
+            
+            $builder->enableCompilation($cacheDir);
+            $builder->writeProxiesToFile(true, $proxiesDir);
         }
 
         // Load DI definitions from all modules

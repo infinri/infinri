@@ -2,8 +2,7 @@
 /vendor/
 /node_modules/
 
-# Cache & Generated Files
-/var/cache/
+# Cache & Generated Files (structure preserved via var/cache/.gitignore)
 /var/log/
 /var/session/
 /var/tmp/

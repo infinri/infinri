@@ -6,6 +6,7 @@ namespace Infinri\Core\App;
 use Infinri\Core\Model\ObjectManager;
 use Infinri\Core\Controller\AbstractController;
 use Infinri\Core\Helper\Logger;
+use Infinri\Core\App\Middleware\SecurityHeadersMiddleware;
 
 /**
  * Front Controller
@@ -30,7 +31,8 @@ class FrontController
     public function __construct(
         private readonly RouterInterface $router,
         private readonly ObjectManager $objectManager,
-        private readonly Request $request
+        private readonly Request $request,
+        private readonly SecurityHeadersMiddleware $securityHeaders
     ) {
     }
 
@@ -64,9 +66,8 @@ class FrontController
                     'available_routes' => 'Check routes.xml files in enabled modules'
                 ]);
                 
-                return $response
-                    ->setNotFound()
-                    ->setBody('404 - Page Not Found');
+                $response->setNotFound()->setBody('404 - Page Not Found');
+                return $this->securityHeaders->handle($request, $response);
             }
             
             Logger::info('Route matched successfully', [
@@ -101,9 +102,8 @@ class FrontController
                     'uri' => $uri
                 ]);
                 
-                return $response
-                    ->setForbidden()
-                    ->setBody('403 - Forbidden');
+                $response->setForbidden()->setBody('403 - Forbidden');
+                return $this->securityHeaders->handle($request, $response);
             }
 
             // Store resolved controller class and create controller
@@ -120,9 +120,8 @@ class FrontController
                     'available_methods' => get_class_methods($controller)
                 ]);
                 
-                return $response
-                    ->setNotFound()
-                    ->setBody('404 - Action Not Found');
+                $response->setNotFound()->setBody('404 - Action Not Found');
+                return $this->securityHeaders->handle($request, $response);
             }
             
             Logger::debug('Executing action', [
@@ -130,19 +129,19 @@ class FrontController
                 'action' => $action
             ]);
 
-            return $controller->$action($request);
+            $response = $controller->$action($request);
+            
+            // Apply security headers to all responses
+            return $this->securityHeaders->handle($request, $response);
 
         } catch (\Throwable $e) {
             // Log exception
             Logger::exception($e, 'Exception during request dispatch');
             
             // Handle errors
-            return $response
-                ->setServerError()
-                ->setBody($this->formatError($e));
+            $response->setServerError()->setBody($this->formatError($e));
+            return $this->securityHeaders->handle($request, $response);
         }
-
-        return $response;
     }
 
     /**

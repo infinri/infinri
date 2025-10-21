@@ -3,4 +3,55 @@
     <!-- Preferences (Interface -> Implementation mappings) -->
     <preference for="Infinri\Core\Api\ConfigInterface" type="Infinri\Core\Model\Config\ScopeConfig"/>
     <preference for="Infinri\Core\Api\ComponentRegistrarInterface" type="Infinri\Core\Model\ComponentRegistrar"/>
+    <preference for="Infinri\Core\Api\CacheInterface" type="Infinri\Core\Model\Cache\Pool"/>
+    
+    <!-- Virtual Types for Cache Pools -->
+    <virtualType name="Infinri\Core\Model\Cache\ConfigCachePool" type="Infinri\Core\Model\Cache\Pool">
+        <arguments>
+            <argument name="cache" xsi:type="object">Infinri\Core\Model\Cache\ConfigCacheAdapter</argument>
+            <argument name="defaultTtl" xsi:type="number">3600</argument>
+        </arguments>
+    </virtualType>
+    
+    <virtualType name="Infinri\Core\Model\Cache\LayoutCachePool" type="Infinri\Core\Model\Cache\Pool">
+        <arguments>
+            <argument name="cache" xsi:type="object">Infinri\Core\Model\Cache\LayoutCacheAdapter</argument>
+            <argument name="defaultTtl" xsi:type="number">3600</argument>
+        </arguments>
+    </virtualType>
+    
+    <!-- Cache Adapters -->
+    <virtualType name="Infinri\Core\Model\Cache\ConfigCacheAdapter" type="Symfony\Component\Cache\Adapter\FilesystemAdapter">
+        <arguments>
+            <argument name="namespace" xsi:type="string">config</argument>
+            <argument name="defaultLifetime" xsi:type="number">0</argument>
+            <argument name="directory" xsi:type="string">var/cache/config</argument>
+        </arguments>
+    </virtualType>
+    
+    <virtualType name="Infinri\Core\Model\Cache\LayoutCacheAdapter" type="Symfony\Component\Cache\Adapter\FilesystemAdapter">
+        <arguments>
+            <argument name="namespace" xsi:type="string">layout</argument>
+            <argument name="defaultLifetime" xsi:type="number">0</argument>
+            <argument name="directory" xsi:type="string">var/cache/layout</argument>
+        </arguments>
+    </virtualType>
+    
+    <!-- Inject Cache Pools into Loaders -->
+    <type name="Infinri\Core\Model\Config\Loader">
+        <arguments>
+            <argument name="cachePool" xsi:type="object">Infinri\Core\Model\Cache\ConfigCachePool</argument>
+        </arguments>
+    </type>
+    
+    <type name="Infinri\Core\Model\Layout\Loader">
+        <arguments>
+            <argument name="cachePool" xsi:type="object">Infinri\Core\Model\Cache\LayoutCachePool</argument>
+        </arguments>
+    </type>
+
+    <!-- CSRF Services -->
+    <preference for="Symfony\Component\Security\Csrf\TokenStorage\TokenStorageInterface" type="Symfony\Component\Security\Csrf\TokenStorage\SessionTokenStorage"/>
+    <preference for="Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface" type="Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator"/>
+    <preference for="Symfony\Component\Security\Csrf\CsrfTokenManagerInterface" type="Symfony\Component\Security\Csrf\CsrfTokenManager"/>
 </config>

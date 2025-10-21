@@ -8,6 +8,19 @@ use Infinri\Core\Model\Module\ModuleList;
 use Infinri\Core\Model\Module\ModuleManager;
 use Infinri\Core\Model\Config\Reader as ConfigReader;
 use Infinri\Core\Model\Config\Loader;
+use Infinri\Core\Model\Cache\Pool;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+
+class CountingConfigReader extends ConfigReader
+{
+    public int $readCount = 0;
+
+    public function read(string $modulePath): ?array
+    {
+        $this->readCount++;
+        return parent::read($modulePath);
+    }
+}
 
 // Static flag to avoid re-registering modules
 $modulesRegistered = false;
@@ -31,7 +44,7 @@ beforeEach(function () use (&$modulesRegistered) {
     $this->moduleReader = new ModuleReader();
     $this->moduleList = new ModuleList($this->registrar, $this->moduleReader);
     $this->moduleManager = new ModuleManager($this->moduleList);
-    $this->configReader = new ConfigReader();
+    $this->configReader = new CountingConfigReader();
     $this->configLoader = new Loader($this->moduleManager, $this->configReader);
 });
 
@@ -89,6 +102,40 @@ describe('ConfigLoader', function () {
         
         expect($config)->toBeArray();
         expect($config)->toBeEmpty();
+    });
+
+    it('stores merged configuration in cache when enabled', function () {
+        $_ENV['CACHE_CONFIG_ENABLED'] = 'true';
+
+        $adapter = new ArrayAdapter();
+        $cachePool = new Pool($adapter);
+        $loader = new Loader($this->moduleManager, $this->configReader, $cachePool);
+
+        $loader->load();
+
+        $modules = $this->moduleManager->getModulesInOrder();
+        $cacheKey = 'config_merged_' . md5(implode('|', $modules));
+
+        expect($adapter->hasItem($cacheKey))->toBeTrue();
+
+        unset($_ENV['CACHE_CONFIG_ENABLED']);
+    });
+
+    it('uses cached configuration on subsequent loads when enabled', function () {
+        $_ENV['CACHE_CONFIG_ENABLED'] = 'true';
+
+        $adapter = new ArrayAdapter();
+        $cachePool = new Pool($adapter);
+        $loader = new Loader($this->moduleManager, $this->configReader, $cachePool);
+
+        $loader->load();
+        $firstReadCount = $this->configReader->readCount;
+
+        $loader->load();
+
+        expect($this->configReader->readCount)->toBe($firstReadCount);
+
+        unset($_ENV['CACHE_CONFIG_ENABLED']);
     });
     
 });
