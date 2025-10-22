@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <!--
+        Admin Dashboard Layout
+        Route: /admin/infinri
+        Uses empty.xml base
+    -->
+    
+    <!-- Use empty layout as base -->
+    <update handle="empty"/>
+    
+    <!-- Add dashboard to content container -->
+    <referenceContainer name="content">
+        <block class="Infinri\Admin\Block\Adminhtml\Dashboard\Dashboard" 
+               name="admin.dashboard" 
+               template="Infinri_Admin::dashboard/index.phtml">
+            <arguments>
+                <argument name="user" xsi:type="object">user</argument>
+            </arguments>
+        </block>
+    </referenceContainer>
+</layout>

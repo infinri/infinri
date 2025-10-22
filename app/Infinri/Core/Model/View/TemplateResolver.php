@@ -51,9 +51,11 @@ class TemplateResolver
 
         // Try different template locations
         $possiblePaths = [
-            $moduleData['path'] . '/view/frontend/templates/' . $filePath,
-            $moduleData['path'] . '/view/templates/' . $filePath,
-            $moduleData['path'] . '/templates/' . $filePath,
+            $moduleData['path'] . '/view/adminhtml/templates/' . $filePath,  // Admin area
+            $moduleData['path'] . '/view/frontend/templates/' . $filePath,   // Frontend area
+            $moduleData['path'] . '/view/base/templates/' . $filePath,       // Base/shared
+            $moduleData['path'] . '/view/templates/' . $filePath,            // Legacy
+            $moduleData['path'] . '/templates/' . $filePath,                 // Legacy
         ];
 
         foreach ($possiblePaths as $path) {

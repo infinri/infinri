@@ -50,8 +50,156 @@
         </arguments>
     </type>
 
-    <!-- CSRF Services -->
-    <preference for="Symfony\Component\Security\Csrf\TokenStorage\TokenStorageInterface" type="Symfony\Component\Security\Csrf\TokenStorage\SessionTokenStorage"/>
-    <preference for="Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface" type="Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator"/>
-    <preference for="Symfony\Component\Security\Csrf\CsrfTokenManagerInterface" type="Symfony\Component\Security\Csrf\CsrfTokenManager"/>
+    <!-- Security: CSRF Token Management -->
+    <type name="Infinri\Core\Security\CsrfTokenManager">
+        <arguments>
+            <!-- Dependencies auto-wired by constructor -->
+        </arguments>
+    </type>
+    
+    <!-- Security: CSRF Helper for Templates -->
+    <type name="Infinri\Core\Helper\Csrf">
+        <arguments>
+            <argument name="csrfManager" xsi:type="object">Infinri\Core\Security\CsrfTokenManager</argument>
+        </arguments>
+    </type>
+    
+    <!-- Security: CSRF Protection Middleware -->
+    <type name="Infinri\Core\App\Middleware\CsrfProtectionMiddleware">
+        <arguments>
+            <argument name="csrfManager" xsi:type="object">Infinri\Core\Security\CsrfTokenManager</argument>
+        </arguments>
+    </type>
+    
+    <!-- Security: Authentication Middleware -->
+    <type name="Infinri\Core\App\Middleware\AuthenticationMiddleware">
+        <!-- No constructor dependencies -->
+    </type>
+    
+    <!-- Admin: User Resource Model -->
+    <type name="Infinri\Admin\Model\ResourceModel\AdminUser">
+        <arguments>
+            <argument name="connection" xsi:type="object">Infinri\Core\Model\ResourceModel\Connection</argument>
+        </arguments>
+    </type>
+    
+    <!-- Admin: User Model -->
+    <type name="Infinri\Admin\Model\AdminUser">
+        <arguments>
+            <argument name="resource" xsi:type="object">Infinri\Admin\Model\ResourceModel\AdminUser</argument>
+        </arguments>
+    </type>
+    
+    <!-- Auth: Login Controllers -->
+    <type name="Infinri\Auth\Controller\Adminhtml\Login\Index">
+        <arguments>
+            <argument name="request" xsi:type="object">Infinri\Core\App\Request</argument>
+            <argument name="response" xsi:type="object">Infinri\Core\App\Response</argument>
+            <argument name="layoutFactory" xsi:type="object">Infinri\Core\Model\View\LayoutFactory</argument>
+        </arguments>
+    </type>
+    
+    <type name="Infinri\Auth\Controller\Adminhtml\Login\Post">
+        <arguments>
+            <argument name="request" xsi:type="object">Infinri\Core\App\Request</argument>
+            <argument name="response" xsi:type="object">Infinri\Core\App\Response</argument>
+            <argument name="adminUserResource" xsi:type="object">Infinri\Admin\Model\ResourceModel\AdminUser</argument>
+            <argument name="csrfManager" xsi:type="object">Infinri\Core\Security\CsrfTokenManager</argument>
+            <argument name="rememberTokenService" xsi:type="object">Infinri\Admin\Service\RememberTokenService</argument>
+        </arguments>
+    </type>
+    
+    <type name="Infinri\Auth\Controller\Adminhtml\Login\Logout">
+        <arguments>
+            <argument name="request" xsi:type="object">Infinri\Core\App\Request</argument>
+            <argument name="response" xsi:type="object">Infinri\Core\App\Response</argument>
+            <argument name="rememberTokenService" xsi:type="object">Infinri\Admin\Service\RememberTokenService</argument>
+        </arguments>
+    </type>
+    
+    <!-- Auth: Login Form Block -->
+    <type name="Infinri\Auth\Block\Adminhtml\Login\Form">
+        <arguments>
+            <argument name="csrfManager" xsi:type="object">Infinri\Core\Security\CsrfTokenManager</argument>
+        </arguments>
+    </type>
+    
+    <!-- Admin: Dashboard Controller -->
+    <type name="Infinri\Admin\Controller\Adminhtml\Index\Index">
+        <arguments>
+            <argument name="request" xsi:type="object">Infinri\Core\App\Request</argument>
+            <argument name="response" xsi:type="object">Infinri\Core\App\Response</argument>
+            <argument name="layoutFactory" xsi:type="object">Infinri\Core\Model\View\LayoutFactory</argument>
+        </arguments>
+    </type>
+    
+    <!-- Front Controller -->
+    <type name="Infinri\Core\App\FrontController">
+        <arguments>
+            <argument name="router" xsi:type="object">Infinri\Core\App\Router</argument>
+            <argument name="objectManager" xsi:type="object">Infinri\Core\Model\ObjectManager</argument>
+            <argument name="request" xsi:type="object">Infinri\Core\App\Request</argument>
+            <argument name="securityHeaders" xsi:type="object">Infinri\Core\App\Middleware\SecurityHeadersMiddleware</argument>
+            <argument name="authMiddleware" xsi:type="object">Infinri\Core\App\Middleware\AuthenticationMiddleware</argument>
+        </arguments>
+    </type>
+    
+    <!-- Authentication Middleware -->
+    <type name="Infinri\Core\App\Middleware\AuthenticationMiddleware">
+        <arguments>
+            <argument name="rememberTokenService" xsi:type="object">Infinri\Admin\Service\RememberTokenService</argument>
+            <argument name="adminUserResource" xsi:type="object">Infinri\Admin\Model\ResourceModel\AdminUser</argument>
+        </arguments>
+    </type>
+    
+    <!-- Schema Setup -->
+    <type name="Infinri\Core\Model\Setup\SchemaSetup">
+        <arguments>
+            <argument name="connection" xsi:type="object">Infinri\Core\Model\ResourceModel\Connection</argument>
+        </arguments>
+    </type>
+    
+    <!-- Admin: User Management -->
+    <type name="Infinri\Admin\Controller\Adminhtml\User\Index">
+        <arguments>
+            <argument name="uiComponentRenderer" xsi:type="object">Infinri\Core\View\Element\UiComponentRenderer</argument>
+            <argument name="adminLayout" xsi:type="object">Infinri\Cms\Helper\AdminLayout</argument>
+        </arguments>
+    </type>
+    
+    <type name="Infinri\Admin\Controller\Adminhtml\User\Edit">
+        <arguments>
+            <argument name="adminUserResource" xsi:type="object">Infinri\Admin\Model\ResourceModel\AdminUser</argument>
+            <argument name="adminLayout" xsi:type="object">Infinri\Cms\Helper\AdminLayout</argument>
+        </arguments>
+    </type>
+    
+    <type name="Infinri\Admin\Controller\Adminhtml\User\Create">
+        <arguments>
+            <argument name="adminLayout" xsi:type="object">Infinri\Cms\Helper\AdminLayout</argument>
+        </arguments>
+    </type>
+    
+    <type name="Infinri\Admin\Controller\Adminhtml\User\Save">
+        <arguments>
+            <argument name="adminUserResource" xsi:type="object">Infinri\Admin\Model\ResourceModel\AdminUser</argument>
+        </arguments>
+    </type>
+    
+    <type name="Infinri\Admin\Controller\Adminhtml\User\Delete">
+        <arguments>
+            <argument name="adminUserResource" xsi:type="object">Infinri\Admin\Model\ResourceModel\AdminUser</argument>
+        </arguments>
+    </type>
+    
+    <!-- Note: DataProvider parameters (name, primaryFieldName, requestFieldName) are passed by UiComponentRenderer -->
+    <!-- We only configure the injected dependencies here -->
+    
+    <type name="Infinri\Admin\Block\Adminhtml\User\Grid">
+        <arguments>
+            <argument name="adminUserResource" xsi:type="object">Infinri\Admin\Model\ResourceModel\AdminUser</argument>
+        </arguments>
+    </type>
 </config>
+
+

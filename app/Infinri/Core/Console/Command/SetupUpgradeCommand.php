@@ -89,9 +89,30 @@ class SetupUpgradeCommand extends Command
                 }
                 
                 $io->text("  - Processing {$moduleName}...");
-                $result = $this->schemaSetup->processModuleSchema($moduleName, $schemaFile);
-                $tablesCreated += $result['created'] ?? 0;
-                $tablesUpdated += $result['updated'] ?? 0;
+                
+                try {
+                    // Check if file actually exists and is readable
+                    if (!is_readable($schemaFile)) {
+                        $io->warning("    Schema file not readable: {$schemaFile}");
+                        continue;
+                    }
+                    
+                    $io->text("    Schema file: {$schemaFile}");
+                    $result = $this->schemaSetup->processModuleSchema($moduleName, $schemaFile);
+                    $tablesCreated += $result['created'] ?? 0;
+                    $tablesUpdated += $result['updated'] ?? 0;
+                    $io->text("    ✓ Created: {$result['created']}, Updated: {$result['updated']}");
+                    
+                    // Show details if verbose
+                    if ($output->isVerbose() && isset($result['details'])) {
+                        $io->text("    Details: " . $result['details']);
+                    }
+                } catch (\Exception $e) {
+                    $io->error("    ✗ Error processing {$moduleName}: " . $e->getMessage());
+                    if ($output->isVerbose()) {
+                        $io->text($e->getTraceAsString());
+                    }
+                }
             }
             
             $io->success(sprintf('Database schema updated: %d tables created, %d tables updated', $tablesCreated, $tablesUpdated));

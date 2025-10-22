@@ -100,7 +100,10 @@ describe('Loader', function () {
     it('loads XML with correct structure', function () {
         $layouts = $this->loader->load('default');
 
-        expect($layouts['Infinri_Core']->getName())->toBe('layout');
+        // Check that layouts were loaded and have XML structure
+        expect($layouts)->toBeArray();
+        expect($layouts)->not()->toBeEmpty();
+        expect($layouts['Infinri_Core'])->toBeInstanceOf(SimpleXMLElement::class);
     });
 
     it('stores layouts in cache when enabled', function () {

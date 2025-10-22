@@ -1,0 +1,184 @@
+<?php
+/**
+ * @var \Infinri\Admin\Block\Adminhtml\User\Grid $block
+ */
+$users = $block->getUsers();
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Admin Users</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        h1 {
+            font-size: 28px;
+            color: #333;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        .btn-primary {
+            background: #2196F3;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #1976D2;
+        }
+        .btn-success {
+            background: #4CAF50;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #45a049;
+        }
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #da190b;
+        }
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        th {
+            background: #f5f5f5;
+            font-weight: 600;
+            color: #666;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+        tr:hover {
+            background: #f9f9f9;
+        }
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .badge-admin {
+            background: #ff9800;
+            color: white;
+        }
+        .badge-user {
+            background: #2196F3;
+            color: white;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #2196F3;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/admin/infinri" class="back-link">← Back to Dashboard</a>
+        
+        <div class="header">
+            <h1>Manage Admin Users</h1>
+            <a href="/admin/user/user/create" class="btn btn-success">+ Add New User</a>
+        </div>
+
+        <?php if (empty($users)): ?>
+            <div class="empty-state">
+                <h2>No admin users found</h2>
+                <p>Get started by creating your first admin user.</p>
+            </div>
+        <?php else: ?>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Roles</th>
+                        <th>Status</th>
+                        <th>Last Login</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($users as $user): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($user['user_id']) ?></td>
+                            <td><strong><?= htmlspecialchars($user['username']) ?></strong></td>
+                            <td><?= htmlspecialchars(trim(($user['firstname'] ?? '') . ' ' . ($user['lastname'] ?? ''))) ?: '-' ?></td>
+                            <td><?= htmlspecialchars($user['email']) ?></td>
+                            <td><?= $block->formatRoles($user['roles']) ?></td>
+                            <td><?= $block->getStatusLabel((bool)$user['is_active']) ?></td>
+                            <td><?= $block->formatDate($user['last_login_at']) ?></td>
+                            <td>
+                                <div class="actions">
+                                    <a href="/admin/user/user/edit?id=<?= $user['user_id'] ?>" class="btn btn-primary btn-small">Edit</a>
+                                    <a href="/admin/user/user/delete?id=<?= $user['user_id'] ?>" 
+                                       class="btn btn-danger btn-small"
+                                       onclick="return confirm('Are you sure you want to delete user \'<?= htmlspecialchars($user['username']) ?>\'?')">
+                                        Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
+    </div>
+</body>
+</html>

@@ -49,4 +49,24 @@
         </index>
     </table>
     
+    <!-- Sessions Table for Database-Backed Sessions -->
+    <table name="sessions" resource="default" engine="innodb" comment="Database-Backed PHP Sessions">
+        <column xsi:type="varchar" name="sess_id" nullable="false" length="128" comment="Session ID"/>
+        <column xsi:type="text" name="sess_data" nullable="false" comment="Serialized Session Data"/>
+        <column xsi:type="int" name="sess_lifetime" unsigned="true" nullable="false" comment="Session Lifetime (seconds)"/>
+        <column xsi:type="int" name="sess_time" unsigned="true" nullable="false" comment="Session Timestamp"/>
+        
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="sess_id"/>
+        </constraint>
+        
+        <index referenceId="SESSIONS_LIFETIME" indexType="btree">
+            <column name="sess_lifetime"/>
+        </index>
+        
+        <index referenceId="SESSIONS_TIME" indexType="btree">
+            <column name="sess_time"/>
+        </index>
+    </table>
+    
 </schema>

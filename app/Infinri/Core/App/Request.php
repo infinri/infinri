@@ -219,29 +219,121 @@ class Request
 
     /**
      * Get client IP address
+     * 
+     * SECURITY: Only trusts proxy headers (X-Forwarded-For) from configured trusted proxies
+     * to prevent IP spoofing attacks
      *
      * @return string|null
      */
     public function getClientIp(): ?string
     {
-        $keys = [
-            'HTTP_X_FORWARDED_FOR',
-            'HTTP_CLIENT_IP',
-            'REMOTE_ADDR'
-        ];
+        // Get direct connection IP (always available)
+        $remoteAddr = $this->server['REMOTE_ADDR'] ?? null;
         
-        foreach ($keys as $key) {
-            if (isset($this->server[$key])) {
-                $ip = $this->server[$key];
-                // Get first IP if comma-separated
-                if (str_contains($ip, ',')) {
-                    $ip = explode(',', $ip)[0];
+        if (!$remoteAddr) {
+            return null;
+        }
+        
+        // Get trusted proxy IPs from environment configuration
+        // Example .env: TRUSTED_PROXIES=127.0.0.1,10.0.0.0/8,172.16.0.0/12
+        $trustedProxies = $this->getTrustedProxies();
+        
+        // Only trust proxy headers if request comes from a trusted proxy
+        if ($this->isFromTrustedProxy($remoteAddr, $trustedProxies)) {
+            // Trust X-Forwarded-For header from proxy
+            if (isset($this->server['HTTP_X_FORWARDED_FOR'])) {
+                $forwardedIps = explode(',', $this->server['HTTP_X_FORWARDED_FOR']);
+                // Return the FIRST IP in the chain (original client)
+                $clientIp = trim($forwardedIps[0]);
+                if ($this->isValidIp($clientIp)) {
+                    return $clientIp;
                 }
-                return trim($ip);
+            }
+            
+            // Fallback to X-Real-IP if X-Forwarded-For not present
+            if (isset($this->server['HTTP_X_REAL_IP'])) {
+                $clientIp = trim($this->server['HTTP_X_REAL_IP']);
+                if ($this->isValidIp($clientIp)) {
+                    return $clientIp;
+                }
             }
         }
         
-        return null;
+        // Return direct connection IP (not behind proxy or untrusted proxy)
+        return $remoteAddr;
+    }
+    
+    /**
+     * Get trusted proxy IPs from environment configuration
+     *
+     * @return array
+     */
+    private function getTrustedProxies(): array
+    {
+        $proxies = $_ENV['TRUSTED_PROXIES'] ?? getenv('TRUSTED_PROXIES') ?: '';
+        
+        if (empty($proxies)) {
+            // Default: trust localhost only
+            return ['127.0.0.1', '::1'];
+        }
+        
+        return array_map('trim', explode(',', $proxies));
+    }
+    
+    /**
+     * Check if request is from a trusted proxy
+     *
+     * @param string $remoteAddr
+     * @param array $trustedProxies
+     * @return bool
+     */
+    private function isFromTrustedProxy(string $remoteAddr, array $trustedProxies): bool
+    {
+        foreach ($trustedProxies as $proxy) {
+            // Support CIDR notation (e.g., 10.0.0.0/8)
+            if (str_contains($proxy, '/')) {
+                if ($this->ipInRange($remoteAddr, $proxy)) {
+                    return true;
+                }
+            } else {
+                // Exact IP match
+                if ($remoteAddr === $proxy) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Check if IP is in CIDR range
+     *
+     * @param string $ip
+     * @param string $cidr
+     * @return bool
+     */
+    private function ipInRange(string $ip, string $cidr): bool
+    {
+        [$subnet, $mask] = explode('/', $cidr);
+        
+        $ipLong = ip2long($ip);
+        $subnetLong = ip2long($subnet);
+        $maskLong = -1 << (32 - (int)$mask);
+        
+        return ($ipLong & $maskLong) === ($subnetLong & $maskLong);
+    }
+    
+    /**
+     * Validate IP address format
+     *
+     * @param string $ip
+     * @return bool
+     */
+    private function isValidIp(string $ip): bool
+    {
+        return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false
+            || filter_var($ip, FILTER_VALIDATE_IP) !== false;
     }
 
     /**
@@ -263,5 +355,15 @@ class Request
     {
         return (!empty($this->server['HTTPS']) && $this->server['HTTPS'] !== 'off')
             || ($this->server['SERVER_PORT'] ?? 80) == 443;
+    }
+
+    /**
+     * Get user agent string
+     *
+     * @return string
+     */
+    public function getUserAgent(): string
+    {
+        return $this->server['HTTP_USER_AGENT'] ?? '';
     }
 }

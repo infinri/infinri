@@ -39,14 +39,30 @@ class SchemaSetup
      */
     public function processModuleSchema(string $moduleName, string $schemaFile): array
     {
+        // Debug: Echo directly so we can see it
+        echo "\n  [SchemaSetup] Processing {$moduleName}\n";
+        echo "  [SchemaSetup] File: {$schemaFile}\n";
+        
         Logger::info("SchemaSetup: Processing schema for {$moduleName}", [
             'file' => $schemaFile
         ]);
         
+        libxml_use_internal_errors(true);
         $xml = simplexml_load_file($schemaFile);
         
         if ($xml === false) {
-            Logger::warning("SchemaSetup: Failed to parse {$schemaFile}");
+            $errors = libxml_get_errors();
+            $errorMsg = "SchemaSetup: Failed to parse {$schemaFile}";
+            foreach ($errors as $error) {
+                $errorMsg .= "\n  - " . trim($error->message);
+            }
+            libxml_clear_errors();
+            
+            Logger::warning($errorMsg);
+            file_put_contents(__DIR__ . '/../../../../var/schema_debug.log', 
+                $errorMsg . "\n", 
+                FILE_APPEND
+            );
             return ['created' => 0, 'updated' => 0];
         }
         
@@ -54,10 +70,17 @@ class SchemaSetup
         $updated = 0;
         
         // Process each table definition
+        echo "  [SchemaSetup] Found " . count($xml->table) . " tables in XML\n";
+        
         foreach ($xml->table as $tableNode) {
             $tableName = (string)$tableNode['name'];
             
-            if ($this->tableExists($tableName)) {
+            $exists = $this->tableExists($tableName);
+            echo "  [SchemaSetup] Table '{$tableName}' - Exists: " . ($exists ? 'YES' : 'NO') . "\n";
+            
+            Logger::info("SchemaSetup: Table {$tableName} exists check: " . ($exists ? 'YES' : 'NO'));
+            
+            if ($exists) {
                 Logger::debug("SchemaSetup: Table {$tableName} exists, checking for updates");
                 // TODO: Implement table update logic
                 // For now, skip existing tables
@@ -100,6 +123,7 @@ class SchemaSetup
         $columns = [];
         $primaryKey = null;
         $uniqueConstraints = [];
+        $foreignKeys = [];
         $indexes = [];
         
         // Process columns
@@ -119,11 +143,25 @@ class SchemaSetup
                 $refId = (string)$constraint['referenceId'];
                 $ukColumn = (string)$constraint->column['name'];
                 $uniqueConstraints[] = "  CONSTRAINT {$refId} UNIQUE ({$ukColumn})";
+            } elseif ($type === 'foreign') {
+                $refId = (string)$constraint['referenceId'];
+                $column = (string)$constraint['column'];
+                $refTable = (string)$constraint['referenceTable'];
+                $refColumn = (string)$constraint['referenceColumn'];
+                $onDelete = (string)($constraint['onDelete'] ?? 'NO ACTION');
+                
+                $foreignKeys[] = "  CONSTRAINT {$refId} FOREIGN KEY ({$column}) " .
+                                 "REFERENCES {$refTable}({$refColumn}) ON DELETE {$onDelete}";
             }
         }
         
         // Combine all definitions
-        $allDefinitions = array_merge($columns, array_filter([$primaryKey]), $uniqueConstraints);
+        $allDefinitions = array_merge(
+            $columns, 
+            array_filter([$primaryKey]), 
+            $uniqueConstraints,
+            $foreignKeys
+        );
         $sql .= implode(",\n", $allDefinitions);
         $sql .= "\n)";
         

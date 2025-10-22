@@ -56,10 +56,12 @@ class ContentSanitizer
      */
     private function getPurifier(string $profile): object
     {
-        // Check if HTMLPurifier is available
+        // HTMLPurifier is REQUIRED for security - throw error if not installed
         if (!class_exists('\HTMLPurifier')) {
-            // Fallback: use basic tag stripping if HTMLPurifier not installed
-            return $this->getFallbackPurifier($profile);
+            throw new \RuntimeException(
+                'HTMLPurifier is required for XSS protection. ' .
+                'Install it with: composer require ezyang/htmlpurifier'
+            );
         }
         
         // Return cached purifier for this profile if available
@@ -107,15 +109,19 @@ class ContentSanitizer
                 break;
         }
         
-        // Security: Disable cache for simplicity (can be enabled in production)
-        $config->set('Cache.DefinitionImpl', null);
+        // Enable cache for performance
+        $cacheDir = __DIR__ . '/../../../var/cache/htmlpurifier';
+        if (!is_dir($cacheDir)) {
+            mkdir($cacheDir, 0755, true);
+        }
+        $config->set('Cache.SerializerPath', $cacheDir);
         
         // Security: Convert relative URIs to absolute
         $config->set('URI.MakeAbsolute', true);
         $config->set('URI.Base', $this->getBaseUrl());
         
-        // Security: Disable external resources by default
-        $config->set('URI.DisableExternalResources', false);
+        // Security: Disable external resources to prevent SSRF attacks
+        $config->set('URI.DisableExternalResources', true);
         
         // Encoding
         $config->set('Core.Encoding', 'UTF-8');

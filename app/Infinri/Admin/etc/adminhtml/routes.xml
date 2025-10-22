@@ -2,7 +2,10 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:infinri:framework:App/etc/routes.xsd">
     <router id="admin">
-        <route id="admin" frontName="admin">
+        <route id="infinri_admin" frontName="infinri">
+            <module name="Infinri_Admin"/>
+        </route>
+        <route id="infinri_user" frontName="user">
             <module name="Infinri_Admin"/>
         </route>
     </router>

@@ -179,9 +179,11 @@ class Loader
     private function getLayoutDirectories(string $modulePath): array
     {
         return [
-            $modulePath . '/view/frontend/layout',
-            $modulePath . '/view/layout',
-            $modulePath . '/etc/layout',
+            $modulePath . '/view/adminhtml/layout',  // Admin area layouts
+            $modulePath . '/view/frontend/layout',   // Frontend area layouts
+            $modulePath . '/view/base/layout',       // Base layouts (shared)
+            $modulePath . '/view/layout',            // Shared layouts
+            $modulePath . '/etc/layout',             // Config layouts
         ];
     }
 

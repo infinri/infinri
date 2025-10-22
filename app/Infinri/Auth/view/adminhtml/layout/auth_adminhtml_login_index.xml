@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <!--
+        Admin Login Page Layout
+        Route: /admin/auth/login/index
+        Uses empty.xml base (no header/footer chrome)
+    -->
+    
+    <!-- Use empty layout as base -->
+    <update handle="empty"/>
+    
+    <!-- Add login form to content container -->
+    <referenceContainer name="content">
+        <block class="Infinri\Auth\Block\Adminhtml\Login\Form" 
+               name="auth.login.form" 
+               template="Infinri_Auth::login/form.phtml">
+            <arguments>
+                <argument name="error" xsi:type="string">error</argument>
+            </arguments>
+        </block>
+    </referenceContainer>
+</layout>

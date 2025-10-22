@@ -1,5 +1,8 @@
 <?php
 
+// Define constant to indicate we're running in test mode
+define('PHPUNIT_RUNNING', true);
+
 /*
 |--------------------------------------------------------------------------
 | Load Environment Variables
@@ -48,6 +51,27 @@ if (file_exists($envFile)) {
 */
 
 // uses(Tests\TestCase::class)->in('Feature');
+
+/*
+|--------------------------------------------------------------------------
+| Integration Test Bootstrap
+|--------------------------------------------------------------------------
+|
+| Initialize ObjectManager for integration tests that need database access
+|
+*/
+
+// Bootstrap application for integration tests
+if (file_exists(__DIR__ . '/../app/bootstrap.php')) {
+    require_once __DIR__ . '/../app/bootstrap.php';
+    
+    // Initialize ObjectManager for integration tests
+    uses()->beforeEach(function () {
+        if (str_contains(static::class, 'Integration')) {
+            initApplication();
+        }
+    })->in('Integration');
+}
 
 /*
 |--------------------------------------------------------------------------

@@ -234,9 +234,11 @@ class Template extends AbstractBlock
             $basePath = dirname(__DIR__, 4) . '/app/' . str_replace('_', '/', $moduleName);
             
             $possiblePaths = [
-                $basePath . '/view/frontend/templates/' . $filePath,
-                $basePath . '/view/templates/' . $filePath,
-                $basePath . '/templates/' . $filePath,
+                $basePath . '/view/adminhtml/templates/' . $filePath,  // Admin area
+                $basePath . '/view/frontend/templates/' . $filePath,   // Frontend area
+                $basePath . '/view/base/templates/' . $filePath,       // Base/shared
+                $basePath . '/view/templates/' . $filePath,            // Legacy
+                $basePath . '/templates/' . $filePath,                 // Legacy
             ];
             
             foreach ($possiblePaths as $path) {

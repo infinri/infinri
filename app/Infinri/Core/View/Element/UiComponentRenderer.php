@@ -116,6 +116,17 @@ class UiComponentRenderer
         
         // Get buttons from XML
         $buttons = $this->getButtons($xml);
+        
+        // Process actions column if defined
+        $actionsColumn = $this->getActionsColumn($xml);
+        error_log("Actions column object: " . ($actionsColumn ? get_class($actionsColumn) : 'NULL'));
+        if ($actionsColumn) {
+            $data = ['data' => ['items' => $items], 'totalRecords' => $totalRecords];
+            error_log("Before prepareDataSource: " . count($items) . " items");
+            $data = $actionsColumn->prepareDataSource($data);
+            $items = $data['data']['items'] ?? [];
+            error_log("After prepareDataSource: " . count($items) . " items");
+        }
 
         // Build HTML
         $html = '<div class="admin-grid-container">';
@@ -172,14 +183,22 @@ class UiComponentRenderer
                     $html .= '<td>' . $value . '</td>';
                 }
                 
-                // Actions column - detect entity type from component name
-                $isBlock = str_contains($componentName, 'block');
-                $entityPath = $isBlock ? 'block' : 'page';
-                $idField = $isBlock ? 'block_id' : 'page_id';
-                $entityId = $item[$idField] ?? '';
+                // Actions column - rendered from prepareDataSource
                 $html .= '<td class="actions">';
-                $html .= '<a href="/admin/cms/' . $entityPath . '/edit?id=' . $entityId . '">Edit</a> | ';
-                $html .= '<a href="/admin/cms/' . $entityPath . '/delete?id=' . $entityId . '" onclick="return confirm(\'Are you sure?\')">Delete</a>';
+                if (isset($item['actions']) && is_array($item['actions'])) {
+                    $actions = [];
+                    foreach ($item['actions'] as $action) {
+                        if (isset($action['href']) && isset($action['label'])) {
+                            $onclick = isset($action['confirm']) ? 
+                                'onclick="return confirm(\'' . htmlspecialchars($action['confirm']['message'] ?? 'Are you sure?') . '\')"' : '';
+                            $actions[] = '<a href="' . htmlspecialchars($action['href']) . '" ' . $onclick . '>' . 
+                                         htmlspecialchars($action['label']) . '</a>';
+                        }
+                    }
+                    $html .= implode(' | ', $actions);
+                } else {
+                    $html .= 'No actions';
+                }
                 $html .= '</td>';
                 
                 $html .= '</tr>';
@@ -263,5 +282,32 @@ class UiComponentRenderer
         }
         
         return $buttons;
+    }
+
+    /**
+     * Get and instantiate actions column from XML
+     */
+    private function getActionsColumn(SimpleXMLElement $xml): ?object
+    {
+        $actionsNodes = $xml->xpath('//columns/actionsColumn');
+        if (empty($actionsNodes)) {
+            return null;
+        }
+
+        $actionsNode = $actionsNodes[0];
+        $className = (string)($actionsNode['class'] ?? '');
+        
+        if (!$className || !class_exists($className)) {
+            error_log("ActionsColumn class not found: $className");
+            return null;
+        }
+
+        try {
+            $objectManager = ObjectManager::getInstance();
+            return $objectManager->get($className);
+        } catch (\Throwable $e) {
+            error_log("Failed to instantiate ActionsColumn: " . $e->getMessage());
+            return null;
+        }
     }
 }

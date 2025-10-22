@@ -23,7 +23,9 @@ class FrontController
         'Infinri\\Core\\Controller\\',
         'Infinri\\Cms\\Controller\\',
         'Infinri\\Admin\\Controller\\',
+        'Infinri\\Auth\\Controller\\',
         'Infinri\\Theme\\Controller\\',
+        'Tests\\',  // Allow test controllers
     ];
     
     private ?string $resolvedControllerClass = null;
@@ -32,7 +34,8 @@ class FrontController
         private readonly RouterInterface $router,
         private readonly ObjectManager $objectManager,
         private readonly Request $request,
-        private readonly SecurityHeadersMiddleware $securityHeaders
+        private readonly SecurityHeadersMiddleware $securityHeaders,
+        private readonly Middleware\AuthenticationMiddleware $authMiddleware
     ) {
     }
 
@@ -104,6 +107,15 @@ class FrontController
                 
                 $response->setForbidden()->setBody('403 - Forbidden');
                 return $this->securityHeaders->handle($request, $response);
+            }
+
+            // Check authentication for admin routes
+            if (str_starts_with($uri, '/admin')) {
+                $response = $this->authMiddleware->handle($request, $response);
+                // If middleware returned a redirect/forbidden response, return it
+                if ($response->getStatusCode() !== 200) {
+                    return $this->securityHeaders->handle($request, $response);
+                }
             }
 
             // Store resolved controller class and create controller
@@ -212,6 +224,11 @@ class FrontController
      */
     private function isValidControllerNamespace(string $controllerClass): bool
     {
+        // Allow anonymous classes (for testing)
+        if (str_starts_with($controllerClass, 'class@anonymous')) {
+            return true;
+        }
+
         // Allow classes in allowed namespaces
         foreach (self::ALLOWED_CONTROLLER_NAMESPACES as $namespace) {
             if (str_starts_with($controllerClass, $namespace)) {
@@ -219,11 +236,8 @@ class FrontController
             }
         }
         
-        // Allow classes in global namespace or test namespaces (no backslash = global namespace)
-        // This is needed for unit tests and development
-        if (strpos($controllerClass, '\\') === false) {
-            return true;
-        }
+        // SECURITY: Global namespace bypass removed
+        // Controllers MUST be in whitelisted namespaces for security
         
         return false;
     }

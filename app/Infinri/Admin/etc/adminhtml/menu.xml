@@ -23,5 +23,14 @@
              module="Infinri_Admin" 
              sortOrder="90" 
              resource="Infinri_Admin::system"/>
+        
+        <!-- System > Users -->
+        <add id="Infinri_Admin::system_users" 
+             title="Admin Users" 
+             module="Infinri_Admin" 
+             sortOrder="10" 
+             parent="Infinri_Admin::system"
+             action="user/user/index" 
+             resource="Infinri_Admin::system_users"/>
     </menu>
 </config>

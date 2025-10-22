@@ -17,6 +17,7 @@ use Infinri\Core\Model\ObjectManager;
 use Infinri\Core\App\FastRouter;
 use Infinri\Core\App\FrontController;
 use Infinri\Core\App\Middleware\SecurityHeadersMiddleware;
+use Infinri\Core\App\Middleware\AuthenticationMiddleware;
 use Infinri\Core\Model\Route\Loader as RouteLoader;
 use Infinri\Core\App\Request;
 use Dotenv\Dotenv;
@@ -65,11 +66,14 @@ function initApplication(): FrontController
     $routeLoader->loadRoutes($router);
     
     // 7. Create Front Controller with singleton ObjectManager instance
+    $objectManager = ObjectManager::getInstance();
+    
     return new FrontController(
         $router, 
-        ObjectManager::getInstance(),
+        $objectManager,
         Request::createFromGlobals(),
-        new SecurityHeadersMiddleware()
+        new SecurityHeadersMiddleware(),
+        $objectManager->get(AuthenticationMiddleware::class)
     );
 }
 

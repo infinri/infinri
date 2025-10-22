@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Tests\Unit\App;
+
 use Infinri\Core\App\FrontController;
 use Infinri\Core\App\FastRouter;
 use Infinri\Core\App\Request;
@@ -10,6 +12,7 @@ use Infinri\Core\App\Middleware\SecurityHeadersMiddleware;
 use Infinri\Core\Model\ObjectManager;
 use Infinri\Core\Controller\AbstractController;
 use Psr\Container\ContainerInterface;
+use Mockery;
 
 // Test controller
 class TestController extends AbstractController
@@ -53,11 +56,16 @@ describe('FrontController', function () {
         $this->container = $container;
         
         $this->router = new FastRouter();
+        // Mock AuthenticationMiddleware dependencies
+        $rememberTokenService = Mockery::mock(\Infinri\Admin\Service\RememberTokenService::class);
+        $adminUserResource = Mockery::mock(\Infinri\Admin\Model\ResourceModel\AdminUser::class);
+        
         $this->frontController = new FrontController(
             $this->router,
             $this->objectManager,
             new Request(),
-            new SecurityHeadersMiddleware()
+            new SecurityHeadersMiddleware(),
+            new \Infinri\Core\App\Middleware\AuthenticationMiddleware($rememberTokenService, $adminUserResource)
         );
     });
     
@@ -66,7 +74,7 @@ describe('FrontController', function () {
     });
     
     it('can dispatch request to controller', function () {
-        $this->router->addRoute('test', '/test', TestController::class);
+        $this->router->addRoute('test', '/test', \Tests\Unit\App\TestController::class);
         
         $request = new Request([], [], ['REQUEST_URI' => '/test', 'REQUEST_METHOD' => 'GET']);
         $response = $this->frontController->dispatch($request);
@@ -108,7 +116,7 @@ describe('FrontController', function () {
     });
     
     it('returns 404 for missing action', function () {
-        $this->router->addRoute('test', '/test', TestController::class, 'nonExistentAction');
+        $this->router->addRoute('test', '/test', \Tests\Unit\App\TestController::class, 'nonExistentAction');
         
         $request = new Request([], [], ['REQUEST_URI' => '/test', 'REQUEST_METHOD' => 'GET']);
         $response = $this->frontController->dispatch($request);
@@ -117,7 +125,8 @@ describe('FrontController', function () {
     });
     
     it('handles controller exceptions', function () {
-        $this->router->addRoute('test', '/test', 'NonExistentController');
+        // Use a non-existent controller in Tests namespace (passes namespace check but doesn't exist)
+        $this->router->addRoute('test', '/test', 'Tests\\Unit\\App\\NonExistentController');
         
         $request = new Request([], [], ['REQUEST_URI' => '/test', 'REQUEST_METHOD' => 'GET']);
         $response = $this->frontController->dispatch($request);

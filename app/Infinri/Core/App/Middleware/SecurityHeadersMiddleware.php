@@ -56,19 +56,29 @@ class SecurityHeadersMiddleware
      * Build Content Security Policy directives
      * 
      * CSP helps prevent XSS, clickjacking, and other code injection attacks
+     * 
+     * SECURITY: Uses nonce-based CSP to prevent XSS without allowing unsafe-inline
      */
     private function getContentSecurityPolicy(): string
     {
+        // Generate cryptographically secure nonce for this request
+        $nonce = base64_encode(random_bytes(16));
+        
+        // Store nonce in global for templates to use
+        // Templates can access via: $_SERVER['CSP_NONCE']
+        $_SERVER['CSP_NONCE'] = $nonce;
+        
         $directives = [
             // Default fallback for any resource type not covered by specific directives
             "default-src 'self'",
             
-            // Scripts: allow inline scripts and eval (needed for some admin functionality)
-            // In production, consider removing 'unsafe-inline' and using nonces
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+            // Scripts: ONLY allow same-origin scripts and nonce-tagged inline scripts
+            // REMOVED: 'unsafe-inline' and 'unsafe-eval' for security
+            "script-src 'self' 'nonce-{$nonce}'",
             
-            // Styles: allow inline styles (used extensively in current templates)
-            "style-src 'self' 'unsafe-inline'",
+            // Styles: ONLY allow same-origin styles and nonce-tagged inline styles
+            // REMOVED: 'unsafe-inline' for security
+            "style-src 'self' 'nonce-{$nonce}'",
             
             // Images: allow from same origin, data URIs (base64 images), and blob (image picker)
             "img-src 'self' data: blob:",
@@ -90,6 +100,9 @@ class SecurityHeadersMiddleware
             
             // Embedding restrictions (controls where this site can be embedded)
             "frame-ancestors 'self'",
+            
+            // Report CSP violations to this endpoint (for monitoring)
+            "report-uri /csp-report",
         ];
         
         return implode('; ', $directives);

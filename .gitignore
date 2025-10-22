@@ -4,7 +4,11 @@
 
 # Cache & Generated Files (structure preserved via var/cache/.gitignore)
 /var/log/
+/var/log/*.log
 /var/session/
+/var/session/*
+/var/cache/
+/var/cache/*
 /var/tmp/
 /app/var/
 /pub/static/
@@ -39,6 +43,13 @@ Thumbs.db
 *_rsa
 *_rsa.pub
 
+# Authentication & Security
+/var/session/*
+*remember_token*
+*auth_token*
+*api_key*
+*.token
+
 # Database dumps & backups
 *.sql
 *.sql.gz
@@ -58,6 +69,16 @@ yarn-error.log
 /coverage/
 /.phpunit.result.cache
 phpunit.xml.dist
+/tests/_output/
+test_*.php
+*_test.db
+*.test.db
+
+# Debug & Test Scripts (root level)
+/check_*.php
+/debug_*.php
+/validate_*.php
+/test_*.php
 
 # Temporary files
 *.tmp
