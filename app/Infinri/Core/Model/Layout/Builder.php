@@ -40,6 +40,7 @@ class Builder
         $this->blocks = [];
         
         // Find root element (usually a container)
+        // Both frontend and admin layouts extend base_default from Theme
         foreach ($layout->children() as $element) {
             if ($element->getName() === 'container' || $element->getName() === 'block') {
                 $rootBlock = $this->buildElement($element);

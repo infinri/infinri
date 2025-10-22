@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Infinri\Admin\Controller\Adminhtml\User;
+namespace Infinri\Admin\Controller\Users;
 
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
@@ -10,7 +10,7 @@ use Infinri\Cms\Helper\AdminLayout;
 
 /**
  * Admin User List Controller
- * Displays admin users using UI Component grid
+ * Route: admin/users/index
  */
 class Index
 {

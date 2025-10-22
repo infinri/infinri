@@ -7,7 +7,7 @@
              title="Dashboard" 
              module="Infinri_Admin" 
              sortOrder="10" 
-             action="admin/dashboard" 
+             action="admin/dashboard/index" 
              resource="Infinri_Admin::dashboard"/>
         
         <!-- Content Section -->
@@ -30,7 +30,7 @@
              module="Infinri_Admin" 
              sortOrder="10" 
              parent="Infinri_Admin::system"
-             action="user/user/index" 
+             action="admin/users/index" 
              resource="Infinri_Admin::system_users"/>
     </menu>
 </config>

@@ -55,7 +55,9 @@ class Post extends AbstractController
         // Validate input
         if (empty($username) || empty($password)) {
             Logger::warning('Login failed: Empty credentials');
-            return $this->redirect('/admin/auth/login?error=empty');
+            $_SESSION['login_error'] = 'Please enter both username and password.';
+            $_SESSION['login_username'] = $username;
+            return $this->redirect('/admin/auth/login/index');
         }
 
         // Load user
@@ -64,7 +66,9 @@ class Post extends AbstractController
         if (!$userData) {
             Logger::warning('Login failed: User not found', ['username' => $username]);
             usleep(random_int(100000, 500000)); // Timing attack prevention
-            return $this->redirect('/admin/auth/login?error=invalid');
+            $_SESSION['login_error'] = 'Invalid username or password.';
+            $_SESSION['login_username'] = $username;
+            return $this->redirect('/admin/auth/login/index');
         }
 
         // Create user model
@@ -74,14 +78,18 @@ class Post extends AbstractController
         // Check active status
         if (!$user->isActive()) {
             Logger::warning('Login failed: User inactive', ['username' => $username]);
-            return $this->redirect('/admin/auth/login?error=inactive');
+            $_SESSION['login_error'] = 'This account has been disabled. Please contact an administrator.';
+            $_SESSION['login_username'] = $username;
+            return $this->redirect('/admin/auth/login/index');
         }
 
         // Verify password
         if (!password_verify($password, $user->getPassword())) {
             Logger::warning('Login failed: Invalid password', ['username' => $username]);
             usleep(random_int(100000, 500000)); // Timing attack prevention
-            return $this->redirect('/admin/auth/login?error=invalid');
+            $_SESSION['login_error'] = 'Invalid username or password.';
+            $_SESSION['login_username'] = $username;
+            return $this->redirect('/admin/auth/login/index');
         }
 
         // Handle Remember Me BEFORE session operations (must be before headers are sent)
@@ -118,7 +126,7 @@ class Post extends AbstractController
         ]);
 
         // Redirect to dashboard
-        return $this->redirect('/admin/infinri');
+        return $this->redirect('/admin/dashboard/index');
     }
 
     private function getFingerprint(): string

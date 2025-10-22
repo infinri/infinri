@@ -34,7 +34,7 @@ class Index extends AbstractController
         // If already logged in, redirect to dashboard
         if (isset($_SESSION['admin_authenticated']) && $_SESSION['admin_authenticated'] === true) {
             Logger::info('Admin already authenticated, redirecting to dashboard');
-            return $this->redirect('/admin/infinri');
+            return $this->redirect('/admin/dashboard/index');
         }
 
         // Render login page using layout

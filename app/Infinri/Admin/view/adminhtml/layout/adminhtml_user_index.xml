@@ -1,4 +1,0 @@
-<?xml version="1.0"?>
-<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <block name="user.grid" class="Infinri\Admin\Block\Adminhtml\User\Grid" template="user/grid.phtml"/>
-</layout>

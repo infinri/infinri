@@ -8,7 +8,7 @@
              module="Infinri_Cms" 
              parent="Infinri_Admin::content"
              sortOrder="10" 
-             action="admin/cms/page/index" 
+             action="/admin/cms/page/index" 
              resource="Infinri_Cms::pages"/>
         
         <!-- Inject Blocks into Content section -->
@@ -17,7 +17,7 @@
              module="Infinri_Cms" 
              parent="Infinri_Admin::content"
              sortOrder="20" 
-             action="admin/cms/block/index" 
+             action="/admin/cms/block/index" 
              resource="Infinri_Cms::blocks"/>
     </menu>
 </config>

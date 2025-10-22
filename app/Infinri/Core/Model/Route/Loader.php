@@ -168,7 +168,8 @@ class Loader
         $baseNamespace = str_replace('_', '\\', $moduleName) . '\\Controller';
         
         // For admin routes, add Adminhtml to namespace
-        $namespace = ($routerId === 'admin') 
+        // Exception: Don't add Adminhtml for the Admin module itself
+        $namespace = ($routerId === 'admin' && $moduleName !== 'Infinri_Admin') 
             ? $baseNamespace . '\\Adminhtml' 
             : $baseNamespace;
 
@@ -205,28 +206,52 @@ class Loader
             // Frontend routes: /{frontName}/...
             $prefix = ($routerId === 'admin') ? '/admin' : '';
             
-            $router->addRoute(
-                "{$routeId}_index_index",
-                "{$prefix}/{$frontName}",
-                $namespace . '\\Index\\Index',
-                'execute',
-                ['GET', 'POST']
-            );
-            
-            $router->addRoute(
-                "{$routeId}_controller_action",
-                "{$prefix}/{$frontName}/:controller/:action",
-                $namespace . '\\:controller\\:action',
-                'execute',
-                ['GET', 'POST']
-            );
-            
-            Logger::info("RouteLoader: Registered standard routes", [
-                'module' => $moduleName,
-                'routerId' => $routerId,
-                'frontName' => $frontName,
-                'pattern' => "{$prefix}/{$frontName}/*"
-            ]);
+            // Special handling for Admin module itself - don't double up the "admin" prefix
+            if ($moduleName === 'Infinri_Admin' && $frontName === 'admin') {
+                $router->addRoute(
+                    "{$routeId}_index_index",
+                    "/admin",
+                    $namespace . '\\Dashboard\\Index',
+                    'execute',
+                    ['GET', 'POST']
+                );
+                
+                $router->addRoute(
+                    "{$routeId}_controller_action",
+                    "/admin/:controller/:action",
+                    $namespace . '\\:controller\\:action',
+                    'execute',
+                    ['GET', 'POST']
+                );
+                
+                Logger::info("RouteLoader: Registered Admin module routes", [
+                    'module' => $moduleName,
+                    'pattern' => '/admin/:controller/:action'
+                ]);
+            } else {
+                $router->addRoute(
+                    "{$routeId}_index_index",
+                    "{$prefix}/{$frontName}",
+                    $namespace . '\\Index\\Index',
+                    'execute',
+                    ['GET', 'POST']
+                );
+                
+                $router->addRoute(
+                    "{$routeId}_controller_action",
+                    "{$prefix}/{$frontName}/:controller/:action",
+                    $namespace . '\\:controller\\:action',
+                    'execute',
+                    ['GET', 'POST']
+                );
+                
+                Logger::info("RouteLoader: Registered standard routes", [
+                    'module' => $moduleName,
+                    'routerId' => $routerId,
+                    'frontName' => $frontName,
+                    'pattern' => "{$prefix}/{$frontName}/*"
+                ]);
+            }
         }
     }
 }

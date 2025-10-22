@@ -3,59 +3,59 @@
 /**
  * Admin Default Layout
  * Base layout for all admin pages
+ * Extends base_default from Theme module
  * Provides: header, navigation, content area, footer
  */
 -->
-<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="urn:infinri:framework:View/Layout/etc/page.xsd">
-    <body>
-        <container name="root" class="root">
-            
-            <!-- Admin Header -->
-            <container name="header" class="admin-header">
-                <block class="Infinri\Core\Block\Template" 
-                       name="admin.header" 
-                       template="Infinri_Admin::header.phtml"/>
-            </container>
-            
-            <!-- Admin Navigation -->
-            <container name="navigation" class="admin-navigation">
-                <block class="Infinri\Admin\Block\Menu" 
-                       name="admin.menu" 
-                       template="Infinri_Admin::menu.phtml"/>
-            </container>
-            
-            <!-- Main Content Wrapper -->
-            <container name="main" class="admin-main">
-                
-                <!-- Breadcrumbs -->
-                <container name="breadcrumbs" class="admin-breadcrumbs">
-                    <block class="Infinri\Core\Block\Template" 
-                           name="admin.breadcrumbs" 
-                           template="Infinri_Admin::breadcrumbs.phtml"/>
-                </container>
-                
-                <!-- Messages -->
-                <container name="messages" class="admin-messages">
-                    <block class="Infinri\Core\Block\Template" 
-                           name="admin.messages" 
-                           template="Infinri_Admin::messages.phtml"/>
-                </container>
-                
-                <!-- Page Content -->
-                <container name="content" class="admin-content">
-                    <!-- Page-specific content goes here -->
-                </container>
-                
-            </container>
-            
-            <!-- Admin Footer -->
-            <container name="footer" class="admin-footer">
-                <block class="Infinri\Core\Block\Template" 
-                       name="admin.footer" 
-                       template="Infinri_Admin::footer.phtml"/>
-            </container>
-            
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <!-- Extend base layout from Theme -->
+    <update handle="base_default"/>
+    
+    <!-- Replace main content structure with admin-specific layout -->
+    <referenceContainer name="main.content" remove="true"/>
+    
+    <referenceContainer name="page.wrapper">
+        <!-- Admin Header -->
+        <container name="admin.header" htmlTag="header" htmlClass="admin-header">
+            <block class="Infinri\Core\Block\Template" 
+                   name="admin.header.block" 
+                   template="Infinri_Admin::header.phtml"/>
         </container>
-    </body>
-</page>
+        
+        <!-- Admin Navigation -->
+        <container name="admin.navigation" htmlTag="nav" htmlClass="admin-navigation">
+            <block class="Infinri\Admin\Block\Menu" 
+                   name="admin.menu" 
+                   template="Infinri_Admin::menu.phtml"/>
+        </container>
+        
+        <!-- Admin Main Content -->
+        <container name="admin.main" htmlTag="main" htmlClass="admin-main">
+            <!-- Breadcrumbs -->
+            <container name="admin.breadcrumbs" htmlClass="admin-breadcrumbs">
+                <block class="Infinri\Core\Block\Template" 
+                       name="admin.breadcrumbs.block" 
+                       template="Infinri_Admin::breadcrumbs.phtml"/>
+            </container>
+            
+            <!-- Messages -->
+            <container name="admin.messages" htmlClass="admin-messages">
+                <block class="Infinri\Core\Block\Template" 
+                       name="admin.messages.block" 
+                       template="Infinri_Admin::messages.phtml"/>
+            </container>
+            
+            <!-- Page Content -->
+            <container name="content" htmlClass="admin-content">
+                <!-- Page-specific content goes here -->
+            </container>
+        </container>
+        
+        <!-- Admin Footer -->
+        <container name="admin.footer" htmlTag="footer" htmlClass="admin-footer">
+            <block class="Infinri\Core\Block\Template" 
+                   name="admin.footer.block" 
+                   template="Infinri_Admin::footer.phtml"/>
+        </container>
+    </referenceContainer>
+</layout>

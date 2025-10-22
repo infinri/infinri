@@ -8,7 +8,7 @@
              module="Infinri_Core" 
              parent="Infinri_Admin::content"
              sortOrder="30" 
-             action="admin/infinri_media/media/index" 
+             action="/admin/infinri_media/media/index" 
              resource="Infinri_Core::media"/>
     </menu>
 </config>

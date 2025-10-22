@@ -19,7 +19,7 @@
     <settings>
         <buttons>
             <button name="add">
-                <url path="/admin/user/user/create"/>
+                <url path="/admin/users/create"/>
                 <class>primary</class>
                 <label translate="true">Add New User</label>
             </button>

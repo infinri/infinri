@@ -97,6 +97,15 @@ $nonce = $_SERVER['CSP_NONCE'] ?? '';
             color: #666;
             font-size: 12px;
         }
+        .error-message {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -122,6 +131,7 @@ $nonce = $_SERVER['CSP_NONCE'] ?? '';
                     type="text" 
                     id="username" 
                     name="username" 
+                    value="<?= $block->escapeHtmlAttr($block->getUsername()) ?>"
                     required 
                     autofocus 
                     autocomplete="username"

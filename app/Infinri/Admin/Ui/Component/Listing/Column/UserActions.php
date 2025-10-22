@@ -21,11 +21,11 @@ class UserActions
                 if (isset($item['user_id'])) {
                     error_log("Adding actions for user_id: " . $item['user_id']);
                     $item['actions']['edit'] = [
-                        'href' => '/admin/user/user/edit?id=' . $item['user_id'],
+                        'href' => '/admin/users/edit?id=' . $item['user_id'],
                         'label' => 'Edit'
                     ];
                     $item['actions']['delete'] = [
-                        'href' => '/admin/user/user/delete?id=' . $item['user_id'],
+                        'href' => '/admin/users/delete?id=' . $item['user_id'],
                         'label' => 'Delete',
                         'confirm' => [
                             'title' => 'Delete User',

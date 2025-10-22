@@ -4,19 +4,26 @@ declare(strict_types=1);
 
 namespace Infinri\Core\Security;
 
-use Symfony\Component\Security\Csrf\CsrfToken;
-use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
-
+/**
+ * Lightweight CSRF guard backed by PHP sessions.
+ * Avoids external framework dependencies while keeping API compatible
+ * with existing form renderer usage.
+ */
 class CsrfGuard
 {
-    public function __construct(private readonly CsrfTokenManagerInterface $tokenManager)
-    {
-    }
+    private const SESSION_KEY = '_csrf_tokens';
 
     public function generateToken(string $tokenId): string
     {
         $this->ensureSessionStarted();
-        return $this->tokenManager->getToken($tokenId)->getValue();
+
+        $token = bin2hex(random_bytes(32));
+        $_SESSION[self::SESSION_KEY][$tokenId] = [
+            'value' => $token,
+            'generated_at' => time(),
+        ];
+
+        return $token;
     }
 
     public function validateToken(string $tokenId, ?string $tokenValue): bool
@@ -26,7 +33,27 @@ class CsrfGuard
         }
 
         $this->ensureSessionStarted();
-        return $this->tokenManager->isTokenValid(new CsrfToken($tokenId, $tokenValue));
+
+        $stored = $_SESSION[self::SESSION_KEY][$tokenId] ?? null;
+        if (!$stored) {
+            return false;
+        }
+
+        // Optional expiration (default 1 hour)
+        $isExpired = ($stored['generated_at'] ?? 0) < (time() - 3600);
+        if ($isExpired) {
+            unset($_SESSION[self::SESSION_KEY][$tokenId]);
+            return false;
+        }
+
+        $isValid = hash_equals($stored['value'], $tokenValue);
+
+        // One-time use: rotate token after successful validation
+        if ($isValid) {
+            unset($_SESSION[self::SESSION_KEY][$tokenId]);
+        }
+
+        return $isValid;
     }
 
     public function getHiddenField(string $tokenId, string $fieldName = '_csrf_token'): string
@@ -49,6 +76,9 @@ class CsrfGuard
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
+        }
+        if (!isset($_SESSION[self::SESSION_KEY])) {
+            $_SESSION[self::SESSION_KEY] = [];
         }
     }
 }

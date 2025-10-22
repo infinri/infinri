@@ -88,8 +88,8 @@ describe('Admin User Grid Components', function () {
         $result = $userActions->prepareDataSource($testData);
         $actions = $result['data']['items'][0]['actions'];
         
-        expect($actions['edit']['href'])->toBe('/admin/user/user/edit?id=123')
-            ->and($actions['delete']['href'])->toBe('/admin/user/user/delete?id=123')
+        expect($actions['edit']['href'])->toBe('/admin/users/edit?id=123')
+            ->and($actions['delete']['href'])->toBe('/admin/users/delete?id=123')
             ->and($actions['edit']['label'])->toBe('Edit')
             ->and($actions['delete']['label'])->toBe('Delete');
     });

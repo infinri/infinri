@@ -32,20 +32,16 @@ class Form extends Template
     }
 
     /**
-     * Get error message based on error code
+     * Get error message from session flash
      */
     public function getErrorMessage(): string
     {
-        $error = $this->getData('error');
-        
-        return match($error) {
-            'invalid' => 'Invalid username or password',
-            'empty' => 'Please enter username and password',
-            'inactive' => 'This account has been disabled',
-            'csrf' => 'Security token validation failed. Please try again.',
-            'session_invalid' => 'Your session has expired. Please login again.',
-            default => ''
-        };
+        if (isset($_SESSION['login_error'])) {
+            $error = $_SESSION['login_error'];
+            unset($_SESSION['login_error']); // Clear after displaying
+            return $error;
+        }
+        return '';
     }
 
     /**
@@ -53,6 +49,19 @@ class Form extends Template
      */
     public function hasError(): bool
     {
-        return !empty($this->getData('error'));
+        return isset($_SESSION['login_error']);
+    }
+    
+    /**
+     * Get username from previous attempt
+     */
+    public function getUsername(): string
+    {
+        if (isset($_SESSION['login_username'])) {
+            $username = $_SESSION['login_username'];
+            unset($_SESSION['login_username']); // Clear after displaying
+            return $username;
+        }
+        return '';
     }
 }

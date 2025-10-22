@@ -1,12 +1,16 @@
 <?xml version="1.0"?>
+<!--
+/**
+ * Admin User Index Layout
+ * Route: admin/users/index
+ * Uses UI Component for grid display (admin_user_listing)
+ */
+-->
 <layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <!-- Extend base admin layout -->
     <update handle="admin_default"/>
     
     <referenceContainer name="content">
-        <!-- Dashboard Content -->
-        <block class="Infinri\Admin\Block\Dashboard" 
-               name="admin.dashboard" 
-               template="Infinri_Admin::dashboard/index.phtml"/>
+        <uiComponent name="admin_user_listing"/>
     </referenceContainer>
 </layout>
