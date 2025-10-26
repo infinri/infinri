@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Adminhtml Default Layout
+ * Base theme layout for all admin pages
+ * Extends base_default and adds admin-specific CSS/JS
+ */
+-->
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <!-- Extend base layout -->
+    <update handle="base_default"/>
+    
+    <!-- Add adminhtml CSS -->
+    <referenceContainer name="head.styles">
+        <block class="Infinri\Core\Block\Css" name="theme.admin.styles">
+            <arguments>
+                <argument name="href" xsi:type="string">/static/adminhtml/css/styles.min.css</argument>
+                <argument name="media" xsi:type="string">all</argument>
+            </arguments>
+        </block>
+    </referenceContainer>
+    
+    <!-- Add adminhtml JS -->
+    <referenceContainer name="head.scripts">
+        <block class="Infinri\Core\Block\Js" name="theme.admin.scripts">
+            <arguments>
+                <argument name="src" xsi:type="string">/static/adminhtml/js/scripts.min.js</argument>
+                <argument name="defer" xsi:type="boolean">true</argument>
+            </arguments>
+        </block>
+    </referenceContainer>
+    
+    <!-- Add admin-specific page wrapper styling -->
+    <referenceContainer name="page.wrapper">
+        <arguments>
+            <argument name="htmlClass" xsi:type="string">admin-page-wrapper</argument>
+        </arguments>
+    </referenceContainer>
+</layout>

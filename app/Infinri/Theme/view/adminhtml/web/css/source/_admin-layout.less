@@ -1,0 +1,113 @@
+/**
+ * Admin Layout
+ * Page structure and containers for admin interface
+ */
+
+// Admin wrapper
+.admin-wrapper {
+    display: flex;
+    min-height: 100vh;
+    background: @body-bg;
+}
+
+// Admin page structure
+.admin-page {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0; // Prevent flex overflow
+}
+
+// Admin main content area
+.admin-main {
+    flex: 1;
+    padding: @spacing-lg;
+    max-width: 100%;
+    
+    @media (min-width: @breakpoint-lg) {
+        padding: @spacing-xl;
+    }
+}
+
+// Admin content container
+.admin-content {
+    background: @white;
+    border-radius: @border-radius-lg;
+    box-shadow: @shadow;
+    padding: @spacing-lg;
+    margin-bottom: @spacing-lg;
+}
+
+// Admin breadcrumbs container
+.admin-breadcrumbs {
+    margin-bottom: @spacing-md;
+    padding: @spacing-sm 0;
+}
+
+// Admin messages container
+.admin-messages {
+    margin-bottom: @spacing-lg;
+}
+
+// Admin page title
+.admin-page-title {
+    font-size: @font-size-h2;
+    font-weight: @font-weight-bold;
+    color: @text-color;
+    margin-bottom: @spacing-lg;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+    .admin-page-actions {
+        display: flex;
+        gap: @spacing-sm;
+    }
+}
+
+// Admin section
+.admin-section {
+    margin-bottom: @spacing-xl;
+    
+    .admin-section-title {
+        font-size: @font-size-h4;
+        font-weight: @font-weight-semibold;
+        color: @text-color;
+        margin-bottom: @spacing-md;
+        padding-bottom: @spacing-sm;
+        border-bottom: 2px solid @border-color;
+    }
+}
+
+// Admin two-column layout
+.admin-layout-2col {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: @spacing-lg;
+    
+    @media (min-width: @breakpoint-md) {
+        grid-template-columns: 250px 1fr;
+    }
+    
+    @media (min-width: @breakpoint-lg) {
+        grid-template-columns: 300px 1fr;
+    }
+}
+
+// Admin sidebar
+.admin-sidebar {
+    background: @surface-bg;
+    border-radius: @border-radius-lg;
+    padding: @spacing-lg;
+}
+
+// Responsive utilities
+@media (max-width: @breakpoint-md) {
+    .admin-main {
+        padding: @spacing-md;
+    }
+    
+    .admin-content {
+        padding: @spacing-md;
+    }
+}

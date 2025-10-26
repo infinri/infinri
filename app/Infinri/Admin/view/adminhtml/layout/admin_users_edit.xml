@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Admin User Edit Layout
+ */
+-->
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <update handle="admin_default"/>
+
+    <referenceContainer name="content">
+        <uiComponent name="admin_user_form">
+            <arguments>
+                <argument name="user_id" xsi:type="string">$id</argument>
+            </arguments>
+        </uiComponent>
+    </referenceContainer>
+</layout>

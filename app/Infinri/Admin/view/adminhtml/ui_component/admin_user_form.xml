@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Admin User Form UI Component
+ * Provides form for creating/editing admin users
+ */
+-->
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">admin_user_form.admin_user_form_data_source</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">User Information</item>
+    </argument>
+
+    <settings>
+        <buttons>
+            <button name="back">
+                <url path="/admin/users/index"/>
+                <class>back</class>
+                <label translate="true">Back</label>
+            </button>
+            <button name="save">
+                <url path="/admin/users/save"/>
+                <class>primary</class>
+                <label translate="true">Save User</label>
+            </button>
+        </buttons>
+        <namespace>admin_user_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>admin_user_form.admin_user_form_data_source</dep>
+        </deps>
+    </settings>
+
+    <dataSource name="admin_user_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="/admin/users/save"/>
+        </settings>
+        <dataProvider class="Infinri\Admin\Ui\Component\Form\DataProvider" name="admin_user_form_data_source">
+            <settings>
+                <requestFieldName>user_id</requestFieldName>
+                <primaryFieldName>user_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <fieldset name="general">
+        <settings>
+            <label translate="true">General Information</label>
+        </settings>
+
+        <field name="user_id" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <visible>false</visible>
+                <dataScope>user_id</dataScope>
+            </settings>
+        </field>
+
+        <field name="username" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Username</label>
+                <dataScope>username</dataScope>
+            </settings>
+        </field>
+
+        <field name="email" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Email</label>
+                <dataScope>email</dataScope>
+            </settings>
+        </field>
+
+        <field name="firstname" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">First Name</label>
+                <dataScope>firstname</dataScope>
+            </settings>
+        </field>
+
+        <field name="lastname" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Last Name</label>
+                <dataScope>lastname</dataScope>
+            </settings>
+        </field>
+
+        <field name="password" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Password</label>
+                <dataScope>password</dataScope>
+            </settings>
+            <formElements>
+                <input>
+                    <settings>
+                        <type>password</type>
+                    </settings>
+                </input>
+            </formElements>
+        </field>
+
+        <field name="is_active" formElement="checkbox">
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Active</label>
+                <dataScope>is_active</dataScope>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+    </fieldset>
+</form>

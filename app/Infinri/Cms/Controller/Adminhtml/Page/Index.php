@@ -5,8 +5,7 @@ namespace Infinri\Cms\Controller\Adminhtml\Page;
 
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
-use Infinri\Core\View\Element\UiComponentRenderer;
-use Infinri\Cms\Helper\AdminLayout;
+use Infinri\Core\Model\View\LayoutFactory;
 
 /**
  * Displays CMS pages using UI Component grid
@@ -14,16 +13,14 @@ use Infinri\Cms\Helper\AdminLayout;
 class Index
 {
     public function __construct(
-        private readonly UiComponentRenderer $uiComponentRenderer,
-        private readonly AdminLayout $adminLayout
+        private readonly LayoutFactory $layoutFactory
     ) {
     }
 
     public function execute(Request $request): Response
     {
-        $gridHtml = $this->uiComponentRenderer->render('cms_page_listing');
-        $html = $this->adminLayout->wrapContent($gridHtml, 'CMS Pages');
-        
+        $html = $this->layoutFactory->render('cms_adminhtml_page_index');
+
         return (new Response())->setBody($html);
     }
 }

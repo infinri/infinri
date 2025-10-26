@@ -128,6 +128,10 @@ class UiFormRenderer
             $entityType = 'block';
             $primaryField = 'block_id';
             $basePath = '/admin/cms/block';
+        } elseif (str_contains($formName, 'user')) {
+            $entityType = 'user';
+            $primaryField = 'user_id';
+            $basePath = '/admin/users';
         } else {
             $entityType = 'page';
             $primaryField = 'page_id';
@@ -137,7 +141,13 @@ class UiFormRenderer
         $entityLabel = ucfirst($entityType);
         $primaryId = $data[$primaryField] ?? null;
         $isNew = empty($primaryId);
-        $pageTitle = $isNew ? "New $entityLabel" : "Edit $entityLabel: " . ($data['title'] ?? '#' . $primaryId);
+        
+        // Build page title based on entity type
+        if ($entityType === 'user') {
+            $pageTitle = $isNew ? "New User" : "Edit User: " . ($data['username'] ?? '#' . $primaryId);
+        } else {
+            $pageTitle = $isNew ? "New $entityLabel" : "Edit $entityLabel: " . ($data['title'] ?? '#' . $primaryId);
+        }
 
         error_log("Form entity: $entityLabel, ID: " . ($primaryId ?? 'null') . ", Title: $pageTitle");
 

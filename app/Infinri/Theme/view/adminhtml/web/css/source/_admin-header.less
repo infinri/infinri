@@ -1,0 +1,123 @@
+/**
+ * Admin Header
+ * Top bar with logo, search, and user menu
+ */
+
+.admin-header {
+    background: @white;
+    border-bottom: 1px solid @border-color;
+    box-shadow: @shadow-sm;
+    padding: 0 @spacing-lg;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: @z-index-sticky;
+}
+
+// Admin logo
+.admin-logo {
+    display: flex;
+    align-items: center;
+    font-size: @font-size-xl;
+    font-weight: @font-weight-bold;
+    color: @primary-color;
+    text-decoration: none;
+    transition: @transition-base;
+    
+    &:hover {
+        color: @primary-dark;
+    }
+    
+    img {
+        height: 32px;
+        width: auto;
+        margin-right: @spacing-sm;
+    }
+}
+
+// Admin header toolbar
+.admin-header-toolbar {
+    display: flex;
+    align-items: center;
+    gap: @spacing-md;
+}
+
+// Admin search
+.admin-header-search {
+    position: relative;
+    
+    input {
+        width: 300px;
+        padding: @spacing-sm @spacing-md @spacing-sm 36px;
+        border: 1px solid @border-color;
+        border-radius: @border-radius;
+        font-size: @font-size-sm;
+        transition: @transition-base;
+        
+        &:focus {
+            outline: none;
+            border-color: @primary-color;
+            box-shadow: 0 0 0 3px fade(@primary-color, 10%);
+        }
+    }
+    
+    .search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: @text-light;
+        pointer-events: none;
+    }
+}
+
+// Admin user menu
+.admin-user-menu {
+    position: relative;
+    
+    .user-trigger {
+        display: flex;
+        align-items: center;
+        gap: @spacing-sm;
+        padding: @spacing-sm @spacing-md;
+        border-radius: @border-radius;
+        cursor: pointer;
+        transition: @transition-base;
+        
+        &:hover {
+            background: @gray-100;
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: @border-radius-circle;
+            background: @gray-300;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: @font-weight-bold;
+            color: @white;
+        }
+        
+        .user-name {
+            font-size: @font-size-sm;
+            font-weight: @font-weight-medium;
+            color: @text-color;
+        }
+    }
+}
+
+// Responsive
+@media (max-width: @breakpoint-md) {
+    .admin-header {
+        padding: 0 @spacing-md;
+    }
+    
+    .admin-header-search {
+        display: none;
+    }
+}

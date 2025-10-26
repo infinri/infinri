@@ -1,0 +1,174 @@
+/**
+ * Admin Forms
+ * Enhanced form styling for admin interface
+ */
+
+.admin-form {
+    .form-group {
+        margin-bottom: @spacing-lg;
+        
+        label {
+            display: block;
+            font-weight: @font-weight-semibold;
+            color: @text-color;
+            margin-bottom: @spacing-sm;
+            font-size: @font-size-sm;
+            
+            .required {
+                color: @danger-color;
+                margin-left: 2px;
+            }
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: @input-padding-y @input-padding-x;
+            border: 1px solid @input-border-color;
+            border-radius: @input-border-radius;
+            font-size: @font-size-base;
+            transition: @transition-base;
+            
+            &:focus {
+                outline: none;
+                border-color: @input-focus-color;
+                box-shadow: 0 0 0 3px fade(@input-focus-color, 10%);
+            }
+            
+            &:disabled {
+                background: @gray-100;
+                cursor: not-allowed;
+                opacity: 0.6;
+            }
+        }
+        
+        .form-hint {
+            display: block;
+            margin-top: @spacing-xs;
+            font-size: @font-size-sm;
+            color: @text-muted;
+        }
+        
+        .form-error {
+            display: block;
+            margin-top: @spacing-xs;
+            font-size: @font-size-sm;
+            color: @danger-color;
+        }
+    }
+}
+
+// Form fieldset
+.admin-fieldset {
+    border: 1px solid @border-color;
+    border-radius: @border-radius-lg;
+    padding: @spacing-lg;
+    margin-bottom: @spacing-lg;
+    
+    legend {
+        font-size: @font-size-h5;
+        font-weight: @font-weight-semibold;
+        color: @text-color;
+        padding: 0 @spacing-sm;
+        margin-bottom: @spacing-md;
+    }
+}
+
+// Form row (inline fields)
+.admin-form-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: @spacing-md;
+    
+    @media (min-width: @breakpoint-md) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    @media (min-width: @breakpoint-lg) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    &.admin-form-row-2col {
+        @media (min-width: @breakpoint-md) {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+}
+
+// Form actions
+.admin-form-actions {
+    display: flex;
+    gap: @spacing-md;
+    padding-top: @spacing-lg;
+    border-top: 1px solid @border-color;
+    margin-top: @spacing-lg;
+    
+    .btn {
+        min-width: 120px;
+    }
+}
+
+// Toggle switch
+.admin-toggle {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+    
+    input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+        
+        &:checked + .admin-toggle-slider {
+            background: @success-color;
+            
+            &:before {
+                transform: translateX(24px);
+            }
+        }
+    }
+    
+    .admin-toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: @gray-300;
+        border-radius: @border-radius-pill;
+        transition: @transition-base;
+        
+        &:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: @white;
+            border-radius: 50%;
+            transition: @transition-base;
+        }
+    }
+}
+
+// Select with icon
+.admin-select-wrapper {
+    position: relative;
+    
+    select {
+        appearance: none;
+        padding-right: 36px;
+    }
+    
+    &:after {
+        content: '▼';
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        color: @text-muted;
+    }
+}

@@ -15,6 +15,7 @@ $formIdAttr = $entityType . '-form';
 $formAction = match($entityType) {
     'block' => '/admin/cms/block/save',
     'widget' => '/admin/cms/widget/save',
+    'user' => '/admin/users/save',
     default => '/admin/cms/page/save',
 };
 
@@ -22,6 +23,7 @@ $formAction = match($entityType) {
 $primaryFieldName = $primaryField ?? match($entityType) {
     'block' => 'block_id',
     'widget' => 'widget_id',
+    'user' => 'user_id',
     default => 'page_id',
 };
 

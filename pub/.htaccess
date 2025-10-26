@@ -1,0 +1,19 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Allow static files to be served directly without routing through index.php
+    RewriteCond %{REQUEST_URI} ^/static/ [OR]
+    RewriteCond %{REQUEST_URI} ^/media/
+    RewriteRule .* - [L]
+    
+    # Route all other requests through index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>
+
+# Prevent directory listing
+Options -Indexes
+
+# Enable following symlinks  
+Options +FollowSymLinks

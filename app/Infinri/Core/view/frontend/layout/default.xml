@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <!-- Extend base default layout -->
-    <update handle="base_default"/>
-    
-    <!-- This layout extends base_default.xml -->
-    <!-- Use referenceContainer to add blocks to existing containers -->
-    
-</layout>

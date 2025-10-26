@@ -6,8 +6,7 @@ namespace Infinri\Cms\Controller\Adminhtml\Block;
 
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
-use Infinri\Core\View\Element\UiComponentRenderer;
-use Infinri\Cms\Helper\AdminLayout;
+use Infinri\Core\Model\View\LayoutFactory;
 
 /**
  * Displays CMS blocks using UI Component grid
@@ -15,15 +14,14 @@ use Infinri\Cms\Helper\AdminLayout;
 class Index
 {
     public function __construct(
-        private readonly UiComponentRenderer $uiComponentRenderer,
-        private readonly AdminLayout $adminLayout
+        private readonly LayoutFactory $layoutFactory
     ) {
     }
 
     public function execute(Request $request): Response
     {
-        $gridHtml = $this->uiComponentRenderer->render('cms_block_listing');
-        $html = $this->adminLayout->wrapContent($gridHtml, 'CMS Blocks');
+        // Render using layout system (Theme provides styling)
+        $html = $this->layoutFactory->render('cms_adminhtml_block_index');
 
         return (new Response())->setBody($html);
     }

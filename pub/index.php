@@ -7,6 +7,43 @@
 
 declare(strict_types=1);
 
+// Serve static files directly (for PHP built-in server or when .htaccess doesn't work)
+$requestUri = $_SERVER['REQUEST_URI'] ?? '';
+if (preg_match('/^\/(static|media)\//', $requestUri)) {
+    $filePath = __DIR__ . parse_url($requestUri, PHP_URL_PATH);
+    if (file_exists($filePath) && is_file($filePath)) {
+        // Determine MIME type
+        $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+        $mimeTypes = [
+            'css' => 'text/css',
+            'js' => 'text/javascript',
+            'json' => 'application/json',
+            'svg' => 'image/svg+xml',
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'gif' => 'image/gif',
+            'webp' => 'image/webp',
+            'woff' => 'font/woff',
+            'woff2' => 'font/woff2',
+            'ttf' => 'font/ttf',
+            'otf' => 'font/otf',
+        ];
+        $mimeType = $mimeTypes[$extension] ?? 'application/octet-stream';
+        
+        header('Content-Type: ' . $mimeType);
+        header('Content-Length: ' . filesize($filePath));
+        header('Cache-Control: public, max-age=31536000'); // Cache for 1 year
+        readfile($filePath);
+        exit;
+    } else {
+        // File not found
+        http_response_code(404);
+        echo '404 Not Found: ' . htmlspecialchars($requestUri);
+        exit;
+    }
+}
+
 use Infinri\Core\App\Request;
 use Infinri\Core\Helper\Logger;
 use Dotenv\Dotenv;

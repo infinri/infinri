@@ -3,7 +3,7 @@
  * Dynamic Build Script
  * 
  * Automatically discovers and compiles CSS/JS from all modules
- * No need to hardcode module names in package.json
+ * Supports multiple areas: base, frontend, adminhtml
  */
 
 const fs = require('fs');
@@ -12,6 +12,15 @@ const { execSync } = require('child_process');
 
 const APP_DIR = path.join(__dirname, 'app/Infinri');
 const PUB_STATIC = path.join(__dirname, 'pub/static');
+const NODE_MODULES = path.join(__dirname, 'node_modules');
+
+// Direct paths to binaries (fixes npx issues on Windows)
+const LESSC = path.join(NODE_MODULES, 'less/bin/lessc');
+const CLEANCSS = path.join(NODE_MODULES, 'clean-css-cli/bin/cleancss');
+const TERSER = path.join(NODE_MODULES, 'terser/bin/terser');
+
+// Areas to compile
+const AREAS = ['base', 'frontend', 'adminhtml'];
 
 /**
  * Find all modules in app/Infinri
@@ -28,43 +37,48 @@ function findModules() {
 }
 
 /**
- * Compile CSS from a module
+ * Compile CSS from a module for a specific area
  */
-function compileCss(moduleName) {
-    const lessFile = path.join(APP_DIR, moduleName, 'view/frontend/web/css/styles.less');
+function compileCss(moduleName, area) {
+    const lessFile = path.join(APP_DIR, moduleName, `view/${area}/web/css/styles.less`);
     
     if (!fs.existsSync(lessFile)) {
-        return false;
+        return null;
     }
     
-    const outputDir = path.join(PUB_STATIC, 'Infinri', moduleName, 'css');
+    const outputDir = path.join(PUB_STATIC, 'Infinri', moduleName, area, 'css');
     fs.mkdirSync(outputDir, { recursive: true });
     
     const outputFile = path.join(outputDir, `${moduleName.toLowerCase()}.css`);
     
-    console.log(`📦 Compiling CSS: ${moduleName}`);
-    execSync(`npx lessc "${lessFile}" "${outputFile}"`, { stdio: 'inherit' });
+    console.log(`📦 Compiling CSS: ${moduleName} (${area})`);
     
-    return outputFile;
+    try {
+        execSync(`node "${LESSC}" "${lessFile}" "${outputFile}"`, { stdio: 'inherit' });
+        return { file: outputFile, area };
+    } catch (error) {
+        console.error(`❌ Failed to compile ${moduleName} (${area})`);
+        return null;
+    }
 }
 
 /**
- * Compile JS from a module
+ * Compile JS from a module for a specific area
  */
-function compileJs(moduleName) {
-    const jsDir = path.join(APP_DIR, moduleName, 'view/frontend/web/js');
+function compileJs(moduleName, area) {
+    const jsDir = path.join(APP_DIR, moduleName, `view/${area}/web/js`);
     const baseJsDir = path.join(APP_DIR, moduleName, 'view/base/web/js');
     
     const jsFiles = [];
     
-    // Add base JS files
-    if (fs.existsSync(baseJsDir)) {
+    // Add base JS files (only for non-base areas)
+    if (area !== 'base' && fs.existsSync(baseJsDir)) {
         jsFiles.push(...fs.readdirSync(baseJsDir)
             .filter(f => f.endsWith('.js'))
             .map(f => path.join(baseJsDir, f)));
     }
     
-    // Add frontend JS files
+    // Add area-specific JS files
     if (fs.existsSync(jsDir)) {
         jsFiles.push(...fs.readdirSync(jsDir)
             .filter(f => f.endsWith('.js'))
@@ -72,50 +86,50 @@ function compileJs(moduleName) {
     }
     
     if (jsFiles.length === 0) {
-        return false;
+        return null;
     }
     
-    const outputDir = path.join(PUB_STATIC, 'Infinri', moduleName, 'js');
+    const outputDir = path.join(PUB_STATIC, 'Infinri', moduleName, area, 'js');
     fs.mkdirSync(outputDir, { recursive: true });
     
     const outputFile = path.join(outputDir, `${moduleName.toLowerCase()}.js`);
     
-    console.log(`📦 Compiling JS: ${moduleName} (${jsFiles.length} files)`);
+    console.log(`📦 Compiling JS: ${moduleName} (${area}) - ${jsFiles.length} files`);
     
     // Concatenate all JS files
     const content = jsFiles.map(file => fs.readFileSync(file, 'utf8')).join('\n\n');
     fs.writeFileSync(outputFile, content);
     
-    return outputFile;
+    return { file: outputFile, area };
 }
 
 /**
- * Merge all CSS files
+ * Merge CSS files by area
  */
-function mergeCss(cssFiles) {
-    console.log('🔗 Merging CSS from all modules...');
+function mergeCss(cssFiles, area) {
+    console.log(`🔗 Merging CSS from all modules (${area})...`);
     
-    const outputDir = path.join(PUB_STATIC, 'frontend/css');
+    const outputDir = path.join(PUB_STATIC, area, 'css');
     fs.mkdirSync(outputDir, { recursive: true });
     
     const merged = path.join(outputDir, 'styles.css');
-    const content = cssFiles.map(file => fs.readFileSync(file, 'utf8')).join('\n\n');
+    const content = cssFiles.map(item => fs.readFileSync(item.file, 'utf8')).join('\n\n');
     fs.writeFileSync(merged, content);
     
     return merged;
 }
 
 /**
- * Merge all JS files
+ * Merge JS files by area
  */
-function mergeJs(jsFiles) {
-    console.log('🔗 Merging JS from all modules...');
+function mergeJs(jsFiles, area) {
+    console.log(`🔗 Merging JS from all modules (${area})...`);
     
-    const outputDir = path.join(PUB_STATIC, 'frontend/js');
+    const outputDir = path.join(PUB_STATIC, area, 'js');
     fs.mkdirSync(outputDir, { recursive: true });
     
     const merged = path.join(outputDir, 'scripts.js');
-    const content = jsFiles.map(file => fs.readFileSync(file, 'utf8')).join('\n\n');
+    const content = jsFiles.map(item => fs.readFileSync(item.file, 'utf8')).join('\n\n');
     fs.writeFileSync(merged, content);
     
     return merged;
@@ -127,8 +141,13 @@ function mergeJs(jsFiles) {
 function minifyCss(cssFile) {
     console.log('🗜️  Minifying CSS...');
     const output = cssFile.replace('.css', '.min.css');
-    execSync(`npx cleancss -o "${output}" "${cssFile}"`, { stdio: 'inherit' });
-    return output;
+    try {
+        execSync(`node "${CLEANCSS}" -o "${output}" "${cssFile}"`, { stdio: 'inherit' });
+        return output;
+    } catch (error) {
+        console.error('❌ Failed to minify CSS');
+        return null;
+    }
 }
 
 /**
@@ -137,8 +156,13 @@ function minifyCss(cssFile) {
 function minifyJs(jsFile) {
     console.log('🗜️  Minifying JS...');
     const output = jsFile.replace('.js', '.min.js');
-    execSync(`npx terser "${jsFile}" -o "${output}" --compress --mangle`, { stdio: 'inherit' });
-    return output;
+    try {
+        execSync(`node "${TERSER}" "${jsFile}" -o "${output}" --compress --mangle`, { stdio: 'inherit' });
+        return output;
+    } catch (error) {
+        console.error('❌ Failed to minify JS');
+        return null;
+    }
 }
 
 /**
@@ -150,32 +174,52 @@ function build() {
     const modules = findModules();
     console.log(`📋 Found ${modules.length} modules: ${modules.join(', ')}\n`);
     
-    const cssFiles = [];
-    const jsFiles = [];
-    
-    // Compile each module
-    for (const module of modules) {
-        const css = compileCss(module);
-        if (css) cssFiles.push(css);
+    // Compile for each area
+    for (const area of AREAS) {
+        console.log(`\n📍 Processing area: ${area}`);
+        console.log('─'.repeat(50));
         
-        const js = compileJs(module);
-        if (js) jsFiles.push(js);
-    }
-    
-    console.log('');
-    
-    // Merge and minify
-    if (cssFiles.length > 0) {
-        const mergedCss = mergeCss(cssFiles);
-        minifyCss(mergedCss);
-    }
-    
-    if (jsFiles.length > 0) {
-        const mergedJs = mergeJs(jsFiles);
-        minifyJs(mergedJs);
+        const cssFiles = [];
+        const jsFiles = [];
+        
+        // Compile each module for this area
+        for (const module of modules) {
+            const css = compileCss(module, area);
+            if (css) cssFiles.push(css);
+            
+            const js = compileJs(module, area);
+            if (js) jsFiles.push(js);
+        }
+        
+        // Merge and minify for this area
+        if (cssFiles.length > 0) {
+            console.log('');
+            const mergedCss = mergeCss(cssFiles, area);
+            minifyCss(mergedCss);
+        } else {
+            console.log(`⚠️  No CSS files found for ${area}`);
+        }
+        
+        if (jsFiles.length > 0) {
+            console.log('');
+            const mergedJs = mergeJs(jsFiles, area);
+            minifyJs(mergedJs);
+        } else {
+            console.log(`⚠️  No JS files found for ${area}`);
+        }
     }
     
     console.log('\n✅ Build complete!');
+    console.log('\n📦 Output structure:');
+    console.log('   pub/static/');
+    AREAS.forEach(area => {
+        const areaPath = path.join(PUB_STATIC, area);
+        if (fs.existsSync(areaPath)) {
+            console.log(`   ├── ${area}/`);
+            console.log(`   │   ├── css/styles.css & styles.min.css`);
+            console.log(`   │   └── js/scripts.js & scripts.min.js`);
+        }
+    });
 }
 
 // Run build

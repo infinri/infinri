@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Admin User Create Layout
+ * Extends admin_default to inherit Theme styling
+ */
+-->
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <update handle="admin_default"/>
+
+    <referenceContainer name="content">
+        <uiComponent name="admin_user_form"/>
+    </referenceContainer>
+</layout>

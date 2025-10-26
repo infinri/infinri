@@ -5,8 +5,7 @@ namespace Infinri\Admin\Controller\Users;
 
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
-use Infinri\Core\View\Element\UiComponentRenderer;
-use Infinri\Cms\Helper\AdminLayout;
+use Infinri\Core\Model\View\LayoutFactory;
 
 /**
  * Admin User List Controller
@@ -15,16 +14,14 @@ use Infinri\Cms\Helper\AdminLayout;
 class Index
 {
     public function __construct(
-        private readonly UiComponentRenderer $uiComponentRenderer,
-        private readonly AdminLayout $adminLayout
+        private readonly LayoutFactory $layoutFactory
     ) {
     }
 
     public function execute(Request $request): Response
     {
-        $gridHtml = $this->uiComponentRenderer->render('admin_user_listing');
-        $html = $this->adminLayout->wrapContent($gridHtml, 'Admin Users');
-        
+        $html = $this->layoutFactory->render('admin_users_index');
+
         return (new Response())->setBody($html);
     }
 }
