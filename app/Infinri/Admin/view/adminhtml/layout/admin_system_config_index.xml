@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * System Configuration Page Layout
+ */
+-->
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <update handle="admin_default"/>
+    
+    <referenceContainer name="content">
+        <block class="Infinri\Admin\Block\System\Config" 
+               name="system.config" 
+               template="Infinri_Admin::system/config/index.phtml"/>
+    </referenceContainer>
+</layout>

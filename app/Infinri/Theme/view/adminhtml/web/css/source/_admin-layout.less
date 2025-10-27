@@ -32,8 +32,7 @@ header.header-container {
 .admin-main-wrapper {
     display: flex;
     flex: 1;
-    min-height: calc(100vh - 64px); // Full height minus header
-    overflow: hidden;
+    overflow: visible; // Allow submenu flyout to escape
 }
 
 // Admin sidebar (left navigation) - ALWAYS FIRST CHILD
@@ -41,10 +40,10 @@ header.header-container {
     width: 260px;
     background: #1e293b;
     color: #ffffff;
-    overflow-y: auto;
+    overflow: visible; // Allow submenu to escape completely
     flex-shrink: 0;
     order: -1; // Force sidebar to be first
-    height: 100%;
+    position: relative; // For absolute positioned submenus
     
     @media (max-width: 768px) {
         position: fixed;
@@ -53,6 +52,8 @@ header.header-container {
         bottom: 0;
         z-index: 999;
         transition: left 0.3s ease;
+        overflow-y: auto;
+        overflow-x: visible;
         
         &.is-open {
             left: 0;
@@ -143,8 +144,8 @@ header.header-container {
     }
 }
 
-// Admin sidebar
-.admin-sidebar {
+// Admin sidebar panel (for content sections - different from navigation sidebar)
+.admin-sidebar-panel {
     background: @surface-bg;
     border-radius: @border-radius-lg;
     padding: @spacing-lg;

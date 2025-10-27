@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * System Configuration Structure
+ * Defines sections, groups, and fields for admin configuration
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:infinri:framework:Config/etc/system.xsd">
+    <system>
+        <!-- General Section -->
+        <section id="general" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>General</label>
+            <tab>general</tab>
+            <resource>Infinri_Core::config_general</resource>
+            
+            <group id="store_information" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Store Information</label>
+                
+                <field id="name" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Store Name</label>
+                    <comment>The name of your store</comment>
+                </field>
+                
+                <field id="phone" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Store Phone Number</label>
+                </field>
+                
+                <field id="email" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Store Contact Email</label>
+                    <validate>validate-email</validate>
+                </field>
+                
+                <field id="address" translate="label" type="textarea" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Store Address</label>
+                </field>
+            </group>
+            
+            <group id="locale" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Locale Options</label>
+                
+                <field id="timezone" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Timezone</label>
+                    <source_model>Infinri\Core\Model\Config\Source\Timezone</source_model>
+                </field>
+                
+                <field id="locale" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Locale</label>
+                    <source_model>Infinri\Core\Model\Config\Source\Locale</source_model>
+                </field>
+            </group>
+        </section>
+        
+        <!-- Web Section -->
+        <section id="web" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Web</label>
+            <tab>general</tab>
+            <resource>Infinri_Core::config_web</resource>
+            
+            <group id="url" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>URL Options</label>
+                
+                <field id="base_url" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Base URL</label>
+                    <comment>Include trailing slash, e.g., https://example.com/</comment>
+                    <validate>validate-url</validate>
+                </field>
+                
+                <field id="use_rewrites" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Use Web Server Rewrites</label>
+                    <source_model>Infinri\Core\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+            
+            <group id="session" translate="label" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Session Configuration</label>
+                
+                <field id="lifetime" translate="label comment" type="text" sortOrder="10" showInDefault="1">
+                    <label>Session Lifetime (seconds)</label>
+                    <comment>Default: 3600 (1 hour)</comment>
+                    <validate>validate-digits</validate>
+                </field>
+                
+                <field id="save_method" translate="label" type="select" sortOrder="20" showInDefault="1">
+                    <label>Session Save Method</label>
+                    <source_model>Infinri\Core\Model\Config\Source\SessionSaveMethod</source_model>
+                </field>
+            </group>
+        </section>
+        
+        <!-- Developer Section -->
+        <section id="dev" translate="label" sortOrder="900" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Developer</label>
+            <tab>advanced</tab>
+            <resource>Infinri_Core::config_dev</resource>
+            
+            <group id="debug" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Debug</label>
+                
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Debug Mode</label>
+                    <source_model>Infinri\Core\Model\Config\Source\Yesno</source_model>
+                </field>
+                
+                <field id="log_errors" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Log Errors to File</label>
+                    <source_model>Infinri\Core\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+            
+            <group id="cache" translate="label" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Caching</label>
+                
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1">
+                    <label>Enable Caching</label>
+                    <source_model>Infinri\Core\Model\Config\Source\Yesno</source_model>
+                </field>
+                
+                <field id="lifetime" translate="label comment" type="text" sortOrder="20" showInDefault="1">
+                    <label>Cache Lifetime (seconds)</label>
+                    <comment>Default: 7200 (2 hours)</comment>
+                    <validate>validate-digits</validate>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

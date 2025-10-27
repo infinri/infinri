@@ -1,0 +1,117 @@
+<?php
+/**
+ * System Configuration Template
+ * 
+ * @var \Infinri\Admin\Block\System\Config $block
+ */
+$section = $block->getSectionData();
+$sections = $block->getSections();
+$currentSection = $block->getCurrentSection();
+?>
+
+<div class="admin-page-header config-page-header">
+    <div>
+        <span class="config-breadcrumb">System</span>
+        <h1 class="page-title">⚙️ Configuration</h1>
+        <p class="page-subtitle">Adjust store behaviour across general, web, and developer sections.</p>
+    </div>
+    <div class="config-header-actions">
+        <a class="btn-outline" href="/admin/help/configuration" title="Configuration documentation">❔ Help</a>
+    </div>
+</div>
+
+<div class="config-layout">
+    <!-- Left Sidebar: Section Navigation -->
+    <aside class="config-sidebar">
+        <div class="config-nav-card">
+            <div class="config-nav-heading">Sections</div>
+            <nav class="config-nav-list">
+                <?php foreach ($sections as $sectionId => $sectionData): ?>
+                    <a href="/admin/system/config/index?section=<?= urlencode($sectionId) ?>"
+                       class="config-nav-link <?= $currentSection === $sectionId ? 'active' : '' ?>">
+                        <span class="config-nav-label"><?= $block->escapeHtml($sectionData['label']) ?></span>
+                        <span class="config-nav-tab"><?= $block->escapeHtml(ucfirst($sectionData['tab'] ?? 'general')) ?></span>
+                    </a>
+                <?php endforeach; ?>
+            </nav>
+        </div>
+    </aside>
+    
+    <!-- Main Content: Configuration Form -->
+    <main class="config-content">
+        <?php if ($section): ?>
+            <form method="post" action="/admin/system/config/save" class="config-form">
+                <input type="hidden" name="section" value="<?= $block->escapeHtml($currentSection) ?>">
+                
+                <div class="config-section">
+                    <div class="config-section-header">
+                        <h2 class="config-section-title"><?= $block->escapeHtml($section['label']) ?></h2>
+                        <span class="config-section-tab"><?= $block->escapeHtml(ucfirst($section['tab'] ?? 'general')) ?> section</span>
+                    </div>
+                    
+                    <?php foreach ($section['groups'] as $groupId => $group): ?>
+                        <div class="config-group">
+                            <div class="config-group-header">
+                                <h3 class="config-group-title"><?= $block->escapeHtml($group['label']) ?></h3>
+                            </div>
+                            
+                            <div class="config-fields">
+                                <?php foreach ($group['fields'] as $fieldId => $field): ?>
+                                    <?php
+                                    $path = $currentSection . '/' . $groupId . '/' . $fieldId;
+                                    $value = $block->getConfigValue($path);
+                                    $fieldName = "groups[{$groupId}][fields][{$fieldId}][value]";
+                                    ?>
+                                    
+                                    <div class="config-field">
+                                        <label class="config-field-label">
+                                            <?= $block->escapeHtml($field['label']) ?>
+                                            <?php if (!empty($field['comment'])): ?>
+                                                <span class="config-field-comment"><?= $block->escapeHtml($field['comment']) ?></span>
+                                            <?php endif; ?>
+                                        </label>
+                                        
+                                        <div class="config-field-input">
+                                            <?php if ($field['type'] === 'text'): ?>
+                                                <input type="text" 
+                                                       name="<?= $fieldName ?>" 
+                                                       value="<?= $block->escapeHtml($value ?? '') ?>"
+                                                       class="form-control <?= $field['validate'] ?>"
+                                                       />
+                                                       
+                                            <?php elseif ($field['type'] === 'textarea'): ?>
+                                                <textarea name="<?= $fieldName ?>" 
+                                                          rows="5" 
+                                                          class="form-control"><?= $block->escapeHtml($value ?? '') ?></textarea>
+                                                          
+                                            <?php elseif ($field['type'] === 'select'): ?>
+                                                <select name="<?= $fieldName ?>" class="form-control">
+                                                    <option value="">-- Please Select --</option>
+                                                    <?php foreach ($block->getFieldOptions($field['source_model']) as $option): ?>
+                                                        <option value="<?= $block->escapeHtml($option['value']) ?>"
+                                                                <?= $value == $option['value'] ? 'selected' : '' ?>>
+                                                            <?= $block->escapeHtml($option['label']) ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                                
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                
+                <div class="config-actions">
+                    <button type="submit" class="btn btn-primary">💾 Save Configuration</button>
+                </div>
+            </form>
+        <?php else: ?>
+            <div class="alert alert-info">
+                Please select a section from the left menu.
+            </div>
+        <?php endif; ?>
+    </main>
+</div>

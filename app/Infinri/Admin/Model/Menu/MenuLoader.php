@@ -77,6 +77,7 @@ class MenuLoader
                     'parent' => (string)($item['parent'] ?? ''),
                     'action' => (string)($item['action'] ?? ''),
                     'resource' => (string)($item['resource'] ?? ''),
+                    'icon' => (string)($item['icon'] ?? ''),
                 ];
             }
         }

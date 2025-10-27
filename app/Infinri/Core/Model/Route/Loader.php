@@ -216,6 +216,16 @@ class Loader
                     ['GET', 'POST']
                 );
                 
+                // Support 3-level nested paths: /admin/system/config/index
+                $router->addRoute(
+                    "{$routeId}_nested_controller_action",
+                    "/admin/:controller/:subcontroller/:action",
+                    $namespace . '\\:controller\\:subcontroller\\:action',
+                    'execute',
+                    ['GET', 'POST']
+                );
+                
+                // Support 2-level paths: /admin/dashboard/index
                 $router->addRoute(
                     "{$routeId}_controller_action",
                     "/admin/:controller/:action",
@@ -226,7 +236,7 @@ class Loader
                 
                 Logger::info("RouteLoader: Registered Admin module routes", [
                     'module' => $moduleName,
-                    'pattern' => '/admin/:controller/:action'
+                    'patterns' => ['/admin/:controller/:subcontroller/:action', '/admin/:controller/:action']
                 ]);
             } else {
                 $router->addRoute(

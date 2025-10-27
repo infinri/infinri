@@ -16,15 +16,15 @@ error_log("Menu items in template: " . count($menuItems));
                 
                 <?php if (!empty($item['url'])): ?>
                     <a href="<?= $block->escapeHtml($item['url']) ?>">
-                        <?php if (isset($item['icon'])): ?>
-                            <span class="menu-icon <?= $block->escapeHtml($item['icon']) ?>"></span>
+                        <?php if (!empty($item['icon'])): ?>
+                            <span class="menu-icon"><?= $block->escapeHtml($item['icon']) ?></span>
                         <?php endif; ?>
                         <span class="menu-text"><?= $block->escapeHtml($item['title']) ?></span>
                     </a>
                 <?php else: ?>
                     <div class="menu-header">
-                        <?php if (isset($item['icon'])): ?>
-                            <span class="menu-icon <?= $block->escapeHtml($item['icon']) ?>"></span>
+                        <?php if (!empty($item['icon'])): ?>
+                            <span class="menu-icon"><?= $block->escapeHtml($item['icon']) ?></span>
                         <?php endif; ?>
                         <span class="menu-text"><?= $block->escapeHtml($item['title']) ?></span>
                         <?php if ($block->hasChildren($item)): ?>
