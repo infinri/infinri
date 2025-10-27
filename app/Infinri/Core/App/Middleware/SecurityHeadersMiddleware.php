@@ -83,8 +83,8 @@ class SecurityHeadersMiddleware
             // Images: allow from same origin, data URIs (base64 images), and blob (image picker)
             "img-src 'self' data: blob:",
             
-            // Fonts: from same origin only
-            "font-src 'self'",
+            // Fonts: from same origin, data URIs, and common font CDNs
+            "font-src 'self' data: https://fonts.gstatic.com",
             
             // AJAX/fetch requests: same origin only
             "connect-src 'self'",

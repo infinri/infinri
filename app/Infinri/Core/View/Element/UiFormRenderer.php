@@ -259,7 +259,7 @@ class UiFormRenderer
     }
 
     /**
-     * Render form HTML
+     * Render form HTML using Theme template
      */
     private function renderFormHtml(
         string $pageTitle,
@@ -274,8 +274,18 @@ class UiFormRenderer
     {
         $csrfField = $this->csrfGuard->getHiddenField($this->buildTokenId($entityType));
         $csrfFieldName = '_csrf_token';
+        
+        // Template lives in Theme module (presentation layer)
+        // __DIR__ is /app/Infinri/Core/View/Element
+        // Go up 3 levels to /app/Infinri/, then to Theme
+        $templatePath = __DIR__ . '/../../../Theme/view/adminhtml/templates/form.phtml';
+        
+        if (!file_exists($templatePath)) {
+            throw new \RuntimeException("Form template not found at: {$templatePath}");
+        }
+        
         ob_start();
-        include __DIR__ . '/../../../Core/view/adminhtml/templates/form.phtml';
+        include $templatePath;
         return ob_get_clean();
     }
 

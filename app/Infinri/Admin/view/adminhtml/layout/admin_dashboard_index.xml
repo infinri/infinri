@@ -3,8 +3,24 @@
     <!-- Extend base admin layout -->
     <update handle="admin_default"/>
     
+    <!-- Set page title -->
+    <referenceBlock name="page.title">
+        <arguments>
+            <argument name="page_title" xsi:type="string">Dashboard</argument>
+        </arguments>
+    </referenceBlock>
+    
+    <!-- Explicitly add sidebar (for debugging) -->
+    <referenceContainer name="main.content">
+        <container name="admin.sidebar.test" htmlTag="aside" htmlClass="admin-sidebar" before="content">
+            <block class="Infinri\Admin\Block\Menu" 
+                   name="admin.navigation.test" 
+                   template="Infinri_Theme::html/menu.phtml"/>
+        </container>
+    </referenceContainer>
+    
+    <!-- Dashboard Content -->
     <referenceContainer name="content">
-        <!-- Dashboard Content -->
         <block class="Infinri\Admin\Block\Dashboard" 
                name="admin.dashboard" 
                template="Infinri_Admin::dashboard/index.phtml"/>

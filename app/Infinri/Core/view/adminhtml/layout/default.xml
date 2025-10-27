@@ -1,32 +1,12 @@
 <?xml version="1.0"?>
 <!--
 /**
- * Admin Default Layout
- * Base layout for all admin pages (Magento-style)
+ * Admin Default Layout - Core Module
+ * This should be minimal - Theme handles all presentation
+ * Core only provides functional blocks if needed
  */
 -->
-<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <body>
-        <!-- Admin Header -->
-        <referenceContainer name="header">
-            <block class="Infinri\Core\Block\Template" 
-                   name="admin.header" 
-                   template="Infinri_Core::adminhtml/header.phtml"/>
-        </referenceContainer>
-        
-        <!-- Admin Navigation (Left Sidebar Menu) -->
-        <referenceContainer name="menu">
-            <block class="Infinri\Core\Block\Adminhtml\Menu" 
-                   name="admin.menu" 
-                   template="Infinri_Core::adminhtml/menu.phtml"/>
-        </referenceContainer>
-        
-        <!-- Admin Footer -->
-        <referenceContainer name="footer">
-            <block class="Infinri\Core\Block\Template" 
-                   name="admin.footer" 
-                   template="Infinri_Core::adminhtml/footer.phtml"/>
-        </referenceContainer>
-    </body>
-</page>
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <!-- All admin layout structure is now handled by Theme module -->
+    <!-- This file can be used for Core-specific admin blocks if needed -->
+</layout>

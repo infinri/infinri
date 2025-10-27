@@ -7,10 +7,15 @@
  */
 -->
 <layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <!-- Extend base admin layout -->
-    <update handle="admin_default"/>
+    <!-- Extend base admin layout (provides header, footer, navigation, CSS/JS) -->
+    <update handle="admin_1column"/>
     
+    <!-- Add UI Component grid (no template needed) -->
     <referenceContainer name="content">
-        <uiComponent name="admin_user_listing"/>
+        <block class="Infinri\Core\Block\UiComponent" name="admin.users.grid">
+            <arguments>
+                <argument name="component_name" xsi:type="string">admin_user_listing</argument>
+            </arguments>
+        </block>
     </referenceContainer>
 </layout>

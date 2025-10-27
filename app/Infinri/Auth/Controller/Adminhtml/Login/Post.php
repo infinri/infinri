@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Infinri\Auth\Controller\Adminhtml\Login;
 
-use Infinri\Core\Controller\AbstractController;
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
 use Infinri\Admin\Model\ResourceModel\AdminUser as AdminUserResource;
@@ -14,22 +13,19 @@ use Infinri\Core\Helper\Logger;
 
 /**
  * Admin Login POST Handler
- * 
+ * Route: /admin/auth/login/post
  * Processes login form submission with CSRF protection and Remember Me
  */
-class Post extends AbstractController
+class Post
 {
     public function __construct(
-        Request $request,
-        Response $response,
         private readonly AdminUserResource $adminUserResource,
         private readonly CsrfTokenManager $csrfManager,
         private readonly RememberTokenService $rememberTokenService
     ) {
-        parent::__construct($request, $response);
     }
 
-    public function execute(): Response
+    public function execute(Request $request): Response
     {
         // Start session
         if (session_status() === PHP_SESSION_NONE) {
@@ -37,18 +33,18 @@ class Post extends AbstractController
         }
 
         // Validate CSRF token
-        $csrfToken = $this->request->getPost('_csrf_token', '');
-        $csrfTokenId = $this->request->getPost('_csrf_token_id', 'admin_login');
+        $csrfToken = $request->getPost('_csrf_token', '');
+        $csrfTokenId = $request->getPost('_csrf_token_id', 'admin_login');
 
         if (!$this->csrfManager->validateToken($csrfTokenId, $csrfToken)) {
             Logger::warning('Login failed: Invalid CSRF token', [
-                'ip' => $this->request->getClientIp()
+                'ip' => $request->getClientIp()
             ]);
-            return $this->redirect('/admin/auth/login/index?error=csrf');
+            return $this->createRedirect('/admin/auth/login/index?error=csrf');
         }
 
-        $username = $this->request->getPost('username', '');
-        $password = $this->request->getPost('password', '');
+        $username = $request->getPost('username', '');
+        $password = $request->getPost('password', '');
 
         Logger::info('Admin login attempt', ['username' => $username]);
 
@@ -57,7 +53,7 @@ class Post extends AbstractController
             Logger::warning('Login failed: Empty credentials');
             $_SESSION['login_error'] = 'Please enter both username and password.';
             $_SESSION['login_username'] = $username;
-            return $this->redirect('/admin/auth/login/index');
+            return $this->createRedirect('/admin/auth/login/index');
         }
 
         // Load user
@@ -68,7 +64,7 @@ class Post extends AbstractController
             usleep(random_int(100000, 500000)); // Timing attack prevention
             $_SESSION['login_error'] = 'Invalid username or password.';
             $_SESSION['login_username'] = $username;
-            return $this->redirect('/admin/auth/login/index');
+            return $this->createRedirect('/admin/auth/login/index');
         }
 
         // Create user model
@@ -80,7 +76,7 @@ class Post extends AbstractController
             Logger::warning('Login failed: User inactive', ['username' => $username]);
             $_SESSION['login_error'] = 'This account has been disabled. Please contact an administrator.';
             $_SESSION['login_username'] = $username;
-            return $this->redirect('/admin/auth/login/index');
+            return $this->createRedirect('/admin/auth/login/index');
         }
 
         // Verify password
@@ -89,16 +85,16 @@ class Post extends AbstractController
             usleep(random_int(100000, 500000)); // Timing attack prevention
             $_SESSION['login_error'] = 'Invalid username or password.';
             $_SESSION['login_username'] = $username;
-            return $this->redirect('/admin/auth/login/index');
+            return $this->createRedirect('/admin/auth/login/index');
         }
 
         // Handle Remember Me BEFORE session operations (must be before headers are sent)
-        $rememberMe = $this->request->getPost('remember_me', '0');
+        $rememberMe = $request->getPost('remember_me', '0');
         if ($rememberMe === '1') {
             $token = $this->rememberTokenService->generateToken(
                 $user->getUserId(),
-                $this->request->getClientIp(),
-                $this->request->getUserAgent()
+                $request->getClientIp(),
+                $request->getUserAgent()
             );
             
             $this->rememberTokenService->setRememberCookie($token);
@@ -114,7 +110,7 @@ class Post extends AbstractController
         $_SESSION['admin_full_name'] = $user->getFullName();
         $_SESSION['admin_authenticated'] = true;
         $_SESSION['admin_login_time'] = time();
-        $_SESSION['admin_fingerprint'] = $this->getFingerprint();
+        $_SESSION['admin_fingerprint'] = $this->getFingerprint($request);
 
         // Update last login
         $this->adminUserResource->updateLastLogin($user->getUserId());
@@ -126,14 +122,22 @@ class Post extends AbstractController
         ]);
 
         // Redirect to dashboard
-        return $this->redirect('/admin/dashboard/index');
+        return $this->createRedirect('/admin/dashboard/index');
     }
 
-    private function getFingerprint(): string
+    private function createRedirect(string $url): Response
+    {
+        $response = new Response();
+        $response->setStatusCode(302);
+        $response->setHeader('Location', $url);
+        return $response;
+    }
+
+    private function getFingerprint(Request $request): string
     {
         return hash('sha256', 
-            $this->request->getClientIp() . 
-            $this->request->getUserAgent()
+            $request->getClientIp() . 
+            $request->getUserAgent()
         );
     }
 }

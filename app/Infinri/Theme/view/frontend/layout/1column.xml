@@ -4,11 +4,9 @@
     <update handle="default"/>
     
     <!-- Single column layout - content takes full width -->
-    <referenceContainer name="main.content">
-        <container name="columns" htmlTag="div" htmlClass="columns columns-1">
-            <referenceContainer name="content">
-                <argument name="htmlClass" xsi:type="string">column main</argument>
-            </referenceContainer>
-        </container>
+    <referenceContainer name="content">
+        <arguments>
+            <argument name="htmlClass" xsi:type="string">column main column-full-width</argument>
+        </arguments>
     </referenceContainer>
 </layout>

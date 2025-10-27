@@ -5,26 +5,25 @@ namespace Infinri\Admin\Controller\Users;
 
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
-use Infinri\Core\View\Element\UiFormRenderer;
 use Infinri\Core\Model\View\LayoutFactory;
 
 /**
  * Admin User Create Controller
  * Route: admin/users/create
+ * Uses layout system with UI Component form
  */
 class Create
 {
     public function __construct(
-        private readonly UiFormRenderer $formRenderer,
         private readonly LayoutFactory $layoutFactory
     ) {
     }
 
     public function execute(Request $request): Response
     {
-        // Render the form using UiFormRenderer (generates complete page)
-        $formHtml = $this->formRenderer->render('admin_user_form');
+        // Render using layout system (proper separation of concerns)
+        $html = $this->layoutFactory->render('admin_users_create');
 
-        return (new Response())->setBody($formHtml);
+        return (new Response())->setBody($html);
     }
 }

@@ -5,18 +5,24 @@
     
     <!-- Two column layout with right sidebar -->
     <referenceContainer name="main.content">
-        <container name="columns" htmlTag="div" htmlClass="columns columns-2 columns-right">
-            <referenceContainer name="content">
-                <argument name="htmlClass" xsi:type="string">column main</argument>
-            </referenceContainer>
-            
-            <container name="sidebar.right" htmlTag="aside" htmlClass="sidebar sidebar-right">
-                <block class="Infinri\Core\Block\Text" name="sidebar.placeholder">
-                    <arguments>
-                        <argument name="text" xsi:type="string"><!-- Right Sidebar Content --></argument>
-                    </arguments>
-                </block>
-            </container>
+        <arguments>
+            <argument name="htmlClass" xsi:type="string">main-content columns columns-2 columns-right</argument>
+        </arguments>
+        
+        <!-- Add right sidebar after content -->
+        <container name="sidebar.right" htmlTag="aside" htmlClass="sidebar sidebar-right" after="content">
+            <block class="Infinri\Core\Block\Text" name="sidebar.right.placeholder">
+                <arguments>
+                    <argument name="text" xsi:type="string"><!-- Right Sidebar Content --></argument>
+                </arguments>
+            </block>
         </container>
+    </referenceContainer>
+    
+    <!-- Update content column styling -->
+    <referenceContainer name="content">
+        <arguments>
+            <argument name="htmlClass" xsi:type="string">column main</argument>
+        </arguments>
     </referenceContainer>
 </layout>

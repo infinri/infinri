@@ -9,19 +9,18 @@ use Infinri\Core\Helper\Logger;
 use Infinri\Admin\Model\AdminUser;
 use Infinri\Admin\Model\ResourceModel\AdminUser as AdminUserResource;
 use Infinri\Core\Model\View\LayoutFactory;
-use Infinri\Core\View\Element\UiFormRenderer;
 
 /**
  * Admin User Edit Controller
  * Route: admin/users/edit
+ * Uses layout system with UI Component form
  */
 class Edit
 {
     public function __construct(
         private readonly AdminUser $adminUser,
         private readonly AdminUserResource $adminUserResource,
-        private readonly LayoutFactory $layoutFactory,
-        private readonly UiFormRenderer $formRenderer
+        private readonly LayoutFactory $layoutFactory
     ) {
     }
 
@@ -48,12 +47,13 @@ class Edit
                 return $response;
             }
 
-            // Render the form using UiFormRenderer with user ID (generates complete page)
-            $formHtml = $this->formRenderer->render('admin_user_form', [
+            // Render using layout system (proper separation of concerns)
+            // Pass 'id' parameter (standard for UI Component forms)
+            $html = $this->layoutFactory->render('admin_users_edit', [
                 'id' => $userId
             ]);
 
-            return (new Response())->setBody($formHtml);
+            return (new Response())->setBody($html);
             
         } catch (\Exception $e) {
             Logger::error('Edit user failed', [

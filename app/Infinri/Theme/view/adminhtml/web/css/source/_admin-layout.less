@@ -1,41 +1,90 @@
 /**
- * Admin Layout
- * Page structure and containers for admin interface
+ * Admin Layout - Magento Style
+ * Header + Left Sidebar + Content
  */
 
-// Admin wrapper
-.admin-wrapper {
-    display: flex;
-    min-height: 100vh;
-    background: @body-bg;
+// Reset body for admin
+.admin-body {
+    margin: 0;
+    padding: 0;
+    background: #f4f6fa;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-// Admin page structure
-.admin-page {
+// Page wrapper - full viewport
+.page-wrapper {
     display: flex;
     flex-direction: column;
-    flex: 1;
-    min-width: 0; // Prevent flex overflow
+    min-height: 100vh;
 }
 
-// Admin main content area
-.admin-main {
+// Header container (fixed at top)
+header.header-container {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: #ffffff;
+    border-bottom: 1px solid #cbd5e1;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+// Admin main wrapper - contains sidebar + content
+.admin-main-wrapper {
+    display: flex;
     flex: 1;
-    padding: @spacing-lg;
-    max-width: 100%;
+    min-height: calc(100vh - 64px); // Full height minus header
+    overflow: hidden;
+}
+
+// Admin sidebar (left navigation) - ALWAYS FIRST CHILD
+.admin-sidebar {
+    width: 260px;
+    background: #1e293b;
+    color: #ffffff;
+    overflow-y: auto;
+    flex-shrink: 0;
+    order: -1; // Force sidebar to be first
+    height: 100%;
     
-    @media (min-width: @breakpoint-lg) {
-        padding: @spacing-xl;
+    @media (max-width: 768px) {
+        position: fixed;
+        left: -260px;
+        top: 64px;
+        bottom: 0;
+        z-index: 999;
+        transition: left 0.3s ease;
+        
+        &.is-open {
+            left: 0;
+        }
     }
 }
 
-// Admin content container
+// Admin content area (right side)
 .admin-content {
-    background: @white;
-    border-radius: @border-radius-lg;
-    box-shadow: @shadow;
-    padding: @spacing-lg;
-    margin-bottom: @spacing-lg;
+    flex: 1;
+    overflow-y: auto;
+    background: #f4f6fa;
+    padding: 24px;
+    order: 1; // Content comes after sidebar
+    
+    @media (max-width: 768px) {
+        padding: 16px;
+    }
+}
+
+// Page title wrapper
+.page-title-wrapper {
+    margin-bottom: 24px;
+    
+    .page-title {
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #0f172a;
+            margin: 0;
+        }
+    }
 }
 
 // Admin breadcrumbs container
@@ -99,6 +148,51 @@
     background: @surface-bg;
     border-radius: @border-radius-lg;
     padding: @spacing-lg;
+}
+
+// Admin footer
+.admin-footer {
+    background: @white;
+    border-top: 1px solid @border-color;
+    padding: @spacing-md @spacing-lg;
+    margin-top: auto;
+    
+    .admin-footer-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: @font-size-sm;
+        color: @text-muted;
+        
+        .copyright {
+            margin-right: @spacing-md;
+        }
+        
+        .version {
+            color: @text-light;
+        }
+    }
+}
+
+// Admin navigation wrapper
+.admin-navigation-wrapper {
+    background: @gray-900;
+    width: 240px;
+    min-height: calc(100vh - 64px);
+    flex-shrink: 0;
+    overflow-y: auto;
+    
+    @media (max-width: @breakpoint-md) {
+        position: fixed;
+        left: -240px;
+        top: 64px;
+        z-index: @z-index-fixed;
+        transition: left 0.3s ease-in-out;
+        
+        &.is-open {
+            left: 0;
+        }
+    }
 }
 
 // Responsive utilities

@@ -10,6 +10,7 @@ use Infinri\Core\Model\View\LayoutFactory;
 /**
  * Admin User List Controller
  * Route: admin/users/index
+ * Displays admin users grid using UI Component and layout system
  */
 class Index
 {
@@ -20,6 +21,7 @@ class Index
 
     public function execute(Request $request): Response
     {
+        // Render using layout system (proper separation of concerns)
         $html = $this->layoutFactory->render('admin_users_index');
 
         return (new Response())->setBody($html);

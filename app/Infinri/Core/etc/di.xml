@@ -90,32 +90,7 @@
         </arguments>
     </type>
     
-    <!-- Auth: Login Controllers -->
-    <type name="Infinri\Auth\Controller\Adminhtml\Login\Index">
-        <arguments>
-            <argument name="request" xsi:type="object">Infinri\Core\App\Request</argument>
-            <argument name="response" xsi:type="object">Infinri\Core\App\Response</argument>
-            <argument name="layoutFactory" xsi:type="object">Infinri\Core\Model\View\LayoutFactory</argument>
-        </arguments>
-    </type>
-    
-    <type name="Infinri\Auth\Controller\Adminhtml\Login\Post">
-        <arguments>
-            <argument name="request" xsi:type="object">Infinri\Core\App\Request</argument>
-            <argument name="response" xsi:type="object">Infinri\Core\App\Response</argument>
-            <argument name="adminUserResource" xsi:type="object">Infinri\Admin\Model\ResourceModel\AdminUser</argument>
-            <argument name="csrfManager" xsi:type="object">Infinri\Core\Security\CsrfTokenManager</argument>
-            <argument name="rememberTokenService" xsi:type="object">Infinri\Admin\Service\RememberTokenService</argument>
-        </arguments>
-    </type>
-    
-    <type name="Infinri\Auth\Controller\Adminhtml\Login\Logout">
-        <arguments>
-            <argument name="request" xsi:type="object">Infinri\Core\App\Request</argument>
-            <argument name="response" xsi:type="object">Infinri\Core\App\Response</argument>
-            <argument name="rememberTokenService" xsi:type="object">Infinri\Admin\Service\RememberTokenService</argument>
-        </arguments>
-    </type>
+    <!-- Auth: Login Controllers - Use autowiring (no manual definitions needed) -->
     
     <!-- Auth: Login Form Block -->
     <type name="Infinri\Auth\Block\Adminhtml\Login\Form">

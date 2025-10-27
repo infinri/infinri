@@ -2,16 +2,20 @@
 <!--
 /**
  * Admin User Edit Layout
+ * Route: admin/users/edit?id={user_id}
+ * Uses UI Component form (admin_user_form)
  */
 -->
 <layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <update handle="admin_default"/>
+    <!-- Extend base admin layout (provides header, footer, navigation, CSS/JS) -->
+    <update handle="admin_1column"/>
 
+    <!-- Add UI Form (no template needed) -->
     <referenceContainer name="content">
-        <uiComponent name="admin_user_form">
+        <block class="Infinri\Core\Block\UiForm" name="admin.users.form">
             <arguments>
-                <argument name="user_id" xsi:type="string">$id</argument>
+                <argument name="component_name" xsi:type="string">admin_user_form</argument>
             </arguments>
-        </uiComponent>
+        </block>
     </referenceContainer>
 </layout>

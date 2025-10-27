@@ -1,0 +1,24 @@
+<?php
+/**
+ * Admin Header Template
+ * 
+ * @var \Infinri\Core\Block\Template $block
+ */
+?>
+<div class="admin-header">
+    <a href="/admin/dashboard/index" class="admin-logo">
+        <span>Infinri</span>
+    </a>
+    
+    <div class="admin-header-toolbar">
+        <div class="admin-user-menu">
+            <button class="user-trigger" aria-label="User Menu">
+                <span class="user-name">Admin User</span>
+            </button>
+            <div class="admin-user-dropdown" hidden>
+                <a href="/admin/account/edit" class="dropdown-item">Account Settings</a>
+                <a href="/admin/auth/login/logout" class="dropdown-item">Sign Out</a>
+            </div>
+        </div>
+    </div>
+</div>

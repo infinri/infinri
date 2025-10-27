@@ -4,10 +4,34 @@
         Admin Login Page Layout
         Route: /admin/auth/login/index
         Uses empty.xml base (no header/footer chrome)
+        Adds admin theme CSS/JS for styling
     -->
     
     <!-- Use empty layout as base -->
     <update handle="empty"/>
+    
+    <!-- Add viewport meta tag for responsive design -->
+    <referenceContainer name="head">
+        <block class="Infinri\Core\Block\Text" name="head.meta.viewport">
+            <arguments>
+                <argument name="text" xsi:type="string"><![CDATA[<meta name="viewport" content="width=device-width, initial-scale=1.0">]]></argument>
+            </arguments>
+        </block>
+        
+        <!-- Load admin theme CSS -->
+        <block class="Infinri\Core\Block\Text" name="head.css.admin" as="admin_css">
+            <arguments>
+                <argument name="text" xsi:type="string"><![CDATA[<link rel="stylesheet" href="/static/adminhtml/css/styles.min.css">]]></argument>
+            </arguments>
+        </block>
+        
+        <!-- Load admin theme JS -->
+        <block class="Infinri\Core\Block\Text" name="head.js.admin" as="admin_js">
+            <arguments>
+                <argument name="text" xsi:type="string"><![CDATA[<script src="/static/adminhtml/js/scripts.min.js"></script>]]></argument>
+            </arguments>
+        </block>
+    </referenceContainer>
     
     <!-- Add login form to content container -->
     <referenceContainer name="content">

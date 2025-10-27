@@ -1,8 +1,8 @@
 /**
  * Master Styles - Base
  * 
- * This file imports all base LESS modules
- * Core provides compilation to CSS
+ * This file imports all base LESS modules that are universal across all view areas.
+ * Both frontend and adminhtml extend these base styles.
  */
 
 // Variables and Mixins (must be first)
@@ -14,3 +14,11 @@
 @import 'source/_typography';
 @import 'source/_layout';
 @import 'source/_grid';
+
+// Universal Components (used by both frontend and admin)
+@import 'source/_buttons';
+@import 'source/_forms';
+@import 'source/_components';
+@import 'source/_tables';
+@import 'source/_modals';
+@import 'source/_loading';

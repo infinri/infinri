@@ -154,10 +154,10 @@ class Response
         // Content Security Policy
         if ($strict) {
             // Strict CSP - only same origin
-            $this->setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'self'");
+            $this->setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self'; frame-ancestors 'self'");
         } else {
             // Lenient CSP - allows inline scripts/styles (for development)
-            $this->setHeader('Content-Security-Policy', "default-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: https:; font-src 'self' data:; frame-ancestors 'self'");
+            $this->setHeader('Content-Security-Policy', "default-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; frame-ancestors 'self'");
         }
         
         // Permissions policy - disable unnecessary features

@@ -15,6 +15,10 @@
     position: sticky;
     top: 0;
     z-index: @z-index-sticky;
+    
+    @media (max-width: @breakpoint-md) {
+        padding: 0 @spacing-md;
+    }
 }
 
 // Admin logo
@@ -86,6 +90,8 @@
         border-radius: @border-radius;
         cursor: pointer;
         transition: @transition-base;
+        background: none;
+        border: none;
         
         &:hover {
             background: @gray-100;
@@ -95,7 +101,7 @@
             width: 32px;
             height: 32px;
             border-radius: @border-radius-circle;
-            background: @gray-300;
+            background: @primary-color;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -107,6 +113,44 @@
             font-size: @font-size-sm;
             font-weight: @font-weight-medium;
             color: @text-color;
+        }
+    }
+    
+    .admin-user-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: @spacing-xs;
+        background: @white;
+        border: 1px solid @border-color;
+        border-radius: @border-radius;
+        box-shadow: @shadow-md;
+        min-width: 200px;
+        z-index: @z-index-dropdown;
+        
+        &[hidden] {
+            display: none;
+        }
+        
+        .dropdown-item {
+            display: block;
+            padding: @spacing-sm @spacing-md;
+            color: @text-color;
+            text-decoration: none;
+            font-size: @font-size-sm;
+            transition: @transition-fast;
+            
+            &:hover {
+                background: @gray-100;
+            }
+            
+            &:first-child {
+                border-radius: @border-radius @border-radius 0 0;
+            }
+            
+            &:last-child {
+                border-radius: 0 0 @border-radius @border-radius;
+            }
         }
     }
 }

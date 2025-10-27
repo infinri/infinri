@@ -14,6 +14,7 @@
                         <argument name="text" xsi:type="string"><![CDATA[<title>Infinri</title>]]></argument>
                     </arguments>
                 </block>
+                <!-- Note: Pages extending empty.xml can add more head blocks via <referenceContainer name="head"> -->
             </container>
             
             <container name="body" htmlTag="body">

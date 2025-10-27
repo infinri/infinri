@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Admin 1-Column Page Layout (Magento-style)
+ * Header + Left Sidebar + Content
+ */
+-->
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <!-- Extend adminhtml default (which extends base_default and loads CSS/JS) -->
+    <update handle="default"/>
+    
+    <!-- Add admin header -->
+    <referenceContainer name="header.container">
+        <block class="Infinri\Core\Block\Template" 
+               name="admin.header" 
+               template="Infinri_Theme::html/header.phtml"/>
+    </referenceContainer>
+    
+    <!-- Replace main.content structure -->
+    <referenceContainer name="main.content">
+        <arguments>
+            <argument name="htmlTag" xsi:type="string">div</argument>
+            <argument name="htmlClass" xsi:type="string">admin-main-wrapper</argument>
+        </arguments>
+    </referenceContainer>
+    
+    <!-- Configure content container as admin content area -->
+    <referenceContainer name="content">
+        <arguments>
+            <argument name="htmlTag" xsi:type="string">div</argument>
+            <argument name="htmlClass" xsi:type="string">admin-content</argument>
+        </arguments>
+        
+        <!-- Page title block -->
+        <container name="page.title.wrapper" htmlTag="div" htmlClass="page-title-wrapper">
+            <block class="Infinri\Core\Block\Template" 
+                   name="page.title" 
+                   template="Infinri_Theme::html/page_title.phtml"/>
+        </container>
+        
+        <!-- Messages container -->
+        <container name="messages"/>
+    </referenceContainer>
+    
+    <!-- Add admin footer -->
+    <referenceContainer name="footer.container">
+        <block class="Infinri\Core\Block\Template" 
+               name="admin.footer" 
+               template="Infinri_Theme::html/footer.phtml"/>
+    </referenceContainer>
+</layout>

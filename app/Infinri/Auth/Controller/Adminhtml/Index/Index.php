@@ -3,19 +3,21 @@ declare(strict_types=1);
 
 namespace Infinri\Auth\Controller\Adminhtml\Index;
 
-use Infinri\Core\Controller\AbstractController;
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
 
 /**
  * Auth Index Controller
- * 
- * Redirects /admin/auth to /admin/auth/login/index
+ * Route: /admin/auth/index
+ * Redirects to login page
  */
-class Index extends AbstractController
+class Index
 {
-    public function execute(): Response
+    public function execute(Request $request): Response
     {
-        return $this->redirect('/admin/auth/login/index');
+        $response = new Response();
+        $response->setStatusCode(302);
+        $response->setHeader('Location', '/admin/auth/login/index');
+        return $response;
     }
 }

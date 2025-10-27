@@ -1,19 +1,15 @@
 /**
  * Master Styles - Frontend
  * 
- * This file imports base styles and frontend-specific modules
+ * This file imports base styles (which include universal components)
+ * and adds frontend-specific styling for public-facing pages.
  */
 
-// Import base styles first
+// Import base styles first (includes: variables, mixins, reset, typography, layout, grid,
+// buttons, forms, components, tables, modals, loading)
 @import '../../../base/web/css/styles';
 
-// Frontend-specific components
+// Frontend-specific components (public website UI)
 @import 'source/_header';
 @import 'source/_navigation';
 @import 'source/_footer';
-@import 'source/_forms';
-@import 'source/_buttons';
-@import 'source/_components';
-@import 'source/_modals';
-@import 'source/_tables';
-@import 'source/_loading';

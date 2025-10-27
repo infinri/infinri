@@ -1,66 +1,74 @@
 /**
- * Admin Navigation
+ * Admin Navigation - Magento Style
  * Left sidebar navigation menu
  */
 
 .admin-navigation {
-    background: @gray-900;
-    width: 240px;
-    min-height: 100vh;
-    position: sticky;
-    top: 0;
-    overflow-y: auto;
-    flex-shrink: 0;
-    
-    @media (max-width: @breakpoint-md) {
-        position: fixed;
-        left: -240px;
-        top: 0;
-        z-index: @z-index-fixed;
-        transition: left 0.3s ease-in-out;
-        
-        &.is-open {
-            left: 0;
-        }
-    }
+    padding: 16px 0;
 }
 
 // Admin menu
 .admin-menu {
-    padding: @spacing-md 0;
     list-style: none;
     margin: 0;
+    padding: 0;
 }
 
 // Menu item
 .admin-menu-item {
     margin: 0;
     
-    a {
+    a,
+    .menu-header {
         display: flex;
         align-items: center;
-        padding: @spacing-md @spacing-lg;
-        color: @gray-300;
+        padding: 12px 20px;
+        color: #94a3b8;
         text-decoration: none;
-        font-size: @font-size-sm;
-        font-weight: @font-weight-medium;
-        transition: @transition-fast;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        cursor: pointer;
         
         &:hover {
-            background: fade(@white, 5%);
-            color: @white;
-        }
-        
-        &.active {
-            background: @primary-color;
-            color: @white;
-            border-left: 3px solid @primary-light;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
         }
         
         .menu-icon {
-            margin-right: @spacing-md;
+            margin-right: 12px;
             font-size: 18px;
+            width: 20px;
+            text-align: center;
         }
+        
+        .menu-text {
+            flex: 1;
+        }
+        
+        .menu-arrow {
+            margin-left: auto;
+            font-size: 10px;
+            transition: transform 0.2s ease;
+        }
+    }
+    
+    // Active top-level menu item
+    &.active > a {
+        background: #2563eb;
+        color: #ffffff;
+        border-left: 3px solid #3b82f6;
+    }
+    
+    // Active parent with children
+    &.active.has-children > .menu-header {
+        background: rgba(37, 99, 235, 0.3);
+        color: #ffffff;
+    }
+    
+    // Rotate arrow when submenu is active
+    &.has-children.active .menu-arrow {
+        transform: rotate(180deg);
     }
 }
 
@@ -69,11 +77,37 @@
     list-style: none;
     margin: 0;
     padding: 0;
-    background: fade(@black, 20%);
+    background: rgba(0, 0, 0, 0.3);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
     
-    .admin-menu-item a {
-        padding-left: @spacing-xl + @spacing-md;
-        font-size: @font-size-sm;
+    // Show submenu when parent is active or has .open class
+    &.active,
+    .admin-menu-item.open > & {
+        max-height: 500px;
+    }
+    
+    .admin-menu-item {
+        a, span {
+            display: block;
+            padding: 10px 20px 10px 52px; // Indent submenu items
+            font-size: 13px;
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            
+            &:hover {
+                background: rgba(255, 255, 255, 0.08);
+                color: #ffffff;
+            }
+        }
+        
+        &.active a {
+            background: rgba(37, 99, 235, 0.5);
+            color: #ffffff;
+            border-left: 3px solid #60a5fa;
+        }
     }
 }
 

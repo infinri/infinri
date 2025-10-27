@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Infinri\Auth\Controller\Adminhtml\Login;
 
-use Infinri\Core\Controller\AbstractController;
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
 use Infinri\Admin\Service\RememberTokenService;
@@ -11,18 +10,16 @@ use Infinri\Core\Helper\Logger;
 
 /**
  * Admin Logout Controller
+ * Route: /admin/auth/login/logout
  */
-class Logout extends AbstractController
+class Logout
 {
     public function __construct(
-        Request $request,
-        Response $response,
         private readonly RememberTokenService $rememberTokenService
     ) {
-        parent::__construct($request, $response);
     }
 
-    public function execute(): Response
+    public function execute(Request $request): Response
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -65,6 +62,11 @@ class Logout extends AbstractController
 
         Logger::info('Admin logged out', ['username' => $username]);
 
-        return $this->redirect('/admin/auth/login/index');
+        // Redirect to login page
+        $response = new Response();
+        $response->setStatusCode(302);
+        $response->setHeader('Location', '/admin/auth/login/index');
+        
+        return $response;
     }
 }

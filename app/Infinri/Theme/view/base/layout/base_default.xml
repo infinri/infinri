@@ -2,7 +2,7 @@
 <layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <!-- Root container for entire page -->
     <container name="root">
-        <container name="html" htmlTag="html" htmlClass="no-js">
+        <container name="html" htmlTag="html">
             <!-- Head section -->
             <container name="head" htmlTag="head">
                 <block class="Infinri\Core\Block\Text" name="head.meta.charset">

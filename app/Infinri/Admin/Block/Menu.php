@@ -1,46 +1,73 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Infinri\Admin\Block;
 
 use Infinri\Core\Block\Template;
-use Infinri\Admin\Model\Menu\Builder;
-use Infinri\Core\App\Request;
+use Infinri\Admin\Model\Menu\MenuLoader;
 
 /**
  * Admin Menu Block
- * 
- * Renders admin navigation menu
+ * Renders the admin navigation sidebar
  */
 class Menu extends Template
 {
-    private Builder $menuBuilder;
-    private Request $request;
-    
     public function __construct(
-        Builder $menuBuilder,
-        Request $request
+        private readonly MenuLoader $menuLoader
     ) {
-        $this->menuBuilder = $menuBuilder;
-        $this->request = $request;
     }
-    
+
     /**
-     * Get menu items
-     *
-     * @return \Infinri\Admin\Model\Menu\Item[]
+     * Get menu items loaded from menu.xml files
      */
     public function getMenuItems(): array
     {
-        return $this->menuBuilder->build();
+        error_log("Menu::getMenuItems() called");
+        $items = $this->menuLoader->getMenuItems();
+        error_log("Menu items loaded: " . count($items));
+        
+        // Add URL and active state to each item
+        foreach ($items as &$item) {
+            if (!empty($item['action'])) {
+                $item['url'] = '/' . ltrim($item['action'], '/');
+            }
+            $item['active'] = $this->isActive($item);
+            
+            // Process child items
+            if (!empty($item['children'])) {
+                foreach ($item['children'] as &$child) {
+                    if (!empty($child['action'])) {
+                        $child['url'] = '/' . ltrim($child['action'], '/');
+                    }
+                    $child['active'] = $this->isActive($child);
+                }
+            }
+        }
+        
+        return $items;
     }
-    
+
     /**
-     * Get current URL for active state detection
+     * Check if menu item is active
      */
-    public function getCurrentUrl(): string
+    public function isActive(array $item): bool
     {
-        return $this->request->getRequestUri();
+        return $item['active'] ?? false;
+    }
+
+    /**
+     * Check if menu item has children
+     */
+    public function hasChildren(array $item): bool
+    {
+        return !empty($item['children']);
+    }
+
+    /**
+     * Get default template
+     */
+    public function getTemplate(): string
+    {
+        return $this->template ?: 'Infinri_Theme::html/menu.phtml';
     }
 }
