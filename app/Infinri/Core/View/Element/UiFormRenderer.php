@@ -246,6 +246,13 @@ class UiFormRenderer
         $name = (string)$field['name'];
         $formElement = (string)$field['formElement'];
         
+        // Check for custom template
+        $template = null;
+        $templateNode = $field->xpath('formElements/' . $formElement . '/settings/template')[0] ?? null;
+        if ($templateNode) {
+            $template = (string)$templateNode;
+        }
+        
         return [
             'name' => $name,
             'type' => $formElement,
@@ -255,6 +262,7 @@ class UiFormRenderer
             'dataScope' => (string)($field->xpath('settings/dataScope')[0] ?? $name),
             'visible' => (string)($field->xpath('settings/visible')[0] ?? 'true') !== 'false',
             'rows' => (int)($field->xpath('formElements/textarea/settings/rows')[0] ?? 5),
+            'template' => $template,
         ];
     }
 

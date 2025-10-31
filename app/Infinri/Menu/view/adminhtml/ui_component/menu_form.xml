@@ -9,10 +9,26 @@
     
     <settings>
         <buttons>
-            <button name="back" class="Infinri\Core\Block\Adminhtml\Button\Back"/>
-            <button name="delete" class="Infinri\Core\Block\Adminhtml\Button\Delete"/>
-            <button name="save" class="Infinri\Core\Block\Adminhtml\Button\Save"/>
-            <button name="save_and_continue" class="Infinri\Core\Block\Adminhtml\Button\SaveAndContinue"/>
+            <button name="back">
+                <url path="/admin/menu/menu/index"/>
+                <class>back</class>
+                <label translate="true">Back</label>
+            </button>
+            <button name="save">
+                <url path="/admin/menu/menu/save"/>
+                <class>primary</class>
+                <label translate="true">Save Menu</label>
+            </button>
+            <button name="save_and_continue">
+                <url path="/admin/menu/menu/save"/>
+                <class>save</class>
+                <label translate="true">Save &amp; Continue Edit</label>
+            </button>
+            <button name="delete">
+                <url path="/admin/menu/menu/delete"/>
+                <class>delete</class>
+                <label translate="true">Delete Menu</label>
+            </button>
         </buttons>
         <namespace>menu_form</namespace>
         <dataScope>data</dataScope>
@@ -85,6 +101,29 @@
                         <prefer>toggle</prefer>
                     </settings>
                 </checkbox>
+            </formElements>
+        </field>
+    </fieldset>
+    
+    <fieldset name="cms_pages">
+        <settings>
+            <label translate="true">CMS Pages</label>
+            <notice translate="true">Select which CMS pages to include in this menu and set their display order.</notice>
+        </settings>
+        
+        <field name="cms_pages" formElement="checkboxset">
+            <settings>
+                <dataType>array</dataType>
+                <label translate="true">Available Pages</label>
+                <dataScope>cms_pages</dataScope>
+                <notice translate="true">Check pages to include in menu. Lower sort order numbers appear first.</notice>
+            </settings>
+            <formElements>
+                <checkboxset>
+                    <settings>
+                        <template>Infinri_Menu::form/field/checkboxset-with-sortorder</template>
+                    </settings>
+                </checkboxset>
             </formElements>
         </field>
     </fieldset>

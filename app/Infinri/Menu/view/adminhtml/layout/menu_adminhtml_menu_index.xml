@@ -1,8 +1,21 @@
 <?xml version="1.0"?>
+<!--
+/**
+ * Menu Index Layout
+ * Route: admin/menu/menu/index
+ * Uses UI Component for grid display (menu_listing)
+ */
+-->
 <layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <update handle="admin_default"/>
+    <!-- Extend base admin layout (provides header, footer, navigation, CSS/JS) -->
+    <update handle="admin_1column"/>
     
+    <!-- Add UI Component grid (no template needed) -->
     <referenceContainer name="content">
-        <uiComponent name="menu_listing"/>
+        <block class="Infinri\Core\Block\UiComponent" name="menu.menu.grid">
+            <arguments>
+                <argument name="component_name" xsi:type="string">menu_listing</argument>
+            </arguments>
+        </block>
     </referenceContainer>
 </layout>

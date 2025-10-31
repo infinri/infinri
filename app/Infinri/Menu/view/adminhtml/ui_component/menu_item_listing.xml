@@ -15,40 +15,32 @@
         </argument>
     </dataSource>
     
+    <!-- Grid Settings -->
+    <settings>
+        <buttons>
+            <button name="add">
+                <url path="/admin/menu/menuitem/edit"/>
+                <class>primary</class>
+                <label translate="true">Add Menu Item</label>
+            </button>
+            <button name="back">
+                <url path="/admin/menu/menu/index"/>
+                <class>secondary</class>
+                <label translate="true">Back to Menus</label>
+            </button>
+        </buttons>
+        <spinner>menu_item_columns</spinner>
+        <deps>
+            <dep>menu_item_listing.menu_item_listing_data_source</dep>
+        </deps>
+    </settings>
+    
     <listingToolbar name="listing_top">
-        <argument name="data" xsi:type="array">
-            <item name="config" xsi:type="array">
-                <item name="sticky" xsi:type="boolean">true</item>
-            </item>
-        </argument>
-        
         <bookmark name="bookmarks"/>
         <columnsControls name="columns_controls"/>
-        
         <filterSearch name="fulltext"/>
-        
         <filters name="listing_filters"/>
-        
         <paging name="listing_paging"/>
-        
-        <button name="add">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="label" xsi:type="string">Add Menu Item</item>
-                    <item name="url" xsi:type="string">menu/menuitem/edit</item>
-                </item>
-            </argument>
-        </button>
-        
-        <button name="back_to_menus">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="label" xsi:type="string">Back to Menus</item>
-                    <item name="url" xsi:type="string">menu/menu/index</item>
-                    <item name="class" xsi:type="string">secondary</item>
-                </item>
-            </argument>
-        </button>
     </listingToolbar>
     
     <columns name="menu_item_columns">
