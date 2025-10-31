@@ -1,0 +1,215 @@
+<?xml version="1.0"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">menu_item_form.menu_item_form_data_source</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Menu Item Information</item>
+    </argument>
+    
+    <settings>
+        <buttons>
+            <button name="back" class="Infinri\Core\Block\Adminhtml\Button\Back"/>
+            <button name="delete" class="Infinri\Core\Block\Adminhtml\Button\Delete"/>
+            <button name="save" class="Infinri\Core\Block\Adminhtml\Button\Save"/>
+            <button name="save_and_continue" class="Infinri\Core\Block\Adminhtml\Button\SaveAndContinue"/>
+        </buttons>
+        <namespace>menu_item_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>menu_item_form.menu_item_form_data_source</dep>
+        </deps>
+    </settings>
+    
+    <dataSource name="menu_item_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Infinri_Core/js/form/provider</item>
+            </item>
+        </argument>
+        <argument name="dataProvider" xsi:type="string">Infinri\Menu\Ui\Component\Form\MenuItemDataProvider</argument>
+        <settings>
+            <submitUrl path="menu/menuitem/save"/>
+        </settings>
+    </dataSource>
+    
+    <fieldset name="general">
+        <settings>
+            <label translate="true">General Information</label>
+        </settings>
+        
+        <field name="item_id" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <visible>false</visible>
+            </settings>
+        </field>
+        
+        <field name="menu_id" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <visible>false</visible>
+            </settings>
+        </field>
+        
+        <field name="title" formElement="input">
+            <settings>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <dataType>text</dataType>
+                <label translate="true">Title</label>
+                <dataScope>title</dataScope>
+            </settings>
+        </field>
+        
+        <field name="link_type" formElement="select">
+            <settings>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <dataType>text</dataType>
+                <label translate="true">Link Type</label>
+                <dataScope>link_type</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options>
+                            <option name="cms_page" xsi:type="array">
+                                <item name="value" xsi:type="string">cms_page</item>
+                                <item name="label" xsi:type="string" translate="true">CMS Page</item>
+                            </option>
+                            <option name="custom_url" xsi:type="array">
+                                <item name="value" xsi:type="string">custom_url</item>
+                                <item name="label" xsi:type="string" translate="true">Custom URL</item>
+                            </option>
+                            <option name="external" xsi:type="array">
+                                <item name="value" xsi:type="string">external</item>
+                                <item name="label" xsi:type="string" translate="true">External Link</item>
+                            </option>
+                        </options>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        
+        <field name="resource_id" formElement="select">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">CMS Page</label>
+                <dataScope>resource_id</dataScope>
+                <notice translate="true">Select the CMS page to link to</notice>
+                <visible>true</visible>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <caption translate="true">-- Select Page --</caption>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        
+        <field name="custom_url" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Custom URL</label>
+                <dataScope>custom_url</dataScope>
+                <notice translate="true">Enter the URL path (e.g., /about, /contact) or full URL (e.g., https://example.com)</notice>
+                <visible>false</visible>
+            </settings>
+        </field>
+        
+        <field name="parent_item_id" formElement="select">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Parent Item</label>
+                <dataScope>parent_item_id</dataScope>
+                <notice translate="true">Select a parent item to create a nested menu</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <caption translate="true">-- No Parent (Root Level) --</caption>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        
+        <field name="sort_order" formElement="input">
+            <settings>
+                <validation>
+                    <rule name="validate-number" xsi:type="boolean">true</rule>
+                </validation>
+                <dataType>number</dataType>
+                <label translate="true">Sort Order</label>
+                <dataScope>sort_order</dataScope>
+                <notice translate="true">Lower numbers appear first</notice>
+            </settings>
+        </field>
+        
+        <field name="is_active" formElement="checkbox">
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Is Active</label>
+                <dataScope>is_active</dataScope>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="boolean">false</map>
+                            <map name="true" xsi:type="boolean">true</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+    </fieldset>
+    
+    <fieldset name="advanced">
+        <settings>
+            <label translate="true">Advanced Options</label>
+            <collapsible>true</collapsible>
+            <opened>false</opened>
+        </settings>
+        
+        <field name="css_class" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">CSS Class</label>
+                <dataScope>css_class</dataScope>
+                <notice translate="true">Custom CSS classes for styling</notice>
+            </settings>
+        </field>
+        
+        <field name="icon_class" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Icon Class</label>
+                <dataScope>icon_class</dataScope>
+                <notice translate="true">Icon class (e.g., fa-home for Font Awesome)</notice>
+            </settings>
+        </field>
+        
+        <field name="open_in_new_tab" formElement="checkbox">
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Open in New Tab</label>
+                <dataScope>open_in_new_tab</dataScope>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="boolean">false</map>
+                            <map name="true" xsi:type="boolean">true</map>
+                        </valueMap>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+    </fieldset>
+</form>

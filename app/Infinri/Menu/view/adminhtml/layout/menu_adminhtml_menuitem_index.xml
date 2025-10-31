@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <update handle="admin_default"/>
+    
+    <referenceContainer name="content">
+        <uiComponent name="menu_item_listing"/>
+    </referenceContainer>
+</layout>
