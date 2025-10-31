@@ -50,7 +50,7 @@ class InstallDefaultMenus implements DataPatchInterface
             $stmt->execute([
                 $menu['identifier'],
                 $menu['title'],
-                $menu['is_active']
+                $menu['is_active'] ? 'true' : 'false'
             ]);
         }
     }

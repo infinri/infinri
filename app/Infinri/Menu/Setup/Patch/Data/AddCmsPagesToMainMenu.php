@@ -46,7 +46,7 @@ class AddCmsPagesToMainMenu implements DataPatchInterface
         $stmt = $this->connection->query(
             "SELECT page_id, title, url_key 
              FROM cms_page 
-             WHERE is_active = true 
+             WHERE is_active::boolean = true 
              AND url_key NOT IN ('404', '500', 'maintenance')
              ORDER BY page_id ASC"
         );
@@ -98,9 +98,9 @@ class AddCmsPagesToMainMenu implements DataPatchInterface
                 null,  // custom_url
                 null,  // css_class
                 null,  // icon_class
-                false, // open_in_new_tab
+                'false', // open_in_new_tab
                 $sortOrder,
-                true   // is_active
+                'true'   // is_active
             ]);
             
             $sortOrder += 10;

@@ -104,8 +104,19 @@ class SchemaSetup
                 "SELECT to_regclass('public.{$tableName}') AS table_exists"
             );
             $result = $stmt->fetch(\PDO::FETCH_ASSOC);
-            return $result && $result['table_exists'] !== null;
+            $exists = $result && $result['table_exists'] !== null;
+            
+            // Debug logging
+            if (!$exists) {
+                Logger::debug("SchemaSetup: Table {$tableName} check", [
+                    'result' => $result,
+                    'exists' => $exists
+                ]);
+            }
+            
+            return $exists;
         } catch (\Exception $e) {
+            Logger::warning("SchemaSetup: Error checking if table {$tableName} exists: " . $e->getMessage());
             return false;
         }
     }
@@ -172,7 +183,14 @@ class SchemaSetup
         
         Logger::debug("SchemaSetup: Executing SQL", ['sql' => $sql]);
         
-        $this->connection->exec($sql);
+        try {
+            $result = $this->connection->exec($sql);
+            Logger::info("SchemaSetup: Table {$tableName} created successfully (affected rows: " . ($result === false ? '0' : $result) . ")");
+        } catch (\Exception $e) {
+            Logger::error("SchemaSetup: Failed to create table {$tableName}: " . $e->getMessage());
+            echo "  ❌ Error creating table {$tableName}: " . $e->getMessage() . "\n";
+            throw $e;
+        }
         
         // Create indexes
         foreach ($tableNode->index as $index) {
@@ -244,6 +262,13 @@ class SchemaSetup
         
         Logger::debug("SchemaSetup: Creating index", ['sql' => $sql]);
         
-        $this->connection->exec($sql);
+        try {
+            $this->connection->exec($sql);
+            Logger::info("SchemaSetup: Index {$refId} created successfully");
+        } catch (\Exception $e) {
+            Logger::error("SchemaSetup: Failed to create index {$refId}: " . $e->getMessage());
+            echo "  ⚠ Warning creating index {$refId}: " . $e->getMessage() . "\n";
+            // Don't throw - indexes might already exist
+        }
     }
 }
