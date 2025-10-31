@@ -19,5 +19,14 @@
              sortOrder="20" 
              action="/admin/cms/block/index" 
              resource="Infinri_Cms::blocks"/>
+        
+        <!-- Media Manager -->
+        <add id="Infinri_Cms::media" 
+             title="Media Manager" 
+             module="Infinri_Cms" 
+             parent="Infinri_Admin::content"
+             sortOrder="30" 
+             action="/admin/cms/media/index" 
+             resource="Infinri_Cms::media"/>
     </menu>
 </config>

@@ -78,7 +78,8 @@ class SecurityHeadersMiddleware
             
             // Styles: ONLY allow same-origin styles and nonce-tagged inline styles
             // REMOVED: 'unsafe-inline' for security
-            "style-src 'self' 'nonce-{$nonce}'",
+            // ALLOWED: Google Fonts for typography
+            "style-src 'self' 'nonce-{$nonce}' https://fonts.googleapis.com",
             
             // Images: allow from same origin, data URIs (base64 images), and blob (image picker)
             "img-src 'self' data: blob:",

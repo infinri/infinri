@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <!-- Admin routes for Core module (media uploads, etc.) -->
-    <router id="admin">
-        <route id="infinri_media" frontName="infinri_media" module="Infinri_Core">
-            <module name="Infinri_Core"/>
-        </route>
-    </router>
-</config>

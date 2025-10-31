@@ -217,6 +217,7 @@ class Loader
                 );
                 
                 // Support 3-level nested paths: /admin/system/config/index
+                // Router's specificity system ensures more specific routes match first
                 $router->addRoute(
                     "{$routeId}_nested_controller_action",
                     "/admin/:controller/:subcontroller/:action",

@@ -17,7 +17,7 @@ class Template extends AbstractBlock
     /**
      * @var string|null Template file path
      */
-    private ?string $template = null;
+    protected ?string $template = null;
 
     /**
      * @var TemplateResolver|null Template resolver
@@ -314,7 +314,7 @@ class Template extends AbstractBlock
     }
 
     /**
-     * Escape URL
+     * Escape URL for safe output in HTML
      *
      * @param string $url
      * @return string
@@ -322,5 +322,16 @@ class Template extends AbstractBlock
     public function escapeUrl(string $url): string
     {
         return htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
+    }
+
+    /**
+     * Escape string for safe output in JavaScript
+     *
+     * @param string $string
+     * @return string
+     */
+    public function escapeJs(string $string): string
+    {
+        return addslashes($string);
     }
 }

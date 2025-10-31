@@ -16,6 +16,8 @@
         initTableCheckboxes();
         initAlertClose();
         initFormImagePicker();
+        initDeleteConfirmation();
+        initImagePickerButtons();
     });
     
     /**
@@ -195,5 +197,44 @@
     window.confirmDelete = function(message) {
         return confirm(message || 'Are you sure you want to delete this item?');
     };
+    
+    /**
+     * Initialize delete confirmation on buttons/links
+     */
+    function initDeleteConfirmation() {
+        document.querySelectorAll('.button-delete').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                const message = this.getAttribute('data-confirm');
+                if (message && !confirm(message)) {
+                    e.preventDefault();
+                }
+            });
+        });
+    }
+    
+    /**
+     * Initialize image picker buttons (non-onclick handlers)
+     */
+    function initImagePickerButtons() {
+        // Browse Images button
+        document.querySelectorAll('.btn-image-picker').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const fieldName = this.getAttribute('data-field');
+                if (window.openImagePicker && typeof window.openImagePicker === 'function') {
+                    window.openImagePicker(fieldName);
+                }
+            });
+        });
+        
+        // Close button
+        const closeBtn = document.getElementById('btn-close-image-picker');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function() {
+                if (window.closeImagePicker && typeof window.closeImagePicker === 'function') {
+                    window.closeImagePicker();
+                }
+            });
+        }
+    }
     
 })();

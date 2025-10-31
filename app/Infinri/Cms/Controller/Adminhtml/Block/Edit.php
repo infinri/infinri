@@ -4,26 +4,33 @@ declare(strict_types=1);
 
 namespace Infinri\Cms\Controller\Adminhtml\Block;
 
-use Infinri\Core\View\Element\UiFormRenderer;
-use Infinri\Cms\Controller\Adminhtml\AbstractEditController;
+use Infinri\Core\App\Request;
+use Infinri\Core\App\Response;
+use Infinri\Core\Model\View\LayoutFactory;
 
 /**
  * Edit/Create Block Controller
+ * Route: admin/cms/block/edit?id={block_id}
+ * Uses layout system with UI Component form
+ * Follows Magento pattern: edit?id=123 (edit) or edit (new)
  */
-class Edit extends AbstractEditController
+class Edit
 {
-    public function __construct(UiFormRenderer $formRenderer)
-    {
-        parent::__construct($formRenderer);
+    public function __construct(
+        private readonly LayoutFactory $layoutFactory
+    ) {
     }
 
-    protected function getFormName(): string
+    public function execute(Request $request): Response
     {
-        return 'cms_block_form';
-    }
+        $blockId = (int) $request->getParam('id');
+        
+        // Render using layout system (proper separation of concerns)
+        // Pass 'id' parameter (standard for UI Component forms)
+        $html = $this->layoutFactory->render('cms_adminhtml_block_edit', [
+            'id' => $blockId ?: null
+        ]);
 
-    protected function getIdParam(): string
-    {
-        return 'id';
+        return (new Response())->setBody($html);
     }
 }

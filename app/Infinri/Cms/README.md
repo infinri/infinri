@@ -309,7 +309,6 @@ app/Infinri/Cms/
 ├── Controller/
 │   ├── Adminhtml/
 │   │   ├── AbstractDeleteController.php
-│   │   ├── AbstractEditController.php
 │   │   ├── AbstractSaveController.php
 │   │   ├── Block/
 │   │   │   ├── Delete.php

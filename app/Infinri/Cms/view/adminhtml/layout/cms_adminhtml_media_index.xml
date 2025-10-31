@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Media Manager Layout
+ * Route: admin/infinri_media/media/index
+ * CSS & JS compiled into adminhtml/css/styles.min.css and adminhtml/js/scripts.min.js
+ */
+-->
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <!-- Extend base admin layout (already includes compiled CSS/JS) -->
+    <update handle="admin_1column"/>
+    
+    <!-- Add media manager content -->
+    <referenceContainer name="content">
+        <block class="Infinri\Core\Block\Template"
+               name="media.manager.content"
+               template="Infinri_Cms::media/manager_new.phtml"/>
+    </referenceContainer>
+</layout>

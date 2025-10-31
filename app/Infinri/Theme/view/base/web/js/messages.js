@@ -18,11 +18,22 @@
          * Initialize close buttons
          */
         initCloseButtons() {
+            // Standard data-dismiss pattern
             const closeButtons = document.querySelectorAll('[data-dismiss="message"]');
-            
             closeButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     const message = button.closest('.message');
+                    if (message) {
+                        this.hideMessage(message);
+                    }
+                });
+            });
+            
+            // Also handle .message-close class (without data attribute)
+            const messageCloseButtons = document.querySelectorAll('.message-close');
+            messageCloseButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const message = button.closest('.message') || button.parentElement;
                     if (message) {
                         this.hideMessage(message);
                     }

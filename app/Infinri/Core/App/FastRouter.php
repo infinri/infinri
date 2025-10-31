@@ -51,11 +51,45 @@ class FastRouter implements RouterInterface
             'controller' => $controller,
             'action' => $action,
             'methods' => $methods,
+            'specificity' => $this->calculateSpecificity($path),
         ];
         
         $this->dirty = true;
         
         return $this;
+    }
+    
+    /**
+     * Calculate route specificity score (higher = more specific)
+     * More specific routes should be matched first
+     *
+     * @param string $path
+     * @return int
+     */
+    private function calculateSpecificity(string $path): int
+    {
+        $score = 0;
+        
+        // Split path into segments
+        $segments = explode('/', trim($path, '/'));
+        
+        foreach ($segments as $segment) {
+            if ($segment === '' || $segment === '*') {
+                // Wildcard - least specific
+                $score -= 100;
+            } elseif (str_starts_with($segment, ':')) {
+                // Parameter segment (e.g., :id) - somewhat specific
+                $score += 1;
+            } else {
+                // Static segment (e.g., "admin", "auth") - most specific
+                $score += 100;
+            }
+        }
+        
+        // Prefer routes with more segments (more specific paths)
+        $score += count($segments);
+        
+        return $score;
     }
 
     /**
@@ -103,8 +137,15 @@ class FastRouter implements RouterInterface
      */
     private function buildDispatcher(): void
     {
-        $this->dispatcher = simpleDispatcher(function (RouteCollector $r) {
-            foreach ($this->routes as $name => $route) {
+        // Sort routes by specificity (most specific first)
+        // This ensures more specific routes are checked before generic catch-alls
+        $sortedRoutes = $this->routes;
+        uasort($sortedRoutes, function ($a, $b) {
+            return ($b['specificity'] ?? 0) <=> ($a['specificity'] ?? 0);
+        });
+        
+        $this->dispatcher = simpleDispatcher(function (RouteCollector $r) use ($sortedRoutes) {
+            foreach ($sortedRoutes as $name => $route) {
                 // Convert custom :param syntax to FastRoute {param} syntax
                 $fastRoutePath = $this->convertToFastRoutePattern($route['path']);
                 

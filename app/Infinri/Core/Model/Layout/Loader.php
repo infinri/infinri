@@ -5,6 +5,7 @@ namespace Infinri\Core\Model\Layout;
 
 use Infinri\Core\Model\Module\ModuleManager;
 use Infinri\Core\Model\Cache\Pool;
+use Infinri\Core\App\Request;
 use SimpleXMLElement;
 
 /**
@@ -20,9 +21,12 @@ class Loader
      */
     private const CACHE_TTL = 3600;
 
+    private ?string $currentArea = null;
+
     public function __construct(
         private readonly ModuleManager $moduleManager,
-        private readonly ?Pool $cachePool = null
+        private readonly ?Pool $cachePool = null,
+        private readonly ?Request $request = null
     ) {
     }
 
@@ -171,6 +175,37 @@ class Loader
     }
 
     /**
+     * Set area explicitly (for testing)
+     * @param string $area 'frontend' or 'adminhtml'
+     * @return void
+     */
+    public function setArea(string $area): void
+    {
+        $this->currentArea = $area;
+    }
+    
+    /**
+     * Detect current area (admin or frontend)
+     */
+    private function detectArea(): string
+    {
+        if ($this->currentArea !== null) {
+            return $this->currentArea;
+        }
+        
+        // Check request path
+        if ($this->request) {
+            $path = $this->request->getPath();
+            $this->currentArea = (str_starts_with($path, '/admin')) ? 'adminhtml' : 'frontend';
+        } else {
+            // Fallback to adminhtml if no request (for backward compatibility with tests)
+            $this->currentArea = 'adminhtml';
+        }
+        
+        return $this->currentArea;
+    }
+    
+    /**
      * Get layout directory paths for a module
      *
      * @param string $modulePath Module base path
@@ -178,12 +213,26 @@ class Loader
      */
     private function getLayoutDirectories(string $modulePath): array
     {
+        $area = $this->detectArea();
+        
+        // If we can detect a specific area, prioritize it
+        if ($this->request !== null) {
+            // Request available - use detected area first
+            return [
+                $modulePath . '/view/' . $area . '/layout',  // Area-specific (detected)
+                $modulePath . '/view/base/layout',           // Base layouts
+                $modulePath . '/view/layout',                // Shared layouts
+                $modulePath . '/etc/layout',                 // Config layouts
+            ];
+        }
+        
+        // No request - check both areas (for tests/CLI)
         return [
-            $modulePath . '/view/adminhtml/layout',  // Admin area layouts
-            $modulePath . '/view/frontend/layout',   // Frontend area layouts
-            $modulePath . '/view/base/layout',       // Base layouts (shared)
-            $modulePath . '/view/layout',            // Shared layouts
-            $modulePath . '/etc/layout',             // Config layouts
+            $modulePath . '/view/adminhtml/layout',      // Admin area
+            $modulePath . '/view/frontend/layout',       // Frontend area
+            $modulePath . '/view/base/layout',           // Base layouts
+            $modulePath . '/view/layout',                // Shared layouts
+            $modulePath . '/etc/layout',                 // Config layouts
         ];
     }
 

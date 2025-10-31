@@ -187,6 +187,19 @@ class Response
         $this->setHeader('Location', $url);
         return $this;
     }
+    
+    /**
+     * Convenience method for redirect (alias of setRedirect)
+     *
+     * @param string $url
+     * @param int $code
+     * @return $this
+     * @throws \InvalidArgumentException If URL is not safe for redirect
+     */
+    public function redirect(string $url, int $code = 302): self
+    {
+        return $this->setRedirect($url, $code);
+    }
 
     /**
      * Set JSON response

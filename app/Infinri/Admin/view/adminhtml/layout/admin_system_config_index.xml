@@ -7,6 +7,23 @@
 <layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <update handle="admin_default"/>
     
+    <!-- Set page title -->
+    <referenceBlock name="page.title">
+        <arguments>
+            <argument name="page_title" xsi:type="string">Configuration</argument>
+        </arguments>
+    </referenceBlock>
+    
+    <!-- Add sidebar navigation -->
+    <referenceContainer name="main.content">
+        <container name="admin.sidebar" htmlTag="aside" htmlClass="admin-sidebar" before="content">
+            <block class="Infinri\Admin\Block\Menu" 
+                   name="admin.navigation" 
+                   template="Infinri_Theme::html/menu.phtml"/>
+        </container>
+    </referenceContainer>
+    
+    <!-- Configuration Content -->
     <referenceContainer name="content">
         <block class="Infinri\Admin\Block\System\Config" 
                name="system.config" 

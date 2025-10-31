@@ -120,29 +120,47 @@ class Builder
         if (isset($element['class'])) {
             $className = (string) $element['class'];
             
-            // Try to create via ObjectManager first (if available)
+            // Try to create via ObjectManager (handles dependency injection)
             try {
                 $objectManager = ObjectManager::getInstance();
-                if ($objectManager->has($className)) {
-                    $block = $objectManager->create($className);
-                    if ($block instanceof AbstractBlock) {
-                        return $block;
-                    }
-                }
-            } catch (\RuntimeException $e) {
-                // ObjectManager not configured yet (likely in tests)
-                // Fall through to regular instantiation
-            }
-
-            // Try direct instantiation
-            if (class_exists($className)) {
-                $block = new $className();
+                $block = $objectManager->create($className);
+                
                 if ($block instanceof AbstractBlock) {
                     // Inject TemplateResolver for Template blocks
                     if ($block instanceof Template && $this->templateResolver !== null) {
                         $block->setTemplateResolver($this->templateResolver);
                     }
                     return $block;
+                }
+            } catch (\RuntimeException $e) {
+                // ObjectManager not configured yet (likely in tests)
+                // Fall through to direct instantiation for simple blocks
+            } catch (\Throwable $e) {
+                // Failed to create via ObjectManager - log and try fallback
+                \Infinri\Core\Helper\Logger::warning('Builder: Failed to create block via ObjectManager', [
+                    'class' => $className,
+                    'error' => $e->getMessage()
+                ]);
+            }
+
+            // Fallback: Try direct instantiation (only works for blocks without dependencies)
+            if (class_exists($className)) {
+                try {
+                    $block = new $className();
+                    if ($block instanceof AbstractBlock) {
+                        // Inject TemplateResolver for Template blocks
+                        if ($block instanceof Template && $this->templateResolver !== null) {
+                            $block->setTemplateResolver($this->templateResolver);
+                        }
+                        return $block;
+                    }
+                } catch (\Throwable $e) {
+                    // Constructor requires dependencies - cannot instantiate
+                    \Infinri\Core\Helper\Logger::error('Builder: Failed to create block', [
+                        'class' => $className,
+                        'error' => $e->getMessage(),
+                        'hint' => 'Block requires dependencies but ObjectManager is not available or class is not registered'
+                    ]);
                 }
             }
         }

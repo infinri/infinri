@@ -38,10 +38,45 @@ class Router implements RouterInterface
             'action' => $action,
             'methods' => $methods,
             'pattern' => $this->convertToRegex($path),
+            'specificity' => $this->calculateSpecificity($path),
         ];
         
         return $this;
     }
+    
+    /**
+     * Calculate route specificity score (higher = more specific)
+     * More specific routes should be matched first
+     *
+     * @param string $path
+     * @return int
+     */
+    private function calculateSpecificity(string $path): int
+    {
+        $score = 0;
+        
+        // Split path into segments
+        $segments = explode('/', trim($path, '/'));
+        
+        foreach ($segments as $segment) {
+            if ($segment === '' || $segment === '*') {
+                // Wildcard - least specific
+                $score -= 100;
+            } elseif (str_starts_with($segment, ':')) {
+                // Parameter segment (e.g., :id) - somewhat specific
+                $score += 1;
+            } else {
+                // Static segment (e.g., "admin", "auth") - most specific
+                $score += 100;
+            }
+        }
+        
+        // Prefer routes with more segments (more specific paths)
+        $score += count($segments);
+        
+        return $score;
+    }
+
 
     /**
      * Match URL to route
@@ -52,7 +87,13 @@ class Router implements RouterInterface
      */
     public function match(string $path, string $method = 'GET'): ?array
     {
-        foreach ($this->routes as $name => $route) {
+        // Sort routes by specificity (most specific first)
+        $sortedRoutes = $this->routes;
+        uasort($sortedRoutes, function ($a, $b) {
+            return ($b['specificity'] ?? 0) <=> ($a['specificity'] ?? 0);
+        });
+        
+        foreach ($sortedRoutes as $name => $route) {
             // Check if method is allowed
             if (!in_array($method, $route['methods'], true)) {
                 continue;
@@ -79,7 +120,7 @@ class Router implements RouterInterface
 
         return null;
     }
-
+    
     /**
      * Convert route path to regex pattern
      *

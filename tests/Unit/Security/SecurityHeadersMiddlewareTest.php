@@ -50,6 +50,8 @@ describe('SecurityHeadersMiddleware', function () {
         expect($csp)->toContain("default-src 'self'");
         expect($csp)->toContain("script-src 'self'");
         expect($csp)->toContain("style-src 'self'");
+        expect($csp)->toContain("https://fonts.googleapis.com");
+        expect($csp)->toContain("https://fonts.gstatic.com");
     });
 
     it('adds HSTS header for HTTPS requests', function () {

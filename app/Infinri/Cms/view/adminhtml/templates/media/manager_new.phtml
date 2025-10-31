@@ -1,0 +1,133 @@
+<?php
+/**
+ * Media Manager Template
+ * 
+ * @var \Infinri\Core\Block\Template $block
+ */
+
+try {
+    $currentFolder = $block->getData('currentFolder') ?? '';
+    $folders = $block->getData('folders') ?? [];
+    $images = $block->getData('images') ?? [];
+    $csrfTokens = $block->getData('csrfTokens') ?? [];
+    $breadcrumbs = $block->getData('breadcrumbs') ?? [];
+
+    $csrfTokensJson = json_encode($csrfTokens);
+    if ($csrfTokensJson === false) {
+        $csrfTokensJson = '{}';
+    }
+} catch (\Throwable $e) {
+    file_put_contents('/home/infinri/Initrix/Projects/infinri/var/log/media-template-error.log', 
+        date('Y-m-d H:i:s') . ' ERROR: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() . "\n" . $e->getTraceAsString() . "\n\n",
+        FILE_APPEND
+    );
+    echo '<div style="color: red; padding: 20px; border: 2px solid red; background: white; margin: 20px;">';
+    echo '<h2>❌ Template Error</h2>';
+    echo '<p><strong>Error:</strong> ' . htmlspecialchars($e->getMessage()) . '</p>';
+    echo '<p><strong>File:</strong> ' . htmlspecialchars($e->getFile()) . '</p>';
+    echo '<p><strong>Line:</strong> ' . $e->getLine() . '</p>';
+    echo '<pre style="background: #f5f5f5; padding: 10px; overflow: auto;">' . htmlspecialchars($e->getTraceAsString()) . '</pre>';
+    echo '</div>';
+    return;
+}
+?>
+<?php error_log('TEMPLATE DEBUG: Starting HTML output'); ?>
+<div class="media-manager-header">
+    <h1>📁 Media Manager</h1>
+    <div class="media-breadcrumbs">
+        <?php foreach ($breadcrumbs as $index => $crumb): ?>
+            <?php if ($index > 0): ?>
+                <span>›</span>
+            <?php endif; ?>
+            <a href="<?= $block->escapeUrl($crumb['url']) ?>">
+                <?= $block->escapeHtml($crumb['label']) ?>
+            </a>
+        <?php endforeach; ?>
+    </div>
+</div>
+
+<div class="media-toolbar">
+    <button class="media-btn media-btn-primary" id="btn-upload-modal">📤 Upload Images</button>
+    <button class="media-btn media-btn-secondary" id="btn-folder-modal">📁 New Folder</button>
+</div>
+
+<div class="media-content" 
+     data-csrf-tokens="<?= $block->escapeHtmlAttr($csrfTokensJson) ?>"
+     data-current-folder="<?= $block->escapeHtmlAttr($currentFolder) ?>">
+    <?php if (!empty($folders)): ?>
+        <div class="media-folders">
+            <?php foreach ($folders as $folder): ?>
+                <?php 
+                    $folderPath = $currentFolder ? $currentFolder . '/' . $folder['name'] : $folder['name'];
+                    $folderUrl = '/admin/cms/media/index?folder=' . urlencode($folderPath);
+                ?>
+                <div class="media-folder" data-folder-url="<?= $block->escapeUrl($folderUrl) ?>">
+                    <div class="media-folder-icon">📁</div>
+                    <div class="media-folder-name"><?= $block->escapeHtml($folder['name']) ?></div>
+                    <div class="media-folder-count"><?= (int)$folder['count'] ?> items</div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if (!empty($images)): ?>
+        <div class="media-images">
+            <?php foreach ($images as $image): ?>
+                <div class="media-image-card">
+                    <img src="<?= $block->escapeUrl($image['url']) ?>" 
+                         alt="<?= $block->escapeHtmlAttr($image['name']) ?>" 
+                         class="media-image-preview">
+                    <div class="media-image-info">
+                        <div class="media-image-name"><?= $block->escapeHtml($image['name']) ?></div>
+                        <div class="media-image-actions">
+                            <button class="btn-copy-url" data-url="<?= $block->escapeHtmlAttr($image['url']) ?>">📋 Copy URL</button>
+                            <button class="btn-delete-image" data-name="<?= $block->escapeHtmlAttr($image['name']) ?>">🗑️ Delete</button>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php elseif (empty($folders)): ?>
+        <div class="media-empty-state">
+            <div class="media-empty-state-icon">🖼️</div>
+            <p>No images in this folder</p>
+            <p class="media-empty-text">Upload some images to get started</p>
+        </div>
+    <?php endif; ?>
+</div>
+
+<!-- Upload Modal -->
+<div id="upload-modal" class="media-modal">
+    <div class="media-modal-content">
+        <h2>Upload Images</h2>
+        <form id="upload-form" enctype="multipart/form-data">
+            <input type="hidden" name="folder" value="<?= $block->escapeHtmlAttr($currentFolder) ?>">
+            <input type="hidden" name="_csrf_token" value="<?= $block->escapeHtmlAttr($csrfTokens['upload'] ?? '') ?>">
+            <div id="upload-area" class="media-upload-area">
+                <p class="media-upload-text">📤 Drag & drop images here</p>
+                <p class="media-upload-hint">or click to browse</p>
+                <input type="file" id="file-input" name="files[]" multiple accept="image/*">
+            </div>
+            <div class="media-modal-actions">
+                <button type="button" class="media-btn media-btn-secondary" id="btn-cancel-upload">Cancel</button>
+                <button type="submit" class="media-btn media-btn-primary">Upload</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- New Folder Modal -->
+<div id="folder-modal" class="media-modal">
+    <div class="media-modal-content">
+        <h2>Create New Folder</h2>
+        <form id="folder-form">
+            <input type="hidden" name="parent" value="<?= $block->escapeHtmlAttr($currentFolder) ?>">
+            <input type="hidden" name="_csrf_token" value="<?= $block->escapeHtmlAttr($csrfTokens['createFolder'] ?? '') ?>">
+            <input type="text" name="name" placeholder="Folder name" required>
+            <div class="media-modal-actions">
+                <button type="button" class="media-btn media-btn-secondary" id="btn-cancel-folder">Cancel</button>
+                <button type="submit" class="media-btn media-btn-primary">Create</button>
+            </div>
+        </form>
+    </div>
+</div>

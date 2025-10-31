@@ -6,18 +6,17 @@ namespace Infinri\Admin\Controller\System\Config;
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
 use Infinri\Core\Model\Config;
+use Infinri\Core\Model\Message\MessageManager;
 
 /**
  * System Configuration Save Controller
  */
 class Save
 {
-    private Config $config;
-    
     public function __construct(
-        Config $config
+        private readonly Config $config,
+        private readonly MessageManager $messageManager
     ) {
-        $this->config = $config;
     }
     
     /**
@@ -28,23 +27,32 @@ class Save
         $section = $request->getParam('section', 'general');
         $groups = $request->getParam('groups', []);
         
-        // Process each group's fields
-        foreach ($groups as $groupId => $groupData) {
-            if (!isset($groupData['fields'])) {
-                continue;
-            }
-            
-            foreach ($groupData['fields'] as $fieldId => $fieldData) {
-                $value = $fieldData['value'] ?? null;
-                $path = $section . '/' . $groupId . '/' . $fieldId;
+        try {
+            // Process each group's fields
+            foreach ($groups as $groupId => $groupData) {
+                if (!isset($groupData['fields'])) {
+                    continue;
+                }
                 
-                if ($value !== null) {
-                    $this->config->saveValue($path, $value);
+                foreach ($groupData['fields'] as $fieldId => $fieldData) {
+                    $value = $fieldData['value'] ?? null;
+                    $path = $section . '/' . $groupId . '/' . $fieldId;
+                    
+                    if ($value !== null) {
+                        $this->config->saveValue($path, $value);
+                    }
                 }
             }
+            
+            // Add success message
+            $this->messageManager->addSuccess('Configuration saved successfully.');
+            
+        } catch (\Exception $e) {
+            // Add error message
+            $this->messageManager->addError('Failed to save configuration: ' . $e->getMessage());
         }
         
-        // Redirect back to configuration page with success message
+        // Redirect back to configuration page
         $response = new Response();
         $response->redirect('/admin/system/config/index?section=' . urlencode($section));
         return $response;

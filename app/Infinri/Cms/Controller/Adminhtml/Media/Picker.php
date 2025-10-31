@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Infinri\Core\Controller\Adminhtml\Media;
+namespace Infinri\Cms\Controller\Adminhtml\Media;
 
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
