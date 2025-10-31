@@ -25,6 +25,7 @@ class FrontController
         'Infinri\\Admin\\Controller\\',
         'Infinri\\Auth\\Controller\\',
         'Infinri\\Theme\\Controller\\',
+        'Infinri\\Menu\\Controller\\',
         'Tests\\',  // Allow test controllers
     ];
     

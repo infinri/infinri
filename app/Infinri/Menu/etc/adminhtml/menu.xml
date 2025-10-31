@@ -11,7 +11,7 @@
              title="Manage Menus" 
              module="Infinri_Menu" 
              sortOrder="10" 
-             action="menu/menu/index" 
+             action="/admin/menu/menu/index" 
              resource="Infinri_Menu::menus" 
              parent="Infinri_Menu::menus"/>
     </menu>
