@@ -8,9 +8,10 @@
             "Modules\\": "modules/",
             "Infinri\\Admin\\": "app/Infinri/Admin",
             "Infinri\\Auth\\": "app/Infinri/Auth",
+            "Infinri\\Cms\\": "app/Infinri/Cms",
             "Infinri\\Core\\": "app/Infinri/Core",
-            "Infinri\\Theme\\": "app/Infinri/Theme",
-            "Infinri\\Cms\\": "app/Infinri/Cms"
+            "Infinri\\Menu\\": "app/Infinri/Menu",
+            "Infinri\\Theme\\": "app/Infinri/Theme"
         }
     },
     "autoload-dev": {

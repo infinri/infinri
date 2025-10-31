@@ -10,10 +10,11 @@ declare(strict_types=1);
 
 return [
     'modules' => [
-        'Infinri_Core' => 1,
-        'Infinri_Theme' => 1,
-        'Infinri_Cms' => 1,
         'Infinri_Admin' => 1,
         'Infinri_Auth' => 1,
+        'Infinri_Cms' => 1,
+        'Infinri_Core' => 1,
+        'Infinri_Theme' => 1,
+        'Infinri_Menu' => 1,
     ]
 ];
