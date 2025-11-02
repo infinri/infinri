@@ -143,6 +143,33 @@ class InstallDefaultConfig implements DataPatchInterface
                 'path' => 'dev/log/enabled',
                 'value' => '1',
             ],
+            
+            // Theme/Footer Settings
+            [
+                'scope' => 'default',
+                'scope_id' => 0,
+                'path' => 'theme/footer/social_links',
+                'value' => json_encode([
+                    [
+                        'label' => 'GitHub',
+                        'url' => 'https://github.com/infinri',
+                        'icon' => 'github',
+                        'platform' => 'GitHub'
+                    ],
+                    [
+                        'label' => 'Twitter',
+                        'url' => 'https://twitter.com/infinri',
+                        'icon' => 'twitter',
+                        'platform' => 'Twitter'
+                    ],
+                    [
+                        'label' => 'LinkedIn',
+                        'url' => 'https://linkedin.com/company/infinri',
+                        'icon' => 'linkedin',
+                        'platform' => 'LinkedIn'
+                    ],
+                ], JSON_PRETTY_PRINT),
+            ],
         ];
     }
     

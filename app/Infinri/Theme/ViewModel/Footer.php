@@ -53,32 +53,38 @@ class Footer
     }
     
     /**
-     * Get social media links
+     * Get social media links from configuration
      *
      * @return array Social media platforms
      */
     public function getSocialLinks(): array
     {
-        return [
-            [
-                'platform' => 'Twitter',
-                'label' => 'Twitter',
-                'url' => 'https://twitter.com/infinri',
-                'icon' => 'twitter',
-            ],
-            [
-                'platform' => 'GitHub',
-                'label' => 'GitHub',
-                'url' => 'https://github.com/infinri',
-                'icon' => 'github',
-            ],
-            [
-                'platform' => 'LinkedIn',
-                'label' => 'LinkedIn',
-                'url' => 'https://linkedin.com/company/infinri',
-                'icon' => 'linkedin',
-            ],
-        ];
+        // Get social links from admin configuration (stored as JSON)
+        $socialLinksJson = $this->config->getValue('theme/footer/social_links');
+        
+        if (empty($socialLinksJson)) {
+            return [];
+        }
+        
+        try {
+            $socialLinks = json_decode($socialLinksJson, true, 512, JSON_THROW_ON_ERROR);
+            
+            // Validate structure
+            if (!is_array($socialLinks)) {
+                return [];
+            }
+            
+            // Filter out invalid entries
+            return array_filter($socialLinks, function ($link) {
+                return is_array($link) 
+                    && !empty($link['url']) 
+                    && !empty($link['label']);
+            });
+            
+        } catch (\JsonException $e) {
+            // Invalid JSON - return empty array
+            return [];
+        }
     }
     
     /**
