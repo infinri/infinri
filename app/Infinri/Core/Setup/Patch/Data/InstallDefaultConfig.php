@@ -144,11 +144,23 @@ class InstallDefaultConfig implements DataPatchInterface
                 'value' => '1',
             ],
             
-            // Theme/Footer Settings
+            // Theme Footer Settings (matches system.xml structure)
             [
                 'scope' => 'default',
                 'scope_id' => 0,
-                'path' => 'theme/footer/social_links',
+                'path' => 'theme_footer/general/enabled',
+                'value' => '1',
+            ],
+            [
+                'scope' => 'default',
+                'scope_id' => 0,
+                'path' => 'theme_footer/general/copyright',
+                'value' => '© ' . date('Y') . ' Infinri. All rights reserved.',
+            ],
+            [
+                'scope' => 'default',
+                'scope_id' => 0,
+                'path' => 'theme_footer/social/social_links',
                 'value' => json_encode([
                     [
                         'label' => 'GitHub',
@@ -169,6 +181,12 @@ class InstallDefaultConfig implements DataPatchInterface
                         'platform' => 'LinkedIn'
                     ],
                 ], JSON_PRETTY_PRINT),
+            ],
+            [
+                'scope' => 'default',
+                'scope_id' => 0,
+                'path' => 'theme_footer/newsletter/enabled',
+                'value' => '0',
             ],
         ];
     }

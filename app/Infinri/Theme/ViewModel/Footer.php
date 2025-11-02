@@ -36,7 +36,7 @@ class Footer
     public function getCopyright(): string
     {
         $year = date('Y');
-        $copyright = $this->config->getValue('theme/general/copyright');
+        $copyright = $this->config->getValue('theme_footer/general/copyright');
         
         return $copyright ?? "© {$year} Infinri. All rights reserved.";
     }
@@ -60,7 +60,7 @@ class Footer
     public function getSocialLinks(): array
     {
         // Get social links from admin configuration (stored as JSON)
-        $socialLinksJson = $this->config->getValue('theme/footer/social_links');
+        $socialLinksJson = $this->config->getValue('theme_footer/social/social_links');
         
         if (empty($socialLinksJson)) {
             return [];
@@ -94,7 +94,7 @@ class Footer
      */
     public function isNewsletterEnabled(): bool
     {
-        return (bool)$this->config->getValue('theme/footer/newsletter_enabled');
+        return (bool)$this->config->getValue('theme_footer/newsletter/enabled');
     }
     
     /**
