@@ -67,7 +67,7 @@ $currentSection = $block->getCurrentSection();
                                         <label class="config-field-label">
                                             <?= $block->escapeHtml($field['label']) ?>
                                             <?php if (!empty($field['comment'])): ?>
-                                                <span class="config-field-comment"><?= $block->escapeHtml($field['comment']) ?></span>
+                                                <span class="config-field-comment"><?= $field['comment'] ?></span>
                                             <?php endif; ?>
                                         </label>
                                         
