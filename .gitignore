@@ -94,3 +94,4 @@ test_*.php
 *.min.js
 *.css.map
 *.js.map
+app/var/

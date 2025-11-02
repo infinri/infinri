@@ -79,6 +79,9 @@ if ($isDevelopment) {
 // Initialize logger early
 Logger::init(__DIR__ . '/../var/log');
 
+// Rotate logs if needed (happens once per request, quick check)
+Logger::rotateLogsIfNeeded();
+
 // Set up error and exception handlers (Logger is now available)
 set_error_handler(function ($severity, $message, $file, $line) {
     if (!(error_reporting() & $severity)) {

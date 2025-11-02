@@ -110,7 +110,7 @@ class ContentSanitizer
         }
         
         // Enable cache for performance
-        $cacheDir = __DIR__ . '/../../../var/cache/htmlpurifier';
+        $cacheDir = __DIR__ . '/../../../../var/cache/htmlpurifier';
         if (!is_dir($cacheDir)) {
             mkdir($cacheDir, 0755, true);
         }
