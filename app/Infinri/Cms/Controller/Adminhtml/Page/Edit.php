@@ -3,9 +3,8 @@ declare(strict_types=1);
 
 namespace Infinri\Cms\Controller\Adminhtml\Page;
 
-use Infinri\Core\App\Request;
+use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
-use Infinri\Core\Model\View\LayoutFactory;
 
 /**
  * Edit/Create Page Controller
@@ -13,23 +12,14 @@ use Infinri\Core\Model\View\LayoutFactory;
  * Uses layout system with UI Component form
  * Follows Magento pattern: edit?id=123 (edit) or edit (new)
  */
-class Edit
+class Edit extends AbstractAdminController
 {
-    public function __construct(
-        private readonly LayoutFactory $layoutFactory
-    ) {
-    }
-
-    public function execute(Request $request): Response
+    public function execute(): Response
     {
-        $pageId = (int) $request->getParam('id');
+        $pageId = $this->getIntParam('id');
         
-        // Render using layout system (proper separation of concerns)
-        // Pass 'id' parameter (standard for UI Component forms)
-        $html = $this->layoutFactory->render('cms_adminhtml_page_edit', [
+        return $this->renderAdminLayout('cms_adminhtml_page_edit', [
             'id' => $pageId ?: null
         ]);
-
-        return (new Response())->setBody($html);
     }
 }

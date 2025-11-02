@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Infinri\Seo\Controller\Adminhtml\Redirect;
 
-use Infinri\Core\App\Request;
+use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
 use Infinri\Seo\Service\RedirectManager;
 use Psr\Log\LoggerInterface;
@@ -11,28 +11,29 @@ use Psr\Log\LoggerInterface;
 /**
  * Redirect Mass Delete Controller
  */
-class MassDelete
+class MassDelete extends AbstractAdminController
 {
     public function __construct(
+        \Infinri\Core\App\Request $request,
+        \Infinri\Core\App\Response $response,
+        \Infinri\Core\Model\View\LayoutFactory $layoutFactory,
+        \Infinri\Core\Security\CsrfGuard $csrfGuard,
         private RedirectManager $redirectManager,
         private LoggerInterface $logger
-    ) {}
+    ) {
+        parent::__construct($request, $response, $layoutFactory, $csrfGuard);
+    }
 
-    /**
-     * Execute action
-     */
-    public function execute(Request $request, Response $response): Response
+    public function execute(): Response
     {
-        if ($request->getMethod() !== 'POST') {
-            $response->setStatusCode(405);
-            return $response->setBody('Method Not Allowed');
+        if ($postError = $this->requirePost('/admin/seo/redirect')) {
+            return $this->response->setStatusCode(405)->setBody('Method Not Allowed');
         }
 
-        $ids = $request->getPost('ids', []);
+        $ids = $this->request->getPost('ids', []);
 
         if (empty($ids)) {
-            $response->setStatusCode(400);
-            return $response->setBody('No redirects selected');
+            return $this->response->setStatusCode(400)->setBody('No redirects selected');
         }
 
         try {
@@ -48,17 +49,14 @@ class MassDelete
                 'total' => count($ids)
             ]);
 
-            $response->setStatusCode(302);
-            $response->setHeader('Location', '/admin/seo/redirect');
-            return $response;
+            return $this->redirect('/admin/seo/redirect');
 
         } catch (\Exception $e) {
             $this->logger->error('Failed to mass delete redirects', [
                 'error' => $e->getMessage()
             ]);
 
-            $response->setStatusCode(500);
-            return $response->setBody('Failed to delete redirects: ' . $e->getMessage());
+            return $this->response->setStatusCode(500)->setBody('Failed to delete redirects: ' . $e->getMessage());
         }
     }
 }

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Infinri\Admin\Controller\Users;
 
-use Infinri\Core\App\Request;
+use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
 use Infinri\Core\Helper\Logger;
 use Infinri\Admin\Model\Repository\AdminUserRepository;
@@ -12,23 +12,25 @@ use Infinri\Admin\Model\Repository\AdminUserRepository;
  * Admin User Delete Controller
  * Route: admin/users/delete
  */
-class Delete
+class Delete extends AbstractAdminController
 {
     public function __construct(
+        \Infinri\Core\App\Request $request,
+        \Infinri\Core\App\Response $response,
+        \Infinri\Core\Model\View\LayoutFactory $layoutFactory,
+        \Infinri\Core\Security\CsrfGuard $csrfGuard,
         private readonly AdminUserRepository $repository
     ) {
+        parent::__construct($request, $response, $layoutFactory, $csrfGuard);
     }
 
-    public function execute(Request $request): Response
+    public function execute(): Response
     {
-        $response = new Response();
-        $userId = (int) $request->getParam('id');
+        $userId = $this->getIntParam('id');
 
         if (!$userId) {
             Logger::error('Delete user: No user ID provided');
-            $response->setStatusCode(302);
-            $response->setHeader('Location', '/admin/users/index?error=1');
-            return $response;
+            return $this->redirectWithError('/admin/users/index');
         }
 
         try {
@@ -36,9 +38,7 @@ class Delete
 
             if (!$user) {
                 Logger::error('Delete user: User not found', ['user_id' => $userId]);
-                $response->setStatusCode(302);
-                $response->setHeader('Location', '/admin/users/index?error=1');
-                return $response;
+                return $this->redirectWithError('/admin/users/index');
             }
 
             // Delete the user via repository
@@ -49,9 +49,7 @@ class Delete
                 'username' => $user->getUsername()
             ]);
 
-            $response->setStatusCode(302);
-            $response->setHeader('Location', '/admin/users/index?success=1');
-            return $response;
+            return $this->redirectWithSuccess('/admin/users/index');
 
         } catch (\Exception $e) {
             Logger::error('Delete user failed', [
@@ -59,9 +57,7 @@ class Delete
                 'error' => $e->getMessage()
             ]);
             
-            $response->setStatusCode(302);
-            $response->setHeader('Location', '/admin/users/index?error=1');
-            return $response;
+            return $this->redirectWithError('/admin/users/index');
         }
     }
 }

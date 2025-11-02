@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Infinri\Cms\Controller\Adminhtml\Media;
 
-use Infinri\Core\App\Request;
+use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
 use Infinri\Core\Helper\PathHelper;
 use Infinri\Core\Helper\JsonResponse;
@@ -14,13 +14,9 @@ use Infinri\Core\Helper\JsonResponse;
  * 
  * Phase 4: DRY/KISS - Uses PathHelper and JsonResponse
  */
-class Gallery
+class Gallery extends AbstractAdminController
 {
-    public function __construct()
-    {
-    }
-
-    public function execute(Request $request): Response
+    public function execute(): Response
     {
         try {
             $images = $this->scanForImages(PathHelper::getMediaPath());

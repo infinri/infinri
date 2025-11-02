@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Infinri\Cms\Controller\Adminhtml\Block;
 
-use Infinri\Core\App\Request;
+use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
-use Infinri\Core\Model\View\LayoutFactory;
 
 /**
  * Edit/Create Block Controller
@@ -14,23 +13,14 @@ use Infinri\Core\Model\View\LayoutFactory;
  * Uses layout system with UI Component form
  * Follows Magento pattern: edit?id=123 (edit) or edit (new)
  */
-class Edit
+class Edit extends AbstractAdminController
 {
-    public function __construct(
-        private readonly LayoutFactory $layoutFactory
-    ) {
-    }
-
-    public function execute(Request $request): Response
+    public function execute(): Response
     {
-        $blockId = (int) $request->getParam('id');
+        $blockId = $this->getIntParam('id');
         
-        // Render using layout system (proper separation of concerns)
-        // Pass 'id' parameter (standard for UI Component forms)
-        $html = $this->layoutFactory->render('cms_adminhtml_block_edit', [
+        return $this->renderAdminLayout('cms_adminhtml_block_edit', [
             'id' => $blockId ?: null
         ]);
-
-        return (new Response())->setBody($html);
     }
 }

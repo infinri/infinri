@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Infinri\Cms\Controller\Adminhtml\Media;
 
-use Infinri\Core\App\Request;
+use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
 use Infinri\Cms\Controller\Adminhtml\Media\CsrfTokenIds;
-use Infinri\Core\Security\CsrfGuard;
-use Infinri\Core\Model\View\LayoutFactory;
 use Infinri\Core\Helper\PathHelper;
 
 /**
@@ -18,27 +16,27 @@ use Infinri\Core\Helper\PathHelper;
  * 
  * Phase 4: DRY/KISS - Uses PathHelper
  */
-class Index
+class Index extends AbstractAdminController
 {
     private string $baseUrl = '/media';
     
     public function __construct(
-        private readonly CsrfGuard $csrfGuard,
-        private readonly LayoutFactory $layoutFactory
+        \Infinri\Core\App\Request $request,
+        \Infinri\Core\App\Response $response,
+        \Infinri\Core\Model\View\LayoutFactory $layoutFactory,
+        \Infinri\Core\Security\CsrfGuard $csrfGuard
     ) {
-        // Create media directory if it doesn't exist
+        parent::__construct($request, $response, $layoutFactory, $csrfGuard);
+        
         $mediaPath = PathHelper::getMediaPath();
         if (!is_dir($mediaPath)) {
             mkdir($mediaPath, 0755, true);
         }
     }
 
-    public function execute(Request $request): Response
+    public function execute(): Response
     {
-        $response = new Response();
-        
-        // Get current folder from query parameter (default: root)
-        $currentFolder = $request->getParam('folder', '');
+        $currentFolder = $this->getStringParam('folder');
         $mediaPath = PathHelper::getMediaPath();
         $currentPath = $mediaPath . ($currentFolder ? '/' . $currentFolder : '');
         
@@ -59,21 +57,19 @@ class Index
             'delete' => $this->csrfGuard->generateToken(CsrfTokenIds::DELETE),
         ];
         
-        // Render using layout system
-        $html = $this->layoutFactory->render('cms_adminhtml_media_index', [
+        \Infinri\Core\Helper\Logger::debug('Media Manager: Rendering', [
+            'current_folder' => $currentFolder,
+            'folders_count' => count($folders),
+            'images_count' => count($images)
+        ]);
+        
+        return $this->renderAdminLayout('cms_adminhtml_media_index', [
             'currentFolder' => $currentFolder,
             'folders' => $folders,
             'images' => $images,
             'csrfTokens' => $csrfTokens,
             'breadcrumbs' => $this->generateBreadcrumbs($currentFolder),
         ]);
-        
-        \Infinri\Core\Helper\Logger::debug('Media Manager: HTML rendered', [
-            'html_length' => strlen($html),
-            'html_preview' => substr($html, 0, 200)
-        ]);
-        
-        return $response->setBody($html);
     }
     
     private function getFolders(string $path): array

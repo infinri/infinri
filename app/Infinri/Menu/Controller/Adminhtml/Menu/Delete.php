@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Infinri\Menu\Controller\Adminhtml\Menu;
 
-use Infinri\Core\App\Request;
+use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
 use Infinri\Menu\Model\Repository\MenuRepository;
 use Infinri\Core\Model\Message\MessageManager;
@@ -14,42 +14,35 @@ use Infinri\Core\Model\Message\MessageManager;
  * 
  * Deletes a menu
  */
-class Delete
+class Delete extends AbstractAdminController
 {
-    /**
-     * Constructor
-     *
-     * @param MenuRepository $menuRepository
-     * @param MessageManager $messageManager
-     */
     public function __construct(
+        \Infinri\Core\App\Request $request,
+        \Infinri\Core\App\Response $response,
+        \Infinri\Core\Model\View\LayoutFactory $layoutFactory,
+        \Infinri\Core\Security\CsrfGuard $csrfGuard,
         private readonly MenuRepository $menuRepository,
         private readonly MessageManager $messageManager
-    ) {}
+    ) {
+        parent::__construct($request, $response, $layoutFactory, $csrfGuard);
+    }
 
-    /**
-     * Execute action
-     *
-     * @param Request $request
-     * @return Response
-     */
-    public function execute(Request $request): Response
+    public function execute(): Response
     {
         try {
-            $menuId = (int)$request->getParam('id');
+            $menuId = $this->getIntParam('id');
             
             if (!$menuId) {
                 throw new \RuntimeException('Menu ID is required');
             }
             
             $this->menuRepository->delete($menuId);
-            
             $this->messageManager->addSuccess('Menu deleted successfully');
             
         } catch (\Exception $e) {
             $this->messageManager->addError('Error deleting menu: ' . $e->getMessage());
         }
         
-        return (new Response())->setRedirect('/admin/menu/menu/index');
+        return $this->redirect('/admin/menu/menu/index');
     }
 }

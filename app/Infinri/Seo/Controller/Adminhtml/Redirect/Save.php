@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Infinri\Seo\Controller\Adminhtml\Redirect;
 
-use Infinri\Core\App\Request;
+use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
 use Infinri\Seo\Service\RedirectManager;
 use Psr\Log\LoggerInterface;
@@ -11,32 +11,32 @@ use Psr\Log\LoggerInterface;
 /**
  * Redirect Save Controller
  */
-class Save
+class Save extends AbstractAdminController
 {
     public function __construct(
+        \Infinri\Core\App\Request $request,
+        \Infinri\Core\App\Response $response,
+        \Infinri\Core\Model\View\LayoutFactory $layoutFactory,
+        \Infinri\Core\Security\CsrfGuard $csrfGuard,
         private RedirectManager $redirectManager,
         private LoggerInterface $logger
-    ) {}
+    ) {
+        parent::__construct($request, $response, $layoutFactory, $csrfGuard);
+    }
 
-    /**
-     * Execute action
-     */
-    public function execute(Request $request, Response $response): Response
+    public function execute(): Response
     {
-        if ($request->getMethod() !== 'POST') {
-            $response->setStatusCode(405);
-            return $response->setBody('Method Not Allowed');
+        if ($postError = $this->requirePost('/admin/seo/redirect')) {
+            return $this->response->setStatusCode(405)->setBody('Method Not Allowed');
         }
 
-        $data = $request->getPost();
+        $data = $this->request->getPost();
         $redirectId = isset($data['redirect_id']) ? (int)$data['redirect_id'] : null;
 
         try {
-            // Validate data
             $errors = $this->redirectManager->validateRedirectData($data);
             if (!empty($errors)) {
-                $response->setStatusCode(400);
-                return $response->setBody('Validation failed: ' . implode(', ', $errors));
+                return $this->response->setStatusCode(400)->setBody('Validation failed: ' . implode(', ', $errors));
             }
 
             // Save redirect
@@ -57,18 +57,11 @@ class Save
                 $message = 'Redirect created successfully.';
             }
 
-            // Determine redirect location
             if (isset($data['back']) && $data['back'] === 'continue') {
-                // Save & Continue - redirect to edit page
-                $redirectUrl = '/admin/seo/redirect/edit?id=' . $redirect->getRedirectId();
-            } else {
-                // Save - redirect to grid
-                $redirectUrl = '/admin/seo/redirect';
+                return $this->redirectToRoute('/admin/seo/redirect/edit', ['id' => $redirect->getRedirectId()]);
             }
-
-            $response->setStatusCode(302);
-            $response->setHeader('Location', $redirectUrl);
-            return $response;
+            
+            return $this->redirect('/admin/seo/redirect');
 
         } catch (\Exception $e) {
             $this->logger->error('Failed to save redirect', [
@@ -76,8 +69,7 @@ class Save
                 'data' => $data
             ]);
 
-            $response->setStatusCode(500);
-            return $response->setBody('Failed to save redirect: ' . $e->getMessage());
+            return $this->response->setStatusCode(500)->setBody('Failed to save redirect: ' . $e->getMessage());
         }
     }
 }

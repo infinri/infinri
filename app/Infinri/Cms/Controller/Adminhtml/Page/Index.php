@@ -3,24 +3,16 @@ declare(strict_types=1);
 
 namespace Infinri\Cms\Controller\Adminhtml\Page;
 
-use Infinri\Core\App\Request;
+use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
-use Infinri\Core\Model\View\LayoutFactory;
 
 /**
  * Displays CMS pages using UI Component grid
  */
-class Index
+class Index extends AbstractAdminController
 {
-    public function __construct(
-        private readonly LayoutFactory $layoutFactory
-    ) {
-    }
-
-    public function execute(Request $request): Response
+    public function execute(): Response
     {
-        $html = $this->layoutFactory->render('cms_adminhtml_page_index');
-
-        return (new Response())->setBody($html);
+        return $this->renderAdminLayout('cms_adminhtml_page_index');
     }
 }

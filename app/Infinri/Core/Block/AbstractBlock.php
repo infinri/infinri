@@ -198,7 +198,7 @@ abstract class AbstractBlock
      * @param string|null $value Value to escape
      * @return string Escaped value
      */
-    protected function escapeHtml(?string $value): string
+    public function escapeHtml(?string $value): string
     {
         if ($value === null) {
             return '';
@@ -214,7 +214,7 @@ abstract class AbstractBlock
      * @param string|null $value Value to escape
      * @return string Escaped value
      */
-    protected function escapeHtmlAttr(?string $value): string
+    public function escapeHtmlAttr(?string $value): string
     {
         if ($value === null) {
             return '';
@@ -230,7 +230,7 @@ abstract class AbstractBlock
      * @param string|null $url URL to escape
      * @return string Sanitized URL
      */
-    protected function escapeUrl(?string $url): string
+    public function escapeUrl(?string $url): string
     {
         if ($url === null || $url === '') {
             return '';
@@ -259,7 +259,7 @@ abstract class AbstractBlock
      * @param mixed $value Value to escape
      * @return string JSON-encoded value safe for JS
      */
-    protected function escapeJs(mixed $value): string
+    public function escapeJs(mixed $value): string
     {
         return json_encode($value, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR);
     }
@@ -272,7 +272,7 @@ abstract class AbstractBlock
      * @param string|null $value CSS value
      * @return string Escaped value
      */
-    protected function escapeCss(?string $value): string
+    public function escapeCss(?string $value): string
     {
         if ($value === null) {
             return '';

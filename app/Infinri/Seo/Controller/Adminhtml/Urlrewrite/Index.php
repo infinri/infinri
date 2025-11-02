@@ -3,25 +3,16 @@ declare(strict_types=1);
 
 namespace Infinri\Seo\Controller\Adminhtml\Urlrewrite;
 
-use Infinri\Core\App\Request;
+use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
-use Infinri\Core\Model\View\LayoutFactory;
 
 /**
  * URL Rewrite Management Controller
  */
-class Index
+class Index extends AbstractAdminController
 {
-    public function __construct(
-        private readonly LayoutFactory $layoutFactory
-    ) {}
-
-    /**
-     * Execute action
-     */
-    public function execute(Request $request): Response
+    public function execute(): Response
     {
-        $html = $this->layoutFactory->render('seo_adminhtml_urlrewrite_index');
-        return (new Response())->setBody($html);
+        return $this->renderAdminLayout('seo_adminhtml_urlrewrite_index');
     }
 }

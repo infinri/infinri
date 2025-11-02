@@ -3,46 +3,47 @@ declare(strict_types=1);
 
 namespace Infinri\Auth\Controller\Adminhtml\Login;
 
-use Infinri\Core\App\Request;
+use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
 use Infinri\Admin\Service\RememberTokenService;
 use Infinri\Core\Helper\Logger;
-use Infinri\Core\Security\CsrfGuard;
 
 /**
  * Admin Logout Controller
  * Route: /admin/auth/login/logout
  */
-class Logout
+class Logout extends AbstractAdminController
 {
     public function __construct(
-        private readonly RememberTokenService $rememberTokenService,
-        private readonly CsrfGuard $csrfGuard
+        \Infinri\Core\App\Request $request,
+        \Infinri\Core\App\Response $response,
+        \Infinri\Core\Model\View\LayoutFactory $layoutFactory,
+        \Infinri\Core\Security\CsrfGuard $csrfGuard,
+        private readonly RememberTokenService $rememberTokenService
     ) {
+        parent::__construct($request, $response, $layoutFactory, $csrfGuard);
     }
 
-    public function execute(Request $request): Response
+    public function execute(): Response
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
-        // 🔒 SECURITY: Logout must be POST with CSRF token to prevent CSRF attacks
-        if (!$request->isPost()) {
+        if ($postError = $this->requirePost('/admin/dashboard/index')) {
             Logger::warning('Logout failed: Not a POST request');
-            return $this->createRedirect('/admin/dashboard/index');
+            return $postError;
         }
 
-        // Validate CSRF token
-        $csrfToken = $request->getPost('_csrf_token', '');
-        $csrfTokenId = $request->getPost('_csrf_token_id', 'admin_logout');
+        $csrfToken = $this->request->getPost('_csrf_token', '');
+        $csrfTokenId = $this->request->getPost('_csrf_token_id', 'admin_logout');
 
-        if (!$this->csrfGuard->validateToken($csrfTokenId, $csrfToken)) {
+        if (!$this->validateCsrf($csrfTokenId, $csrfToken)) {
             Logger::warning('Logout failed: Invalid CSRF token', [
                 'token_id' => $csrfTokenId,
                 'has_token' => !empty($csrfToken)
             ]);
-            return $this->createRedirect('/admin/dashboard/index');
+            return $this->redirect('/admin/dashboard/index');
         }
 
         $username = $_SESSION['admin_username'] ?? 'unknown';
@@ -82,15 +83,6 @@ class Logout
 
         Logger::info('Admin logged out', ['username' => $username]);
 
-        // Redirect to login page
-        return $this->createRedirect('/admin/auth/login/index');
-    }
-
-    private function createRedirect(string $url): Response
-    {
-        $response = new Response();
-        $response->setStatusCode(302);
-        $response->setHeader('Location', $url);
-        return $response;
+        return $this->redirect('/admin/auth/login/index');
     }
 }

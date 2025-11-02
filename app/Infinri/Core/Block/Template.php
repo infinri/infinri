@@ -105,12 +105,22 @@ class Template extends AbstractBlock
     }
 
     /**
-     * Get ViewModel (stub - not yet implemented)
+     * Get ViewModel instance
      * 
-     * Templates that use ViewModels will get null for now.
-     * TODO: Implement ViewModel support
+     * Returns the ViewModel configured for this template block via layout XML.
+     * ViewModels provide presentation logic separate from business logic.
+     * 
+     * Supports both object instances and class name strings (instantiated via ObjectManager).
+     * Returns null if no ViewModel is configured or instantiation fails.
+     * 
+     * Example usage in layout XML:
+     * <block class="Infinri\Core\Block\Template" name="footer" template="footer.phtml">
+     *     <arguments>
+     *         <argument name="view_model" xsi:type="object">Infinri\Theme\ViewModel\Footer</argument>
+     *     </arguments>
+     * </block>
      *
-     * @return mixed
+     * @return object|null ViewModel instance or null if not configured
      */
     public function getViewModel(): mixed
     {
@@ -146,9 +156,6 @@ class Template extends AbstractBlock
                 ]);
             }
         }
-
-        // Cache the result
-        self::$templatePathCache[$this->template] = null;
         
         return null;
     }
@@ -291,50 +298,6 @@ class Template extends AbstractBlock
         return $renderer->render();
     }
 
-    /**
-     * Escape HTML output (delegates to parent - Phase 2.3)
-     *
-     * @param string|null $value
-     * @return string
-     */
-    public function escapeHtml(?string $value): string
-    {
-        return parent::escapeHtml($value);
-    }
-
-    /**
-     * Escape HTML attribute (delegates to parent - Phase 2.3)
-     *
-     * @param string|null $value
-     * @return string
-     */
-    public function escapeHtmlAttr(?string $value): string
-    {
-        return parent::escapeHtmlAttr($value);
-    }
-
-    /**
-     * Escape URL for safe output in HTML (delegates to parent - Phase 2.3)
-     *
-     * @param string|null $url
-     * @return string
-     */
-    public function escapeUrl(?string $url): string
-    {
-        return parent::escapeUrl($url);
-    }
-
-    /**
-     * Escape data for safe output in JavaScript (delegates to parent - Phase 2.3)
-     *
-     * @param mixed $value
-     * @return string
-     */
-    public function escapeJs(mixed $value): string
-    {
-        return parent::escapeJs($value);
-    }
-    
     /**
      * Get CSRF token for forms
      *

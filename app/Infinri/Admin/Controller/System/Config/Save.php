@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Infinri\Admin\Controller\System\Config;
 
-use Infinri\Core\App\Request;
+use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
 use Infinri\Core\Model\Config;
 use Infinri\Core\Model\Message\MessageManager;
@@ -11,21 +11,26 @@ use Infinri\Core\Model\Message\MessageManager;
 /**
  * System Configuration Save Controller
  */
-class Save
+class Save extends AbstractAdminController
 {
     public function __construct(
+        \Infinri\Core\App\Request $request,
+        \Infinri\Core\App\Response $response,
+        \Infinri\Core\Model\View\LayoutFactory $layoutFactory,
+        \Infinri\Core\Security\CsrfGuard $csrfGuard,
         private readonly Config $config,
         private readonly MessageManager $messageManager
     ) {
+        parent::__construct($request, $response, $layoutFactory, $csrfGuard);
     }
     
     /**
      * Save configuration
      */
-    public function execute(Request $request): Response
+    public function execute(): Response
     {
-        $section = $request->getParam('section', 'general');
-        $groups = $request->getParam('groups', []);
+        $section = $this->getStringParam('section', 'general');
+        $groups = $this->request->getParam('groups', []);
         
         try {
             // Process each group's fields
@@ -53,8 +58,6 @@ class Save
         }
         
         // Redirect back to configuration page
-        $response = new Response();
-        $response->redirect('/admin/system/config/index?section=' . urlencode($section));
-        return $response;
+        return $this->redirectToRoute('/admin/system/config/index', ['section' => $section]);
     }
 }

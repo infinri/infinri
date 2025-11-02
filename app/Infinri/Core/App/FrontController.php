@@ -41,94 +41,20 @@ class FrontController
             $uri = $request->getPathInfo();
             $method = $request->getMethod();
             
-            Logger::debug('Attempting to match route', [
-                'uri' => $uri,
-                'method' => $method
-            ]);
+            Logger::debug('Attempting to match route', ['uri' => $uri, 'method' => $method]);
             
             // Check for redirects first (highest priority)
-            $redirect = $this->checkRedirect($uri);
-            if ($redirect) {
-                Logger::info('Redirect applied', [
-                    'from' => $uri,
-                    'to' => $redirect['to_path'],
-                    'code' => $redirect['redirect_code']
-                ]);
-                
-                $response->setStatusCode($redirect['redirect_code']);
-                $response->setHeader('Location', '/' . $redirect['to_path']);
-                return $this->securityHeaders->handle($request, $response);
+            if ($redirectResponse = $this->handleRedirect($uri, $request, $response)) {
+                return $redirectResponse;
             }
             
             // Check URL rewrites before routing
-            $urlRewrite = $this->checkUrlRewrite($uri);
-            if ($urlRewrite) {
-                // Handle redirect types (301/302)
-                if ($urlRewrite['redirect_type'] > 0) {
-                    Logger::info('URL rewrite redirect', [
-                        'from' => $uri,
-                        'to' => $urlRewrite['target_path'],
-                        'code' => $urlRewrite['redirect_type']
-                    ]);
-                    
-                    $response->setStatusCode($urlRewrite['redirect_type']);
-                    $response->setHeader('Location', '/' . $urlRewrite['target_path']);
-                    return $this->securityHeaders->handle($request, $response);
-                }
-                
-                // Internal rewrite (no redirect)
-                Logger::info('URL rewrite applied', [
-                    'from' => $uri,
-                    'to' => $urlRewrite['target_path']
-                ]);
-                
-                // Parse target path (e.g., "cms/page/view?key=test")
-                $uri = $this->parseTargetPath($urlRewrite['target_path'], $request);
+            if ($rewriteResponse = $this->handleUrlRewrite($uri, $request, $response)) {
+                return $rewriteResponse;
             }
             
-            // Match route
-            $match = $this->router->match($uri, $method);
-
-            if ($match === null) {
-                // Log 404 - Route not found
-                Logger::warning('404 - Route not found', [
-                    'uri' => $uri,
-                    'method' => $method,
-                    'available_routes' => 'Check routes.xml files in enabled modules'
-                ]);
-                
-                $response->setNotFound()->setBody('404 - Page Not Found');
-                return $this->securityHeaders->handle($request, $response);
-            }
-            
-            // Create Route value object
-            $route = new Route(
-                controller: $match['controller'],
-                action: $match['action'],
-                params: $match['params']
-            );
-            
-            Logger::info('Route matched successfully', [
-                'uri' => $uri,
-                'controller' => $route->controller,
-                'action' => $route->action,
-                'params' => $route->params
-            ]);
-
-            // Check authentication for admin routes
-            if (str_starts_with($uri, '/admin')) {
-                $response = $this->authMiddleware->handle($request, $response);
-                // If middleware returned a redirect/forbidden response, return it
-                if ($response->getStatusCode() !== 200) {
-                    return $this->securityHeaders->handle($request, $response);
-                }
-            }
-
-            // Dispatch to controller (via Dispatcher)
-            $response = $this->dispatcher->dispatch($route);
-            
-            // Apply security headers to all responses
-            return $this->securityHeaders->handle($request, $response);
+            // Match and dispatch route
+            return $this->matchAndDispatchRoute($uri, $method, $request, $response);
 
         } catch (\Throwable $e) {
             // Log exception
@@ -165,6 +91,94 @@ class FrontController
             // Production: Show generic error message only
             return "500 - Internal Server Error\n\nAn unexpected error occurred. Please try again later.";
         }
+    }
+
+    /**
+     * Handle redirect if exists
+     */
+    private function handleRedirect(string $uri, Request $request, Response $response): ?Response
+    {
+        $redirect = $this->checkRedirect($uri);
+        if (!$redirect) {
+            return null;
+        }
+        
+        Logger::info('Redirect applied', [
+            'from' => $uri,
+            'to' => $redirect['to_path'],
+            'code' => $redirect['redirect_code']
+        ]);
+        
+        $response->setStatusCode($redirect['redirect_code']);
+        $response->setHeader('Location', '/' . $redirect['to_path']);
+        return $this->securityHeaders->handle($request, $response);
+    }
+
+    /**
+     * Handle URL rewrite if exists
+     */
+    private function handleUrlRewrite(string &$uri, Request $request, Response $response): ?Response
+    {
+        $urlRewrite = $this->checkUrlRewrite($uri);
+        if (!$urlRewrite) {
+            return null;
+        }
+        
+        // Handle redirect types (301/302)
+        if ($urlRewrite['redirect_type'] > 0) {
+            Logger::info('URL rewrite redirect', [
+                'from' => $uri,
+                'to' => $urlRewrite['target_path'],
+                'code' => $urlRewrite['redirect_type']
+            ]);
+            
+            $response->setStatusCode($urlRewrite['redirect_type']);
+            $response->setHeader('Location', '/' . $urlRewrite['target_path']);
+            return $this->securityHeaders->handle($request, $response);
+        }
+        
+        // Internal rewrite (no redirect)
+        Logger::info('URL rewrite applied', ['from' => $uri, 'to' => $urlRewrite['target_path']]);
+        $uri = $this->parseTargetPath($urlRewrite['target_path'], $request);
+        
+        return null;
+    }
+
+    /**
+     * Match route and dispatch to controller
+     */
+    private function matchAndDispatchRoute(string $uri, string $method, Request $request, Response $response): Response
+    {
+        $match = $this->router->match($uri, $method);
+
+        if ($match === null) {
+            Logger::warning('404 - Route not found', ['uri' => $uri, 'method' => $method]);
+            $response->setNotFound()->setBody('404 - Page Not Found');
+            return $this->securityHeaders->handle($request, $response);
+        }
+        
+        $route = new Route(
+            controller: $match['controller'],
+            action: $match['action'],
+            params: $match['params']
+        );
+        
+        Logger::info('Route matched successfully', [
+            'uri' => $uri,
+            'controller' => $route->controller,
+            'action' => $route->action
+        ]);
+
+        // Check authentication for admin routes
+        if (str_starts_with($uri, '/admin')) {
+            $response = $this->authMiddleware->handle($request, $response);
+            if ($response->getStatusCode() !== 200) {
+                return $this->securityHeaders->handle($request, $response);
+            }
+        }
+
+        $response = $this->dispatcher->dispatch($route);
+        return $this->securityHeaders->handle($request, $response);
     }
 
     /**

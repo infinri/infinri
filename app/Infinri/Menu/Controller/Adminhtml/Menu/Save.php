@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Infinri\Menu\Controller\Adminhtml\Menu;
 
-use Infinri\Core\App\Request;
+use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
 use Infinri\Menu\Model\Repository\MenuRepository;
 use Infinri\Menu\Model\Repository\MenuItemRepository;
@@ -15,33 +15,25 @@ use Infinri\Core\Model\Message\MessageManager;
  * 
  * Saves menu data and processes CMS page selections
  */
-class Save
+class Save extends AbstractAdminController
 {
-    /**
-     * Constructor
-     *
-     * @param MenuRepository $menuRepository
-     * @param MenuItemRepository $menuItemRepository
-     * @param MessageManager $messageManager
-     */
     public function __construct(
+        \Infinri\Core\App\Request $request,
+        \Infinri\Core\App\Response $response,
+        \Infinri\Core\Model\View\LayoutFactory $layoutFactory,
+        \Infinri\Core\Security\CsrfGuard $csrfGuard,
         private readonly MenuRepository $menuRepository,
         private readonly MenuItemRepository $menuItemRepository,
         private readonly MessageManager $messageManager
-    ) {}
+    ) {
+        parent::__construct($request, $response, $layoutFactory, $csrfGuard);
+    }
 
-    /**
-     * Execute action
-     *
-     * @return Response
-     */
-    public function execute(Request $request): Response
+    public function execute(): Response
     {
         try {
-            // Get menu ID if editing
-            $menuId = $request->getParam('menu_id') ? (int)$request->getParam('menu_id') : null;
+            $menuId = $this->getIntParam('menu_id');
             
-            // Create or update menu
             if ($menuId) {
                 $menu = $this->menuRepository->getById($menuId);
                 if (!$menu) {
@@ -51,33 +43,30 @@ class Save
                 $menu = $this->menuRepository->create();
             }
             
-            $menu->setTitle($request->getParam('title', ''));
-            $menu->setIdentifier($request->getParam('identifier', ''));
-            $menu->setIsActive(!empty($request->getParam('is_active')));
+            $menu->setTitle($this->getStringParam('title'));
+            $menu->setIdentifier($this->getStringParam('identifier'));
+            $menu->setIsActive($this->getBoolParam('is_active'));
             
             $this->menuRepository->save($menu);
             
-            // Process CMS page selections
-            $cmsPages = $request->getParam('cms_pages', []);
+            $cmsPages = $this->request->getParam('cms_pages', []);
             $this->processCmsPages($menu->getMenuId(), $cmsPages);
             
             $this->messageManager->addSuccess('Menu saved successfully');
             
-            // Check if "Save & Continue"
-            if ($request->getParam('save_and_continue')) {
-                return (new Response())->setRedirect('/admin/menu/menu/edit?id=' . $menu->getMenuId());
+            if ($this->hasParam('save_and_continue')) {
+                return $this->redirectToRoute('/admin/menu/menu/edit', ['id' => $menu->getMenuId()]);
             }
             
-            return (new Response())->setRedirect('/admin/menu/menu/index');
+            return $this->redirect('/admin/menu/menu/index');
             
         } catch (\Exception $e) {
             $this->messageManager->addError('Error saving menu: ' . $e->getMessage());
             
-            // Redirect back to form
-            $backMenuId = $request->getParam('menu_id');
+            $backMenuId = $this->getIntParam('menu_id');
             $url = $backMenuId ? '/admin/menu/menu/edit?id=' . $backMenuId : '/admin/menu/menu/edit';
             
-            return (new Response())->setRedirect($url);
+            return $this->redirect($url);
         }
     }
     

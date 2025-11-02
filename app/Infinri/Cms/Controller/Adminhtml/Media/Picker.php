@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Infinri\Cms\Controller\Adminhtml\Media;
 
-use Infinri\Core\App\Request;
+use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
-use Infinri\Core\Security\CsrfGuard;
 use Infinri\Core\Model\Media\MediaLibrary;
 use Infinri\Cms\Controller\Adminhtml\Media\CsrfTokenIds;
 
@@ -15,24 +14,26 @@ use Infinri\Cms\Controller\Adminhtml\Media\CsrfTokenIds;
  * 
  * Phase 3.4: SOLID Refactoring - Now uses MediaLibrary service
  */
-class Picker
+class Picker extends AbstractAdminController
 {
     private MediaLibrary $mediaLibrary;
 
-    public function __construct(private readonly CsrfGuard $csrfGuard)
-    {
+    public function __construct(
+        \Infinri\Core\App\Request $request,
+        \Infinri\Core\App\Response $response,
+        \Infinri\Core\Model\View\LayoutFactory $layoutFactory,
+        \Infinri\Core\Security\CsrfGuard $csrfGuard
+    ) {
+        parent::__construct($request, $response, $layoutFactory, $csrfGuard);
+        
         $mediaPath = dirname(__DIR__, 6) . '/pub/media';
         $this->mediaLibrary = new MediaLibrary($mediaPath, '/media');
     }
 
-    public function execute(Request $request): Response
+    public function execute(): Response
     {
-        $response = new Response();
-
-        // Generate CSRF token for upload
         $csrfToken = $this->csrfGuard->generateToken(CsrfTokenIds::UPLOAD);
 
-        // Load the standalone picker template
         $templatePath = dirname(__DIR__, 3) . '/view/adminhtml/templates/media/picker.phtml';
         
         if (file_exists($templatePath)) {
@@ -43,7 +44,7 @@ class Picker
             $html = '<p>Error: Picker template not found</p>';
         }
 
-        return $response->setBody($html);
+        return $this->response->setBody($html);
     }
 
     /**
