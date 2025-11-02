@@ -25,6 +25,7 @@ class Merger
         
         // Merge each layout file in order
         foreach ($layouts as $moduleName => $xml) {
+            \Infinri\Core\Helper\Logger::debug('Merger: Merging layout from module', ['module' => $moduleName]);
             $this->mergeXml($merged, $xml);
         }
         
@@ -56,6 +57,23 @@ class Merger
     private function appendElement(SimpleXMLElement $target, SimpleXMLElement $source): void
     {
         $name = $source->getName();
+        
+        $sourceName = isset($source['name']) ? (string)$source['name'] : null;
+        if ($sourceName === 'admin.sidebar' || $sourceName === 'main.content') {
+            $childNames = [];
+            foreach ($source->children() as $child) {
+                $childName = isset($child['name']) ? (string)$child['name'] : $child->getName();
+                $childNames[] = $childName;
+            }
+            
+            \Infinri\Core\Helper\Logger::info('Merger: Appending element', [
+                'type' => $name,
+                'name' => $sourceName,
+                'has_children' => $source->count() > 0,
+                'child_count' => $source->count(),
+                'children' => $childNames
+            ]);
+        }
         
         // Create new child element
         $new = $target->addChild($name);

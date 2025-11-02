@@ -95,9 +95,9 @@ class RememberTokenService
                 'expires' => $expires,
                 'path' => '/',
                 'domain' => '',
-                'secure' => false, // Set to true in production with HTTPS
-                'httponly' => true,
-                'samesite' => 'Lax'
+                'secure' => true, // 🔒 SECURITY: Always require HTTPS for admin cookies
+                'httponly' => true, // Prevent JavaScript access
+                'samesite' => 'Strict' // 🔒 SECURITY: Strict for admin cookies (prevent CSRF)
             ]
         );
     }
@@ -123,7 +123,9 @@ class RememberTokenService
             [
                 'expires' => time() - 3600,
                 'path' => '/',
-                'httponly' => true
+                'secure' => true, // 🔒 SECURITY: Match cookie creation flags
+                'httponly' => true,
+                'samesite' => 'Strict'
             ]
         );
     }

@@ -4,25 +4,12 @@ declare(strict_types=1);
 namespace Infinri\Auth\Block\Adminhtml\Login;
 
 use Infinri\Core\Block\Template;
-use Infinri\Core\Security\CsrfTokenManager;
 
 /**
  * Admin Login Form Block
  */
 class Form extends Template
 {
-    public function __construct(
-        private readonly CsrfTokenManager $csrfManager
-    ) {}
-
-    /**
-     * Get CSRF token for login form
-     */
-    public function getCsrfToken(): string
-    {
-        return $this->csrfManager->generateToken('admin_login');
-    }
-
     /**
      * Get form action URL
      */

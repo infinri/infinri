@@ -17,6 +17,30 @@ class UiFormRenderer
         private readonly CsrfGuard $csrfGuard
     ) {
     }
+    
+    /**
+     * Escape HTML attributes
+     */
+    public function escapeHtmlAttr(string $value): string
+    {
+        return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    }
+    
+    /**
+     * Escape HTML
+     */
+    public function escapeHtml(string $value): string
+    {
+        return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    }
+    
+    /**
+     * Escape URL
+     */
+    public function escapeUrl(string $value): string
+    {
+        return rawurlencode($value);
+    }
 
     /**
      * Render a UI form by name
@@ -45,28 +69,30 @@ class UiFormRenderer
     private function getDataFromProvider(SimpleXMLElement $xml, array $params): array
     {
         try {
-            $dataProviderNode = $xml->xpath('//dataSource/dataProvider')[0] ?? null;
-            if (!$dataProviderNode) {
-                return [];
+            // Look for dataProvider in argument tag (like menu_form.xml uses)
+            $dataProviderArg = $xml->xpath('//dataSource/argument[@name="dataProvider"]')[0] ?? null;
+            if (!$dataProviderArg) {
+                // Fallback: look for dataProvider as a child element
+                $dataProviderNode = $xml->xpath('//dataSource/dataProvider')[0] ?? null;
+                if (!$dataProviderNode) {
+                    error_log('No dataProvider found in form XML');
+                    return [];
+                }
+                $providerClass = (string)$dataProviderNode['class'];
+            } else {
+                // DataProvider is specified as an argument
+                $providerClass = (string)$dataProviderArg;
             }
 
-            $providerClass = (string)$dataProviderNode['class'];
             if ($providerClass === '') {
-                return [];
-            }
-
-            $settings = $dataProviderNode->settings ?? null;
-            if ($settings === null) {
+                error_log('DataProvider class is empty');
                 return [];
             }
 
             $objectManager = ObjectManager::getInstance();
 
-            $providerInstance = $objectManager->create($providerClass, [
-                'name' => (string)($dataProviderNode['name'] ?? ''),
-                'primaryFieldName' => (string)($settings->primaryFieldName ?? ''),
-                'requestFieldName' => (string)($settings->requestFieldName ?? ''),
-            ]);
+            // Don't pass constructor args - let ObjectManager handle DI
+            $providerInstance = $objectManager->create($providerClass);
 
             $requestId = $params['id'] ?? null;
             $requestId = $requestId !== null ? (int)$requestId : null;
@@ -112,15 +138,20 @@ class UiFormRenderer
         return null;
     }
 
-    /**
-{{ ... }}
-     */
     private function buildForm(SimpleXMLElement $xml, array $data, string $formName): string
     {
         error_log("buildForm data: " . json_encode($data));
         
         // Detect entity type from form name
-        if (str_contains($formName, 'widget')) {
+        if (str_contains($formName, 'menu_item')) {
+            $entityType = 'menuitem';
+            $primaryField = 'item_id';
+            $basePath = '/admin/menu/menuitem';
+        } elseif (str_contains($formName, 'menu')) {
+            $entityType = 'menu';
+            $primaryField = 'menu_id';
+            $basePath = '/admin/menu/menu';
+        } elseif (str_contains($formName, 'widget')) {
             $entityType = 'widget';
             $primaryField = 'widget_id';
             $basePath = '/admin/cms/widget';

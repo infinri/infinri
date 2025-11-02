@@ -40,9 +40,21 @@ try {
                     <?php foreach ($viewModel->getNavigation() as $item): ?>
                         <li class="nav-item <?= $item['active'] ? 'active' : '' ?>">
                             <a href="<?= $block->escapeUrl($item['url']) ?>" 
-                               class="nav-link">
-                                <?= $block->escapeHtml($item['label']) ?>
+                               class="nav-link <?= $item['active'] ? 'active' : '' ?>">
+                                <?= $block->escapeHtml($item['title']) ?>
                             </a>
+                            <?php if (!empty($item['children'])): ?>
+                                <ul class="nav-submenu">
+                                    <?php foreach ($item['children'] as $child): ?>
+                                        <li class="nav-subitem <?= $child['active'] ? 'active' : '' ?>">
+                                            <a href="<?= $block->escapeUrl($child['url']) ?>" 
+                                               class="nav-sublink <?= $child['active'] ? 'active' : '' ?>">
+                                                <?= $block->escapeHtml($child['title']) ?>
+                                            </a>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php endif; ?>
                         </li>
                     <?php endforeach; ?>
                 </ul>

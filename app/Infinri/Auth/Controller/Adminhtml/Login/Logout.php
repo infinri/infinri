@@ -7,6 +7,7 @@ use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
 use Infinri\Admin\Service\RememberTokenService;
 use Infinri\Core\Helper\Logger;
+use Infinri\Core\Security\CsrfGuard;
 
 /**
  * Admin Logout Controller
@@ -15,7 +16,8 @@ use Infinri\Core\Helper\Logger;
 class Logout
 {
     public function __construct(
-        private readonly RememberTokenService $rememberTokenService
+        private readonly RememberTokenService $rememberTokenService,
+        private readonly CsrfGuard $csrfGuard
     ) {
     }
 
@@ -23,6 +25,24 @@ class Logout
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
+        }
+
+        // 🔒 SECURITY: Logout must be POST with CSRF token to prevent CSRF attacks
+        if (!$request->isPost()) {
+            Logger::warning('Logout failed: Not a POST request');
+            return $this->createRedirect('/admin/dashboard/index');
+        }
+
+        // Validate CSRF token
+        $csrfToken = $request->getPost('_csrf_token', '');
+        $csrfTokenId = $request->getPost('_csrf_token_id', 'admin_logout');
+
+        if (!$this->csrfGuard->validateToken($csrfTokenId, $csrfToken)) {
+            Logger::warning('Logout failed: Invalid CSRF token', [
+                'token_id' => $csrfTokenId,
+                'has_token' => !empty($csrfToken)
+            ]);
+            return $this->createRedirect('/admin/dashboard/index');
         }
 
         $username = $_SESSION['admin_username'] ?? 'unknown';
@@ -63,10 +83,14 @@ class Logout
         Logger::info('Admin logged out', ['username' => $username]);
 
         // Redirect to login page
+        return $this->createRedirect('/admin/auth/login/index');
+    }
+
+    private function createRedirect(string $url): Response
+    {
         $response = new Response();
         $response->setStatusCode(302);
-        $response->setHeader('Location', '/admin/auth/login/index');
-        
+        $response->setHeader('Location', $url);
         return $response;
     }
 }

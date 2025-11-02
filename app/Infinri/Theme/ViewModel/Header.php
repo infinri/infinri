@@ -6,6 +6,7 @@ namespace Infinri\Theme\ViewModel;
 
 use Infinri\Core\Model\Config\ScopeConfig;
 use Infinri\Core\Model\Url\Builder as UrlBuilder;
+use Infinri\Menu\ViewModel\Navigation as MenuNavigation;
 
 /**
  * Header ViewModel
@@ -19,10 +20,12 @@ class Header
      *
      * @param ScopeConfig $config Configuration reader
      * @param UrlBuilder $urlBuilder URL generator
+     * @param MenuNavigation $menuNavigation Menu navigation ViewModel
      */
     public function __construct(
         private ScopeConfig $config,
-        private UrlBuilder $urlBuilder
+        private UrlBuilder $urlBuilder,
+        private MenuNavigation $menuNavigation
     ) {}
     
     /**
@@ -48,32 +51,12 @@ class Header
     /**
      * Get main navigation items
      *
-     * @return array Navigation menu items
+     * @return array Navigation menu items from database
      */
     public function getNavigation(): array
     {
-        return [
-            [
-                'label' => 'Home',
-                'url' => $this->urlBuilder->build('home/index/index'),
-                'active' => false,
-            ],
-            [
-                'label' => 'About',
-                'url' => $this->urlBuilder->build('page/view/about'),
-                'active' => false,
-            ],
-            [
-                'label' => 'Products',
-                'url' => $this->urlBuilder->build('product/index/index'),
-                'active' => false,
-            ],
-            [
-                'label' => 'Contact',
-                'url' => $this->urlBuilder->build('contact/index/index'),
-                'active' => false,
-            ],
-        ];
+        // Load navigation from Menu module (replaces hardcoded links)
+        return $this->menuNavigation->getMainNavigation();
     }
     
     /**

@@ -7,6 +7,7 @@ namespace Tests\Unit\Theme\ViewModel;
 use Infinri\Core\Model\Config\ScopeConfig;
 use Infinri\Core\Model\Url\Builder as UrlBuilder;
 use Infinri\Theme\ViewModel\Header;
+use Infinri\Menu\ViewModel\Navigation as MenuNavigation;
 use PHPUnit\Framework\TestCase;
 
 class HeaderTest extends TestCase
@@ -14,13 +15,15 @@ class HeaderTest extends TestCase
     private Header $viewModel;
     private ScopeConfig $config;
     private UrlBuilder $urlBuilder;
+    private MenuNavigation $menuNavigation;
 
     protected function setUp(): void
     {
         $this->config = $this->createMock(ScopeConfig::class);
         $this->urlBuilder = $this->createMock(UrlBuilder::class);
+        $this->menuNavigation = $this->createMock(MenuNavigation::class);
         
-        $this->viewModel = new Header($this->config, $this->urlBuilder);
+        $this->viewModel = new Header($this->config, $this->urlBuilder, $this->menuNavigation);
     }
 
     public function test_get_logo_returns_configured_value(): void
@@ -58,14 +61,17 @@ class HeaderTest extends TestCase
 
     public function test_get_navigation_returns_menu_items(): void
     {
-        $this->urlBuilder
-            ->method('build')
-            ->willReturnMap([
-                ['home/index/index', '/'],
-                ['page/view/about', '/about'],
-                ['product/index/index', '/products'],
-                ['contact/index/index', '/contact'],
-            ]);
+        $menuItems = [
+            ['label' => 'Home', 'url' => '/', 'active' => false],
+            ['label' => 'About', 'url' => '/about', 'active' => false],
+            ['label' => 'Products', 'url' => '/products', 'active' => false],
+            ['label' => 'Contact', 'url' => '/contact', 'active' => false],
+        ];
+        
+        $this->menuNavigation
+            ->expects($this->once())
+            ->method('getMainNavigation')
+            ->willReturn($menuItems);
 
         $navigation = $this->viewModel->getNavigation();
 

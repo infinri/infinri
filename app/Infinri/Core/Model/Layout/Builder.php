@@ -23,6 +23,11 @@ class Builder
      * @var array<string, AbstractBlock> Named blocks for reference
      */
     private array $blocks = [];
+    
+    /**
+     * @var array Layout data (page, category, product, etc.)
+     */
+    private array $data = [];
 
     public function __construct(
         private readonly TemplateResolver $templateResolver,
@@ -33,11 +38,13 @@ class Builder
      * Build block tree from processed layout XML
      *
      * @param SimpleXMLElement $layout Processed layout XML
+     * @param array $data Layout data to pass to blocks
      * @return AbstractBlock|null Root block
      */
-    public function build(SimpleXMLElement $layout): ?AbstractBlock
+    public function build(SimpleXMLElement $layout, array $data = []): ?AbstractBlock
     {
         $this->blocks = [];
+        $this->data = $data;
         
         // Find root element (usually a container)
         // Both frontend and admin layouts extend base_default from Theme
@@ -62,6 +69,14 @@ class Builder
     {
         $type = $element->getName();
         $name = isset($element['name']) ? (string) $element['name'] : null;
+        
+        if ($name === 'admin.sidebar' || $name === 'admin.navigation') {
+            \Infinri\Core\Helper\Logger::info('Builder: Creating sidebar element', [
+                'name' => $name,
+                'type' => $type,
+                'class' => isset($element['class']) ? (string)$element['class'] : 'N/A'
+            ]);
+        }
         
         // Create block instance
         $block = $this->createBlock($element);
@@ -213,13 +228,25 @@ class Builder
                     // Get the argument value (text content)
                     $value = trim((string) $argument);
                     
-                    // Check for xsi:type attribute
-                    $namespaces = $argument->getNameSpaces(true);
+                    // Check for xsi:type attribute - try multiple methods
                     $xsiType = null;
                     
+                    // Method 1: Try with xsi namespace
+                    $namespaces = $argument->getNameSpaces(true);
                     if (isset($namespaces['xsi'])) {
                         $xsiAttrs = $argument->attributes('xsi', true);
                         $xsiType = isset($xsiAttrs['type']) ? (string) $xsiAttrs['type'] : null;
+                    }
+                    
+                    // Method 2: Try with http://www.w3.org/2001/XMLSchema-instance namespace directly
+                    if (!$xsiType) {
+                        $xsiAttrs = $argument->attributes('http://www.w3.org/2001/XMLSchema-instance', true);
+                        $xsiType = isset($xsiAttrs['type']) ? (string) $xsiAttrs['type'] : null;
+                    }
+                    
+                    // Method 3: Try as regular attribute (namespace might be stripped)
+                    if (!$xsiType && isset($argument['type'])) {
+                        $xsiType = (string) $argument['type'];
                     }
                     
                     \Infinri\Core\Helper\Logger::info('Builder: Processing argument', [
@@ -231,21 +258,33 @@ class Builder
                     
                     // Handle different types
                     if ($xsiType === 'object') {
-                        try {
-                            $objectManager = ObjectManager::getInstance();
-                            // Instantiate the object using ObjectManager
-                            $value = $objectManager->get($value);
-                            \Infinri\Core\Helper\Logger::info('Builder: Instantiated ViewModel', [
+                        // Check if value is a data key reference (no namespace separator) or a class name
+                        if (strpos($value, '\\') === false && isset($this->data[$value])) {
+                            // Reference to layout data - use the value from data array
+                            $dataKey = $value;
+                            $value = $this->data[$value];
+                            \Infinri\Core\Helper\Logger::info('Builder: Resolved data reference', [
                                 'name' => $name,
-                                'class' => get_class($value)
+                                'data_key' => $dataKey,
+                                'resolved_type' => is_object($value) ? get_class($value) : gettype($value)
                             ]);
-                        } catch (\RuntimeException $e) {
-                            // ObjectManager not configured, skip ViewModel
-                            \Infinri\Core\Helper\Logger::debug('Builder: ObjectManager not available for ViewModel', [
-                                'name' => $name,
-                                'value' => $value
-                            ]);
-                            continue;
+                        } else {
+                            // Class name - instantiate via ObjectManager
+                            try {
+                                $objectManager = ObjectManager::getInstance();
+                                $value = $objectManager->get($value);
+                                \Infinri\Core\Helper\Logger::info('Builder: Instantiated ViewModel', [
+                                    'name' => $name,
+                                    'class' => get_class($value)
+                                ]);
+                            } catch (\RuntimeException $e) {
+                                // ObjectManager not configured, skip ViewModel
+                                \Infinri\Core\Helper\Logger::debug('Builder: ObjectManager not available for ViewModel', [
+                                    'name' => $name,
+                                    'value' => $value
+                                ]);
+                                continue;
+                            }
                         }
 
                     } elseif ($xsiType === 'boolean') {
@@ -254,7 +293,16 @@ class Builder
                         $value = (int) $value;
                     }
                     
-                    $block->setData($name, $value);
+                    // Special handling for 'template' argument on Template blocks
+                    if ($name === 'template' && $block instanceof Template) {
+                        $block->setTemplate($value);
+                        \Infinri\Core\Helper\Logger::debug('Builder: Set template via argument', [
+                            'block_name' => $block->getName(),
+                            'template' => $value
+                        ]);
+                    } else {
+                        $block->setData($name, $value);
+                    }
                 }
             }
         }

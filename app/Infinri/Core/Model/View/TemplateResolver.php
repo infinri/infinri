@@ -46,6 +46,13 @@ class TemplateResolver
         }
 
         [$moduleName, $filePath] = explode('::', $templatePath, 2);
+        
+        // 🔒 SECURITY (Phase 2.4): Validate template path to prevent directory traversal
+        if (!$this->isValidTemplatePath($filePath)) {
+            throw new \InvalidArgumentException(
+                "Invalid template path: Directory traversal attempt detected in '$filePath'"
+            );
+        }
 
         // Get module path
         $moduleData = $this->moduleManager->getModuleList()->getOne($moduleName);
@@ -126,5 +133,82 @@ class TemplateResolver
     public function clearCache(): void
     {
         $this->templateCache = [];
+    }
+    
+    // ==================== SECURITY (Phase 2.4) ====================
+    
+    /**
+     * Validate template path to prevent directory traversal attacks
+     * 
+     * Blocks:
+     * - Path traversal sequences (../, ..\)
+     * - Absolute paths (/ at start)
+     * - Null bytes (\0)
+     * - Non-.phtml files
+     * 
+     * @param string $filePath Template file path
+     * @return bool True if path is valid and safe
+     */
+    private function isValidTemplatePath(string $filePath): bool
+    {
+        // 1. Block path traversal attempts
+        if (str_contains($filePath, '..')) {
+            return false;
+        }
+        
+        // 2. Block absolute paths
+        if (str_starts_with($filePath, '/') || str_starts_with($filePath, '\\')) {
+            return false;
+        }
+        
+        // 3. Block null bytes
+        if (str_contains($filePath, "\0")) {
+            return false;
+        }
+        
+        // 4. Block backslashes (Windows path separators shouldn't be used)
+        if (str_contains($filePath, '\\')) {
+            return false;
+        }
+        
+        // 5. Must end with .phtml extension
+        if (!str_ends_with($filePath, '.phtml')) {
+            return false;
+        }
+        
+        // 6. Whitelist allowed characters: alphanumeric, /, -, _, .
+        if (!preg_match('/^[a-zA-Z0-9\/_.-]+$/', $filePath)) {
+            return false;
+        }
+        
+        // 7. Path must not be empty
+        if (trim($filePath) === '') {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Validate that resolved path is within allowed directories
+     * 
+     * Additional security check after path resolution
+     * 
+     * @param string $resolvedPath Absolute path to template file
+     * @param string $moduleBasePath Module's base directory
+     * @return bool True if path is within module directory
+     */
+    private function isWithinAllowedDirectory(string $resolvedPath, string $moduleBasePath): bool
+    {
+        // Get real paths (resolves symlinks and canonicalizes)
+        $realResolved = realpath($resolvedPath);
+        $realBase = realpath($moduleBasePath);
+        
+        if ($realResolved === false || $realBase === false) {
+            return false;
+        }
+        
+        // Ensure resolved path starts with base path
+        return str_starts_with($realResolved, $realBase);
     }
 }

@@ -8,24 +8,22 @@ use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
 use Infinri\Cms\Controller\Adminhtml\Media\CsrfTokenIds;
 use Infinri\Core\Security\CsrfGuard;
+use Infinri\Core\Helper\PathHelper;
+use Infinri\Core\Helper\JsonResponse;
 
 /**
  * Delete Image
+ * 
+ * Phase 4: DRY/KISS - Uses PathHelper and JsonResponse
  */
 class Delete
 {
-    private string $mediaPath;
-    
     public function __construct(private readonly CsrfGuard $csrfGuard)
     {
-        $this->mediaPath = dirname(__DIR__, 6) . '/pub/media';
     }
 
     public function execute(Request $request): Response
     {
-        $response = new Response();
-        $response->setHeader('Content-Type', 'application/json');
-
         try {
             $input = json_decode(file_get_contents('php://input'), true, 512, JSON_THROW_ON_ERROR);
             $file = $input['file'] ?? '';
@@ -33,21 +31,18 @@ class Delete
             $token = $input['_csrf_token'] ?? null;
 
             if (!$request->isPost() || !$this->csrfGuard->validateToken(CsrfTokenIds::DELETE, is_string($token) ? $token : null)) {
-                $response->setForbidden();
-                return $response->setBody(json_encode([
-                    'success' => false,
-                    'error' => 'Invalid CSRF token'
-                ]));
+                return JsonResponse::csrfError();
             }
             
             if (empty($file)) {
                 throw new \RuntimeException('File name is required');
             }
             
-            $filePath = $this->mediaPath . ($folder ? '/' . $folder : '') . '/' . $file;
+            $mediaPath = PathHelper::getMediaPath();
+            $filePath = $mediaPath . ($folder ? '/' . $folder : '') . '/' . $file;
             
             // Security check
-            if (strpos(realpath(dirname($filePath)), realpath($this->mediaPath)) !== 0) {
+            if (strpos(realpath(dirname($filePath)), realpath($mediaPath)) !== 0) {
                 throw new \RuntimeException('Invalid file path');
             }
             
@@ -57,24 +52,12 @@ class Delete
             
             unlink($filePath);
             
-            $response->setBody(json_encode([
-                'success' => true
-            ]));
+            return JsonResponse::success();
 
         } catch (\JsonException $e) {
-            $response->setServerError();
-            $response->setBody(json_encode([
-                'success' => false,
-                'error' => 'Invalid JSON payload'
-            ]));
+            return JsonResponse::error('Invalid JSON payload', 400);
         } catch (\Throwable $e) {
-            $response->setServerError();
-            $response->setBody(json_encode([
-                'success' => false,
-                'error' => $e->getMessage()
-            ]));
+            return JsonResponse::error($e->getMessage());
         }
-
-        return $response;
     }
 }

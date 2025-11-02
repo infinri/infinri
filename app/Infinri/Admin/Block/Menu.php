@@ -26,21 +26,26 @@ class Menu extends Template
         $items = $this->menuLoader->getMenuItems();
         error_log("Menu items loaded: " . count($items));
         
-        // Add URL and active state to each item
+        // Process all items recursively (add URL and active state)
+        $items = $this->processMenuItems($items);
+        
+        return $items;
+    }
+
+    /**
+     * Recursively process menu items to add URLs and active states
+     */
+    private function processMenuItems(array $items): array
+    {
         foreach ($items as &$item) {
             if (!empty($item['action'])) {
                 $item['url'] = '/' . ltrim($item['action'], '/');
             }
             $item['active'] = $this->isActive($item);
             
-            // Process child items
+            // Recursively process children at any level
             if (!empty($item['children'])) {
-                foreach ($item['children'] as &$child) {
-                    if (!empty($child['action'])) {
-                        $child['url'] = '/' . ltrim($child['action'], '/');
-                    }
-                    $child['active'] = $this->isActive($child);
-                }
+                $item['children'] = $this->processMenuItems($item['children']);
             }
         }
         

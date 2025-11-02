@@ -4,20 +4,31 @@ declare(strict_types=1);
 namespace Infinri\Core\Model\Config;
 
 use Infinri\Core\Model\Config;
+use Infinri\Core\Model\Cache\Factory as CacheFactory;
+use Infinri\Core\Api\CacheInterface;
 
 /**
  * Scope Configuration
  * 
  * Provides convenient methods for retrieving configuration values
- * with proper type casting. Wraps the Config model.
+ * with proper type casting and caching support.
+ * 
+ * Phase 6: Performance Optimization - Added config caching
  */
 class ScopeConfig
 {
     private Config $config;
+    private ?CacheInterface $cache = null;
+    private const CACHE_TTL = 3600; // 1 hour
     
-    public function __construct(Config $config)
+    public function __construct(Config $config, ?CacheFactory $cacheFactory = null)
     {
         $this->config = $config;
+        
+        // Initialize cache if factory provided
+        if ($cacheFactory) {
+            $this->cache = $cacheFactory->create('config', 'filesystem', self::CACHE_TTL);
+        }
     }
     
     /**
@@ -30,8 +41,23 @@ class ScopeConfig
      */
     public function getValue(string $path, string $scope = 'default', int $scopeId = 0): ?string
     {
+        $cacheKey = $this->getCacheKey($path, $scope, $scopeId);
+        
+        // Try cache first
+        if ($this->cache && $this->cache->has($cacheKey)) {
+            return $this->cache->get($cacheKey);
+        }
+        
+        // Get from database
         $value = $this->config->getValue($path, $scope, $scopeId);
-        return $value !== false ? (string)$value : null;
+        $result = $value !== false ? (string)$value : null;
+        
+        // Cache the result
+        if ($this->cache && $result !== null) {
+            $this->cache->set($cacheKey, $result);
+        }
+        
+        return $result;
     }
     
     /**
@@ -44,7 +70,7 @@ class ScopeConfig
      */
     public function isSetFlag(string $path, string $scope = 'default', int $scopeId = 0): bool
     {
-        $value = $this->config->getValue($path, $scope, $scopeId);
+        $value = $this->getValue($path, $scope, $scopeId);
         return (bool)$value;
     }
     
@@ -108,5 +134,30 @@ class ScopeConfig
         
         $decoded = json_decode($value, true);
         return is_array($decoded) ? $decoded : [];
+    }
+    
+    /**
+     * Clear configuration cache
+     * 
+     * @return void
+     */
+    public function clearCache(): void
+    {
+        if ($this->cache) {
+            $this->cache->clear();
+        }
+    }
+    
+    /**
+     * Generate cache key
+     * 
+     * @param string $path
+     * @param string $scope
+     * @param int $scopeId
+     * @return string
+     */
+    private function getCacheKey(string $path, string $scope, int $scopeId): string
+    {
+        return sprintf('config_%s_%s_%d', $path, $scope, $scopeId);
     }
 }

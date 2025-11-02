@@ -292,46 +292,58 @@ class Template extends AbstractBlock
     }
 
     /**
-     * Escape HTML output
+     * Escape HTML output (delegates to parent - Phase 2.3)
      *
-     * @param string $string
+     * @param string|null $value
      * @return string
      */
-    public function escapeHtml(string $string): string
+    public function escapeHtml(?string $value): string
     {
-        return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
+        return parent::escapeHtml($value);
     }
 
     /**
-     * Escape HTML attribute
+     * Escape HTML attribute (delegates to parent - Phase 2.3)
      *
-     * @param string $string
+     * @param string|null $value
      * @return string
      */
-    public function escapeHtmlAttr(string $string): string
+    public function escapeHtmlAttr(?string $value): string
     {
-        return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
+        return parent::escapeHtmlAttr($value);
     }
 
     /**
-     * Escape URL for safe output in HTML
+     * Escape URL for safe output in HTML (delegates to parent - Phase 2.3)
      *
-     * @param string $url
+     * @param string|null $url
      * @return string
      */
-    public function escapeUrl(string $url): string
+    public function escapeUrl(?string $url): string
     {
-        return htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
+        return parent::escapeUrl($url);
     }
 
     /**
-     * Escape string for safe output in JavaScript
+     * Escape data for safe output in JavaScript (delegates to parent - Phase 2.3)
      *
-     * @param string $string
+     * @param mixed $value
      * @return string
      */
-    public function escapeJs(string $string): string
+    public function escapeJs(mixed $value): string
     {
-        return addslashes($string);
+        return parent::escapeJs($value);
+    }
+    
+    /**
+     * Get CSRF token for forms
+     *
+     * @param string $tokenId Token identifier
+     * @return string CSRF token
+     */
+    public function getCsrfToken(string $tokenId): string
+    {
+        $csrfGuard = ObjectManager::getInstance()->get(\Infinri\Core\Security\CsrfGuard::class);
+        return $csrfGuard->generateToken($tokenId);
     }
 }

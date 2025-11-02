@@ -159,6 +159,120 @@ class Request
     {
         return $this->query[$key] ?? $this->post[$key] ?? $this->params[$key] ?? $default;
     }
+    
+    // ==================== TYPE-SAFE GETTERS (Phase 2.1) ====================
+    
+    /**
+     * Get parameter as string with automatic trimming
+     * 
+     * @param string $key Parameter name
+     * @param string $default Default value if not found
+     * @return string Trimmed string value
+     */
+    public function getString(string $key, string $default = ''): string
+    {
+        $value = $this->getParam($key, $default);
+        return is_string($value) ? trim($value) : (string)$default;
+    }
+    
+    /**
+     * Get parameter as integer with validation
+     * 
+     * @param string $key Parameter name
+     * @param int $default Default value if not found or invalid
+     * @return int Validated integer
+     */
+    public function getInt(string $key, int $default = 0): int
+    {
+        $value = $this->getParam($key, $default);
+        $filtered = filter_var($value, FILTER_VALIDATE_INT);
+        return $filtered !== false ? $filtered : $default;
+    }
+    
+    /**
+     * Get parameter as boolean
+     * 
+     * Recognizes: true/false, 1/0, "true"/"false", "yes"/"no", "on"/"off"
+     * 
+     * @param string $key Parameter name
+     * @param bool $default Default value if not found
+     * @return bool Validated boolean
+     */
+    public function getBool(string $key, bool $default = false): bool
+    {
+        $value = $this->getParam($key, $default);
+        
+        if (is_bool($value)) {
+            return $value;
+        }
+        
+        return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? $default;
+    }
+    
+    /**
+     * Get parameter as array
+     * 
+     * @param string $key Parameter name
+     * @param array $default Default value if not found
+     * @return array Validated array
+     */
+    public function getArray(string $key, array $default = []): array
+    {
+        $value = $this->getParam($key, $default);
+        return is_array($value) ? $value : $default;
+    }
+    
+    /**
+     * Get parameter as validated email address
+     * 
+     * @param string $key Parameter name
+     * @param string|null $default Default value if not found or invalid
+     * @return string|null Validated email or default
+     */
+    public function getEmail(string $key, ?string $default = null): ?string
+    {
+        $value = $this->getParam($key, $default);
+        
+        if ($value === null || $value === '') {
+            return $default;
+        }
+        
+        $filtered = filter_var($value, FILTER_VALIDATE_EMAIL);
+        return $filtered !== false ? $filtered : $default;
+    }
+    
+    /**
+     * Get parameter as validated URL
+     * 
+     * @param string $key Parameter name
+     * @param string|null $default Default value if not found or invalid
+     * @return string|null Validated URL or default
+     */
+    public function getUrl(string $key, ?string $default = null): ?string
+    {
+        $value = $this->getParam($key, $default);
+        
+        if ($value === null || $value === '') {
+            return $default;
+        }
+        
+        $filtered = filter_var($value, FILTER_VALIDATE_URL);
+        return $filtered !== false ? $filtered : $default;
+    }
+    
+    /**
+     * Get parameter as float/decimal
+     * 
+     * @param string $key Parameter name
+     * @param float $default Default value if not found or invalid
+     * @return float Validated float
+     */
+    public function getFloat(string $key, float $default = 0.0): float
+    {
+        $value = $this->getParam($key, $default);
+        $filtered = filter_var($value, FILTER_VALIDATE_FLOAT);
+        return $filtered !== false ? $filtered : $default;
+    }
 
     /**
      * Set route parameter
@@ -365,5 +479,35 @@ class Request
     public function getUserAgent(): string
     {
         return $this->server['HTTP_USER_AGENT'] ?? '';
+    }
+
+    /**
+     * Get request scheme (http or https)
+     *
+     * @return string
+     */
+    public function getScheme(): string
+    {
+        return $this->isSecure() ? 'https' : 'http';
+    }
+
+    /**
+     * Get host name
+     *
+     * @return string
+     */
+    public function getHost(): string
+    {
+        return $this->server['HTTP_HOST'] ?? $this->server['SERVER_NAME'] ?? 'localhost';
+    }
+
+    /**
+     * Get server port
+     *
+     * @return int
+     */
+    public function getPort(): int
+    {
+        return (int)($this->server['SERVER_PORT'] ?? 80);
     }
 }

@@ -16,9 +16,10 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenticatedUserInterface
 {
     public function __construct(
-        private readonly AdminUserResource $resource
+        private readonly AdminUserResource $resource,
+        array $data = []
     ) {
-        parent::__construct();
+        parent::__construct($data);
     }
 
     /**

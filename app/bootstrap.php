@@ -61,17 +61,27 @@ function initApplication(): FrontController
     // 5. Initialize FastRouter (O(1) routing performance)
     $router = new FastRouter();
     
+    // 5.1 Register SEO-specific routes FIRST (sitemap.xml, robots.txt)
+    // These must be registered before CMS catch-all route for proper precedence
+    $seoRoutesFile = __DIR__ . '/Infinri/Seo/Setup/RegisterSeoRoutes.php';
+    if (file_exists($seoRoutesFile)) {
+        require_once $seoRoutesFile;
+        \Infinri\Seo\Setup\RegisterSeoRoutes::register($router);
+    }
+    
     // 6. Load routes from modules' routes.xml files (automatic discovery)
     $routeLoader = new RouteLoader($moduleManager);
     $routeLoader->loadRoutes($router);
     
-    // 7. Create Front Controller with singleton ObjectManager instance
+    // 7. Create Front Controller with Dispatcher (Phase 3.1 SOLID Refactoring)
     $objectManager = ObjectManager::getInstance();
+    $request = Request::createFromGlobals();
+    $dispatcher = new \Infinri\Core\App\Dispatcher($objectManager, $request);
     
     return new FrontController(
         $router, 
-        $objectManager,
-        Request::createFromGlobals(),
+        $dispatcher,
+        $request,
         new SecurityHeadersMiddleware(),
         $objectManager->get(AuthenticationMiddleware::class)
     );

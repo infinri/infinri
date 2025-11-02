@@ -84,7 +84,7 @@ abstract class AbstractSaveController
         try {
             if (!$this->isValidCsrf($request)) {
                 $response->setForbidden();
-                $response->setBody('<h1>Forbidden</h1><p>Invalid or missing CSRF token.</p>');
+                $response->setBody('403 Forbidden - Invalid or missing CSRF token');
                 return $response;
             }
 
@@ -131,7 +131,7 @@ abstract class AbstractSaveController
 
         } catch (\Throwable $e) {
             $response->setServerError();
-            $response->setBody('<h1>Error</h1><p>' . htmlspecialchars($e->getMessage()) . '</p>');
+            $response->setBody('500 Internal Server Error - ' . $e->getMessage());
         }
 
         return $response;

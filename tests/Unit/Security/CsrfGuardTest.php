@@ -3,40 +3,27 @@
 declare(strict_types=1);
 
 use Infinri\Core\Security\CsrfGuard;
-use PHPUnit\Framework\MockObject\MockObject;
-use Symfony\Component\Security\Csrf\CsrfToken;
-use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Infinri\Core\App\Session;
 
 describe('CsrfGuard', function () {
-    /** @var CsrfTokenManagerInterface&MockObject */
     beforeEach(function () {
-        $this->tokenManager = $this->createMock(CsrfTokenManagerInterface::class);
-        $this->guard = new CsrfGuard($this->tokenManager);
+        // Create a real session for testing
+        $this->session = new Session();
+        $this->guard = new CsrfGuard($this->session);
     });
 
-    it('generates tokens using token manager', function () {
-        $token = new CsrfToken('test', 'generated-token');
-        $this->tokenManager
-            ->expects($this->once())
-            ->method('getToken')
-            ->with('test')
-            ->willReturn($token);
-
-        expect($this->guard->generateToken('test'))->toBe('generated-token');
+    it('generates tokens using session', function () {
+        $token = $this->guard->generateToken('test');
+        
+        expect($token)->not->toBeNull();
+        expect($token)->toBeString();
+        expect(strlen($token))->toBeGreaterThan(10);
     });
 
-    it('validates tokens via token manager', function () {
-        $this->tokenManager
-            ->expects($this->once())
-            ->method('isTokenValid')
-            ->with($this->callback(function ($token) {
-                return $token instanceof CsrfToken
-                    && $token->getId() === 'test'
-                    && $token->getValue() === 'value';
-            }))
-            ->willReturn(true);
-
-        expect($this->guard->validateToken('test', 'value'))->toBeTrue();
+    it('validates tokens via session', function () {
+        $token = $this->guard->generateToken('test');
+        
+        expect($this->guard->validateToken('test', $token))->toBeTrue();
     });
 
     it('rejects empty token values', function () {
@@ -45,15 +32,22 @@ describe('CsrfGuard', function () {
     });
 
     it('renders hidden field markup', function () {
-        $token = new CsrfToken('form', 'token-value');
-        $this->tokenManager
-            ->expects($this->once())
-            ->method('getToken')
-            ->with('form')
-            ->willReturn($token);
-
         $field = $this->guard->getHiddenField('form');
+        
         expect($field)->toContain('name="_csrf_token"');
-        expect($field)->toContain('value="token-value"');
+        expect($field)->toContain('type="hidden"');
+        expect($field)->toContain('value=');
+    });
+    
+    it('rejects invalid tokens', function () {
+        $this->guard->generateToken('test');
+        
+        expect($this->guard->validateToken('test', 'invalid-token'))->toBeFalse();
+    });
+    
+    it('rejects tokens with different ids', function () {
+        $token = $this->guard->generateToken('test1');
+        
+        expect($this->guard->validateToken('test2', $token))->toBeFalse();
     });
 });

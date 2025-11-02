@@ -63,9 +63,17 @@ class LayoutFactory
             // Merge all layout files
             $mergedXml = $this->merger->merge($layoutXmlFiles);
             
+            $fullXml = $mergedXml->asXML();
             Logger::debug('LayoutFactory: Merged XML', [
-                'xml_preview' => substr($mergedXml->asXML(), 0, 500)
+                'xml_preview' => substr($fullXml, 0, 500)
             ]);
+            
+            // Check if sidebar is in merged XML
+            if (strpos($fullXml, 'admin.sidebar') !== false) {
+                Logger::info('LayoutFactory: SIDEBAR FOUND in merged XML');
+            } else {
+                Logger::warning('LayoutFactory: SIDEBAR NOT FOUND in merged XML');
+            }
             
             // Process layout directives (references, removes, etc.)
             $processedXml = $this->processor->process($mergedXml);
@@ -82,8 +90,8 @@ class LayoutFactory
                 'full_xml_length' => strlen($processedXml->asXML())
             ]);
             
-            // Build block tree
-            $rootBlock = $this->builder->build($processedXml);
+            // Build block tree with data
+            $rootBlock = $this->builder->build($processedXml, $data);
             
             if (!$rootBlock) {
                 Logger::warning('LayoutFactory: No root block created', [
@@ -145,15 +153,21 @@ class LayoutFactory
             $layoutsByModule = $this->loader->load($handle);
             
             if (empty($layoutsByModule)) {
+                Logger::warning('LayoutFactory: No XML found for handle', ['handle' => $handle]);
                 continue;
             }
             
-            // Extract XML elements and check for <update> directives
-            $xmlElements = array_values($layoutsByModule);
+            Logger::debug('LayoutFactory: Loaded modules for handle', [
+                'handle' => $handle,
+                'modules' => array_keys($layoutsByModule)
+            ]);
+            
+            // Extract XML elements and check for <update> directives (preserve module names)
             $referencedHandles = [];
             
-            foreach ($xmlElements as $xml) {
-                $layoutXmlFiles[] = $xml;
+            foreach ($layoutsByModule as $moduleName => $xml) {
+                // Use handle_module as key to prevent overwrites
+                $layoutXmlFiles[$handle . '_' . $moduleName] = $xml;
                 
                 // Find all <update handle="..."/> directives
                 foreach ($xml->xpath('//update[@handle]') as $updateNode) {
@@ -166,6 +180,10 @@ class LayoutFactory
             
             // Recursively load referenced handles (they should be loaded FIRST for proper inheritance)
             if (!empty($referencedHandles)) {
+                Logger::debug('LayoutFactory: Found referenced handles', [
+                    'current_handle' => $handle,
+                    'referenced_handles' => $referencedHandles
+                ]);
                 $referencedXml = $this->loadHandlesRecursively($referencedHandles, $loaded);
                 // Prepend referenced XML so base layouts come first
                 $layoutXmlFiles = array_merge($referencedXml, $layoutXmlFiles);

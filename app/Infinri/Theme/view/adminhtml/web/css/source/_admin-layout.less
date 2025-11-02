@@ -44,6 +44,7 @@ header.header-container {
     flex-shrink: 0;
     order: -1; // Force sidebar to be first
     position: relative; // For absolute positioned submenus
+    z-index: 10; // Below content to prevent click interference
     
     @media (max-width: 768px) {
         position: fixed;
@@ -54,19 +55,18 @@ header.header-container {
         transition: left 0.3s ease;
         overflow-y: auto;
         overflow-x: visible;
-        
-        &.is-open {
-            left: 0;
-        }
     }
 }
 
-// Admin content area (right side)
+// Admin content area (main content)
 .admin-content {
     flex: 1;
+    padding: 24px;
     overflow-y: auto;
     background: #f4f6fa;
-    padding: 24px;
+    position: relative;
+    // No z-index needed - natural DOM order handles layering
+    // and prevents stacking context issues with sidebar submenu
     order: 1; // Content comes after sidebar
     
     @media (max-width: 768px) {

@@ -32,11 +32,16 @@ class MenuItemResolver
     {
         $linkType = $item['link_type'] ?? '';
         
+        // Cast resource_id to int if it exists
+        $resourceId = isset($item['resource_id']) && $item['resource_id'] !== null 
+            ? (int)$item['resource_id'] 
+            : null;
+        
         return match($linkType) {
-            'cms_page' => $this->resolveCmsPageUrl($item['resource_id'] ?? null),
+            'cms_page' => $this->resolveCmsPageUrl($resourceId),
             'custom_url' => $item['custom_url'] ?? '/',
             'external' => $item['custom_url'] ?? '/',
-            // Future: 'category' => $this->resolveCategoryUrl($item['resource_id'] ?? null),
+            // Future: 'category' => $this->resolveCategoryUrl($resourceId),
             default => '/'
         };
     }
@@ -67,7 +72,8 @@ class MenuItemResolver
                 return '/';
             }
             
-            return '/cms/page/view?key=' . urlencode($urlKey);
+            // Use URL rewrite format (/{url_key}) instead of controller format
+            return '/' . $urlKey;
         } catch (\Exception $e) {
             // Log error and return fallback
             error_log('MenuItemResolver: Failed to resolve page URL for ID ' . $pageId . ': ' . $e->getMessage());

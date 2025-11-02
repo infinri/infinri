@@ -9,26 +9,27 @@ use Infinri\Core\App\Response;
 use Infinri\Cms\Controller\Adminhtml\Media\CsrfTokenIds;
 use Infinri\Core\Security\CsrfGuard;
 use Infinri\Core\Model\View\LayoutFactory;
+use Infinri\Core\Helper\PathHelper;
 
 /**
  * Media Manager - Main Gallery View
  * 
  * Simple, intuitive media manager for uploading and organizing images
+ * 
+ * Phase 4: DRY/KISS - Uses PathHelper
  */
 class Index
 {
-    private string $mediaPath;
     private string $baseUrl = '/media';
     
     public function __construct(
         private readonly CsrfGuard $csrfGuard,
         private readonly LayoutFactory $layoutFactory
     ) {
-        $this->mediaPath = dirname(__DIR__, 6) . '/pub/media';
-        
         // Create media directory if it doesn't exist
-        if (!is_dir($this->mediaPath)) {
-            mkdir($this->mediaPath, 0755, true);
+        $mediaPath = PathHelper::getMediaPath();
+        if (!is_dir($mediaPath)) {
+            mkdir($mediaPath, 0755, true);
         }
     }
 
@@ -38,11 +39,12 @@ class Index
         
         // Get current folder from query parameter (default: root)
         $currentFolder = $request->getParam('folder', '');
-        $currentPath = $this->mediaPath . ($currentFolder ? '/' . $currentFolder : '');
+        $mediaPath = PathHelper::getMediaPath();
+        $currentPath = $mediaPath . ($currentFolder ? '/' . $currentFolder : '');
         
         // Security: prevent directory traversal
-        if (strpos(realpath($currentPath), realpath($this->mediaPath)) !== 0) {
-            $currentPath = $this->mediaPath;
+        if (strpos(realpath($currentPath), realpath($mediaPath)) !== 0) {
+            $currentPath = $mediaPath;
             $currentFolder = '';
         }
         
@@ -120,7 +122,7 @@ class Index
             if (is_file($fullPath)) {
                 $ext = strtolower(pathinfo($item, PATHINFO_EXTENSION));
                 if (in_array($ext, $allowedExtensions)) {
-                    $relativePath = str_replace($this->mediaPath, '', $fullPath);
+                    $relativePath = str_replace(PathHelper::getMediaPath(), '', $fullPath);
                     $images[] = [
                         'name' => $item,
                         'path' => $fullPath,

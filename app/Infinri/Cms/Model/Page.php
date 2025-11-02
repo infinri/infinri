@@ -170,7 +170,9 @@ class Page extends AbstractContentEntity
      */
     public function isHomepage(): bool
     {
-        return (bool) $this->getData('is_homepage');
+        $value = $this->getData('is_homepage');
+        // PostgreSQL returns booleans as strings ('t'/'f' or '1'/'0')
+        return $value === true || $value === 1 || $value === '1' || $value === 't';
     }
 
     /**

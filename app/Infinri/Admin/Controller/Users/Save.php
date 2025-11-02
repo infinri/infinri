@@ -6,8 +6,8 @@ namespace Infinri\Admin\Controller\Users;
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
 use Infinri\Core\Helper\Logger;
-use Infinri\Admin\Model\AdminUser;
-use Infinri\Admin\Model\ResourceModel\AdminUser as AdminUserResource;
+use Infinri\Admin\Model\Repository\AdminUserRepository;
+use Infinri\Core\Security\CsrfGuard;
 
 /**
  * Admin User Save Controller
@@ -15,9 +15,11 @@ use Infinri\Admin\Model\ResourceModel\AdminUser as AdminUserResource;
  */
 class Save
 {
+    private const CSRF_TOKEN_ID = 'admin_cms_user_form';
+    
     public function __construct(
-        private readonly AdminUser $adminUser,
-        private readonly AdminUserResource $adminUserResource
+        private readonly AdminUserRepository $repository,
+        private readonly CsrfGuard $csrfGuard
     ) {
     }
 
@@ -30,24 +32,33 @@ class Save
             $response->setHeader('Location', '/admin/users/index');
             return $response;
         }
+        
+        // 🔒 SECURITY: Validate CSRF token before processing user save
+        if (!$this->csrfGuard->validateToken(self::CSRF_TOKEN_ID, $request->getParam('_csrf_token'))) {
+            Logger::warning('User save failed: Invalid CSRF token');
+            $response->setStatusCode(302);
+            $response->setHeader('Location', '/admin/users/index?error=csrf');
+            return $response;
+        }
 
         try {
             $userId = (int) $request->getParam('user_id');
-            $user = clone $this->adminUser;
             
+            // Load existing user or create new one
             if ($userId) {
-                $userData = $this->adminUserResource->load($userId);
-                if (!$userData) {
+                $user = $this->repository->getById($userId);
+                if (!$user) {
                     throw new \RuntimeException('User not found');
                 }
-                $user->setData($userData);
+            } else {
+                $user = $this->repository->create();
             }
 
             // Set user data
             $user->setUsername($request->getParam('username'));
             $user->setEmail($request->getParam('email'));
-            $user->setFirstname($request->getParam('firstname'));
-            $user->setLastname($request->getParam('lastname'));
+            $user->setData('firstname', $request->getParam('firstname'));
+            $user->setData('lastname', $request->getParam('lastname'));
             
             // Hash password if provided
             $password = $request->getParam('password');
@@ -67,13 +78,13 @@ class Save
             $user->setRoles($roles);
             
             // Set is_active
-            $user->setIsActive((bool) $request->getParam('is_active', true));
+            $user->setData('is_active', (bool) $request->getParam('is_active', true));
 
-            // Save user
-            $user->save();
+            // Save user via repository
+            $this->repository->save($user);
             
             Logger::info('User saved successfully', [
-                'user_id' => $user->getUserId(),
+                'user_id' => $user->getData('user_id'),
                 'username' => $user->getUsername()
             ]);
 

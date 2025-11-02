@@ -25,9 +25,9 @@ abstract class AbstractDataProvider
      * @param string $requestFieldName
      */
     public function __construct(
-        private readonly string $name,
-        private readonly string $primaryFieldName,
-        private readonly string $requestFieldName
+        private readonly string $name = '',
+        private readonly string $primaryFieldName = 'id',
+        private readonly string $requestFieldName = 'id'
     ) {
     }
 

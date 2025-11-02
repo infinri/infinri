@@ -234,16 +234,33 @@ class Processor
                 $targets = $layout->xpath("//*[@name='" . $name . "']");
                 
                 if (!empty($targets)) {
+                    $targetProcessed = false;
                     foreach ($targets as $target) {
                         // Skip if target is a reference directive itself
                         if ($target->getName() === 'referenceBlock' || $target->getName() === 'referenceContainer') {
                             continue;
                         }
                         
+                        $targetProcessed = true;
+                        
                         // Merge children from reference into target
-                        foreach ($reference->children() as $child) {
-                            $this->appendElement($target, $child);
+                        // Use FALSE for $preserve_keys to get numeric indices instead of element names
+                        // This prevents duplicate keys when multiple children have the same tag name
+                        $children = iterator_to_array($reference->children(), false);
+                        
+                        foreach ($children as $child) {
+                            try {
+                                $this->appendElement($target, $child);
+                            } catch (\Throwable $e) {
+                                $childName = isset($child['name']) ? (string)$child['name'] : $child->getName();
+                                \Infinri\Core\Helper\Logger::error('Processor: Failed to append child', [
+                                    'child_name' => $childName,
+                                    'parent' => $name,
+                                    'error' => $e->getMessage()
+                                ]);
+                            }
                         }
+                        
                         break; // Only process first matching target
                     }
                 }
@@ -281,8 +298,72 @@ class Processor
         // Import the source node (deep copy with all children)
         $importedNode = $targetDom->ownerDocument->importNode($sourceDom, true);
         
-        // Append to target
-        $targetDom->appendChild($importedNode);
+        // Check for 'before' or 'after' attributes on the source
+        $before = isset($source['before']) ? (string) $source['before'] : null;
+        $after = isset($source['after']) ? (string) $source['after'] : null;
+        
+        $sourceName = isset($source['name']) ? (string) $source['name'] : 'unnamed';
+        $targetName = isset($target['name']) ? (string) $target['name'] : 'unnamed';
+        
+        if ($sourceName === 'admin.sidebar' || $targetName === 'main.content') {
+            \Infinri\Core\Helper\Logger::info('Processor: Appending element', [
+                'source' => $sourceName,
+                'target' => $targetName,
+                'before' => $before,
+                'after' => $after
+            ]);
+        }
+        
+        if ($before !== null) {
+            // Insert before specific sibling
+            $siblings = $targetDom->childNodes;
+            $found = false;
+            foreach ($siblings as $sibling) {
+                if ($sibling->nodeType === XML_ELEMENT_NODE && 
+                    $sibling->hasAttribute('name') && 
+                    $sibling->getAttribute('name') === $before) {
+                    $targetDom->insertBefore($importedNode, $sibling);
+                    $found = true;
+                    
+                    if ($sourceName === 'admin.sidebar') {
+                        \Infinri\Core\Helper\Logger::info('Processor: Inserted sidebar BEFORE content', [
+                            'before' => $before,
+                            'found' => true
+                        ]);
+                    }
+                    return;
+                }
+            }
+            // If before element not found, append to end
+            if ($sourceName === 'admin.sidebar') {
+                \Infinri\Core\Helper\Logger::warning('Processor: Could not find before element, appending sidebar to end', [
+                    'before' => $before,
+                    'found' => $found,
+                    'sibling_count' => $siblings->length
+                ]);
+            }
+            $targetDom->appendChild($importedNode);
+        } elseif ($after !== null) {
+            // Insert after specific sibling
+            $siblings = $targetDom->childNodes;
+            $found = false;
+            foreach ($siblings as $sibling) {
+                if ($found) {
+                    $targetDom->insertBefore($importedNode, $sibling);
+                    return;
+                }
+                if ($sibling->nodeType === XML_ELEMENT_NODE && 
+                    $sibling->hasAttribute('name') && 
+                    $sibling->getAttribute('name') === $after) {
+                    $found = true;
+                }
+            }
+            // If found and it's the last one, or not found, append
+            $targetDom->appendChild($importedNode);
+        } else {
+            // No positioning specified, append to end
+            $targetDom->appendChild($importedNode);
+        }
     }
 
     /**

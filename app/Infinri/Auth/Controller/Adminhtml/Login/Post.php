@@ -8,20 +8,24 @@ use Infinri\Core\App\Response;
 use Infinri\Admin\Model\ResourceModel\AdminUser as AdminUserResource;
 use Infinri\Admin\Model\AdminUser;
 use Infinri\Admin\Service\RememberTokenService;
-use Infinri\Core\Security\CsrfTokenManager;
+use Infinri\Core\Security\CsrfGuard;
 use Infinri\Core\Helper\Logger;
+use Infinri\Core\Service\RateLimiter;
 
 /**
  * Admin Login POST Handler
  * Route: /admin/auth/login/post
  * Processes login form submission with CSRF protection and Remember Me
+ * 
+ * Security (Phase 2.5): Rate limiting prevents brute force attacks
  */
 class Post
 {
     public function __construct(
         private readonly AdminUserResource $adminUserResource,
-        private readonly CsrfTokenManager $csrfManager,
-        private readonly RememberTokenService $rememberTokenService
+        private readonly CsrfGuard $csrfGuard,
+        private readonly RememberTokenService $rememberTokenService,
+        private readonly RateLimiter $rateLimiter
     ) {
     }
 
@@ -32,13 +36,32 @@ class Post
             session_start();
         }
 
+        // 🔒 SECURITY (Phase 2.5): Rate limiting - prevent brute force attacks
+        // Default: 5 login attempts per 5 minutes per IP
+        if (!$this->rateLimiter->attemptFromRequest($request, 'login')) {
+            $retryAfter = $this->rateLimiter->retryAfter('login', $request->getClientIp() ?? 'unknown');
+            
+            Logger::warning('Login rate limit exceeded', [
+                'ip' => $request->getClientIp(),
+                'retry_after' => $retryAfter
+            ]);
+            
+            $_SESSION['login_error'] = sprintf(
+                'Too many login attempts. Please try again in %d seconds.',
+                $retryAfter
+            );
+            
+            return $this->createRedirect('/admin/auth/login/index');
+        }
+
         // Validate CSRF token
         $csrfToken = $request->getPost('_csrf_token', '');
         $csrfTokenId = $request->getPost('_csrf_token_id', 'admin_login');
 
-        if (!$this->csrfManager->validateToken($csrfTokenId, $csrfToken)) {
+        if (!$this->csrfGuard->validateToken($csrfTokenId, $csrfToken)) {
             Logger::warning('Login failed: Invalid CSRF token', [
-                'ip' => $request->getClientIp()
+                'ip' => $request->getClientIp(),
+                'token_id' => $csrfTokenId
             ]);
             return $this->createRedirect('/admin/auth/login/index?error=csrf');
         }

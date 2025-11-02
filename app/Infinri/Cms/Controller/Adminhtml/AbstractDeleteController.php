@@ -79,9 +79,7 @@ abstract class AbstractDeleteController
 
         } catch (\Throwable $e) {
             $response->setServerError();
-            $response->setBody(
-                '<h1>Error</h1><p>' . htmlspecialchars($e->getMessage()) . '</p>'
-            );
+            $response->setBody('500 Internal Server Error - ' . $e->getMessage());
         }
 
         return $response;

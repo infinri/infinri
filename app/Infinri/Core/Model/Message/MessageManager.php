@@ -21,9 +21,18 @@ class MessageManager
     public const TYPE_INFO = 'info';
     
     /**
-     * Session key for messages
+     * Session key for messages (namespaced by area)
      */
-    private const SESSION_KEY = 'infinri_messages';
+    private const SESSION_KEY_PREFIX = 'infinri_messages_';
+    
+    /**
+     * Get the session key for current area (admin vs frontend)
+     */
+    private function getSessionKey(): string
+    {
+        $isAdmin = isset($_SERVER['REQUEST_URI']) && str_starts_with($_SERVER['REQUEST_URI'], '/admin');
+        return self::SESSION_KEY_PREFIX . ($isAdmin ? 'admin' : 'frontend');
+    }
     
     /**
      * Add a success message
@@ -80,11 +89,13 @@ class MessageManager
     {
         $this->startSession();
         
-        if (!isset($_SESSION[self::SESSION_KEY])) {
-            $_SESSION[self::SESSION_KEY] = [];
+        $sessionKey = $this->getSessionKey();
+        
+        if (!isset($_SESSION[$sessionKey])) {
+            $_SESSION[$sessionKey] = [];
         }
         
-        $_SESSION[self::SESSION_KEY][] = [
+        $_SESSION[$sessionKey][] = [
             'type' => $type,
             'text' => $message,
             'timestamp' => time(),
@@ -103,7 +114,8 @@ class MessageManager
     {
         $this->startSession();
         
-        $messages = $_SESSION[self::SESSION_KEY] ?? [];
+        $sessionKey = $this->getSessionKey();
+        $messages = $_SESSION[$sessionKey] ?? [];
         
         if ($clear) {
             $this->clearMessages();
@@ -123,16 +135,17 @@ class MessageManager
     {
         $this->startSession();
         
-        $allMessages = $_SESSION[self::SESSION_KEY] ?? [];
+        $sessionKey = $this->getSessionKey();
+        $allMessages = $_SESSION[$sessionKey] ?? [];
         $filtered = array_filter($allMessages, fn($msg) => $msg['type'] === $type);
         
         if ($clear && !empty($filtered)) {
             // Remove only the filtered messages
-            $_SESSION[self::SESSION_KEY] = array_filter(
+            $_SESSION[$sessionKey] = array_filter(
                 $allMessages,
                 fn($msg) => $msg['type'] !== $type
             );
-            $_SESSION[self::SESSION_KEY] = array_values($_SESSION[self::SESSION_KEY]);
+            $_SESSION[$sessionKey] = array_values($_SESSION[$sessionKey]);
         }
         
         return array_values($filtered);
@@ -148,7 +161,8 @@ class MessageManager
     {
         $this->startSession();
         
-        $messages = $_SESSION[self::SESSION_KEY] ?? [];
+        $sessionKey = $this->getSessionKey();
+        $messages = $_SESSION[$sessionKey] ?? [];
         
         if ($type === null) {
             return !empty($messages);
@@ -166,7 +180,8 @@ class MessageManager
     {
         $this->startSession();
         
-        $_SESSION[self::SESSION_KEY] = [];
+        $sessionKey = $this->getSessionKey();
+        $_SESSION[$sessionKey] = [];
         
         return $this;
     }
@@ -181,7 +196,8 @@ class MessageManager
     {
         $this->startSession();
         
-        $messages = $_SESSION[self::SESSION_KEY] ?? [];
+        $sessionKey = $this->getSessionKey();
+        $messages = $_SESSION[$sessionKey] ?? [];
         
         if ($type === null) {
             return count($messages);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Infinri\Menu\Model\ResourceModel;
 
 use Infinri\Core\Model\ResourceModel\AbstractResource;
+use Infinri\Core\Model\ResourceModel\Connection;
 use PDO;
 
 /**
@@ -17,11 +18,14 @@ class Menu extends AbstractResource
     /**
      * Constructor
      *
-     * @param PDO $connection
+     * @param Connection $connection
      */
-    public function __construct(PDO $connection)
+    public function __construct(Connection $connection)
     {
-        parent::__construct($connection, 'menu', 'menu_id');
+        parent::__construct($connection);
+        $this->mainTable = 'menu';
+        $this->primaryKey = 'menu_id';
+        $this->idFieldName = 'menu_id';
     }
 
     /**
@@ -32,8 +36,8 @@ class Menu extends AbstractResource
      */
     public function getByIdentifier(string $identifier): ?array
     {
-        $stmt = $this->connection->prepare(
-            "SELECT * FROM {$this->table} WHERE identifier = :identifier LIMIT 1"
+        $stmt = $this->connection->getConnection()->prepare(
+            "SELECT * FROM {$this->mainTable} WHERE identifier = :identifier LIMIT 1"
         );
         
         $stmt->execute(['identifier' => $identifier]);
@@ -50,7 +54,7 @@ class Menu extends AbstractResource
      */
     public function getAll(bool $activeOnly = false): array
     {
-        $sql = "SELECT * FROM {$this->table}";
+        $sql = "SELECT * FROM {$this->mainTable}";
         
         if ($activeOnly) {
             $sql .= " WHERE is_active = true";
@@ -58,7 +62,7 @@ class Menu extends AbstractResource
         
         $sql .= " ORDER BY title ASC";
         
-        $stmt = $this->connection->query($sql);
+        $stmt = $this->connection->getConnection()->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

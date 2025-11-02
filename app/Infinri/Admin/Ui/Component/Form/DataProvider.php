@@ -4,23 +4,14 @@ declare(strict_types=1);
 
 namespace Infinri\Admin\Ui\Component\Form;
 
-use Infinri\Admin\Model\ResourceModel\AdminUser as AdminUserResource;
+use Infinri\Admin\Model\Repository\AdminUserRepository;
 use Infinri\Core\Model\ObjectManager;
 
 /**
  * Admin User Form Data Provider
- * 
- * Note: AdminUser doesn't have a repository, so we override getData to use resource model directly
  */
 class DataProvider
 {
-    public function __construct(
-        private readonly string $name,
-        private readonly string $primaryFieldName,
-        private readonly string $requestFieldName
-    ) {
-    }
-
     /**
      * Get form data
      *
@@ -34,24 +25,26 @@ class DataProvider
             return $this->getDefaultData();
         }
 
-        // Get resource from ObjectManager
+        // Get repository from ObjectManager
         $objectManager = ObjectManager::getInstance();
-        $resource = $objectManager->get(AdminUserResource::class);
+        $repository = $objectManager->get(AdminUserRepository::class);
 
         // Load existing user
-        $userData = $resource->load($entityId);
+        $user = $repository->getById($entityId);
 
-        if (!$userData) {
+        if (!$user) {
             return [];
         }
 
         // Return user data as array
-        return $this->mapEntityToArray($userData);
-    }
-
-    protected function getRepositoryClass(): string
-    {
-        return AdminUserResource::class;
+        return [
+            'user_id' => $user->getData('user_id'),
+            'username' => $user->getUsername(),
+            'email' => $user->getEmail(),
+            'firstname' => $user->getData('firstname'),
+            'lastname' => $user->getData('lastname'),
+            'is_active' => (bool)$user->getData('is_active'),
+        ];
     }
 
     protected function getDefaultData(): array
@@ -63,19 +56,6 @@ class DataProvider
             'firstname' => '',
             'lastname' => '',
             'is_active' => true,
-        ];
-    }
-
-    protected function mapEntityToArray($entity): array
-    {
-        // Entity is array data from resource model
-        return [
-            'user_id' => $entity['user_id'] ?? null,
-            'username' => $entity['username'] ?? '',
-            'email' => $entity['email'] ?? '',
-            'firstname' => $entity['firstname'] ?? '',
-            'lastname' => $entity['lastname'] ?? '',
-            'is_active' => (bool)($entity['is_active'] ?? false),
         ];
     }
 }

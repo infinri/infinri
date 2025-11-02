@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Infinri\Menu\Model\ResourceModel;
 
 use Infinri\Core\Model\ResourceModel\AbstractResource;
+use Infinri\Core\Model\ResourceModel\Connection;
 use PDO;
 
 /**
@@ -17,11 +18,14 @@ class MenuItem extends AbstractResource
     /**
      * Constructor
      *
-     * @param PDO $connection
+     * @param Connection $connection
      */
-    public function __construct(PDO $connection)
+    public function __construct(Connection $connection)
     {
-        parent::__construct($connection, 'menu_item', 'item_id');
+        parent::__construct($connection);
+        $this->mainTable = 'menu_item';
+        $this->primaryKey = 'item_id';
+        $this->idFieldName = 'item_id';
     }
 
     /**
@@ -33,7 +37,7 @@ class MenuItem extends AbstractResource
      */
     public function getByMenuId(int $menuId, bool $activeOnly = false): array
     {
-        $sql = "SELECT * FROM {$this->table} WHERE menu_id = :menu_id";
+        $sql = "SELECT * FROM {$this->mainTable} WHERE menu_id = :menu_id";
         
         if ($activeOnly) {
             $sql .= " AND is_active = true";
@@ -41,7 +45,7 @@ class MenuItem extends AbstractResource
         
         $sql .= " ORDER BY sort_order ASC, item_id ASC";
         
-        $stmt = $this->connection->prepare($sql);
+        $stmt = $this->connection->getConnection()->prepare($sql);
         $stmt->execute(['menu_id' => $menuId]);
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -58,18 +62,18 @@ class MenuItem extends AbstractResource
     {
         $sql = "
             SELECT mi.* 
-            FROM {$this->table} mi
-            INNER JOIN menu m ON mi.menu_id = m.menu_id
+            FROM {$this->mainTable} mi
+            INNER JOIN menu m ON mi.menu_id::integer = m.menu_id::integer
             WHERE m.identifier = :identifier
         ";
         
         if ($activeOnly) {
-            $sql .= " AND mi.is_active = true AND m.is_active = true";
+            $sql .= " AND mi.is_active::boolean = true AND m.is_active::boolean = true";
         }
         
         $sql .= " ORDER BY mi.sort_order ASC, mi.item_id ASC";
         
-        $stmt = $this->connection->prepare($sql);
+        $stmt = $this->connection->getConnection()->prepare($sql);
         $stmt->execute(['identifier' => $identifier]);
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -84,7 +88,7 @@ class MenuItem extends AbstractResource
      */
     public function getChildren(int $parentItemId, bool $activeOnly = false): array
     {
-        $sql = "SELECT * FROM {$this->table} WHERE parent_item_id = :parent_item_id";
+        $sql = "SELECT * FROM {$this->mainTable} WHERE parent_item_id = :parent_item_id";
         
         if ($activeOnly) {
             $sql .= " AND is_active = true";
@@ -92,7 +96,7 @@ class MenuItem extends AbstractResource
         
         $sql .= " ORDER BY sort_order ASC, item_id ASC";
         
-        $stmt = $this->connection->prepare($sql);
+        $stmt = $this->connection->getConnection()->prepare($sql);
         $stmt->execute(['parent_item_id' => $parentItemId]);
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -106,11 +110,11 @@ class MenuItem extends AbstractResource
      */
     public function reorder(array $orderData): bool
     {
-        $this->connection->beginTransaction();
+        $this->connection->getConnection()->beginTransaction();
         
         try {
-            $stmt = $this->connection->prepare(
-                "UPDATE {$this->table} SET sort_order = :sort_order WHERE item_id = :item_id"
+            $stmt = $this->connection->getConnection()->prepare(
+                "UPDATE {$this->mainTable} SET sort_order = :sort_order WHERE item_id = :item_id"
             );
             
             foreach ($orderData as $itemId => $sortOrder) {
@@ -120,10 +124,10 @@ class MenuItem extends AbstractResource
                 ]);
             }
             
-            $this->connection->commit();
+            $this->connection->getConnection()->commit();
             return true;
         } catch (\Exception $e) {
-            $this->connection->rollBack();
+            $this->connection->getConnection()->rollBack();
             throw $e;
         }
     }

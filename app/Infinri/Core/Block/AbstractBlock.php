@@ -187,4 +187,101 @@ abstract class AbstractBlock
         
         return $html;
     }
+    
+    // ==================== OUTPUT ESCAPING (Phase 2.3) ====================
+    
+    /**
+     * Escape HTML content to prevent XSS
+     * 
+     * Use for general content output
+     * 
+     * @param string|null $value Value to escape
+     * @return string Escaped value
+     */
+    protected function escapeHtml(?string $value): string
+    {
+        if ($value === null) {
+            return '';
+        }
+        return htmlspecialchars($value, ENT_QUOTES | ENT_HTML5 | ENT_SUBSTITUTE, 'UTF-8');
+    }
+    
+    /**
+     * Escape HTML attribute values
+     * 
+     * Use for values in HTML attributes (title, alt, data-*, etc.)
+     * 
+     * @param string|null $value Value to escape
+     * @return string Escaped value
+     */
+    protected function escapeHtmlAttr(?string $value): string
+    {
+        if ($value === null) {
+            return '';
+        }
+        return htmlspecialchars($value, ENT_QUOTES | ENT_HTML5 | ENT_SUBSTITUTE, 'UTF-8');
+    }
+    
+    /**
+     * Escape URL for safe output
+     * 
+     * Use for href and src attributes
+     * 
+     * @param string|null $url URL to escape
+     * @return string Sanitized URL
+     */
+    protected function escapeUrl(?string $url): string
+    {
+        if ($url === null || $url === '') {
+            return '';
+        }
+        
+        // Filter out dangerous protocols
+        $filtered = filter_var($url, FILTER_SANITIZE_URL);
+        
+        if ($filtered === false || $filtered === '') {
+            return '';
+        }
+        
+        // Block javascript: and data: protocols
+        if (preg_match('/^(javascript|data):/i', $filtered)) {
+            return '';
+        }
+        
+        return $filtered;
+    }
+    
+    /**
+     * Escape data for JavaScript context
+     * 
+     * Use when outputting PHP data into JavaScript code
+     * 
+     * @param mixed $value Value to escape
+     * @return string JSON-encoded value safe for JS
+     */
+    protected function escapeJs(mixed $value): string
+    {
+        return json_encode($value, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR);
+    }
+    
+    /**
+     * Escape CSS value
+     * 
+     * Use for inline style attributes
+     * 
+     * @param string|null $value CSS value
+     * @return string Escaped value
+     */
+    protected function escapeCss(?string $value): string
+    {
+        if ($value === null) {
+            return '';
+        }
+        
+        // Remove any HTML tags
+        $value = strip_tags($value);
+        
+        // Allow only safe characters in CSS
+        return preg_replace('/[^a-zA-Z0-9\s\-\%\.\,\#\(\)]/', '', $value);
+    }
 }

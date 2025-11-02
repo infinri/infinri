@@ -8,43 +8,49 @@ use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
 use Infinri\Cms\Controller\Adminhtml\Media\CsrfTokenIds;
 use Infinri\Core\Security\CsrfGuard;
+use Infinri\Core\Helper\PathHelper;
+use Infinri\Core\Helper\JsonResponse;
 
 /**
  * Upload Multiple Images
+ * 
+ * Phase 4: DRY/KISS - Uses PathHelper and JsonResponse
  */
 class Uploadmultiple
 {
-    private string $mediaPath;
     private const CSRF_TOKEN_ID = CsrfTokenIds::UPLOAD;
     
     public function __construct(private readonly CsrfGuard $csrfGuard)
     {
-        $this->mediaPath = dirname(__DIR__, 6) . '/pub/media';
     }
 
     public function execute(Request $request): Response
     {
-        $response = new Response();
-        $response->setHeader('Content-Type', 'application/json');
-
         try {
             if (!$request->isPost() || !$this->csrfGuard->validateToken(self::CSRF_TOKEN_ID, $request->getParam('_csrf_token'))) {
-                $response->setForbidden();
-                return $response->setBody(json_encode([
-                    'success' => false,
-                    'error' => 'Invalid CSRF token',
-                ]));
+                return JsonResponse::csrfError();
             }
 
             error_log('UploadMultiple called');
             error_log('$_FILES: ' . print_r($_FILES, true));
             error_log('$_POST: ' . print_r($_POST, true));
             
+            // 🔒 SECURITY: Sanitize folder parameter to prevent directory traversal
             $folder = $request->getParam('folder', '');
-            $targetPath = $this->mediaPath . ($folder ? '/' . $folder : '');
+            if ($folder) {
+                // Remove any path traversal attempts
+                $folder = str_replace(['..', '\\', '\0'], '', $folder);
+                $folder = trim($folder, '/');
+                // Whitelist allowed characters: alphanumeric, underscore, hyphen, forward slash
+                if (!preg_match('/^[a-zA-Z0-9_\/-]+$/', $folder)) {
+                    throw new \RuntimeException('Invalid folder name');
+                }
+            }
+            $mediaPath = PathHelper::getMediaPath();
+            $targetPath = $mediaPath . ($folder ? '/' . $folder : '');
             
             error_log('Target path: ' . $targetPath);
-            error_log('Media path: ' . $this->mediaPath);
+            error_log('Media path: ' . $mediaPath);
             
             // Create target directory if it doesn't exist
             if (!is_dir($targetPath)) {
@@ -95,7 +101,22 @@ class Uploadmultiple
                     continue;
                 }
                 
-                $filename = basename($name);
+                // 🔒 SECURITY: Sanitize filename to prevent path traversal
+                $filename = basename($name); // Remove path components
+                $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+                
+                // Whitelist allowed extensions
+                $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+                if (!in_array($extension, $allowedExtensions)) {
+                    $errors[] = "$name: Invalid file extension ($extension)";
+                    continue;
+                }
+                
+                // Sanitize filename: keep only safe characters
+                $filename = preg_replace('/[^a-zA-Z0-9_.-]/', '_', $filename);
+                
+                // Add unique prefix to prevent collisions
+                $filename = uniqid('', true) . '_' . $filename;
                 $targetFile = $targetPath . '/' . $filename;
                 
                 error_log("Moving $tmpName to $targetFile");
@@ -110,25 +131,17 @@ class Uploadmultiple
                 }
             }
             
-            $response->setBody(json_encode([
-                'success' => count($uploaded) > 0,
+            return JsonResponse::success([
                 'uploaded' => $uploaded,
                 'count' => count($uploaded),
                 'errors' => $errors
-            ]));
+            ]);
 
         } catch (\Throwable $e) {
             error_log('Upload exception: ' . $e->getMessage());
             error_log('Stack trace: ' . $e->getTraceAsString());
-            
-            $response->setServerError();
-            $response->setBody(json_encode([
-                'success' => false,
-                'error' => $e->getMessage()
-            ]));
+            return JsonResponse::error($e->getMessage());
         }
-
-        return $response;
     }
     
     private function getUploadErrorMessage(int $error): string

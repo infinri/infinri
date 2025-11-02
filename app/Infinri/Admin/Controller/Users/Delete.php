@@ -6,8 +6,7 @@ namespace Infinri\Admin\Controller\Users;
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
 use Infinri\Core\Helper\Logger;
-use Infinri\Admin\Model\AdminUser;
-use Infinri\Admin\Model\ResourceModel\AdminUser as AdminUserResource;
+use Infinri\Admin\Model\Repository\AdminUserRepository;
 
 /**
  * Admin User Delete Controller
@@ -16,8 +15,7 @@ use Infinri\Admin\Model\ResourceModel\AdminUser as AdminUserResource;
 class Delete
 {
     public function __construct(
-        private readonly AdminUser $adminUser,
-        private readonly AdminUserResource $adminUserResource
+        private readonly AdminUserRepository $repository
     ) {
     }
 
@@ -34,20 +32,17 @@ class Delete
         }
 
         try {
-            $userData = $this->adminUserResource->load($userId);
+            $user = $this->repository->getById($userId);
 
-            if (!$userData) {
+            if (!$user) {
                 Logger::error('Delete user: User not found', ['user_id' => $userId]);
                 $response->setStatusCode(302);
                 $response->setHeader('Location', '/admin/users/index?error=1');
                 return $response;
             }
-            
-            $user = clone $this->adminUser;
-            $user->setData($userData);
 
-            // Delete the user
-            $user->delete();
+            // Delete the user via repository
+            $this->repository->delete($user);
             
             Logger::info('User deleted successfully', [
                 'user_id' => $userId,

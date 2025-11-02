@@ -92,28 +92,47 @@ class MenuLoader
     }
     
     /**
-     * Build hierarchical menu tree
+     * Build hierarchical menu tree (supports unlimited nesting)
      */
     private function buildMenuTree(): void
     {
-        $tree = [];
         $items = $this->menuItems;
         
-        // First pass: collect top-level items
+        // Initialize children array for all items
+        foreach ($items as $id => $item) {
+            $items[$id]['children'] = [];
+        }
+        
+        // Build tree recursively by attaching children to parents
+        $tree = [];
         foreach ($items as $id => $item) {
             if (empty($item['parent'])) {
+                // Top-level item
                 $tree[$id] = $item;
-                $tree[$id]['children'] = [];
+            } else if (isset($items[$item['parent']])) {
+                // Child item - attach to parent
+                $items[$item['parent']]['children'][$id] = $item;
             }
         }
         
-        // Second pass: attach children to parents
-        foreach ($items as $id => $item) {
-            if (!empty($item['parent']) && isset($tree[$item['parent']])) {
-                $tree[$item['parent']]['children'][$id] = $item;
-            }
-        }
+        // Now recursively attach grandchildren and beyond
+        $tree = $this->attachNestedChildren($tree, $items);
         
         $this->menuItems = $tree;
+    }
+    
+    /**
+     * Recursively attach nested children to their parents
+     */
+    private function attachNestedChildren(array $tree, array $allItems): array
+    {
+        foreach ($tree as $id => &$item) {
+            if (isset($allItems[$id]['children']) && !empty($allItems[$id]['children'])) {
+                $item['children'] = $allItems[$id]['children'];
+                // Recursively process children
+                $item['children'] = $this->attachNestedChildren($item['children'], $allItems);
+            }
+        }
+        return $tree;
     }
 }

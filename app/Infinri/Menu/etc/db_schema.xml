@@ -90,14 +90,5 @@
         </index>
     </table>
     
-    <!-- Extend CMS Page Table -->
-    <table name="cms_page">
-        <column xsi:type="boolean" name="include_in_menu" nullable="false" default="false" comment="Include in Navigation Menu"/>
-        <column xsi:type="int" name="menu_sort_order" nullable="false" default="0" comment="Position in Menu"/>
-        
-        <index referenceId="CMS_PAGE_INCLUDE_IN_MENU" indexType="btree">
-            <column name="include_in_menu"/>
-        </index>
-    </table>
     
 </schema>

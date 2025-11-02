@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\App;
 
 use Infinri\Core\App\FrontController;
+use Infinri\Core\App\Dispatcher;
 use Infinri\Core\App\FastRouter;
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
@@ -14,18 +15,18 @@ use Infinri\Core\Controller\AbstractController;
 use Psr\Container\ContainerInterface;
 use Mockery;
 
-// Test controller
+// Test controller  
 class TestController extends AbstractController
 {
     public function execute(): Response
     {
-        return $this->response->setBody('Test Response');
+        return (new Response())->setBody('Test Response');
     }
     
     public function withParam(): Response
     {
         $id = $this->request->getParam('id');
-        return $this->response->setBody("ID: {$id}");
+        return (new Response())->setBody("ID: {$id}");
     }
 }
 
@@ -56,14 +57,19 @@ describe('FrontController', function () {
         $this->container = $container;
         
         $this->router = new FastRouter();
+        $this->request = new Request();
+        
+        // Phase 3.1: Create Dispatcher for SOLID refactoring
+        $this->dispatcher = new Dispatcher($this->objectManager, $this->request);
+        
         // Mock AuthenticationMiddleware dependencies
         $rememberTokenService = Mockery::mock(\Infinri\Admin\Service\RememberTokenService::class);
         $adminUserResource = Mockery::mock(\Infinri\Admin\Model\ResourceModel\AdminUser::class);
         
         $this->frontController = new FrontController(
             $this->router,
-            $this->objectManager,
-            new Request(),
+            $this->dispatcher,
+            $this->request,
             new SecurityHeadersMiddleware(),
             new \Infinri\Core\App\Middleware\AuthenticationMiddleware($rememberTokenService, $adminUserResource)
         );
@@ -74,9 +80,10 @@ describe('FrontController', function () {
     });
     
     it('can dispatch request to controller', function () {
-        $this->router->addRoute('test', '/test', \Tests\Unit\App\TestController::class);
+        // Use /static path to bypass redirect/rewrite checks
+        $this->router->addRoute('test', '/static/test', \Tests\Unit\App\TestController::class);
         
-        $request = new Request([], [], ['REQUEST_URI' => '/test', 'REQUEST_METHOD' => 'GET']);
+        $request = new Request([], [], ['REQUEST_URI' => '/static/test', 'REQUEST_METHOD' => 'GET']);
         $response = $this->frontController->dispatch($request);
         
         expect($response->getBody())->toBe('Test Response');
@@ -92,24 +99,10 @@ describe('FrontController', function () {
     });
     
     it('passes parameters to controller', function () {
-        // Create a test controller class
-        $testControllerClass = new class {
-            public function execute(Request $request): Response {
-                // Get the 'id' parameter from the request
-                $id = $request->getParam('id', '');
-                $response = new Response();
-                return $response->setBody('ID: ' . $id);
-            }
-        };
+        // Use /static to bypass redirect/rewrite checks
+        $this->router->addRoute('item', '/static/item/:id', \Tests\Unit\App\TestController::class, 'withParam');
         
-        // Add route with anonymous class
-        $className = get_class($testControllerClass);
-        $this->router->addRoute('item', '/item/:id', $className, 'execute');
-        
-        // Register the controller in the container
-        $this->container->set($className, $testControllerClass);
-        
-        $request = new Request([], [], ['REQUEST_URI' => '/item/123', 'REQUEST_METHOD' => 'GET']);
+        $request = new Request([], [], ['REQUEST_URI' => '/static/item/123', 'REQUEST_METHOD' => 'GET']);
         $response = $this->frontController->dispatch($request);
         
         expect($response->getBody())->toBe('ID: 123');
@@ -126,9 +119,9 @@ describe('FrontController', function () {
     
     it('handles controller exceptions', function () {
         // Use a non-existent controller in Tests namespace (passes namespace check but doesn't exist)
-        $this->router->addRoute('test', '/test', 'Tests\\Unit\\App\\NonExistentController');
+        $this->router->addRoute('test', '/static/test', 'Tests\\Unit\\App\\NonExistentController');
         
-        $request = new Request([], [], ['REQUEST_URI' => '/test', 'REQUEST_METHOD' => 'GET']);
+        $request = new Request([], [], ['REQUEST_URI' => '/static/test', 'REQUEST_METHOD' => 'GET']);
         $response = $this->frontController->dispatch($request);
         
         expect($response->getStatusCode())->toBe(500);

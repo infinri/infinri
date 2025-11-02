@@ -8,32 +8,25 @@ use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
 use Infinri\Cms\Controller\Adminhtml\Media\CsrfTokenIds;
 use Infinri\Core\Security\CsrfGuard;
+use Infinri\Core\Helper\PathHelper;
+use Infinri\Core\Helper\JsonResponse;
 
 /**
  * Create New Folder
+ * 
+ * Phase 4: DRY/KISS - Uses PathHelper and JsonResponse
  */
 class Createfolder
 {
-    private string $mediaPath;
-    
     public function __construct(private readonly CsrfGuard $csrfGuard)
     {
-        $this->mediaPath = dirname(__DIR__, 6) . '/pub/media';
     }
 
     public function execute(Request $request): Response
     {
-        $response = new Response();
-
         try {
-            $response->setHeader('Content-Type', 'application/json');
-
             if (!$request->isPost() || !$this->csrfGuard->validateToken(CsrfTokenIds::CREATE_FOLDER, $request->getParam('_csrf_token'))) {
-                $response->setForbidden();
-                return $response->setBody(json_encode([
-                    'success' => false,
-                    'error' => 'Invalid CSRF token'
-                ]));
+                return JsonResponse::csrfError();
             }
 
             $parent = $request->getParam('parent', '');
@@ -46,11 +39,12 @@ class Createfolder
             // Sanitize folder name
             $name = preg_replace('/[^a-zA-Z0-9_-]/', '_', $name);
             
-            $parentPath = $this->mediaPath . ($parent ? '/' . $parent : '');
+            $mediaPath = PathHelper::getMediaPath();
+            $parentPath = $mediaPath . ($parent ? '/' . $parent : '');
             $newFolderPath = $parentPath . '/' . $name;
             
             // Security check
-            if (strpos(realpath($parentPath), realpath($this->mediaPath)) !== 0) {
+            if (strpos(realpath($parentPath), realpath($mediaPath)) !== 0) {
                 throw new \RuntimeException('Invalid parent path');
             }
             
@@ -60,19 +54,10 @@ class Createfolder
             
             mkdir($newFolderPath, 0755, true);
             
-            $response->setBody(json_encode([
-                'success' => true,
-                'folder' => $name
-            ]));
+            return JsonResponse::success(['folder' => $name]);
 
         } catch (\Throwable $e) {
-            $response->setServerError();
-            $response->setBody(json_encode([
-                'success' => false,
-                'error' => $e->getMessage()
-            ]));
+            return JsonResponse::error($e->getMessage());
         }
-
-        return $response;
     }
 }

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Infinri\Admin\Ui\Component\Listing;
 
-use Infinri\Admin\Model\ResourceModel\AdminUser;
+use Infinri\Admin\Model\Repository\AdminUserRepository;
 use Infinri\Core\Model\ObjectManager;
 
 /**
@@ -11,13 +11,6 @@ use Infinri\Core\Model\ObjectManager;
  */
 class DataProvider
 {
-    public function __construct(
-        private readonly string $name,
-        private readonly string $primaryFieldName,
-        private readonly string $requestFieldName
-    ) {
-    }
-
     /**
      * Get data for grid
      *
@@ -25,41 +18,31 @@ class DataProvider
      */
     public function getData(): array
     {
-        error_log("AdminUser DataProvider::getData() called");
-        
-        // Get AdminUser resource from ObjectManager (like CMS does with repositories)
+        // Get repository from ObjectManager
         $objectManager = ObjectManager::getInstance();
-        $adminUserResource = $objectManager->get(AdminUser::class);
+        $repository = $objectManager->get(AdminUserRepository::class);
         
-        $users = $adminUserResource->findAll();
-        error_log("Found " . count($users) . " users from database");
+        // Get all users from repository
+        $users = $repository->getAll();
         
         $items = [];
         foreach ($users as $user) {
             $items[] = [
-                'user_id' => $user['user_id'] ?? null,
-                'username' => $user['username'] ?? '',
-                'email' => $user['email'] ?? '',
-                'firstname' => $user['firstname'] ?? '',
-                'lastname' => $user['lastname'] ?? '',
-                'roles' => $this->formatRoles($user['roles'] ?? '[]'),
-                'is_active' => (bool)($user['is_active'] ?? false),
-                'last_login_at' => $user['last_login_at'] ?? null,
-                'created_at' => $user['created_at'] ?? null,
+                'user_id' => $user->getData('user_id'),
+                'username' => $user->getUsername(),
+                'email' => $user->getEmail(),
+                'firstname' => $user->getData('firstname'),
+                'lastname' => $user->getData('lastname'),
+                'roles' => implode(', ', $user->getRoles()),
+                'is_active' => (bool)$user->getData('is_active'),
+                'last_login_at' => $user->getData('last_login_at'),
+                'created_at' => $user->getData('created_at'),
             ];
         }
-        
-        error_log("Returning " . count($items) . " items to grid");
         
         return [
             'items' => $items,
             'totalRecords' => count($items),
         ];
-    }
-
-    private function formatRoles(string $rolesJson): string
-    {
-        $roles = json_decode($rolesJson, true);
-        return implode(', ', $roles ?? ['user']);
     }
 }

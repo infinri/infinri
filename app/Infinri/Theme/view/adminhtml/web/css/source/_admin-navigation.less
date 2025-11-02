@@ -105,7 +105,13 @@
     visibility: hidden;
     transform: translateX(-10px);
     transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
-    z-index: 1001; // Above sidebar
+    z-index: 9999; // Above everything including content area
+    pointer-events: none; // Prevent clicks when hidden
+    
+    // Ensure all child elements are also not clickable
+    a, span, button {
+        pointer-events: none;
+    }
     
     .admin-menu-item {
         a, span {
@@ -139,9 +145,57 @@
     opacity: 1;
     visibility: visible;
     transform: translateX(0);
+    display: block;
+    pointer-events: auto;
+    
+    // Re-enable clicks on child elements
+    a, span, button {
+        pointer-events: auto;
+    }
 }
 
-// Menu section header
+// Always-visible submenus (for section headers) - Magento style
+.admin-submenu.always-visible {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    box-shadow: none;
+    border-left: none;
+    background: transparent;
+    padding-left: 20px; // Indent items under section header
+    margin-top: 4px;
+    pointer-events: auto;
+}
+
+// Section header label (non-clickable)
+.menu-section-label {
+    display: block;
+    padding: 8px 20px;
+    font-size: 11px;
+    color: #64748b; // Muted color for section headers
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    text-align: left;
+    cursor: default; // Not clickable
+    background: rgba(255, 255, 255, 0.02);
+    margin-top: 8px;
+    
+    .menu-text {
+        text-align: left;
+    }
+}
+
+// Section header container
+.admin-menu-item.section-header {
+    > .menu-section-label:hover {
+        background: rgba(255, 255, 255, 0.02); // No hover effect
+        color: #64748b; // Keep same color
+    }
+}
+
+// Menu section header (old style - keep for compatibility)
 .admin-menu-section {
     padding: @spacing-lg @spacing-lg @spacing-sm;
     color: @gray-500;

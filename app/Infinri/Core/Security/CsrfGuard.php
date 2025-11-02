@@ -4,24 +4,37 @@ declare(strict_types=1);
 
 namespace Infinri\Core\Security;
 
+use Infinri\Core\App\Session;
+
 /**
  * Lightweight CSRF guard backed by PHP sessions.
  * Avoids external framework dependencies while keeping API compatible
  * with existing form renderer usage.
+ * 
+ * Phase 2.2: Migrated to use Session service for consistency
  */
 class CsrfGuard
 {
     private const SESSION_KEY = '_csrf_tokens';
 
+    public function __construct(
+        private readonly Session $session
+    ) {
+    }
+
     public function generateToken(string $tokenId): string
     {
-        $this->ensureSessionStarted();
+        $this->session->start();
 
         $token = bin2hex(random_bytes(32));
-        $_SESSION[self::SESSION_KEY][$tokenId] = [
+        
+        // Get existing tokens array or create new
+        $tokens = $this->session->get(self::SESSION_KEY, []);
+        $tokens[$tokenId] = [
             'value' => $token,
             'generated_at' => time(),
         ];
+        $this->session->set(self::SESSION_KEY, $tokens);
 
         return $token;
     }
@@ -32,9 +45,11 @@ class CsrfGuard
             return false;
         }
 
-        $this->ensureSessionStarted();
+        $this->session->start();
 
-        $stored = $_SESSION[self::SESSION_KEY][$tokenId] ?? null;
+        $tokens = $this->session->get(self::SESSION_KEY, []);
+        $stored = $tokens[$tokenId] ?? null;
+        
         if (!$stored) {
             return false;
         }
@@ -42,7 +57,8 @@ class CsrfGuard
         // Optional expiration (default 1 hour)
         $isExpired = ($stored['generated_at'] ?? 0) < (time() - 3600);
         if ($isExpired) {
-            unset($_SESSION[self::SESSION_KEY][$tokenId]);
+            unset($tokens[$tokenId]);
+            $this->session->set(self::SESSION_KEY, $tokens);
             return false;
         }
 
@@ -50,7 +66,8 @@ class CsrfGuard
 
         // One-time use: rotate token after successful validation
         if ($isValid) {
-            unset($_SESSION[self::SESSION_KEY][$tokenId]);
+            unset($tokens[$tokenId]);
+            $this->session->set(self::SESSION_KEY, $tokens);
         }
 
         return $isValid;
@@ -70,15 +87,5 @@ class CsrfGuard
     public function appendFieldToHtml(string $html, string $tokenId, string $fieldName = '_csrf_token'): string
     {
         return $html . $this->getHiddenField($tokenId, $fieldName);
-    }
-
-    private function ensureSessionStarted(): void
-    {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        if (!isset($_SESSION[self::SESSION_KEY])) {
-            $_SESSION[self::SESSION_KEY] = [];
-        }
     }
 }

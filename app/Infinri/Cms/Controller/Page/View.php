@@ -38,13 +38,18 @@ class View extends AbstractController
     public function execute(): Response
     {
         try {
-            // Get URL key from request path (e.g., '/about' => 'about')
-            $path = trim($this->request->getPath(), '/');
-            $urlKey = $path ?: 'home';
+            // Get URL key from request parameter (from URL rewrite) or path
+            $urlKey = $this->request->getParam('key');
+            
+            if (!$urlKey) {
+                // Fallback to path if no 'key' parameter (e.g., '/about' => 'about')
+                $path = trim($this->request->getPath(), '/');
+                $urlKey = $path ?: 'home';
+            }
             
             Logger::info('CMS: Looking up page by URL key', [
-                'path' => $path,
-                'url_key' => $urlKey
+                'url_key' => $urlKey,
+                'from_param' => $this->request->getParam('key') ? 'yes' : 'no'
             ]);
             
             // Load page by URL key
@@ -52,7 +57,7 @@ class View extends AbstractController
             
             if (!$page || !$page->getData('is_active')) {
                 // Page not found - use error handler for consistent 404 handling
-                return $this->errorHandler->handle404($this->response, $path);
+                return $this->errorHandler->handle404($this->response, $urlKey);
             }
             
             // Render page layout with page data

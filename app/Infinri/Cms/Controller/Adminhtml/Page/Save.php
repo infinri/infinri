@@ -7,6 +7,7 @@ use Infinri\Core\App\Request;
 use Infinri\Cms\Controller\Adminhtml\AbstractSaveController;
 use Infinri\Cms\Model\Repository\PageRepository;
 use Infinri\Core\Security\CsrfGuard;
+use Infinri\Core\Helper\ContentSanitizer;
 
 /**
  * Handles POST request to save page data.
@@ -15,9 +16,11 @@ class Save extends AbstractSaveController
 {
     /**
      * @param PageRepository $pageRepository
+     * @param ContentSanitizer $contentSanitizer
      */
     public function __construct(
         private readonly PageRepository $pageRepository,
+        private readonly ContentSanitizer $contentSanitizer,
         CsrfGuard $csrfGuard
     ) {
         parent::__construct($csrfGuard);
@@ -75,10 +78,18 @@ class Save extends AbstractSaveController
      */
     protected function extractEntityData(Request $request): array
     {
+        $content = $request->getParam('content', '');
+        
+        // 🔒 SECURITY: Sanitize HTML content on SAVE to prevent XSS
+        // Using 'rich' profile to allow formatting while blocking dangerous elements
+        if (!empty($content)) {
+            $content = $this->contentSanitizer->sanitize($content, 'rich');
+        }
+        
         return [
             'title' => $request->getParam('title', ''),
             'url_key' => $request->getParam('url_key', ''),
-            'content' => $request->getParam('content', ''),
+            'content' => $content, // Sanitized content
             'meta_title' => $request->getParam('meta_title', ''),
             'meta_description' => $request->getParam('meta_description', ''),
             'meta_keywords' => $request->getParam('meta_keywords', ''),

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * SEO Redirect Edit Layout
+ * Route: admin/seo/redirect/edit?id={redirect_id}
+ * Uses UI Component form (seo_redirect_form)
+ */
+-->
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <!-- Extend base admin layout (provides header, footer, navigation, CSS/JS) -->
+    <update handle="admin_1column"/>
+
+    <!-- Add UI Form (no template needed) -->
+    <referenceContainer name="content">
+        <block class="Infinri\Core\Block\UiForm" name="seo.redirect.form">
+            <arguments>
+                <argument name="component_name" xsi:type="string">seo_redirect_form</argument>
+            </arguments>
+        </block>
+    </referenceContainer>
+</layout>

@@ -52,7 +52,8 @@ class MenuItem extends AbstractModel
      */
     public function getItemId(): ?int
     {
-        return $this->getData('item_id');
+        $value = $this->getData('item_id');
+        return $value !== null ? (int)$value : null;
     }
 
     /**
@@ -73,7 +74,8 @@ class MenuItem extends AbstractModel
      */
     public function getMenuId(): ?int
     {
-        return $this->getData('menu_id');
+        $value = $this->getData('menu_id');
+        return $value !== null ? (int)$value : null;
     }
 
     /**
@@ -94,7 +96,8 @@ class MenuItem extends AbstractModel
      */
     public function getParentItemId(): ?int
     {
-        return $this->getData('parent_item_id');
+        $value = $this->getData('parent_item_id');
+        return $value !== null ? (int)$value : null;
     }
 
     /**
@@ -157,7 +160,8 @@ class MenuItem extends AbstractModel
      */
     public function getResourceId(): ?int
     {
-        return $this->getData('resource_id');
+        $value = $this->getData('resource_id');
+        return $value !== null ? (int)$value : null;
     }
 
     /**

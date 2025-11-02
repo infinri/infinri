@@ -186,6 +186,15 @@ class Loader
                 ['GET']
             );
             
+            // Explicit route for URL rewrite target (cms/page/view?key=xxx)
+            $router->addRoute(
+                'cms_page_view_rewrite',
+                '/cms/page/view',
+                $namespace . '\\Page\\View',
+                'execute',
+                ['GET']
+            );
+            
             // Catch-all for CMS pages by URL key (frontend only, not admin)
             // Use single-level pattern to avoid matching admin URLs like /admin/cms/...
             $router->addRoute(
@@ -198,7 +207,7 @@ class Loader
             
             Logger::info("RouteLoader: Registered CMS catch-all routes", [
                 'module' => $moduleName,
-                'routes' => ['/', '/*']
+                'routes' => ['/', '/cms/page/view', '/*']
             ]);
         } else {
             // Standard module route: /{routerId}/{frontName}/{controller}/{action}

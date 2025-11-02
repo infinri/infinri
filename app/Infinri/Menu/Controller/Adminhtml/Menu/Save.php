@@ -8,7 +8,7 @@ use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
 use Infinri\Menu\Model\Repository\MenuRepository;
 use Infinri\Menu\Model\Repository\MenuItemRepository;
-use Infinri\Core\Model\Message\Manager as MessageManager;
+use Infinri\Core\Model\Message\MessageManager;
 
 /**
  * Menu Save Controller
@@ -20,15 +20,11 @@ class Save
     /**
      * Constructor
      *
-     * @param Request $request
-     * @param Response $response
      * @param MenuRepository $menuRepository
      * @param MenuItemRepository $menuItemRepository
      * @param MessageManager $messageManager
      */
     public function __construct(
-        private readonly Request $request,
-        private readonly Response $response,
         private readonly MenuRepository $menuRepository,
         private readonly MenuItemRepository $menuItemRepository,
         private readonly MessageManager $messageManager
@@ -39,18 +35,15 @@ class Save
      *
      * @return Response
      */
-    public function execute(): Response
+    public function execute(Request $request): Response
     {
         try {
-            $data = $this->request->getPostParams();
-            
-            if (empty($data)) {
-                throw new \RuntimeException('No data provided');
-            }
+            // Get menu ID if editing
+            $menuId = $request->getParam('menu_id') ? (int)$request->getParam('menu_id') : null;
             
             // Create or update menu
-            if (!empty($data['menu_id'])) {
-                $menu = $this->menuRepository->getById((int)$data['menu_id']);
+            if ($menuId) {
+                $menu = $this->menuRepository->getById($menuId);
                 if (!$menu) {
                     throw new \RuntimeException('Menu not found');
                 }
@@ -58,32 +51,33 @@ class Save
                 $menu = $this->menuRepository->create();
             }
             
-            $menu->setTitle($data['title'] ?? '');
-            $menu->setIdentifier($data['identifier'] ?? '');
-            $menu->setIsActive(!empty($data['is_active']));
+            $menu->setTitle($request->getParam('title', ''));
+            $menu->setIdentifier($request->getParam('identifier', ''));
+            $menu->setIsActive(!empty($request->getParam('is_active')));
             
             $this->menuRepository->save($menu);
             
             // Process CMS page selections
-            $this->processCmsPages($menu->getMenuId(), $data['cms_pages'] ?? []);
+            $cmsPages = $request->getParam('cms_pages', []);
+            $this->processCmsPages($menu->getMenuId(), $cmsPages);
             
-            $this->messageManager->addSuccessMessage('Menu saved successfully');
+            $this->messageManager->addSuccess('Menu saved successfully');
             
             // Check if "Save & Continue"
-            if ($this->request->getParam('back') === 'continue') {
-                return $this->response->setRedirect('/admin/menu/menu/edit?id=' . $menu->getMenuId());
+            if ($request->getParam('save_and_continue')) {
+                return (new Response())->setRedirect('/admin/menu/menu/edit?id=' . $menu->getMenuId());
             }
             
-            return $this->response->setRedirect('/admin/menu/menu/index');
+            return (new Response())->setRedirect('/admin/menu/menu/index');
             
         } catch (\Exception $e) {
-            $this->messageManager->addErrorMessage('Error saving menu: ' . $e->getMessage());
+            $this->messageManager->addError('Error saving menu: ' . $e->getMessage());
             
             // Redirect back to form
-            $menuId = $data['menu_id'] ?? null;
-            $url = $menuId ? '/admin/menu/menu/edit?id=' . $menuId : '/admin/menu/menu/edit';
+            $backMenuId = $request->getParam('menu_id');
+            $url = $backMenuId ? '/admin/menu/menu/edit?id=' . $backMenuId : '/admin/menu/menu/edit';
             
-            return $this->response->setRedirect($url);
+            return (new Response())->setRedirect($url);
         }
     }
     

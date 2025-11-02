@@ -40,7 +40,7 @@ class MenuRepository implements MenuRepositoryInterface
      */
     public function getById(int $id): ?Menu
     {
-        $data = $this->resource->getById($id);
+        $data = $this->resource->load($id);
         
         if (!$data) {
             return null;
@@ -88,12 +88,11 @@ class MenuRepository implements MenuRepositoryInterface
         
         $data = $menu->getData();
         
-        if ($menu->getMenuId()) {
-            // Update existing
-            $this->resource->update($menu->getMenuId(), $data);
-        } else {
-            // Insert new
-            $id = $this->resource->insert($data);
+        // Use AbstractResource's save() method which handles both insert and update
+        $id = $this->resource->save($data);
+        
+        // Set menu ID if it's a new menu
+        if (!$menu->getMenuId()) {
             $menu->setMenuId($id);
         }
         
@@ -109,7 +108,7 @@ class MenuRepository implements MenuRepositoryInterface
             throw new \RuntimeException("Menu with ID {$menuId} does not exist");
         }
         
-        return $this->resource->delete($menuId);
+        return $this->resource->delete($menuId) > 0;
     }
 
     /**
@@ -117,6 +116,6 @@ class MenuRepository implements MenuRepositoryInterface
      */
     public function exists(int $menuId): bool
     {
-        return $this->resource->getById($menuId) !== null;
+        return $this->resource->load($menuId) !== false;
     }
 }

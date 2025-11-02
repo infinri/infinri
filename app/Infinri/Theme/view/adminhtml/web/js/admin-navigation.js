@@ -12,6 +12,7 @@
     
     function initAdminNavigation() {
         const menuItems = document.querySelectorAll('.admin-menu-item.has-children');
+        console.log('Admin Navigation: Found', menuItems.length, 'menu items with children');
         
         menuItems.forEach(function(item) {
             const header = item.querySelector('.menu-header');
@@ -37,6 +38,7 @@
     
     function toggleSubmenu(menuItem) {
         const isOpen = menuItem.classList.contains('open');
+        console.log('Toggle submenu:', menuItem, 'Currently open:', isOpen);
         
         // Close all other submenus at the same level
         const siblings = menuItem.parentElement.querySelectorAll(':scope > .admin-menu-item.has-children');

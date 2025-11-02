@@ -15,9 +15,7 @@
         initUserMenu();
         initTableCheckboxes();
         initAlertClose();
-        initFormImagePicker();
         initDeleteConfirmation();
-        initImagePickerButtons();
     });
     
     /**
@@ -126,72 +124,6 @@
     }
     
     /**
-     * Form image picker functionality
-     */
-    function initFormImagePicker() {
-        let currentTargetField = null;
-        let cursorPosition = 0;
-        
-        // Track cursor position in textareas
-        document.querySelectorAll('textarea').forEach(function(textarea) {
-            textarea.addEventListener('click', function() {
-                cursorPosition = this.selectionStart;
-            });
-            textarea.addEventListener('keyup', function() {
-                cursorPosition = this.selectionStart;
-            });
-        });
-        
-        // Global functions for onclick attributes
-        window.openImagePicker = function(fieldName) {
-            currentTargetField = document.getElementById(fieldName);
-            if (currentTargetField) {
-                cursorPosition = currentTargetField.selectionStart;
-            }
-            
-            const modal = document.getElementById('image-picker-modal');
-            const iframe = document.getElementById('image-picker-frame');
-            if (modal && iframe) {
-                iframe.src = '/admin/infinri_media/media/picker';
-                modal.style.display = 'flex';
-            }
-        };
-        
-        window.closeImagePicker = function() {
-            const modal = document.getElementById('image-picker-modal');
-            const iframe = document.getElementById('image-picker-frame');
-            if (modal) {
-                modal.style.display = 'none';
-            }
-            if (iframe) {
-                iframe.src = '';
-            }
-        };
-        
-        // Listen for image selection from iframe
-        window.addEventListener('message', function(event) {
-            if (event.data.type === 'imageSelected' && currentTargetField) {
-                const imageUrl = event.data.url;
-                const imageTag = '<img src="' + imageUrl + '" alt="Image" style="max-width: 100%;">';
-                
-                // Insert at cursor position
-                const content = currentTargetField.value;
-                const newContent = content.substring(0, cursorPosition) + imageTag + content.substring(cursorPosition);
-                currentTargetField.value = newContent;
-                
-                // Move cursor after inserted image
-                cursorPosition += imageTag.length;
-                currentTargetField.setSelectionRange(cursorPosition, cursorPosition);
-                currentTargetField.focus();
-                
-                if (window.closeImagePicker) {
-                    window.closeImagePicker();
-                }
-            }
-        });
-    }
-    
-    /**
      * Confirm delete action
      */
     window.confirmDelete = function(message) {
@@ -212,29 +144,5 @@
         });
     }
     
-    /**
-     * Initialize image picker buttons (non-onclick handlers)
-     */
-    function initImagePickerButtons() {
-        // Browse Images button
-        document.querySelectorAll('.btn-image-picker').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                const fieldName = this.getAttribute('data-field');
-                if (window.openImagePicker && typeof window.openImagePicker === 'function') {
-                    window.openImagePicker(fieldName);
-                }
-            });
-        });
-        
-        // Close button
-        const closeBtn = document.getElementById('btn-close-image-picker');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', function() {
-                if (window.closeImagePicker && typeof window.closeImagePicker === 'function') {
-                    window.closeImagePicker();
-                }
-            });
-        }
-    }
     
 })();

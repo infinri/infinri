@@ -52,8 +52,16 @@ class UiComponent extends AbstractBlock
             return '<div style="padding: 20px; border: 2px solid red;">UiComponent Error: No component_name specified in layout XML</div>';
         }
 
+        // Build params from block data (like UiForm does)
+        $params = [];
+        foreach ($this->getData() as $key => $value) {
+            if ($key !== 'component_name') {
+                $params[$key] = $value;
+            }
+        }
+
         try {
-            $html = $this->getRenderer()->render($componentName);
+            $html = $this->getRenderer()->render($componentName, $params);
             \Infinri\Core\Helper\Logger::debug('UiComponent: Rendered', [
                 'component_name' => $componentName,
                 'html_length' => strlen($html)

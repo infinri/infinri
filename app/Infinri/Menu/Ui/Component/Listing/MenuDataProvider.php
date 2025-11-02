@@ -31,9 +31,9 @@ class MenuDataProvider
     {
         $menus = $this->menuRepository->getAll();
         
-        $data = [];
+        $items = [];
         foreach ($menus as $menu) {
-            $data[] = [
+            $items[] = [
                 'menu_id' => $menu->getMenuId(),
                 'identifier' => $menu->getIdentifier(),
                 'title' => $menu->getTitle(),
@@ -43,6 +43,9 @@ class MenuDataProvider
             ];
         }
         
-        return $data;
+        return [
+            'items' => $items,
+            'totalRecords' => count($items)
+        ];
     }
 }

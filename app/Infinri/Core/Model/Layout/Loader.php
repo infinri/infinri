@@ -38,6 +38,9 @@ class Loader
      */
     public function load(string $handle): array
     {
+        // Reset area detection for each load (instance is reused across requests)
+        $this->currentArea = null;
+        
         // Check cache if available
         if ($this->isCacheEnabled()) {
             $cacheKey = $this->getCacheKey($handle);
@@ -162,11 +165,32 @@ class Loader
      */
     private function loadLayoutFile(string $modulePath, string $handle): ?SimpleXMLElement
     {
-        $layoutDirs = $this->getLayoutDirectories($modulePath);
+        // Get directories fresh for THIS call (don't rely on cached area)
+        $area = $this->request ? 
+            (str_starts_with($this->request->getPath(), '/admin') ? 'adminhtml' : 'frontend') : 
+            'adminhtml';
+            
+        $layoutDirs = [
+            $modulePath . '/view/' . $area . '/layout',  // Area-specific
+            $modulePath . '/view/base/layout',           // Base layouts
+        ];
+        
+        if ($handle === 'default') {
+            \Infinri\Core\Helper\Logger::info('Loader: Searching for default.xml', [
+                'directories' => $layoutDirs,
+                'area' => $area,
+                'path' => $this->request ? $this->request->getPath() : 'no-request'
+            ]);
+        }
         
         foreach ($layoutDirs as $dir) {
             $filePath = $dir . '/' . $handle . '.xml';
             if (file_exists($filePath)) {
+                \Infinri\Core\Helper\Logger::debug('Loader: Loading layout file', [
+                    'handle' => $handle,
+                    'file' => $filePath,
+                    'area' => $area
+                ]);
                 return $this->loadXml($filePath);
             }
         }
@@ -197,6 +221,11 @@ class Loader
         if ($this->request) {
             $path = $this->request->getPath();
             $this->currentArea = (str_starts_with($path, '/admin')) ? 'adminhtml' : 'frontend';
+            
+            \Infinri\Core\Helper\Logger::info('Loader: Detected area', [
+                'path' => $path,
+                'area' => $this->currentArea
+            ]);
         } else {
             // Fallback to adminhtml if no request (for backward compatibility with tests)
             $this->currentArea = 'adminhtml';
@@ -252,6 +281,18 @@ class Loader
             if ($xml === false) {
                 libxml_clear_errors();
                 return null;
+            }
+            
+            // Debug: Check if admin_1column.xml has the sidebar
+            if (strpos($filePath, 'admin_1column.xml') !== false) {
+                $mainContentRefs = $xml->xpath('//referenceContainer[@name="main.content"]');
+                if ($mainContentRefs) {
+                    $childCount = $mainContentRefs[0]->count();
+                    \Infinri\Core\Helper\Logger::info('Loader: Loaded admin_1column.xml', [
+                        'main.content_children' => $childCount,
+                        'has_sidebar' => count($xml->xpath('//container[@name="admin.sidebar"]')) > 0
+                    ]);
+                }
             }
 
             return $xml;

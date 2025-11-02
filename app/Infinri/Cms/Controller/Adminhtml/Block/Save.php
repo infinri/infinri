@@ -8,6 +8,7 @@ use Infinri\Core\App\Request;
 use Infinri\Cms\Controller\Adminhtml\AbstractSaveController;
 use Infinri\Cms\Model\Repository\BlockRepository;
 use Infinri\Core\Security\CsrfGuard;
+use Infinri\Core\Helper\ContentSanitizer;
 
 /**
  * Handles POST request to save block data.
@@ -16,9 +17,11 @@ class Save extends AbstractSaveController
 {
     /**
      * @param BlockRepository $blockRepository
+     * @param ContentSanitizer $contentSanitizer
      */
     public function __construct(
         private readonly BlockRepository $blockRepository,
+        private readonly ContentSanitizer $contentSanitizer,
         CsrfGuard $csrfGuard
     ) {
         parent::__construct($csrfGuard);
@@ -72,10 +75,18 @@ class Save extends AbstractSaveController
      */
     protected function extractEntityData(Request $request): array
     {
+        $content = $request->getParam('content', '');
+        
+        // 🔒 SECURITY: Sanitize HTML content on SAVE to prevent XSS
+        // Using 'rich' profile to allow formatting while blocking dangerous elements
+        if (!empty($content)) {
+            $content = $this->contentSanitizer->sanitize($content, 'rich');
+        }
+        
         return [
             'title' => $request->getParam('title', ''),
             'identifier' => $request->getParam('identifier', ''),
-            'content' => $request->getParam('content', ''),
+            'content' => $content, // Sanitized content
             'is_active' => (bool) $request->getParam('is_active', false),
         ];
     }

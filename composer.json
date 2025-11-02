@@ -11,6 +11,7 @@
             "Infinri\\Cms\\": "app/Infinri/Cms",
             "Infinri\\Core\\": "app/Infinri/Core",
             "Infinri\\Menu\\": "app/Infinri/Menu",
+            "Infinri\\Seo\\": "app/Infinri/Seo",
             "Infinri\\Theme\\": "app/Infinri/Theme"
         }
     },

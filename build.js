@@ -69,19 +69,26 @@ function compileJs(moduleName, area) {
     const jsDir = path.join(APP_DIR, moduleName, `view/${area}/web/js`);
     const baseJsDir = path.join(APP_DIR, moduleName, 'view/base/web/js');
     
+    // Files to exclude from main bundle (loaded only where needed)
+    const EXCLUDE_FILES = [
+        'image-picker-base.js',  // Base class - loaded separately with extensions
+        'picker-standalone.js',  // Only for standalone picker iframe
+        'image-picker.js'        // Only for pages with image picker widgets
+    ];
+    
     const jsFiles = [];
     
     // Add base JS files (only for non-base areas)
     if (area !== 'base' && fs.existsSync(baseJsDir)) {
         jsFiles.push(...fs.readdirSync(baseJsDir)
-            .filter(f => f.endsWith('.js'))
+            .filter(f => f.endsWith('.js') && !EXCLUDE_FILES.includes(f))
             .map(f => path.join(baseJsDir, f)));
     }
     
     // Add area-specific JS files
     if (fs.existsSync(jsDir)) {
         jsFiles.push(...fs.readdirSync(jsDir)
-            .filter(f => f.endsWith('.js'))
+            .filter(f => f.endsWith('.js') && !EXCLUDE_FILES.includes(f))
             .map(f => path.join(jsDir, f)));
     }
     
@@ -166,6 +173,36 @@ function minifyJs(jsFile) {
 }
 
 /**
+ * Copy standalone scripts (excluded from main bundle)
+ */
+function copyStandaloneScripts() {
+    console.log('\n📦 Copying standalone scripts...');
+    
+    const standaloneFiles = [
+        {
+            src: path.join(APP_DIR, 'Cms/view/adminhtml/web/js/image-picker-base.js'),
+            dest: path.join(PUB_STATIC, 'adminhtml/Cms/js/image-picker-base.js')
+        },
+        {
+            src: path.join(APP_DIR, 'Cms/view/adminhtml/web/js/picker-standalone.js'),
+            dest: path.join(PUB_STATIC, 'adminhtml/Cms/js/picker-standalone.js')
+        },
+        {
+            src: path.join(APP_DIR, 'Cms/view/adminhtml/web/js/image-picker.js'),
+            dest: path.join(PUB_STATIC, 'adminhtml/Cms/js/image-picker.js')
+        }
+    ];
+    
+    for (const file of standaloneFiles) {
+        if (fs.existsSync(file.src)) {
+            fs.mkdirSync(path.dirname(file.dest), { recursive: true });
+            fs.copyFileSync(file.src, file.dest);
+            console.log(`   ✓ Copied ${path.basename(file.src)}`);
+        }
+    }
+}
+
+/**
  * Main build process
  */
 function build() {
@@ -209,6 +246,9 @@ function build() {
         }
     }
     
+    // Copy standalone scripts (not bundled)
+    copyStandaloneScripts();
+    
     console.log('\n✅ Build complete!');
     console.log('\n📦 Output structure:');
     console.log('   pub/static/');
@@ -220,6 +260,7 @@ function build() {
             console.log(`   │   └── js/scripts.js & scripts.min.js`);
         }
     });
+    console.log('   └── standalone scripts copied separately');
 }
 
 // Run build

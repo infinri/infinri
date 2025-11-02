@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <update handle="admin_1column"/>
+    <referenceContainer name="content">
+        <block class="Infinri\Core\Block\Template" name="seo.robots">
+            <arguments>
+                <argument name="template" xsi:type="string">Infinri_Seo::robots.phtml</argument>
+            </arguments>
+        </block>
+    </referenceContainer>
+</layout>

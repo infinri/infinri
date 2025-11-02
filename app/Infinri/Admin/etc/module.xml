@@ -4,6 +4,7 @@
     <module name="Infinri_Admin" setup_version="1.0.0">
         <sequence>
             <module name="Infinri_Core"/>
+            <module name="Infinri_Theme"/>
         </sequence>
     </module>
 </config>

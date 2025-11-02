@@ -9,6 +9,13 @@ declare(strict_types=1);
 
 // Serve static files directly (for PHP built-in server or when .htaccess doesn't work)
 $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+
+// Ignore favicon requests to prevent layout pollution
+if ($requestUri === '/favicon.ico' || str_ends_with($requestUri, '/favicon.ico')) {
+    http_response_code(404);
+    exit;
+}
+
 if (preg_match('/^\/(static|media)\//', $requestUri)) {
     $filePath = __DIR__ . parse_url($requestUri, PHP_URL_PATH);
     if (file_exists($filePath) && is_file($filePath)) {

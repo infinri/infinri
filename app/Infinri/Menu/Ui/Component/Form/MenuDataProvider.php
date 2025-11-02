@@ -7,6 +7,7 @@ namespace Infinri\Menu\Ui\Component\Form;
 use Infinri\Menu\Model\Repository\MenuRepository;
 use Infinri\Menu\Model\Repository\MenuItemRepository;
 use Infinri\Cms\Model\Repository\PageRepository;
+use Infinri\Core\Helper\Logger;
 
 /**
  * Menu Form Data Provider
@@ -67,7 +68,7 @@ class MenuDataProvider
     {
         // Get all active CMS pages
         $pages = $this->pageRepository->getAll();
-        $activePagesonly = array_filter($pages, fn($page) => $page->isActive());
+        $activePages = array_filter($pages, fn($page) => $page->isActive());
         
         // Get currently selected pages for this menu (if editing)
         $selectedPages = [];
@@ -86,8 +87,8 @@ class MenuDataProvider
         
         // Build available pages array
         $cmsPages = [];
-        foreach ($activePagesonly as $page) {
-            $pageId = $page->getId();
+        foreach ($activePages as $page) {
+            $pageId = $page->getPageId();
             $cmsPages[] = [
                 'page_id' => $pageId,
                 'title' => $page->getTitle(),

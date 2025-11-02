@@ -13,6 +13,8 @@ $formIdAttr = $entityType . '-form';
 
 // Set form action based on entity type
 $formAction = match ($entityType) {
+    'menu' => '/admin/menu/menu/save',
+    'menuitem' => '/admin/menu/menuitem/save',
     'block' => '/admin/cms/block/save',
     'widget' => '/admin/cms/widget/save',
     'user' => '/admin/users/save',
@@ -21,6 +23,8 @@ $formAction = match ($entityType) {
 
 // Set primary field name based on entity type
 $primaryFieldName = $primaryField ?? match ($entityType) {
+    'menu' => 'menu_id',
+    'menuitem' => 'item_id',
     'block' => 'block_id',
     'widget' => 'widget_id',
     'user' => 'user_id',
@@ -166,18 +170,20 @@ $primaryIdValue = $data[$primaryFieldName] ?? null;
 </div>
 
 <!-- Image Picker Modal -->
-<div id="image-picker-modal"
-     style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center;">
-    <div style="background: white; width: 90%; max-width: 1200px; height: 90%; border-radius: 8px; display: flex; flex-direction: column;">
-        <div style="padding: 20px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center;">
-            <h2 style="margin: 0;">Select Image</h2>
-            <button id="btn-close-image-picker"
-                    style="background: none; border: none; font-size: 24px; cursor: pointer;">×
-            </button>
+<div id="image-picker-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>🖼️ Select Image</h2>
+            <button id="btn-close-image-picker" class="btn-close" title="Close">×</button>
         </div>
-        <iframe id="image-picker-frame" src="" style="flex: 1; border: none;"></iframe>
+        <div class="modal-body">
+            <iframe id="image-picker-frame" src=""></iframe>
+        </div>
     </div>
 </div>
 
 <!-- Form rendered within admin layout (head/body/html tags provided by layout system) -->
 <!-- JavaScript handlers in: /Theme/view/adminhtml/web/js/admin.js -->
+<!-- Image Picker - Only loaded on pages with image picker widget -->
+<script src="/static/adminhtml/Cms/js/image-picker-base.js"></script>
+<script src="/static/adminhtml/Cms/js/image-picker.js"></script>

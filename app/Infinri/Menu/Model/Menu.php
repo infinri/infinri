@@ -46,7 +46,8 @@ class Menu extends AbstractModel
      */
     public function getMenuId(): ?int
     {
-        return $this->getData('menu_id');
+        $value = $this->getData('menu_id');
+        return $value !== null ? (int)$value : null;
     }
 
     /**

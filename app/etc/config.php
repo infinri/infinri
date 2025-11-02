@@ -14,7 +14,8 @@ return [
         'Infinri_Auth' => 1,
         'Infinri_Cms' => 1,
         'Infinri_Core' => 1,
-        'Infinri_Theme' => 1,
         'Infinri_Menu' => 1,
+        'Infinri_Seo' => 1,
+        'Infinri_Theme' => 1,
     ]
 ];

@@ -34,24 +34,19 @@ class MenuItemRepository implements MenuItemRepositoryInterface
     {
         return new MenuItem($this->resource, $data);
     }
-
     /**
      * @inheritDoc
      */
     public function getById(int $id): ?MenuItem
     {
-        $data = $this->resource->getById($id);
-        
+        $data = $this->resource->load($id);
+
         if (!$data) {
             return null;
         }
-        
+
         return $this->create($data);
     }
-
-    /**
-     * @inheritDoc
-     */
     public function getByMenuId(int $menuId, bool $activeOnly = false): array
     {
         $itemsData = $this->resource->getByMenuId($menuId, $activeOnly);
@@ -98,12 +93,11 @@ class MenuItemRepository implements MenuItemRepositoryInterface
         
         $data = $menuItem->getData();
         
-        if ($menuItem->getItemId()) {
-            // Update existing
-            $this->resource->update($menuItem->getItemId(), $data);
-        } else {
-            // Insert new
-            $id = $this->resource->insert($data);
+        // Use AbstractResource's save() method which handles both insert and update
+        $id = $this->resource->save($data);
+        
+        // Set item ID if it's a new item
+        if (!$menuItem->getItemId()) {
             $menuItem->setItemId($id);
         }
         
@@ -121,7 +115,7 @@ class MenuItemRepository implements MenuItemRepositoryInterface
             throw new \RuntimeException("Menu item with ID {$itemId} does not exist");
         }
         
-        return $this->resource->delete($itemId);
+        return $this->resource->delete($itemId) > 0;
     }
 
     /**
