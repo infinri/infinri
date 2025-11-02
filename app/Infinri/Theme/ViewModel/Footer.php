@@ -6,6 +6,7 @@ namespace Infinri\Theme\ViewModel;
 
 use Infinri\Core\Model\Config\ScopeConfig;
 use Infinri\Core\Model\Url\Builder as UrlBuilder;
+use Infinri\Menu\ViewModel\Navigation as MenuNavigation;
 
 /**
  * Footer ViewModel
@@ -19,10 +20,12 @@ class Footer
      *
      * @param ScopeConfig $config Configuration reader
      * @param UrlBuilder $urlBuilder URL generator
+     * @param MenuNavigation $menuNavigation Menu navigation ViewModel
      */
     public function __construct(
         private ScopeConfig $config,
-        private UrlBuilder $urlBuilder
+        private UrlBuilder $urlBuilder,
+        private MenuNavigation $menuNavigation
     ) {}
     
     /**
@@ -39,30 +42,14 @@ class Footer
     }
     
     /**
-     * Get footer links
+     * Get footer links from Menu module
      *
-     * @return array Footer link items
+     * @return array Footer link items from database
      */
     public function getLinks(): array
     {
-        return [
-            [
-                'label' => 'Privacy Policy',
-                'url' => $this->urlBuilder->build('page/view/privacy'),
-            ],
-            [
-                'label' => 'Terms of Service',
-                'url' => $this->urlBuilder->build('page/view/terms'),
-            ],
-            [
-                'label' => 'Contact Us',
-                'url' => $this->urlBuilder->build('contact/index/index'),
-            ],
-            [
-                'label' => 'About Us',
-                'url' => $this->urlBuilder->build('page/view/about'),
-            ],
-        ];
+        // Load footer links from Menu module (replaces hardcoded links)
+        return $this->menuNavigation->getFooterNavigation();
     }
     
     /**

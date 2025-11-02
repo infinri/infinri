@@ -12,19 +12,22 @@ $currentYear = date('Y');
     <div class="footer-content">
         <?php if ($viewModel !== null): ?>
             <?php if (method_exists($viewModel, 'getLinks')): ?>
-                <?php $links = array_filter($viewModel->getLinks() ?? [], static function ($link) { return isset($link['url'], $link['label']); }); ?>
+                <?php $links = $viewModel->getLinks() ?? []; ?>
+                <?php if (!empty($links)): ?>
                 <div class="footer-links">
                     <h3 class="footer-heading">Quick Links</h3>
                     <ul class="footer-list">
                         <?php foreach ($links as $link): ?>
                             <li class="footer-item">
-                                <a href="<?= $block->escapeHtmlAttr($link['url']) ?>" class="footer-link">
-                                    <?= $block->escapeHtml($link['label']) ?>
+                                <a href="<?= $block->escapeUrl($link['url']) ?>" 
+                                   class="footer-link">
+                                    <?= $block->escapeHtml($link['title']) ?>
                                 </a>
                             </li>
                         <?php endforeach; ?>
                     </ul>
                 </div>
+                <?php endif; ?>
             <?php endif; ?>
             
             <?php if (method_exists($viewModel, 'getSocialLinks')): ?>

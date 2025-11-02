@@ -27,6 +27,7 @@
                 // Add click handler
                 header.addEventListener('click', function(e) {
                     e.preventDefault();
+                    e.stopPropagation(); // Prevent click from bubbling to document
                     toggleSubmenu(item);
                 });
             }
@@ -34,6 +35,9 @@
         
         // Open active menu items on load
         openActiveMenus();
+        
+        // Close submenus when clicking outside
+        setupClickOutsideHandler();
     }
     
     function toggleSubmenu(menuItem) {
@@ -68,6 +72,39 @@
                 }
                 parent = parent.parentElement;
             }
+        });
+    }
+    
+    function closeAllSubmenus() {
+        const openMenus = document.querySelectorAll('.admin-menu-item.has-children.open');
+        openMenus.forEach(function(menu) {
+            menu.classList.remove('open');
+        });
+    }
+    
+    function setupClickOutsideHandler() {
+        const sidebar = document.querySelector('.admin-sidebar');
+        
+        if (!sidebar) {
+            return;
+        }
+        
+        // Listen for clicks on the entire document
+        document.addEventListener('click', function(e) {
+            // Check if click is outside the sidebar
+            if (!sidebar.contains(e.target)) {
+                console.log('Click outside sidebar detected, closing all submenus');
+                closeAllSubmenus();
+            }
+        });
+        
+        // Prevent submenu clicks from closing
+        const submenus = document.querySelectorAll('.admin-submenu');
+        submenus.forEach(function(submenu) {
+            submenu.addEventListener('click', function(e) {
+                // Allow clicks inside submenu (for navigation links)
+                e.stopPropagation();
+            });
         });
     }
 })();

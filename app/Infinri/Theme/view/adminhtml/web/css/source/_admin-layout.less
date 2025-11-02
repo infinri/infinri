@@ -44,7 +44,7 @@ header.header-container {
     flex-shrink: 0;
     order: -1; // Force sidebar to be first
     position: relative; // For absolute positioned submenus
-    z-index: 10; // Below content to prevent click interference
+    z-index: 100; // Above content so submenu can fly out over content area
     
     @media (max-width: 768px) {
         position: fixed;
