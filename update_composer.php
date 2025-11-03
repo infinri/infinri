@@ -23,7 +23,7 @@ $composer['autoload-dev']['psr-4'] = ['Tests\\' => 'tests/'];
 
 // Write back with pretty print
 file_put_contents(
-    $composerFile, 
+    $composerFile,
     json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n"
 );
 

@@ -6,8 +6,6 @@ namespace Infinri\Core\Model\Di;
 use SimpleXMLElement;
 
 /**
- * DI XML Reader
- * 
  * Reads and parses di.xml files to extract dependency injection configuration.
  * Supports: preferences (interface -> implementation), type arguments, virtual types.
  */

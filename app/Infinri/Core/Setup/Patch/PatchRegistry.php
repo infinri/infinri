@@ -4,14 +4,12 @@ declare(strict_types=1);
 namespace Infinri\Core\Setup\Patch;
 
 /**
- * Patch Registry
- * 
  * Discovers and manages data patches from all modules
  */
 class PatchRegistry
 {
     private array $patches = [];
-    
+
     /**
      * Discover patches from all modules
      */
@@ -19,18 +17,18 @@ class PatchRegistry
     {
         $appDir = __DIR__ . '/../../../../';
         $modules = $this->findModules($appDir);
-        
+
         foreach ($modules as $module) {
             $patchDir = $appDir . $module . '/Setup/Patch/Data';
-            
+
             if (!is_dir($patchDir)) {
                 continue;
             }
-            
+
             $this->scanDirectory($patchDir, $module);
         }
     }
-    
+
     /**
      * Find all modules in app/Infinri
      */
@@ -38,25 +36,25 @@ class PatchRegistry
     {
         $modules = [];
         $infinriDir = $appDir . 'Infinri';
-        
+
         if (!is_dir($infinriDir)) {
             return $modules;
         }
-        
+
         foreach (scandir($infinriDir) as $item) {
             if ($item === '.' || $item === '..') {
                 continue;
             }
-            
+
             $path = $infinriDir . '/' . $item;
             if (is_dir($path)) {
                 $modules[] = 'Infinri/' . $item;
             }
         }
-        
+
         return $modules;
     }
-    
+
     /**
      * Scan directory for patch files
      */
@@ -66,17 +64,17 @@ class PatchRegistry
             if ($file === '.' || $file === '..' || !str_ends_with($file, '.php')) {
                 continue;
             }
-            
-            $className = str_replace('/', '\\', $module) 
-                . '\\Setup\\Patch\\Data\\' 
+
+            $className = str_replace('/', '\\', $module)
+                . '\\Setup\\Patch\\Data\\'
                 . basename($file, '.php');
-            
+
             if (class_exists($className) && is_subclass_of($className, DataPatchInterface::class)) {
                 $this->patches[] = $className;
             }
         }
     }
-    
+
     /**
      * Get all discovered patches
      */
@@ -84,7 +82,7 @@ class PatchRegistry
     {
         return $this->patches;
     }
-    
+
     /**
      * Sort patches by dependencies
      */
@@ -92,14 +90,14 @@ class PatchRegistry
     {
         $sorted = [];
         $visited = [];
-        
+
         foreach ($patches as $patch) {
             $this->visitPatch($patch, $patches, $sorted, $visited);
         }
-        
+
         return $sorted;
     }
-    
+
     /**
      * Visit patch and its dependencies (topological sort)
      */
@@ -108,9 +106,9 @@ class PatchRegistry
         if (isset($visited[$patch])) {
             return;
         }
-        
+
         $visited[$patch] = true;
-        
+
         // Visit dependencies first
         $dependencies = $patch::getDependencies();
         foreach ($dependencies as $dependency) {
@@ -118,7 +116,7 @@ class PatchRegistry
                 $this->visitPatch($dependency, $allPatches, $sorted, $visited);
             }
         }
-        
+
         $sorted[] = $patch;
     }
 }

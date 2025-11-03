@@ -7,8 +7,6 @@ namespace Infinri\Core\Model\Url;
 use Infinri\Core\App\Router;
 
 /**
- * URL Builder
- * 
  * Generates URLs from route names with parameters and query strings
  */
 class Builder
@@ -140,11 +138,11 @@ class Builder
     {
         $originalSecure = $this->secure;
         $this->secure = true;
-        
+
         $url = $this->absolute($path, $params, $query);
-        
+
         $this->secure = $originalSecure;
-        
+
         return $url;
     }
 

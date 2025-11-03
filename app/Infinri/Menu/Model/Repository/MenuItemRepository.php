@@ -9,8 +9,6 @@ use Infinri\Menu\Model\MenuItem;
 use Infinri\Menu\Model\ResourceModel\MenuItem as MenuItemResource;
 
 /**
- * Menu Item Repository
- * 
  * Provides CRUD operations for MenuItem entities
  */
 class MenuItemRepository implements MenuItemRepositoryInterface
@@ -34,6 +32,7 @@ class MenuItemRepository implements MenuItemRepositoryInterface
     {
         return new MenuItem($this->resource, $data);
     }
+
     /**
      * @inheritDoc
      */
@@ -47,15 +46,16 @@ class MenuItemRepository implements MenuItemRepositoryInterface
 
         return $this->create($data);
     }
+
     public function getByMenuId(int $menuId, bool $activeOnly = false): array
     {
         $itemsData = $this->resource->getByMenuId($menuId, $activeOnly);
-        
+
         $items = [];
         foreach ($itemsData as $data) {
             $items[] = $this->create($data);
         }
-        
+
         return $items;
     }
 
@@ -74,12 +74,12 @@ class MenuItemRepository implements MenuItemRepositoryInterface
     public function getChildren(int $parentItemId, bool $activeOnly = false): array
     {
         $itemsData = $this->resource->getChildren($parentItemId, $activeOnly);
-        
+
         $items = [];
         foreach ($itemsData as $data) {
             $items[] = $this->create($data);
         }
-        
+
         return $items;
     }
 
@@ -90,17 +90,17 @@ class MenuItemRepository implements MenuItemRepositoryInterface
     {
         // Validate before saving
         $menuItem->validate();
-        
+
         $data = $menuItem->getData();
-        
+
         // Use AbstractResource's save() method which handles both insert and update
         $id = $this->resource->save($data);
-        
+
         // Set item ID if it's a new item
         if (!$menuItem->getItemId()) {
             $menuItem->setItemId($id);
         }
-        
+
         return $menuItem;
     }
 
@@ -110,11 +110,11 @@ class MenuItemRepository implements MenuItemRepositoryInterface
     public function delete(int $itemId): bool
     {
         $item = $this->getById($itemId);
-        
+
         if (!$item) {
             throw new \RuntimeException("Menu item with ID {$itemId} does not exist");
         }
-        
+
         return $this->resource->delete($itemId) > 0;
     }
 

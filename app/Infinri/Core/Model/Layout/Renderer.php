@@ -6,8 +6,6 @@ namespace Infinri\Core\Model\Layout;
 use Infinri\Core\Block\AbstractBlock;
 
 /**
- * Layout Renderer
- * 
  * Renders a block tree to HTML.
  */
 class Renderer
@@ -33,11 +31,11 @@ class Renderer
     public function renderBlock(Builder $builder, string $blockName): string
     {
         $block = $builder->getBlock($blockName);
-        
+
         if ($block === null) {
             return '';
         }
-        
+
         return $block->toHtml();
     }
 }

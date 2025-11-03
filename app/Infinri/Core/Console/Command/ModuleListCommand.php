@@ -15,8 +15,6 @@ use Infinri\Core\Model\ComponentRegistrar;
 use Infinri\Core\Model\Module\ModuleReader;
 
 /**
- * Module List Command
- * 
  * Lists all registered modules
  */
 class ModuleListCommand extends Command

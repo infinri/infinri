@@ -6,8 +6,6 @@ namespace Infinri\Core\Model\Module;
 use SimpleXMLElement;
 
 /**
- * Module Reader
- * 
  * Reads and parses module.xml files to extract module metadata.
  */
 class ModuleReader
@@ -27,7 +25,7 @@ class ModuleReader
         }
 
         $xml = $this->loadXml($moduleXmlPath);
-        
+
         if ($xml === null) {
             return null;
         }
@@ -45,10 +43,10 @@ class ModuleReader
     {
         // Suppress XML errors and handle them manually
         $useInternalErrors = libxml_use_internal_errors(true);
-        
+
         try {
             $xml = simplexml_load_file($filePath);
-            
+
             if ($xml === false) {
                 // Log XML errors if needed
                 $errors = libxml_get_errors();
@@ -78,17 +76,17 @@ class ModuleReader
 
         // Get module element
         $moduleElement = $xml->module;
-        
+
         if (!$moduleElement) {
             return $data;
         }
 
         // Extract module name
-        $data['name'] = isset($moduleElement['name']) ? (string) $moduleElement['name'] : null;
+        $data['name'] = isset($moduleElement['name']) ? (string)$moduleElement['name'] : null;
 
         // Extract setup version (check if attribute exists first)
         if (isset($moduleElement['setup_version'])) {
-            $data['setup_version'] = (string) $moduleElement['setup_version'];
+            $data['setup_version'] = (string)$moduleElement['setup_version'];
         } else {
             $data['setup_version'] = '1.0.0';
         }
@@ -96,7 +94,7 @@ class ModuleReader
         // Extract module dependencies (sequence)
         if (isset($moduleElement->sequence)) {
             foreach ($moduleElement->sequence->module as $dependencyModule) {
-                $dependencyName = (string) $dependencyModule['name'];
+                $dependencyName = (string)$dependencyModule['name'];
                 if ($dependencyName) {
                     $data['sequence'][] = $dependencyName;
                 }
@@ -115,7 +113,7 @@ class ModuleReader
     public function validate(string $modulePath): bool
     {
         $data = $this->read($modulePath);
-        
+
         if ($data === null) {
             return false;
         }

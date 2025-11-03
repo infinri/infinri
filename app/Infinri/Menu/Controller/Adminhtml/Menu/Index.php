@@ -8,8 +8,6 @@ use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
 
 /**
- * Menu Grid Controller
- * 
  * Displays the menu listing grid
  */
 class Index extends AbstractAdminController

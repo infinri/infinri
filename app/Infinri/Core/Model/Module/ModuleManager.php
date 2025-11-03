@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace Infinri\Core\Model\Module;
 
 /**
- * Module Manager
- * 
  * Manages module enabled/disabled status and dependency order.
  * Reads from app/etc/config.php to determine which modules are enabled.
  */
@@ -23,7 +21,7 @@ class ModuleManager
 
     public function __construct(
         private readonly ModuleList $moduleList,
-        ?string $configPath = null
+        ?string                     $configPath = null
     ) {
         $this->configPath = $configPath ?? __DIR__ . '/../../../../etc/config.php';
     }
@@ -62,7 +60,7 @@ class ModuleManager
     public function getEnabledModuleNames(): array
     {
         $enabled = [];
-        
+
         foreach ($this->getEnabledModules() as $moduleName => $status) {
             if ($status === 1) {
                 $enabled[] = $moduleName;
@@ -81,7 +79,7 @@ class ModuleManager
     {
         $allModules = $this->moduleList->getAll();
         $enabledNames = $this->getEnabledModuleNames();
-        
+
         // Filter to only enabled modules
         $modules = array_filter(
             $allModules,
@@ -151,10 +149,11 @@ class ModuleManager
      */
     private function visitModule(
         string $moduleName,
-        array $modules,
-        array &$visited,
-        array &$sorted
-    ): void {
+        array  $modules,
+        array  &$visited,
+        array  &$sorted
+    ): void
+    {
         // Already visited
         if (isset($visited[$moduleName])) {
             return;

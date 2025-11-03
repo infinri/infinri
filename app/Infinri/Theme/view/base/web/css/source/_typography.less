@@ -1,37 +1,29 @@
-/**
- * Typography
- * Font definitions and text styles
- * 
- * Note: Google Fonts (Urbanist & Inter) are loaded in base_default.xml layout
- * via <link> tags in the HTML head for better performance.
- */
-
 // ============================================================================
 // Headings
 // ============================================================================
 
 h1, .h1 {
-    .heading(@font-size-h1);
+  .heading(@font-size-h1);
 }
 
 h2, .h2 {
-    .heading(@font-size-h2);
+  .heading(@font-size-h2);
 }
 
 h3, .h3 {
-    .heading(@font-size-h3);
+  .heading(@font-size-h3);
 }
 
 h4, .h4 {
-    .heading(@font-size-h4);
+  .heading(@font-size-h4);
 }
 
 h5, .h5 {
-    .heading(@font-size-h5);
+  .heading(@font-size-h5);
 }
 
 h6, .h6 {
-    .heading(@font-size-h6);
+  .heading(@font-size-h6);
 }
 
 // ============================================================================
@@ -39,147 +31,147 @@ h6, .h6 {
 // ============================================================================
 
 .text-muted {
-    color: @text-muted;
+  color: @text-muted;
 }
 
 .text-primary {
-    color: @primary-color;
+  color: @primary-color;
 }
 
 .text-secondary {
-    color: @secondary-color;
+  color: @secondary-color;
 }
 
 .text-success {
-    color: @success-color;
+  color: @success-color;
 }
 
 .text-danger {
-    color: @danger-color;
+  color: @danger-color;
 }
 
 .text-warning {
-    color: @warning-color;
+  color: @warning-color;
 }
 
 .text-info {
-    color: @info-color;
+  color: @info-color;
 }
 
 .text-light {
-    color: @text-light;
+  color: @text-light;
 }
 
 .text-dark {
-    color: @text-color;
+  color: @text-color;
 }
 
 // Text alignment
 .text-left {
-    text-align: left;
+  text-align: left;
 }
 
 .text-center {
-    text-align: center;
+  text-align: center;
 }
 
 .text-right {
-    text-align: right;
+  text-align: right;
 }
 
 .text-justify {
-    text-align: justify;
+  text-align: justify;
 }
 
 // Text transform
 .text-lowercase {
-    text-transform: lowercase;
+  text-transform: lowercase;
 }
 
 .text-uppercase {
-    text-transform: uppercase;
+  text-transform: uppercase;
 }
 
 .text-capitalize {
-    text-transform: capitalize;
+  text-transform: capitalize;
 }
 
 // Text decoration
 .text-underline {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .text-line-through {
-    text-decoration: line-through;
+  text-decoration: line-through;
 }
 
 .text-no-decoration {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 // Text utilities
 .text-truncate {
-    .text-truncate();
+  .text-truncate();
 }
 
 .text-break {
-    word-wrap: break-word;
-    word-break: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
 }
 
 .text-nowrap {
-    white-space: nowrap;
+  white-space: nowrap;
 }
 
 // Font weight
 .font-weight-light {
-    font-weight: @font-weight-light;
+  font-weight: @font-weight-light;
 }
 
 .font-weight-normal {
-    font-weight: @font-weight-normal;
+  font-weight: @font-weight-normal;
 }
 
 .font-weight-medium {
-    font-weight: @font-weight-medium;
+  font-weight: @font-weight-medium;
 }
 
 .font-weight-semibold {
-    font-weight: @font-weight-semibold;
+  font-weight: @font-weight-semibold;
 }
 
 .font-weight-bold {
-    font-weight: @font-weight-bold;
+  font-weight: @font-weight-bold;
 }
 
 // Font size
 .font-size-sm {
-    font-size: @font-size-sm;
+  font-size: @font-size-sm;
 }
 
 .font-size-base {
-    font-size: @font-size-base;
+  font-size: @font-size-base;
 }
 
 .font-size-lg {
-    font-size: @font-size-lg;
+  font-size: @font-size-lg;
 }
 
 .font-size-xl {
-    font-size: @font-size-xl;
+  font-size: @font-size-xl;
 }
 
 // Line height
 .line-height-sm {
-    line-height: @line-height-sm;
+  line-height: @line-height-sm;
 }
 
 .line-height-base {
-    line-height: @line-height-base;
+  line-height: @line-height-base;
 }
 
 .line-height-lg {
-    line-height: @line-height-lg;
+  line-height: @line-height-lg;
 }
 
 // ============================================================================
@@ -187,27 +179,27 @@ h6, .h6 {
 // ============================================================================
 
 .link-primary {
-    color: @primary-color;
-    
-    &:hover {
-        color: @primary-dark;
-    }
+  color: @primary-color;
+
+  &:hover {
+    color: @primary-dark;
+  }
 }
 
 .link-secondary {
-    color: @secondary-color;
-    
-    &:hover {
-        color: @secondary-dark;
-    }
+  color: @secondary-color;
+
+  &:hover {
+    color: @secondary-dark;
+  }
 }
 
 .link-muted {
-    color: @text-muted;
-    
-    &:hover {
-        color: @text-color;
-    }
+  color: @text-muted;
+
+  &:hover {
+    color: @text-color;
+  }
 }
 
 // ============================================================================
@@ -216,7 +208,7 @@ h6, .h6 {
 
 .sr-only,
 .visually-hidden {
-    .sr-only();
+  .sr-only();
 }
 
 // ============================================================================
@@ -224,20 +216,20 @@ h6, .h6 {
 // ============================================================================
 
 .list-unstyled {
-    padding-left: 0;
-    list-style: none;
+  padding-left: 0;
+  list-style: none;
 }
 
 .list-inline {
-    padding-left: 0;
-    list-style: none;
-    
-    > li {
-        display: inline-block;
-        margin-right: @spacing-sm;
-        
-        &:last-child {
-            margin-right: 0;
-        }
+  padding-left: 0;
+  list-style: none;
+
+  > li {
+    display: inline-block;
+    margin-right: @spacing-sm;
+
+    &:last-child {
+      margin-right: 0;
     }
+  }
 }

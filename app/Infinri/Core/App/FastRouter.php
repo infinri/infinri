@@ -9,8 +9,6 @@ use function FastRoute\simpleDispatcher;
 
 /**
  * FastRoute-based Router
- * 
- * Drop-in replacement for custom Router using nikic/fast-route for O(1) performance
  */
 class FastRouter implements RouterInterface
 {
@@ -18,12 +16,12 @@ class FastRouter implements RouterInterface
      * @var array<string, array<string, mixed>> Registered routes (for reference/generation)
      */
     private array $routes = [];
-    
+
     /**
      * @var Dispatcher|null Compiled FastRoute dispatcher
      */
     private ?Dispatcher $dispatcher = null;
-    
+
     /**
      * @var bool Whether routes have been modified since last compile
      */
@@ -44,8 +42,9 @@ class FastRouter implements RouterInterface
         string $path,
         string $controller,
         string $action = 'execute',
-        array $methods = ['GET', 'POST']
-    ): self {
+        array  $methods = ['GET', 'POST']
+    ): self
+    {
         $this->routes[$name] = [
             'path' => $path,
             'controller' => $controller,
@@ -53,12 +52,12 @@ class FastRouter implements RouterInterface
             'methods' => $methods,
             'specificity' => $this->calculateSpecificity($path),
         ];
-        
+
         $this->dirty = true;
-        
+
         return $this;
     }
-    
+
     /**
      * Calculate route specificity score (higher = more specific)
      * More specific routes should be matched first
@@ -69,10 +68,10 @@ class FastRouter implements RouterInterface
     private function calculateSpecificity(string $path): int
     {
         $score = 0;
-        
+
         // Split path into segments
         $segments = explode('/', trim($path, '/'));
-        
+
         foreach ($segments as $segment) {
             if ($segment === '' || $segment === '*') {
                 // Wildcard - least specific
@@ -85,10 +84,10 @@ class FastRouter implements RouterInterface
                 $score += 100;
             }
         }
-        
+
         // Prefer routes with more segments (more specific paths)
         $score += count($segments);
-        
+
         return $score;
     }
 
@@ -105,25 +104,25 @@ class FastRouter implements RouterInterface
         if ($this->dirty || $this->dispatcher === null) {
             $this->buildDispatcher();
         }
-        
+
         $routeInfo = $this->dispatcher->dispatch($method, $path);
-        
+
         switch ($routeInfo[0]) {
             case Dispatcher::FOUND:
                 $handler = $routeInfo[1];
                 $params = $routeInfo[2];
-                
+
                 return [
                     'name' => $handler['name'],
                     'controller' => $handler['controller'],
                     'action' => $handler['action'],
                     'params' => $params,
                 ];
-                
+
             case Dispatcher::METHOD_NOT_ALLOWED:
                 // Route exists but method not allowed
                 return null;
-                
+
             case Dispatcher::NOT_FOUND:
             default:
                 return null;
@@ -137,18 +136,17 @@ class FastRouter implements RouterInterface
      */
     private function buildDispatcher(): void
     {
-        // Sort routes by specificity (most specific first)
-        // This ensures more specific routes are checked before generic catch-alls
+        // Sort routes by specificity (most specific first). This ensures more specific routes are checked before generic catch-alls
         $sortedRoutes = $this->routes;
         uasort($sortedRoutes, function ($a, $b) {
             return ($b['specificity'] ?? 0) <=> ($a['specificity'] ?? 0);
         });
-        
+
         $this->dispatcher = simpleDispatcher(function (RouteCollector $r) use ($sortedRoutes) {
             foreach ($sortedRoutes as $name => $route) {
                 // Convert custom :param syntax to FastRoute {param} syntax
                 $fastRoutePath = $this->convertToFastRoutePattern($route['path']);
-                
+
                 // Register for each allowed method
                 foreach ($route['methods'] as $method) {
                     $r->addRoute($method, $fastRoutePath, [
@@ -159,13 +157,13 @@ class FastRouter implements RouterInterface
                 }
             }
         });
-        
+
         $this->dirty = false;
     }
-    
+
     /**
      * Convert custom route pattern to FastRoute pattern
-     * 
+     *
      * Custom: /product/view/:id
      * FastRoute: /product/view/{id}
      *
@@ -205,7 +203,7 @@ class FastRouter implements RouterInterface
 
         // Replace :param with actual values
         foreach ($params as $key => $value) {
-            $path = str_replace(':' . $key, (string) $value, $path);
+            $path = str_replace(':' . $key, (string)$value, $path);
         }
 
         return $path;

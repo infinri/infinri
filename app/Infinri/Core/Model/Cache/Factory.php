@@ -10,8 +10,6 @@ use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Contracts\Cache\CacheInterface;
 
 /**
- * Cache Factory
- * 
  * Creates cache instances based on configuration
  * Supports: filesystem, array (memory), apcu
  */
@@ -59,9 +57,10 @@ class Factory
      */
     public function __construct(
         ?string $basePath = null,
-        string $defaultAdapter = 'filesystem',
-        int $defaultTtl = 3600
-    ) {
+        string  $defaultAdapter = 'filesystem',
+        int     $defaultTtl = 3600
+    )
+    {
         $this->basePath = $basePath ?? dirname(__DIR__, 5);
         $this->defaultAdapter = $defaultAdapter;
         $this->defaultTtl = $defaultTtl;
@@ -79,7 +78,7 @@ class Factory
     {
         $adapter = $adapter ?? $this->defaultAdapter;
         $ttl = $ttl ?? $this->defaultTtl;
-        
+
         $cacheKey = $namespace . '_' . $adapter;
 
         if (isset($this->instances[$cacheKey])) {
@@ -100,7 +99,7 @@ class Factory
      * @param string $type Adapter type
      * @param string $namespace Namespace
      * @return CacheInterface Symfony cache adapter
-     * @throws \InvalidArgumentException If adapter type is invalid
+     * @throws \InvalidArgumentException|\Symfony\Component\Cache\Exception\CacheException If adapter type is invalid
      */
     private function createAdapter(string $type, string $namespace): CacheInterface
     {

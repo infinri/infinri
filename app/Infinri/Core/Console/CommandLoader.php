@@ -14,8 +14,6 @@ use Infinri\Core\Console\Command\ModuleStatusCommand;
 use Infinri\Core\Console\Command\SetupUpgradeCommand;
 
 /**
- * Command Loader
- * 
  * Discovers and loads console commands from all modules
  */
 class CommandLoader

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * Module Auto-Discovery
- * 
+ *
  * Automatically discovers and executes registration.php files from all modules.
  */
 

@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace Infinri\Core\Model\Cache;
 
 use Infinri\Core\Api\CacheInterface;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Contracts\Cache\CacheInterface as SymfonyCacheInterface;
 
 /**
- * Cache Pool
- * 
  * Wrapper around Symfony Cache for simplified cache operations
  */
 class Pool implements CacheInterface
@@ -48,6 +47,7 @@ class Pool implements CacheInterface
      * @param string $key Cache key
      * @param mixed $default Default value if not found
      * @return mixed Cached value or default
+     * @throws InvalidArgumentException
      */
     public function get(string $key, mixed $default = null): mixed
     {
@@ -67,6 +67,7 @@ class Pool implements CacheInterface
      * @param mixed $value Value to cache
      * @param int|null $ttl Time to live in seconds (null = use default)
      * @return bool True on success
+     * @throws InvalidArgumentException
      */
     public function set(string $key, mixed $value, ?int $ttl = null): bool
     {
@@ -87,6 +88,7 @@ class Pool implements CacheInterface
      *
      * @param string $key Cache key
      * @return bool True if exists
+     * @throws InvalidArgumentException
      */
     public function has(string $key): bool
     {
@@ -98,6 +100,7 @@ class Pool implements CacheInterface
      *
      * @param string $key Cache key
      * @return bool True on success
+     * @throws InvalidArgumentException
      */
     public function delete(string $key): bool
     {
@@ -139,6 +142,7 @@ class Pool implements CacheInterface
      * @param array $values Array of key-value pairs
      * @param int|null $ttl Time to live in seconds
      * @return bool True on success
+     * @throws InvalidArgumentException
      */
     public function setMultiple(array $values, ?int $ttl = null): bool
     {
@@ -158,6 +162,7 @@ class Pool implements CacheInterface
      *
      * @param array $keys Array of cache keys
      * @return bool True on success
+     * @throws InvalidArgumentException
      */
     public function deleteMultiple(array $keys): bool
     {

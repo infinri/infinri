@@ -1,271 +1,266 @@
-/**
- * Admin Navigation - Magento Style
- * Left sidebar navigation menu
- */
-
 .admin-navigation {
-    padding: 16px 0;
-    overflow: visible; // Allow submenus to escape
+  padding: 16px 0;
+  overflow: visible; // Allow submenus to escape
 }
 
 // Admin menu
 .admin-menu {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    overflow: visible; // Allow submenus to escape
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow: visible; // Allow submenus to escape
 }
 
 // Menu item - Magento vertical layout
 .admin-menu-item {
-    margin: 0;
-    position: relative; // For absolute submenu positioning
-    
-    a,
-    .menu-header {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 16px 12px 12px;
-        color: #94a3b8;
-        text-decoration: none;
-        font-size: 11px;
-        font-weight: 500;
-        transition: all 0.2s ease;
-        cursor: pointer;
-        position: relative;
-        min-height: 70px;
-        text-align: center;
-        
-        &:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: #ffffff;
-        }
-        
-        .menu-icon {
-            font-size: 28px;
-            margin-bottom: 8px;
-            display: block;
-            width: 100%;
-            text-align: center;
-        }
-        
-        .menu-text {
-            display: block;
-            width: 100%;
-            text-align: center;
-            line-height: 1.3;
-            font-size: 11px;
-        }
-        
-        .menu-arrow {
-            position: absolute;
-            right: 8px;
-            top: 8px;
-            font-size: 8px;
-            transition: transform 0.2s ease;
-        }
+  margin: 0;
+  position: relative; // For absolute submenu positioning
+
+  a,
+  .menu-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 12px 12px;
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    min-height: 70px;
+    text-align: center;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
     }
-    
-    // Active top-level menu item
-    &.active > a {
-        background: #2563eb;
-        color: #ffffff;
-        border-left: 3px solid #3b82f6;
+
+    .menu-icon {
+      font-size: 28px;
+      margin-bottom: 8px;
+      display: block;
+      width: 100%;
+      text-align: center;
     }
-    
-    // Active parent with children
-    &.active.has-children > .menu-header,
-    &.open > .menu-header {
-        background: rgba(37, 99, 235, 0.3);
-        color: #ffffff;
+
+    .menu-text {
+      display: block;
+      width: 100%;
+      text-align: center;
+      line-height: 1.3;
+      font-size: 11px;
     }
-    
-    // Rotate arrow when submenu is active or open (not on hover)
-    &.has-children.active .menu-arrow,
-    &.has-children.open .menu-arrow {
-        transform: rotate(-90deg); // Point right instead of down
+
+    .menu-arrow {
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      font-size: 8px;
+      transition: transform 0.2s ease;
     }
+  }
+
+  // Active top-level menu item
+  &.active > a {
+    background: #2563eb;
+    color: #ffffff;
+    border-left: 3px solid #3b82f6;
+  }
+
+  // Active parent with children
+  &.active.has-children > .menu-header,
+  &.open > .menu-header {
+    background: rgba(37, 99, 235, 0.3);
+    color: #ffffff;
+  }
+
+  // Rotate arrow when submenu is active or open (not on hover)
+  &.has-children.active .menu-arrow,
+  &.has-children.open .menu-arrow {
+    transform: rotate(-90deg); // Point right instead of down
+  }
 }
 
 // Submenu - flyout (slides left to right)
 .admin-submenu {
-    position: absolute; // Absolute to parent menu item
-    left: 100%; // Position to the right of parent
-    top: 0; // Align with top of parent
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    background: #1e293b;
-    border-left: 3px solid #2563eb;
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
-    min-width: 200px;
-    max-height: calc(100vh - 100px); // Prevent overflow
-    overflow-y: auto; // Scroll if needed
-    display: none; // Completely hidden by default
-    opacity: 0;
-    transform: translateX(-10px);
-    transition: opacity 0.2s ease, transform 0.2s ease;
-    z-index: 10000; // Above everything including content area
-    pointer-events: none; // Prevent clicks when hidden
-    
-    // Ensure all child elements are also not clickable when hidden
-    * {
-        pointer-events: none;
+  position: absolute; // Absolute to parent menu item
+  left: 100%; // Position to the right of parent
+  top: 0; // Align with top of parent
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: #1e293b;
+  border-left: 3px solid #2563eb;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+  min-width: 200px;
+  max-height: calc(100vh - 100px); // Prevent overflow
+  overflow-y: auto; // Scroll if needed
+  display: none; // Completely hidden by default
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 10000; // Above everything including content area
+  pointer-events: none; // Prevent clicks when hidden
+
+  // Ensure all child elements are also not clickable when hidden
+  * {
+    pointer-events: none;
+  }
+
+  .admin-menu-item {
+    a, span:not(.menu-section-label) {
+      display: block;
+      padding: 12px 20px;
+      font-size: 13px;
+      color: #cbd5e1;
+      text-decoration: none;
+      text-align: left;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #ffffff;
+        padding-left: 24px;
+      }
     }
-    
-    .admin-menu-item {
-        a, span:not(.menu-section-label) {
-            display: block;
-            padding: 12px 20px;
-            font-size: 13px;
-            color: #cbd5e1;
-            text-decoration: none;
-            text-align: left;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-            
-            &:hover {
-                background: rgba(255, 255, 255, 0.08);
-                color: #ffffff;
-                padding-left: 24px;
-            }
-        }
-        
-        &.active a {
-            background: rgba(37, 99, 235, 0.5);
-            color: #ffffff;
-            border-left: 3px solid #60a5fa;
-        }
+
+    &.active a {
+      background: rgba(37, 99, 235, 0.5);
+      color: #ffffff;
+      border-left: 3px solid #60a5fa;
     }
+  }
 }
 
 // Show submenu only when parent has .open or .active class (NOT on hover)
 .admin-menu-item.has-children.open > .admin-submenu,
 .admin-menu-item.has-children.active > .admin-submenu {
-    display: block; // Show the element
-    opacity: 1;
-    transform: translateX(0);
+  display: block; // Show the element
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+
+  // Re-enable clicks on all child elements
+  * {
     pointer-events: auto;
-    
-    // Re-enable clicks on all child elements
-    * {
-        pointer-events: auto;
-    }
+  }
 }
 
 // Always-visible submenus (for section headers) - Magento style
 // Higher specificity to override .admin-submenu base styles
 .admin-menu-item .admin-submenu.always-visible {
-    display: block;
-    position: static;
-    opacity: 1;
-    transform: none;
-    box-shadow: none;
-    border-left: none;
-    background: transparent;
-    padding-left: 20px; // Indent items under section header
-    margin-top: 4px;
+  display: block;
+  position: static;
+  opacity: 1;
+  transform: none;
+  box-shadow: none;
+  border-left: none;
+  background: transparent;
+  padding-left: 20px; // Indent items under section header
+  margin-top: 4px;
+  pointer-events: auto;
+
+  // All children are always clickable
+  * {
     pointer-events: auto;
-    
-    // All children are always clickable
-    * {
-        pointer-events: auto;
+  }
+
+  // Disable hover on section headers inside always-visible submenus
+  .admin-menu-item.section-header {
+    &:hover {
+      background: transparent;
     }
-    
-    // Disable hover on section headers inside always-visible submenus
-    .admin-menu-item.section-header {
-        &:hover {
-            background: transparent;
-        }
-        
-        span,
-        .menu-section-label {
-            transition: none;
-            
-            &:hover {
-                background: transparent;
-                color: #64748b;
-            }
-        }
+
+    span,
+    .menu-section-label {
+      transition: none;
+
+      &:hover {
+        background: transparent;
+        color: #64748b;
+      }
     }
+  }
 }
 
 // Section header label (non-clickable)
 // Higher specificity to override submenu item hover styles
 .admin-submenu .admin-menu-item.section-header .menu-section-label {
-    display: block;
-    padding: 8px 20px;
-    font-size: 11px;
-    color: #64748b; // Muted color for section headers
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 600;
+  display: block;
+  padding: 8px 20px;
+  font-size: 11px;
+  color: #64748b; // Muted color for section headers
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  text-align: left;
+  cursor: default; // Not clickable
+  background: transparent;
+  margin-top: 8px;
+  user-select: none; // Prevent text selection
+  transition: none;
+
+  .menu-text {
     text-align: left;
-    cursor: default; // Not clickable
+  }
+
+  // No hover effects at all
+  &:hover {
     background: transparent;
-    margin-top: 8px;
-    user-select: none; // Prevent text selection
-    transition: none;
-    
-    .menu-text {
-        text-align: left;
-    }
-    
-    // No hover effects at all
-    &:hover {
-        background: transparent;
-        color: #64748b; // Keep same color
-        padding-left: 8px; // Don't shift on hover
-        padding-right: 20px;
-    }
+    color: #64748b; // Keep same color
+    padding-left: 8px; // Don't shift on hover
+    padding-right: 20px;
+  }
 }
 
 // Section header container - higher specificity
 .admin-submenu .admin-menu-item.section-header {
-    // Disable hover effects on section header wrapper
+  // Disable hover effects on section header wrapper
+  &:hover {
+    background: transparent;
+  }
+
+  // Override any span hover styles
+  > span {
+    transition: none;
+
     &:hover {
-        background: transparent;
+      background: transparent;
+      color: #64748b;
+      padding: 8px 20px; // Keep original padding
     }
-    
-    // Override any span hover styles
-    > span {
-        transition: none;
-        
-        &:hover {
-            background: transparent;
-            color: #64748b;
-            padding: 8px 20px; // Keep original padding
-        }
-    }
+  }
 }
 
 // Menu section header (old style - keep for compatibility)
 .admin-menu-section {
-    padding: @spacing-lg @spacing-lg @spacing-sm;
-    color: @gray-500;
-    font-size: 11px;
-    font-weight: @font-weight-semibold;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  padding: @spacing-lg @spacing-lg @spacing-sm;
+  color: @gray-500;
+  font-size: 11px;
+  font-weight: @font-weight-semibold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 // Mobile menu toggle
 .admin-menu-toggle {
-    display: none;
-    position: fixed;
-    top: @spacing-md;
-    left: @spacing-md;
-    z-index: @z-index-fixed + 1;
-    background: @primary-color;
-    color: @white;
-    border: none;
-    border-radius: @border-radius;
-    padding: @spacing-sm @spacing-md;
-    cursor: pointer;
-    
-    @media (max-width: @breakpoint-md) {
-        display: block;
-    }
+  display: none;
+  position: fixed;
+  top: @spacing-md;
+  left: @spacing-md;
+  z-index: @z-index-fixed + 1;
+  background: @primary-color;
+  color: @white;
+  border: none;
+  border-radius: @border-radius;
+  padding: @spacing-sm @spacing-md;
+  cursor: pointer;
+
+  @media (max-width: @breakpoint-md) {
+    display: block;
+  }
 }

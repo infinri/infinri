@@ -20,7 +20,7 @@ class RedirectDataProvider
     public function getData(): array
     {
         $redirects = $this->redirectRepository->getAll();
-        
+
         $items = [];
         foreach ($redirects as $redirect) {
             $items[] = [
@@ -35,7 +35,7 @@ class RedirectDataProvider
                 'updated_at' => $redirect->getData('updated_at'),
             ];
         }
-        
+
         return [
             'totalRecords' => count($items),
             'items' => $items

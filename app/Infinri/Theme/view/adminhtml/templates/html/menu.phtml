@@ -1,19 +1,20 @@
 <?php
 /**
  * Admin Menu Template - Magento Style
- * 
+ *
  * @var \Infinri\Admin\Block\Menu $block
  */
 
 // Recursive function to render menu items
 // Section headers (items without URL but with children) are always expanded
-function renderMenuItem($item, $block, $level = 0) {
+function renderMenuItem($item, $block, $level = 0)
+{
     $hasChildren = $block->hasChildren($item);
     $isActive = $block->isActive($item);
     $hasUrl = !empty($item['url']);
     $isTopLevel = $level === 0;
     $isSectionHeader = !$hasUrl && $hasChildren && $level > 0;
-    
+
     $classes = ['admin-menu-item'];
     if ($isActive) $classes[] = 'active';
     if ($hasChildren) $classes[] = 'has-children';
@@ -45,7 +46,7 @@ function renderMenuItem($item, $block, $level = 0) {
                 <?php endif; ?>
             </div>
         <?php endif; ?>
-        
+
         <?php if ($hasChildren): ?>
             <!-- Always show children for section headers, otherwise use submenu behavior -->
             <ul class="admin-submenu <?= $isSectionHeader ? 'always-visible' : '' ?> <?= $isActive ? 'active' : '' ?>">

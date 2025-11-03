@@ -6,8 +6,6 @@ namespace Infinri\Core\Model\Module;
 use Infinri\Core\Model\ComponentRegistrar;
 
 /**
- * Module List
- * 
  * Provides access to registered modules and their information.
  */
 class ModuleList
@@ -19,9 +17,8 @@ class ModuleList
 
     public function __construct(
         private readonly ComponentRegistrar $componentRegistrar,
-        private readonly ModuleReader $moduleReader
-    ) {
-    }
+        private readonly ModuleReader       $moduleReader
+    ) {}
 
     /**
      * Get all registered modules with their data
@@ -78,12 +75,12 @@ class ModuleList
     private function load(): void
     {
         $this->modules = [];
-        
+
         $modulePaths = $this->componentRegistrar->getPaths(ComponentRegistrar::MODULE);
 
         foreach ($modulePaths as $moduleName => $modulePath) {
             $moduleData = $this->moduleReader->read($modulePath);
-            
+
             if ($moduleData !== null) {
                 $this->modules[$moduleName] = array_merge(
                     $moduleData,

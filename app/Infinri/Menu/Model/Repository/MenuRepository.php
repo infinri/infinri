@@ -9,8 +9,6 @@ use Infinri\Menu\Model\Menu;
 use Infinri\Menu\Model\ResourceModel\Menu as MenuResource;
 
 /**
- * Menu Repository
- * 
  * Provides CRUD operations for Menu entities
  */
 class MenuRepository implements MenuRepositoryInterface
@@ -41,11 +39,11 @@ class MenuRepository implements MenuRepositoryInterface
     public function getById(int $id): ?Menu
     {
         $data = $this->resource->load($id);
-        
+
         if (!$data) {
             return null;
         }
-        
+
         return $this->create($data);
     }
 
@@ -55,11 +53,11 @@ class MenuRepository implements MenuRepositoryInterface
     public function getByIdentifier(string $identifier): ?Menu
     {
         $data = $this->resource->getByIdentifier($identifier);
-        
+
         if (!$data) {
             return null;
         }
-        
+
         return $this->create($data);
     }
 
@@ -69,12 +67,12 @@ class MenuRepository implements MenuRepositoryInterface
     public function getAll(bool $activeOnly = false): array
     {
         $menuData = $this->resource->getAll($activeOnly);
-        
+
         $menus = [];
         foreach ($menuData as $data) {
             $menus[] = $this->create($data);
         }
-        
+
         return $menus;
     }
 
@@ -85,17 +83,17 @@ class MenuRepository implements MenuRepositoryInterface
     {
         // Validate before saving
         $menu->validate();
-        
+
         $data = $menu->getData();
-        
+
         // Use AbstractResource's save() method which handles both insert and update
         $id = $this->resource->save($data);
-        
+
         // Set menu ID if it's a new menu
         if (!$menu->getMenuId()) {
             $menu->setMenuId($id);
         }
-        
+
         return $menu;
     }
 
@@ -107,7 +105,7 @@ class MenuRepository implements MenuRepositoryInterface
         if (!$this->exists($menuId)) {
             throw new \RuntimeException("Menu with ID {$menuId} does not exist");
         }
-        
+
         return $this->resource->delete($menuId) > 0;
     }
 

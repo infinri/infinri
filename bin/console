@@ -14,13 +14,13 @@ use Infinri\Core\Console\Command\SetupUpgradeCommand;
 
 /**
  * Infinri Console Application
- * 
+ *
  * CLI tool for managing the Infinri framework
- * 
+ *
  * Usage:
  *   php bin/console [command] [options]
  *   ./bin/console [command] [options]
- * 
+ *
  * Examples:
  *   bin/console list
  *   bin/console cache:clear

@@ -6,8 +6,6 @@ namespace Infinri\Core\Model;
 use Psr\Container\ContainerInterface;
 
 /**
- * Object Manager
- *
  * This is a facade over PHP-DI container.
  */
 class ObjectManager
@@ -75,6 +73,7 @@ class ObjectManager
      * @template T
      * @param class-string<T> $className
      * @return T
+     * @throws \Psr\Container\NotFoundExceptionInterface|\Psr\Container\ContainerExceptionInterface If class not found
      */
     public function get(string $className): object
     {
@@ -88,6 +87,7 @@ class ObjectManager
      * @param class-string<T> $className
      * @param array<string, mixed> $arguments Constructor arguments
      * @return T
+     * @throws \Psr\Container\NotFoundExceptionInterface|\Psr\Container\ContainerExceptionInterface If class not found
      */
     public function create(string $className, array $arguments = []): object
     {
@@ -96,7 +96,7 @@ class ObjectManager
             if (method_exists($this->container, 'make')) {
                 return $this->container->make($className);
             }
-            
+
             // Fallback to get (which may return singleton)
             return $this->container->get($className);
         }

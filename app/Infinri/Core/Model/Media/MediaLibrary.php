@@ -5,16 +5,12 @@ declare(strict_types=1);
 namespace Infinri\Core\Model\Media;
 
 /**
- * Media Library Service
- * 
  * Handles media file operations (scanning, validation, metadata)
- * 
- * Phase 3.4: SOLID Refactoring - Extracted from Media controllers
  */
 class MediaLibrary
 {
     private const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
-    
+
     public function __construct(
         private readonly string $mediaPath,
         private readonly string $baseUrl = '/media'
@@ -26,14 +22,14 @@ class MediaLibrary
 
     /**
      * Get folders in a directory
-     * 
+     *
      * @param string $relativePath Relative path from media root
      * @return array Array of folder info
      */
     public function getFolders(string $relativePath = ''): array
     {
         $fullPath = $this->getFullPath($relativePath);
-        
+
         if (!is_dir($fullPath)) {
             return [];
         }
@@ -58,14 +54,14 @@ class MediaLibrary
 
     /**
      * Get images in a directory
-     * 
+     *
      * @param string $relativePath Relative path from media root
      * @return FileInfo[] Array of FileInfo objects
      */
     public function getImages(string $relativePath = ''): array
     {
         $fullPath = $this->getFullPath($relativePath);
-        
+
         if (!is_dir($fullPath)) {
             return [];
         }
@@ -83,7 +79,7 @@ class MediaLibrary
             }
 
             $fileInfo = $this->getFileInfo($itemPath, $relativePath);
-            
+
             if ($fileInfo && $fileInfo->isImage()) {
                 $images[] = $fileInfo;
             }
@@ -97,7 +93,7 @@ class MediaLibrary
 
     /**
      * Get file information
-     * 
+     *
      * @param string $fullPath Full filesystem path
      * @param string $relativePath Relative path from media root
      * @return FileInfo|null
@@ -109,7 +105,7 @@ class MediaLibrary
         }
 
         $extension = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
-        
+
         // Validate extension
         if (!in_array($extension, self::ALLOWED_EXTENSIONS, true)) {
             return null;
@@ -131,7 +127,7 @@ class MediaLibrary
 
     /**
      * Check if file is a valid image
-     * 
+     *
      * @param string $fullPath Full filesystem path
      * @return bool
      */
@@ -147,7 +143,7 @@ class MediaLibrary
 
     /**
      * Get full filesystem path from relative path
-     * 
+     *
      * @param string $relativePath Relative path from media root
      * @return string Full filesystem path
      */
@@ -156,16 +152,16 @@ class MediaLibrary
         if ($relativePath === '') {
             return $this->mediaPath;
         }
-        
+
         // Security: Prevent directory traversal
         $relativePath = str_replace(['../', '..\\'], '', $relativePath);
-        
+
         return $this->mediaPath . '/' . ltrim($relativePath, '/');
     }
 
     /**
      * Get base media path
-     * 
+     *
      * @return string
      */
     public function getMediaPath(): string
@@ -175,7 +171,7 @@ class MediaLibrary
 
     /**
      * Get base URL
-     * 
+     *
      * @return string
      */
     public function getBaseUrl(): string

@@ -2,8 +2,7 @@
 <layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <!-- Extend frontend default -->
     <update handle="default"/>
-    
-    <!-- Single column layout - content takes full width -->
+
     <referenceContainer name="content">
         <arguments>
             <argument name="htmlClass" xsi:type="string">column main column-full-width</argument>

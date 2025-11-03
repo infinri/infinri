@@ -12,8 +12,6 @@ use Symfony\Component\Console\Helper\Table;
 use Infinri\Core\Model\Cache\TypeList;
 
 /**
- * Cache Status Command
- * 
  * Shows status of all cache types
  */
 class CacheStatusCommand extends Command
@@ -44,8 +42,7 @@ class CacheStatusCommand extends Command
      */
     protected function configure(): void
     {
-        $this
-            ->setName('cache:status')
+        $this->setName('cache:status')
             ->setDescription('Show cache status')
             ->setHelp('Displays the status of all cache types (enabled/disabled).');
     }

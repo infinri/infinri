@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Infinri\Core\Helper;
 
 /**
- * Translation Helper
- * 
  * Provides internationalization (i18n) support
  * Simple implementation - can be extended with gettext or other libraries
  */

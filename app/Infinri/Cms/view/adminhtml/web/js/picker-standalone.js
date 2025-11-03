@@ -1,12 +1,12 @@
 /**
  * Image Picker - Standalone Implementation
- * 
+ *
  * Extends ImagePickerBase for standalone iframe usage
  * Used in: /admin/cms/media/picker
  */
-(function() {
+(function () {
     'use strict';
-    
+
     class StandalonePicker extends window.ImagePickerBase {
         /**
          * Override onInsert to send message to parent window
@@ -17,13 +17,13 @@
                     type: 'imageSelected',
                     url: this.selectedImage
                 }, '*');
-                
+
                 if (window.parent.closeImagePicker) {
                     window.parent.closeImagePicker();
                 }
             }
         }
-        
+
         /**
          * Override onCancel to close picker
          */
@@ -33,11 +33,11 @@
             }
         }
     }
-    
+
     // Initialize when DOM is ready
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const picker = new StandalonePicker();
         picker.init();
     });
-    
+
 })();

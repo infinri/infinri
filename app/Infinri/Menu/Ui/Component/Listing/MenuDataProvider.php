@@ -7,8 +7,6 @@ namespace Infinri\Menu\Ui\Component\Listing;
 use Infinri\Menu\Model\Repository\MenuRepository;
 
 /**
- * Menu Listing Data Provider
- * 
  * Provides data for the menu grid
  */
 class MenuDataProvider
@@ -30,7 +28,7 @@ class MenuDataProvider
     public function getData(): array
     {
         $menus = $this->menuRepository->getAll();
-        
+
         $items = [];
         foreach ($menus as $menu) {
             $items[] = [
@@ -42,7 +40,7 @@ class MenuDataProvider
                 'updated_at' => $menu->getUpdatedAt(),
             ];
         }
-        
+
         return [
             'items' => $items,
             'totalRecords' => count($items)

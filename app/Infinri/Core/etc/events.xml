@@ -1,100 +1,91 @@
 <?xml version="1.0"?>
-<!--
-/**
- * Core Framework Events Configuration
- * 
- * This file defines core framework events that modules can observe
- * Observers are executed in the order they are defined (within same priority)
- */
--->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:infinri:framework:Event/etc/events.xsd">
-    
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:infinri:framework:Event/etc/events.xsd">
     <!-- Module System Events -->
     <event name="module_load_before">
         <!-- Example: <observer name="log_module_load" instance="Infinri\Module\Observer\LogModuleLoad" method="execute" disabled="false"/> -->
     </event>
-    
+
     <event name="module_load_after">
         <!-- Triggered after all modules are loaded -->
     </event>
-    
+
     <!-- Configuration Events -->
     <event name="config_load_before">
         <!-- Triggered before configuration is loaded -->
     </event>
-    
+
     <event name="config_load_after">
         <!-- Triggered after configuration is loaded -->
     </event>
-    
+
     <!-- Layout Events -->
     <event name="layout_load_before">
         <!-- Triggered before layout XML is loaded -->
     </event>
-    
+
     <event name="layout_generate_blocks_before">
         <!-- Triggered before blocks are generated from layout -->
     </event>
-    
+
     <event name="layout_generate_blocks_after">
         <!-- Triggered after blocks are generated -->
     </event>
-    
+
     <!-- Block Rendering Events -->
     <event name="block_html_before">
         <!-- Triggered before a block is rendered to HTML -->
     </event>
-    
+
     <event name="block_html_after">
         <!-- Triggered after a block is rendered to HTML -->
     </event>
-    
+
     <!-- Controller Events -->
     <event name="controller_dispatch_before">
         <!-- Triggered before controller action is executed -->
     </event>
-    
+
     <event name="controller_dispatch_after">
         <!-- Triggered after controller action is executed -->
     </event>
-    
+
     <!-- Request/Response Events -->
     <event name="request_before">
         <!-- Triggered before request is processed -->
     </event>
-    
+
     <event name="response_send_before">
         <!-- Triggered before response is sent to browser -->
     </event>
-    
+
     <!-- Asset Events -->
     <event name="asset_publish_before">
         <!-- Triggered before assets are published -->
     </event>
-    
+
     <event name="asset_publish_after">
         <!-- Triggered after assets are published -->
     </event>
-    
+
     <!-- Database Events -->
     <event name="model_save_before">
         <!-- Triggered before a model is saved -->
     </event>
-    
+
     <event name="model_save_after">
         <!-- Triggered after a model is saved -->
     </event>
-    
+
     <event name="model_delete_before">
         <!-- Triggered before a model is deleted -->
     </event>
-    
+
     <event name="model_delete_after">
         <!-- Triggered after a model is deleted -->
     </event>
-    
+
     <event name="model_load_after">
         <!-- Triggered after a model is loaded from database -->
     </event>
-    
 </config>

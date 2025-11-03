@@ -6,14 +6,11 @@ namespace Infinri\Core\Model\Config;
 use Infinri\Core\Model\Config;
 use Infinri\Core\Model\Cache\Factory as CacheFactory;
 use Infinri\Core\Api\CacheInterface;
+use Psr\Cache\InvalidArgumentException;
 
 /**
- * Scope Configuration
- * 
  * Provides convenient methods for retrieving configuration values
  * with proper type casting and caching support.
- * 
- * Phase 6: Performance Optimization - Added config caching
  */
 class ScopeConfig
 {
@@ -30,7 +27,7 @@ class ScopeConfig
             $this->cache = $cacheFactory->create('config', 'filesystem', self::CACHE_TTL);
         }
     }
-    
+
     /**
      * Get configuration value as string
      *
@@ -38,6 +35,7 @@ class ScopeConfig
      * @param string $scope Scope type (default, website, store)
      * @param int $scopeId Scope ID
      * @return string|null
+     * @throws InvalidArgumentException
      */
     public function getValue(string $path, string $scope = 'default', int $scopeId = 0): ?string
     {
@@ -59,7 +57,7 @@ class ScopeConfig
         
         return $result;
     }
-    
+
     /**
      * Check if configuration path is set
      *
@@ -67,6 +65,7 @@ class ScopeConfig
      * @param string $scope Scope type
      * @param int $scopeId Scope ID
      * @return bool
+     * @throws InvalidArgumentException
      */
     public function isSetFlag(string $path, string $scope = 'default', int $scopeId = 0): bool
     {

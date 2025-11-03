@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace Infinri\Core\App;
 
 /**
- * HTTP Request
- * 
  * Wrapper for HTTP request data (GET, POST, SERVER, etc.)
  */
 class Request
@@ -95,12 +93,12 @@ class Request
     public function getPathInfo(): string
     {
         $requestUri = $this->server['REQUEST_URI'] ?? '/';
-        
+
         // Remove query string
         if (($pos = strpos($requestUri, '?')) !== false) {
             $requestUri = substr($requestUri, 0, $pos);
         }
-        
+
         return $requestUri;
     }
 
@@ -113,7 +111,7 @@ class Request
     {
         return $this->getPathInfo();
     }
-    
+
     /**
      * Get request path (alias for getUri)
      *
@@ -159,12 +157,10 @@ class Request
     {
         return $this->query[$key] ?? $this->post[$key] ?? $this->params[$key] ?? $default;
     }
-    
-    // ==================== TYPE-SAFE GETTERS (Phase 2.1) ====================
-    
+
     /**
      * Get parameter as string with automatic trimming
-     * 
+     *
      * @param string $key Parameter name
      * @param string $default Default value if not found
      * @return string Trimmed string value
@@ -174,10 +170,10 @@ class Request
         $value = $this->getParam($key, $default);
         return is_string($value) ? trim($value) : (string)$default;
     }
-    
+
     /**
      * Get parameter as integer with validation
-     * 
+     *
      * @param string $key Parameter name
      * @param int $default Default value if not found or invalid
      * @return int Validated integer
@@ -188,12 +184,12 @@ class Request
         $filtered = filter_var($value, FILTER_VALIDATE_INT);
         return $filtered !== false ? $filtered : $default;
     }
-    
+
     /**
      * Get parameter as boolean
-     * 
+     *
      * Recognizes: true/false, 1/0, "true"/"false", "yes"/"no", "on"/"off"
-     * 
+     *
      * @param string $key Parameter name
      * @param bool $default Default value if not found
      * @return bool Validated boolean
@@ -201,17 +197,17 @@ class Request
     public function getBool(string $key, bool $default = false): bool
     {
         $value = $this->getParam($key, $default);
-        
+
         if (is_bool($value)) {
             return $value;
         }
-        
+
         return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? $default;
     }
-    
+
     /**
      * Get parameter as array
-     * 
+     *
      * @param string $key Parameter name
      * @param array $default Default value if not found
      * @return array Validated array
@@ -221,10 +217,10 @@ class Request
         $value = $this->getParam($key, $default);
         return is_array($value) ? $value : $default;
     }
-    
+
     /**
      * Get parameter as validated email address
-     * 
+     *
      * @param string $key Parameter name
      * @param string|null $default Default value if not found or invalid
      * @return string|null Validated email or default
@@ -232,18 +228,18 @@ class Request
     public function getEmail(string $key, ?string $default = null): ?string
     {
         $value = $this->getParam($key, $default);
-        
+
         if ($value === null || $value === '') {
             return $default;
         }
-        
+
         $filtered = filter_var($value, FILTER_VALIDATE_EMAIL);
         return $filtered !== false ? $filtered : $default;
     }
-    
+
     /**
      * Get parameter as validated URL
-     * 
+     *
      * @param string $key Parameter name
      * @param string|null $default Default value if not found or invalid
      * @return string|null Validated URL or default
@@ -251,18 +247,18 @@ class Request
     public function getUrl(string $key, ?string $default = null): ?string
     {
         $value = $this->getParam($key, $default);
-        
+
         if ($value === null || $value === '') {
             return $default;
         }
-        
+
         $filtered = filter_var($value, FILTER_VALIDATE_URL);
         return $filtered !== false ? $filtered : $default;
     }
-    
+
     /**
      * Get parameter as float/decimal
-     * 
+     *
      * @param string $key Parameter name
      * @param float $default Default value if not found or invalid
      * @return float Validated float
@@ -333,9 +329,6 @@ class Request
 
     /**
      * Get client IP address
-     * 
-     * SECURITY: Only trusts proxy headers (X-Forwarded-For) from configured trusted proxies
-     * to prevent IP spoofing attacks
      *
      * @return string|null
      */
@@ -343,15 +336,14 @@ class Request
     {
         // Get direct connection IP (always available)
         $remoteAddr = $this->server['REMOTE_ADDR'] ?? null;
-        
+
         if (!$remoteAddr) {
             return null;
         }
-        
+
         // Get trusted proxy IPs from environment configuration
-        // Example .env: TRUSTED_PROXIES=127.0.0.1,10.0.0.0/8,172.16.0.0/12
         $trustedProxies = $this->getTrustedProxies();
-        
+
         // Only trust proxy headers if request comes from a trusted proxy
         if ($this->isFromTrustedProxy($remoteAddr, $trustedProxies)) {
             // Trust X-Forwarded-For header from proxy
@@ -363,7 +355,7 @@ class Request
                     return $clientIp;
                 }
             }
-            
+
             // Fallback to X-Real-IP if X-Forwarded-For not present
             if (isset($this->server['HTTP_X_REAL_IP'])) {
                 $clientIp = trim($this->server['HTTP_X_REAL_IP']);
@@ -372,11 +364,11 @@ class Request
                 }
             }
         }
-        
+
         // Return direct connection IP (not behind proxy or untrusted proxy)
         return $remoteAddr;
     }
-    
+
     /**
      * Get trusted proxy IPs from environment configuration
      *
@@ -385,15 +377,15 @@ class Request
     private function getTrustedProxies(): array
     {
         $proxies = $_ENV['TRUSTED_PROXIES'] ?? getenv('TRUSTED_PROXIES') ?: '';
-        
+
         if (empty($proxies)) {
             // Default: trust localhost only
             return ['127.0.0.1', '::1'];
         }
-        
+
         return array_map('trim', explode(',', $proxies));
     }
-    
+
     /**
      * Check if request is from a trusted proxy
      *
@@ -416,10 +408,10 @@ class Request
                 }
             }
         }
-        
+
         return false;
     }
-    
+
     /**
      * Check if IP is in CIDR range
      *
@@ -430,14 +422,14 @@ class Request
     private function ipInRange(string $ip, string $cidr): bool
     {
         [$subnet, $mask] = explode('/', $cidr);
-        
+
         $ipLong = ip2long($ip);
         $subnetLong = ip2long($subnet);
         $maskLong = -1 << (32 - (int)$mask);
-        
+
         return ($ipLong & $maskLong) === ($subnetLong & $maskLong);
     }
-    
+
     /**
      * Validate IP address format
      *

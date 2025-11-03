@@ -1,7 +1,7 @@
 <?php
 /**
  * Header Template
- * 
+ *
  * @var \Infinri\Core\Block\Template $block
  * @var \Infinri\Theme\ViewModel\Header $viewModel
  */
@@ -18,28 +18,28 @@ try {
     <?php if ($viewModel && method_exists($viewModel, 'getLogoUrl')): ?>
         <div class="header-container container">
             <div class="header-logo">
-                <a href="<?= $block->escapeUrl($viewModel->getLogoUrl()) ?>" 
-                   class="logo" 
+                <a href="<?= $block->escapeUrl($viewModel->getLogoUrl()) ?>"
+                   class="logo"
                    title="<?= $block->escapeHtmlAttr('Home') ?>">
-                    <img src="<?= $block->escapeUrl($viewModel->getLogo()) ?>" 
+                    <img src="<?= $block->escapeUrl($viewModel->getLogo()) ?>"
                          alt="<?= $block->escapeHtmlAttr('Infinri Logo') ?>"
                          class="logo-image">
                 </a>
             </div>
-            
+
             <nav class="header-navigation" role="navigation" aria-label="Main navigation">
-                <button class="nav-toggle" 
-                        type="button" 
+                <button class="nav-toggle"
+                        type="button"
                         aria-label="<?= $block->escapeHtmlAttr($viewModel->getMobileMenuLabel()) ?>"
                         aria-expanded="false"
                         aria-controls="main-nav">
                     <span class="nav-toggle-icon"></span>
                 </button>
-                
+
                 <ul class="nav-menu" id="main-nav">
                     <?php foreach ($viewModel->getNavigation() as $item): ?>
                         <li class="nav-item <?= $item['active'] ? 'active' : '' ?>">
-                            <a href="<?= $block->escapeUrl($item['url']) ?>" 
+                            <a href="<?= $block->escapeUrl($item['url']) ?>"
                                class="nav-link <?= $item['active'] ? 'active' : '' ?>">
                                 <?= $block->escapeHtml($item['title']) ?>
                             </a>
@@ -47,7 +47,7 @@ try {
                                 <ul class="nav-submenu">
                                     <?php foreach ($item['children'] as $child): ?>
                                         <li class="nav-subitem <?= $child['active'] ? 'active' : '' ?>">
-                                            <a href="<?= $block->escapeUrl($child['url']) ?>" 
+                                            <a href="<?= $block->escapeUrl($child['url']) ?>"
                                                class="nav-sublink <?= $child['active'] ? 'active' : '' ?>">
                                                 <?= $block->escapeHtml($child['title']) ?>
                                             </a>
@@ -59,19 +59,19 @@ try {
                     <?php endforeach; ?>
                 </ul>
             </nav>
-            
+
             <?php if ($viewModel->isSearchEnabled()): ?>
                 <div class="header-search">
-                    <form action="<?= $block->escapeUrl($viewModel->getSearchUrl()) ?>" 
-                          method="get" 
+                    <form action="<?= $block->escapeUrl($viewModel->getSearchUrl()) ?>"
+                          method="get"
                           class="search-form"
                           role="search">
-                        <input type="search" 
-                               name="q" 
-                               class="search-input" 
+                        <input type="search"
+                               name="q"
+                               class="search-input"
                                placeholder="<?= $block->escapeHtmlAttr('Search...') ?>"
                                aria-label="<?= $block->escapeHtmlAttr('Search') ?>">
-                        <button type="submit" 
+                        <button type="submit"
                                 class="search-button"
                                 aria-label="<?= $block->escapeHtmlAttr('Submit search') ?>">
                             <span class="search-icon">🔍</span>
@@ -87,7 +87,7 @@ try {
                     <span class="logo-text">Infinri</span>
                 </a>
             </div>
-            
+
             <nav class="main-navigation">
                 <ul class="nav-list">
                     <li class="nav-item"><a href="/" class="nav-link">Home</a></li>

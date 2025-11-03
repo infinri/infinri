@@ -1,28 +1,23 @@
-/**
- * Modal Styles
- * Modal dialogs and overlays
- */
-
 // ============================================================================
 // Modal Overlay
 // ============================================================================
 
 .modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: @z-index-modal-backdrop;
-    width: 100vw;
-    height: 100vh;
-    background-color: @modal-backdrop-bg;
-    opacity: 0;
-    visibility: hidden;
-    .transition(opacity, 0.3s, ease-in-out);
-    
-    &.is-open {
-        opacity: 1;
-        visibility: visible;
-    }
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: @z-index-modal-backdrop;
+  width: 100vw;
+  height: 100vh;
+  background-color: @modal-backdrop-bg;
+  opacity: 0;
+  visibility: hidden;
+  .transition(opacity, 0.3s, ease-in-out);
+
+  &.is-open {
+    opacity: 1;
+    visibility: visible;
+  }
 }
 
 // ============================================================================
@@ -30,80 +25,80 @@
 // ============================================================================
 
 .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: @z-index-modal;
-    width: 100%;
-    height: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
-    outline: 0;
-    opacity: 0;
-    visibility: hidden;
-    .transition(opacity, 0.3s, ease-in-out);
-    
-    &.is-open {
-        opacity: 1;
-        visibility: visible;
-    }
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: @z-index-modal;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  outline: 0;
+  opacity: 0;
+  visibility: hidden;
+  .transition(opacity, 0.3s, ease-in-out);
+
+  &.is-open {
+    opacity: 1;
+    visibility: visible;
+  }
 }
 
 .modal-dialog {
-    position: relative;
-    width: auto;
-    margin: @spacing-lg;
-    pointer-events: none;
-    
+  position: relative;
+  width: auto;
+  margin: @spacing-lg;
+  pointer-events: none;
+
+  .tablet-up({
+    max-width: 500px;
+    margin: @spacing-2xl auto;
+  });
+
+  &.modal-lg {
     .tablet-up({
-        max-width: 500px;
-        margin: @spacing-2xl auto;
+      max-width: 800px;
     });
-    
-    &.modal-lg {
-        .tablet-up({
-            max-width: 800px;
-        });
+  }
+
+  &.modal-xl {
+    .tablet-up({
+      max-width: 1140px;
+    });
+  }
+
+  &.modal-sm {
+    .tablet-up({
+      max-width: 300px;
+    });
+  }
+
+  &.modal-fullscreen {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    margin: 0;
+
+    .modal-content {
+      height: 100%;
+      border: 0;
+      border-radius: 0;
     }
-    
-    &.modal-xl {
-        .tablet-up({
-            max-width: 1140px;
-        });
-    }
-    
-    &.modal-sm {
-        .tablet-up({
-            max-width: 300px;
-        });
-    }
-    
-    &.modal-fullscreen {
-        width: 100%;
-        max-width: none;
-        height: 100%;
-        margin: 0;
-        
-        .modal-content {
-            height: 100%;
-            border: 0;
-            border-radius: 0;
-        }
-    }
+  }
 }
 
 .modal-content {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    pointer-events: auto;
-    background-color: @modal-bg;
-    background-clip: padding-box;
-    border: 1px solid @border-color;
-    .border-radius(@modal-border-radius);
-    .box-shadow(@shadow-xl);
-    outline: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  pointer-events: auto;
+  background-color: @modal-bg;
+  background-clip: padding-box;
+  border: 1px solid @border-color;
+  .border-radius(@modal-border-radius);
+  .box-shadow(@shadow-xl);
+  outline: 0;
 }
 
 // ============================================================================
@@ -111,41 +106,41 @@
 // ============================================================================
 
 .modal-header {
-    display: flex;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: space-between;
-    padding: @modal-padding;
-    border-bottom: 1px solid @border-color;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  padding: @modal-padding;
+  border-bottom: 1px solid @border-color;
 }
 
 .modal-title {
-    margin: 0;
-    font-size: @font-size-lg;
-    font-weight: @font-weight-semibold;
-    line-height: @line-height-base;
+  margin: 0;
+  font-size: @font-size-lg;
+  font-weight: @font-weight-semibold;
+  line-height: @line-height-base;
 }
 
 .modal-close {
-    padding: @spacing-sm;
-    margin: -@spacing-sm -@spacing-sm -@spacing-sm auto;
-    background-color: transparent;
-    border: 0;
-    font-size: @font-size-xl;
-    line-height: 1;
-    color: @text-color;
-    opacity: 0.5;
-    cursor: pointer;
-    .transition();
-    
-    &:hover {
-        opacity: 1;
-    }
-    
-    &:focus {
-        outline: 2px solid @primary-color;
-        outline-offset: 2px;
-    }
+  padding: @spacing-sm;
+  margin: -@spacing-sm -@spacing-sm -@spacing-sm auto;
+  background-color: transparent;
+  border: 0;
+  font-size: @font-size-xl;
+  line-height: 1;
+  color: @text-color;
+  opacity: 0.5;
+  cursor: pointer;
+  .transition();
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &:focus {
+    outline: 2px solid @primary-color;
+    outline-offset: 2px;
+  }
 }
 
 // ============================================================================
@@ -153,11 +148,11 @@
 // ============================================================================
 
 .modal-body {
-    position: relative;
-    flex: 1 1 auto;
-    padding: @modal-padding;
-    overflow-y: auto;
-    max-height: calc(100vh - 200px);
+  position: relative;
+  flex: 1 1 auto;
+  padding: @modal-padding;
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
 }
 
 // ============================================================================
@@ -165,18 +160,18 @@
 // ============================================================================
 
 .modal-footer {
-    display: flex;
-    flex-wrap: wrap;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: flex-end;
-    padding: (@modal-padding - @spacing-xs);
-    border-top: 1px solid @border-color;
-    gap: @spacing-sm;
-    
-    > * {
-        margin: @spacing-xs;
-    }
+  display: flex;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: flex-end;
+  padding: (@modal-padding - @spacing-xs);
+  border-top: 1px solid @border-color;
+  gap: @spacing-sm;
+
+  > * {
+    margin: @spacing-xs;
+  }
 }
 
 // ============================================================================
@@ -184,16 +179,16 @@
 // ============================================================================
 
 .modal.fade {
-    .transition(opacity, 0.15s, linear);
+  .transition(opacity, 0.15s, linear);
 }
 
 .modal.fade .modal-dialog {
-    .transition(transform, 0.3s, ease-out);
-    transform: translate(0, -50px);
+  .transition(transform, 0.3s, ease-out);
+  transform: translate(0, -50px);
 }
 
 .modal.is-open .modal-dialog {
-    transform: none;
+  transform: none;
 }
 
 // ============================================================================
@@ -201,16 +196,16 @@
 // ============================================================================
 
 .modal-dialog-scrollable {
-    height: calc(100% - (@spacing-2xl * 2));
-    
-    .modal-content {
-        max-height: 100%;
-        overflow: hidden;
-    }
-    
-    .modal-body {
-        overflow-y: auto;
-    }
+  height: calc(100% - (@spacing-2xl * 2));
+
+  .modal-content {
+    max-height: 100%;
+    overflow: hidden;
+  }
+
+  .modal-body {
+    overflow-y: auto;
+  }
 }
 
 // ============================================================================
@@ -218,7 +213,7 @@
 // ============================================================================
 
 .modal-dialog-centered {
-    display: flex;
-    align-items: center;
-    min-height: calc(100% - (@spacing-2xl * 2));
+  display: flex;
+  align-items: center;
+  min-height: calc(100% - (@spacing-2xl * 2));
 }

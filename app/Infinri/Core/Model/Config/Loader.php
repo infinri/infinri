@@ -5,10 +5,9 @@ namespace Infinri\Core\Model\Config;
 
 use Infinri\Core\Model\Module\ModuleManager;
 use Infinri\Core\Model\Cache\Pool;
+use Psr\Cache\InvalidArgumentException;
 
 /**
- * Config Loader
- * 
  * Loads and merges configuration from all enabled modules.
  * Supports caching for improved performance.
  */
@@ -30,6 +29,7 @@ class Loader
      * Load configuration from all enabled modules
      *
      * @return array<string, mixed> Merged configuration array
+     * @throws InvalidArgumentException
      */
     public function load(): array
     {
@@ -132,6 +132,7 @@ class Loader
      *
      * @param string $scope Scope type (default, website, store)
      * @return array<string, mixed>
+     * @throws InvalidArgumentException
      */
     public function loadByScope(string $scope): array
     {

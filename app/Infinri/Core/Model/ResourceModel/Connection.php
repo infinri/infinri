@@ -7,8 +7,6 @@ use PDO;
 use PDOException;
 
 /**
- * Database Connection Manager
- * 
  * Manages database connections using PDO with connection pooling
  */
 class Connection
@@ -39,13 +37,13 @@ class Connection
                 PDO::ATTR_EMULATE_PREPARES => false,
                 // Enable persistent connections for 20-50ms performance boost
                 PDO::ATTR_PERSISTENT => filter_var(
-                    $_ENV['DB_PERSISTENT'] ?? getenv('DB_PERSISTENT') ?: 'false',
+                        $_ENV['DB_PERSISTENT'] ?? getenv('DB_PERSISTENT') ?: 'false',
                     FILTER_VALIDATE_BOOLEAN
                 ),
             ],
         ], $config);
     }
-    
+
     /**
      * Get database driver name
      *
@@ -80,7 +78,7 @@ class Connection
     private function createConnection(): PDO
     {
         $dsn = $this->buildDsn();
-        
+
         $connection = new PDO(
             $dsn,
             $this->config['username'],
@@ -137,7 +135,7 @@ class Connection
     {
         return $this->getConnection()->prepare($sql);
     }
-    
+
     /**
      * Execute a SQL query
      *
@@ -148,7 +146,7 @@ class Connection
     {
         return $this->getConnection()->query($sql);
     }
-    
+
     /**
      * Execute a SQL statement
      *
@@ -159,7 +157,7 @@ class Connection
     {
         return $this->getConnection()->exec($sql);
     }
-    
+
     /**
      * Get the last inserted ID
      *
@@ -170,7 +168,7 @@ class Connection
     {
         return $this->getConnection()->lastInsertId($name);
     }
-    
+
     /**
      * Begin a transaction
      *
@@ -180,7 +178,7 @@ class Connection
     {
         return $this->getConnection()->beginTransaction();
     }
-    
+
     /**
      * Commit a transaction
      *
@@ -190,7 +188,7 @@ class Connection
     {
         return $this->getConnection()->commit();
     }
-    
+
     /**
      * Rollback a transaction
      *
@@ -200,7 +198,7 @@ class Connection
     {
         return $this->getConnection()->rollBack();
     }
-    
+
     /**
      * Check if inside a transaction
      *
@@ -210,7 +208,7 @@ class Connection
     {
         return $this->getConnection()->inTransaction();
     }
-    
+
     /**
      * Quote a string for use in a query
      *
@@ -294,7 +292,7 @@ class Connection
 
         $this->pdoQuery($sql, array_values($data));
 
-        return (int) $this->lastInsertId();
+        return (int)$this->lastInsertId();
     }
 
     /**

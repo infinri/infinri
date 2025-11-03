@@ -6,8 +6,6 @@ namespace Infinri\Core\Model\Config;
 use SimpleXMLElement;
 
 /**
- * Config Reader
- * 
  * Reads config.xml files and converts them to arrays.
  */
 class Reader

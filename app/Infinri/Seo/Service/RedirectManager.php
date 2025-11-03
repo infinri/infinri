@@ -9,29 +9,28 @@ use Infinri\Core\Model\ObjectManager;
 use Psr\Log\LoggerInterface;
 
 /**
- * Redirect Manager Service
- * 
  * Handles redirect creation, validation, and management
  */
 class RedirectManager
 {
     public function __construct(
         private RedirectRepository $redirectRepository,
-        private ObjectManager $objectManager,
-        private LoggerInterface $logger
+        private ObjectManager      $objectManager,
+        private LoggerInterface    $logger
     ) {}
 
     /**
      * Create new redirect
      */
     public function createRedirect(
-        string $fromPath,
-        string $toPath,
-        int $redirectCode = 301,
+        string  $fromPath,
+        string  $toPath,
+        int     $redirectCode = 301,
         ?string $description = null,
-        bool $isActive = true,
-        int $priority = 0
-    ): Redirect {
+        bool    $isActive = true,
+        int     $priority = 0
+    ): Redirect
+    {
         // Normalize paths
         $fromPath = $this->normalizePath($fromPath);
         $toPath = $this->normalizePath($toPath);
@@ -46,7 +45,7 @@ class RedirectManager
         $redirect->setData('priority', $priority);
 
         $this->redirectRepository->save($redirect);
-        
+
         $this->logger->info('Redirect created', [
             'from_path' => $fromPath,
             'to_path' => $toPath,
@@ -60,11 +59,12 @@ class RedirectManager
      * Update existing redirect
      */
     public function updateRedirect(
-        int $redirectId,
+        int   $redirectId,
         array $data
-    ): ?Redirect {
+    ): ?Redirect
+    {
         $redirect = $this->redirectRepository->getById($redirectId);
-        
+
         if (!$redirect) {
             return null;
         }
@@ -72,19 +72,19 @@ class RedirectManager
         if (isset($data['from_path'])) {
             $redirect->setFromPath($this->normalizePath($data['from_path']));
         }
-        
+
         if (isset($data['to_path'])) {
             $redirect->setToPath($this->normalizePath($data['to_path']));
         }
-        
+
         if (isset($data['redirect_code'])) {
             $redirect->setRedirectCode((int)$data['redirect_code']);
         }
-        
+
         if (isset($data['description'])) {
             $redirect->setDescription($data['description']);
         }
-        
+
         if (isset($data['is_active'])) {
             $redirect->setIsActive((bool)$data['is_active']);
         }
@@ -94,7 +94,7 @@ class RedirectManager
         }
 
         $this->redirectRepository->save($redirect);
-        
+
         $this->logger->info('Redirect updated', [
             'redirect_id' => $redirectId
         ]);
@@ -108,13 +108,13 @@ class RedirectManager
     public function deleteRedirect(int $redirectId): bool
     {
         $result = $this->redirectRepository->deleteById($redirectId);
-        
+
         if ($result) {
             $this->logger->info('Redirect deleted', [
                 'redirect_id' => $redirectId
             ]);
         }
-        
+
         return $result;
     }
 
@@ -150,7 +150,7 @@ class RedirectManager
         if (!empty($data['from_path']) && !empty($data['to_path'])) {
             $fromPath = $this->normalizePath($data['from_path']);
             $toPath = $this->normalizePath($data['to_path']);
-            
+
             if ($fromPath === $toPath) {
                 $errors[] = 'Cannot redirect a path to itself';
             }

@@ -1,8 +1,3 @@
-/**
- * Mixins
- * Reusable LESS mixins for common patterns
- */
-
 // Import variables so mixins can use them
 @import '_variables.less';
 
@@ -11,33 +6,33 @@
 // ============================================================================
 
 .responsive(@breakpoint, @rules) {
-    @media (min-width: @breakpoint) {
-        @rules();
-    }
+  @media (min-width: @breakpoint) {
+    @rules();
+  }
 }
 
 .responsive-max(@breakpoint, @rules) {
-    @media (max-width: (@breakpoint - 1)) {
-        @rules();
-    }
+  @media (max-width: (@breakpoint - 1)) {
+    @rules();
+  }
 }
 
 .mobile-only(@rules) {
-    @media (max-width: 767px) {
-        @rules();
-    }
+  @media (max-width: 767px) {
+    @rules();
+  }
 }
 
 .tablet-up(@rules) {
-    @media (min-width: 768px) {
-        @rules();
-    }
+  @media (min-width: 768px) {
+    @rules();
+  }
 }
 
 .desktop-up(@rules) {
-    @media (min-width: 768px) {
-        @rules();
-    }
+  @media (min-width: 768px) {
+    @rules();
+  }
 }
 
 // ============================================================================
@@ -45,32 +40,32 @@
 // ============================================================================
 
 .flex-center() {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .flex-between() {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .flex-start() {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .flex-end() {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .flex-column() {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 // ============================================================================
@@ -78,24 +73,24 @@
 // ============================================================================
 
 .heading(@size) {
-    font-family: @font-family-heading;
-    font-size: @size;
-    line-height: @line-height-heading;
-    font-weight: @font-weight-semibold;
-    margin: 0 0 @spacing-md;
+  font-family: @font-family-heading;
+  font-size: @size;
+  line-height: @line-height-heading;
+  font-weight: @font-weight-semibold;
+  margin: 0 0 @spacing-md;
 }
 
 .text-truncate() {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .text-clamp(@lines: 2) {
-    display: -webkit-box;
-    -webkit-line-clamp: @lines;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: @lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 // ============================================================================
@@ -103,20 +98,20 @@
 // ============================================================================
 
 .container() {
-    width: 100%;
-    max-width: @container-max-width;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: @container-padding;
-    padding-right: @container-padding;
+  width: 100%;
+  max-width: @container-max-width;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: @container-padding;
+  padding-right: @container-padding;
 }
 
 .clearfix() {
-    &::after {
-        content: "";
-        display: table;
-        clear: both;
-    }
+  &::after {
+    content: "";
+    display: table;
+    clear: both;
+  }
 }
 
 // ============================================================================
@@ -124,15 +119,20 @@
 // ============================================================================
 
 .box-shadow(@shadow: 0 2px 4px rgba(0, 0, 0, 0.1)) {
-    box-shadow: @shadow;
+  box-shadow: @shadow;
 }
 
-.transition(@property: all, @duration: @transition-duration, @timing: @transition-timing) {
-    transition: @property @duration @timing;
+.transition(@property: all
+,
+@duration: @transition-duration, @timing: @transition-timing
+)
+{
+  transition: @property @duration @timing
+;
 }
 
 .border-radius(@radius: 4px) {
-    border-radius: @radius;
+  border-radius: @radius;
 }
 
 // ============================================================================
@@ -140,61 +140,61 @@
 // ============================================================================
 
 .button-base() {
-    display: inline-block;
-    padding: @btn-padding-y @btn-padding-x;
-    font-weight: @btn-font-weight;
-    text-align: center;
+  display: inline-block;
+  padding: @btn-padding-y @btn-padding-x;
+  font-weight: @btn-font-weight;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  vertical-align: middle;
+  user-select: none;
+  border: 1px solid transparent;
+  border-radius: @btn-border-radius;
+  .transition(all, @transition-duration, @transition-timing);
+  cursor: pointer;
+
+  &:hover {
     text-decoration: none;
-    white-space: nowrap;
-    vertical-align: middle;
-    user-select: none;
-    border: 1px solid transparent;
-    border-radius: @btn-border-radius;
-    .transition(all, @transition-duration, @transition-timing);
-    cursor: pointer;
-    
-    &:hover {
-        text-decoration: none;
-    }
-    
-    &:focus {
-        outline: 2px solid @primary-color;
-        outline-offset: 2px;
-    }
-    
-    &:disabled {
-        opacity: 0.65;
-        cursor: not-allowed;
-    }
+  }
+
+  &:focus {
+    outline: 2px solid @primary-color;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
 }
 
 .button-variant(@bg, @border: @bg, @color: #ffffff) {
-    background-color: @bg;
-    border-color: @border;
+  background-color: @bg;
+  border-color: @border;
+  color: @color;
+
+  &:hover {
+    background-color: darken(@bg, 7.5%);
+    border-color: darken(@border, 10%);
     color: @color;
-    
-    &:hover {
-        background-color: darken(@bg, 7.5%);
-        border-color: darken(@border, 10%);
-        color: @color;
-    }
-    
-    &:active {
-        background-color: darken(@bg, 10%);
-        border-color: darken(@border, 12.5%);
-    }
+  }
+
+  &:active {
+    background-color: darken(@bg, 10%);
+    border-color: darken(@border, 12.5%);
+  }
 }
 
 .button-outline(@color) {
-    background-color: transparent;
+  background-color: transparent;
+  border-color: @color;
+  color: @color;
+
+  &:hover {
+    background-color: @color;
     border-color: @color;
-    color: @color;
-    
-    &:hover {
-        background-color: @color;
-        border-color: @color;
-        color: #ffffff;
-    }
+    color: #ffffff;
+  }
 }
 
 // ============================================================================
@@ -202,28 +202,28 @@
 // ============================================================================
 
 .form-control() {
-    display: block;
-    width: 100%;
-    padding: @input-padding-y @input-padding-x;
-    font-size: @font-size-base;
-    line-height: @line-height-base;
-    color: @text-color;
-    background-color: @white;
-    border: 1px solid @input-border-color;
-    border-radius: @input-border-radius;
-    .transition(border-color, @transition-duration, @transition-timing);
-    
-    &:focus {
-        border-color: @input-focus-color;
-        outline: 0;
-        box-shadow: 0 0 0 3px fade(@input-focus-color, 25%);
-    }
-    
-    &:disabled {
-        background-color: @gray-100;
-        opacity: 1;
-        cursor: not-allowed;
-    }
+  display: block;
+  width: 100%;
+  padding: @input-padding-y @input-padding-x;
+  font-size: @font-size-base;
+  line-height: @line-height-base;
+  color: @text-color;
+  background-color: @white;
+  border: 1px solid @input-border-color;
+  border-radius: @input-border-radius;
+  .transition(border-color, @transition-duration, @transition-timing);
+
+  &:focus {
+    border-color: @input-focus-color;
+    outline: 0;
+    box-shadow: 0 0 0 3px fade(@input-focus-color, 25%);
+  }
+
+  &:disabled {
+    background-color: @gray-100;
+    opacity: 1;
+    cursor: not-allowed;
+  }
 }
 
 // ============================================================================
@@ -231,27 +231,27 @@
 // ============================================================================
 
 .sr-only() {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .visually-hidden() {
-    .sr-only();
+  .sr-only();
 }
 
 .hide-text() {
-    font: 0/0 a;
-    color: transparent;
-    text-shadow: none;
-    background-color: transparent;
-    border: 0;
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
+  background-color: transparent;
+  border: 0;
 }
 
 // ============================================================================
@@ -259,18 +259,18 @@
 // ============================================================================
 
 .absolute-center() {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .absolute-fill() {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 
 // ============================================================================
@@ -278,21 +278,21 @@
 // ============================================================================
 
 .aspect-ratio(@width: 16, @height: 9) {
-    position: relative;
-    
-    &::before {
-        content: "";
-        display: block;
-        padding-top: (@height / @width) * 100%;
-    }
-    
-    > * {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-    }
+  position: relative;
+
+  &::before {
+    content: "";
+    display: block;
+    padding-top: (@height / @width) * 100%;
+  }
+
+  > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
 }
 
 // ============================================================================
@@ -300,8 +300,8 @@
 // ============================================================================
 
 .focus-visible() {
-    &:focus-visible {
-        outline: 2px solid @primary-color;
-        outline-offset: 2px;
-    }
+  &:focus-visible {
+    outline: 2px solid @primary-color;
+    outline-offset: 2px;
+  }
 }

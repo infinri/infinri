@@ -1,11 +1,4 @@
 <?xml version="1.0"?>
-<!--
-/**
- * SEO Redirect Edit Layout
- * Route: admin/seo/redirect/edit?id={redirect_id}
- * Uses UI Component form (seo_redirect_form)
- */
--->
 <layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <!-- Extend base admin layout (provides header, footer, navigation, CSS/JS) -->
     <update handle="admin_1column"/>

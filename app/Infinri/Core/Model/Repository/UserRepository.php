@@ -8,16 +8,13 @@ use Infinri\Core\Model\User;
 use Infinri\Core\Model\ResourceModel\User as UserResource;
 
 /**
- * User Repository
- * 
  * Repository pattern implementation for User entities
  */
 class UserRepository implements RepositoryInterface
 {
     public function __construct(
         private readonly UserResource $resource
-    ) {
-    }
+    ) {}
 
     /**
      * @inheritDoc

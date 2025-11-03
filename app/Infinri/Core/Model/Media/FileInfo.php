@@ -5,11 +5,7 @@ declare(strict_types=1);
 namespace Infinri\Core\Model\Media;
 
 /**
- * FileInfo Value Object
- * 
  * Represents file metadata
- * 
- * Phase 3.4: SOLID Refactoring - Value object for file information
  */
 class FileInfo
 {
@@ -17,32 +13,31 @@ class FileInfo
         public readonly string $name,
         public readonly string $path,
         public readonly string $url,
-        public readonly int $size,
+        public readonly int    $size,
         public readonly string $extension,
-        public readonly int $modifiedTime
-    ) {
-    }
+        public readonly int    $modifiedTime
+    ) {}
 
     /**
      * Get formatted file size
-     * 
+     *
      * @return string Human-readable size (e.g., "2.5 MB")
      */
     public function getFormattedSize(): string
     {
         $bytes = $this->size;
         $units = ['B', 'KB', 'MB', 'GB'];
-        
+
         for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
             $bytes /= 1024;
         }
-        
+
         return round($bytes, 2) . ' ' . $units[$i];
     }
 
     /**
      * Check if file is an image
-     * 
+     *
      * @return bool
      */
     public function isImage(): bool
@@ -53,7 +48,7 @@ class FileInfo
 
     /**
      * Get file data as array
-     * 
+     *
      * @return array
      */
     public function toArray(): array

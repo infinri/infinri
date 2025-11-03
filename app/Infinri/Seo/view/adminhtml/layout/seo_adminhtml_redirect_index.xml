@@ -1,15 +1,8 @@
 <?xml version="1.0"?>
-<!--
-/**
- * SEO Redirect Index Layout
- * Route: admin/seo/redirect/index
- * Uses UI Component for grid display (seo_redirect_listing)
- */
--->
 <layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <!-- Extend base admin layout (provides header, footer, navigation, CSS/JS) -->
     <update handle="admin_1column"/>
-    
+
     <!-- Add UI Component grid (no template needed) -->
     <referenceContainer name="content">
         <block class="Infinri\Core\Block\UiComponent" name="seo.redirect.grid">

@@ -7,8 +7,6 @@ namespace Infinri\Core\Helper;
 use Infinri\Core\Model\Url\Builder;
 
 /**
- * URL Helper
- * 
  * Template helper for generating URLs
  * Provides convenient functions for use in PHTML templates
  */

@@ -10,8 +10,6 @@ use Infinri\Core\Model\Module\ModuleList;
 use Infinri\Core\Model\Module\ModuleReader;
 
 /**
- * Event Configuration Reader
- * 
  * Reads events.xml from all modules and parses observer configurations
  */
 class Reader
@@ -38,12 +36,12 @@ class Reader
      */
     public function __construct(
         ?ComponentRegistrarInterface $componentRegistrar = null,
-        ?ModuleList $moduleList = null
+        ?ModuleList                  $moduleList = null
     ) {
         $this->componentRegistrar = $componentRegistrar ?? ComponentRegistrar::getInstance();
         $this->moduleList = $moduleList;
     }
-    
+
     /**
      * Get module list (lazy initialization)
      *
@@ -57,7 +55,7 @@ class Reader
                 new ModuleReader()
             );
         }
-        
+
         return $this->moduleList;
     }
 
@@ -126,14 +124,14 @@ class Reader
     {
         // Suppress XML errors for error handling
         libxml_use_internal_errors(true);
-        
+
         $xml = @simplexml_load_file($filePath);
-        
+
         if ($xml === false) {
             libxml_clear_errors();
             return [];
         }
-        
+
         libxml_clear_errors();
 
         $events = [];

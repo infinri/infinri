@@ -8,18 +8,14 @@ use Infinri\Core\Model\ResourceModel\Connection;
 use Infinri\Core\Helper\Logger;
 
 /**
- * Schema Setup
- * 
  * Processes db_schema.xml files and creates/updates database tables
- * Like Magento's declarative schema system
  */
 class SchemaSetup
 {
     public function __construct(
         private readonly Connection $connection
-    ) {
-    }
-    
+    ) {}
+
     /**
      * Get PDO connection
      *
@@ -29,27 +25,28 @@ class SchemaSetup
     {
         return $this->connection->getConnection();
     }
-    
+
     /**
      * Process module's db_schema.xml file
      *
      * @param string $moduleName
      * @param string $schemaFile
      * @return array ['created' => int, 'updated' => int]
+     * @throws \Exception
      */
     public function processModuleSchema(string $moduleName, string $schemaFile): array
     {
         // Debug: Echo directly so we can see it
         echo "\n  [SchemaSetup] Processing {$moduleName}\n";
         echo "  [SchemaSetup] File: {$schemaFile}\n";
-        
+
         Logger::info("SchemaSetup: Processing schema for {$moduleName}", [
             'file' => $schemaFile
         ]);
-        
+
         libxml_use_internal_errors(true);
         $xml = simplexml_load_file($schemaFile);
-        
+
         if ($xml === false) {
             $errors = libxml_get_errors();
             $errorMsg = "SchemaSetup: Failed to parse {$schemaFile}";
@@ -57,29 +54,29 @@ class SchemaSetup
                 $errorMsg .= "\n  - " . trim($error->message);
             }
             libxml_clear_errors();
-            
+
             Logger::warning($errorMsg);
-            file_put_contents(__DIR__ . '/../../../../var/schema_debug.log', 
-                $errorMsg . "\n", 
+            file_put_contents(__DIR__ . '/../../../../var/schema_debug.log',
+                $errorMsg . "\n",
                 FILE_APPEND
             );
             return ['created' => 0, 'updated' => 0];
         }
-        
+
         $created = 0;
         $updated = 0;
-        
+
         // Process each table definition
         echo "  [SchemaSetup] Found " . count($xml->table) . " tables in XML\n";
-        
+
         foreach ($xml->table as $tableNode) {
             $tableName = (string)$tableNode['name'];
-            
+
             $exists = $this->tableExists($tableName);
             echo "  [SchemaSetup] Table '{$tableName}' - Exists: " . ($exists ? 'YES' : 'NO') . "\n";
-            
+
             Logger::info("SchemaSetup: Table {$tableName} exists check: " . ($exists ? 'YES' : 'NO'));
-            
+
             if ($exists) {
                 Logger::debug("SchemaSetup: Table {$tableName} exists, checking for updates");
                 // TODO: Implement table update logic
@@ -90,10 +87,10 @@ class SchemaSetup
                 $created++;
             }
         }
-        
+
         return ['created' => $created, 'updated' => $updated];
     }
-    
+
     /**
      * Check if table exists
      */
@@ -105,7 +102,7 @@ class SchemaSetup
             );
             $result = $stmt->fetch(\PDO::FETCH_ASSOC);
             $exists = $result && $result['table_exists'] !== null;
-            
+
             // Debug logging
             if (!$exists) {
                 Logger::debug("SchemaSetup: Table {$tableName} check", [
@@ -113,14 +110,14 @@ class SchemaSetup
                     'exists' => $exists
                 ]);
             }
-            
+
             return $exists;
         } catch (\Exception $e) {
             Logger::warning("SchemaSetup: Error checking if table {$tableName} exists: " . $e->getMessage());
             return false;
         }
     }
-    
+
     /**
      * Create table from XML definition
      */
@@ -128,25 +125,25 @@ class SchemaSetup
     {
         $tableName = (string)$tableNode['name'];
         $comment = (string)($tableNode['comment'] ?? '');
-        
+
         $sql = "CREATE TABLE {$tableName} (\n";
-        
+
         $columns = [];
         $primaryKey = null;
         $uniqueConstraints = [];
         $foreignKeys = [];
         $indexes = [];
-        
+
         // Process columns
         foreach ($tableNode->column as $column) {
             $columnSql = $this->buildColumnDefinition($column);
             $columns[] = "  {$columnSql}";
         }
-        
+
         // Process constraints
         foreach ($tableNode->constraint as $constraint) {
             $type = (string)$constraint['type'];
-            
+
             if ($type === 'primary') {
                 $pkColumn = (string)$constraint->column['name'];
                 $primaryKey = "  PRIMARY KEY ({$pkColumn})";
@@ -160,29 +157,29 @@ class SchemaSetup
                 $refTable = (string)$constraint['referenceTable'];
                 $refColumn = (string)$constraint['referenceColumn'];
                 $onDelete = (string)($constraint['onDelete'] ?? 'NO ACTION');
-                
+
                 $foreignKeys[] = "  CONSTRAINT {$refId} FOREIGN KEY ({$column}) " .
-                                 "REFERENCES {$refTable}({$refColumn}) ON DELETE {$onDelete}";
+                    "REFERENCES {$refTable}({$refColumn}) ON DELETE {$onDelete}";
             }
         }
-        
+
         // Combine all definitions
         $allDefinitions = array_merge(
-            $columns, 
-            array_filter([$primaryKey]), 
+            $columns,
+            array_filter([$primaryKey]),
             $uniqueConstraints,
             $foreignKeys
         );
         $sql .= implode(",\n", $allDefinitions);
         $sql .= "\n)";
-        
+
         if ($comment) {
             // PostgreSQL doesn't support table comments in CREATE TABLE
             // Will add after creation
         }
-        
+
         Logger::debug("SchemaSetup: Executing SQL", ['sql' => $sql]);
-        
+
         try {
             $result = $this->connection->exec($sql);
             Logger::info("SchemaSetup: Table {$tableName} created successfully (affected rows: " . ($result === false ? '0' : $result) . ")");
@@ -191,15 +188,15 @@ class SchemaSetup
             echo "  ❌ Error creating table {$tableName}: " . $e->getMessage() . "\n";
             throw $e;
         }
-        
+
         // Create indexes
         foreach ($tableNode->index as $index) {
             $this->createIndex($tableName, $index);
         }
-        
+
         Logger::info("SchemaSetup: Table {$tableName} created successfully");
     }
-    
+
     /**
      * Build column definition SQL
      */
@@ -212,9 +209,9 @@ class SchemaSetup
         $identity = ((string)($column['identity'] ?? 'false')) === 'true';
         $length = (string)($column['length'] ?? '');
         $comment = (string)($column['comment'] ?? '');
-        
+
         // Map XML types to PostgreSQL types
-        $pgType = match($type) {
+        $pgType = match ($type) {
             'int' => 'INTEGER',
             'varchar' => $length ? "VARCHAR({$length})" : 'VARCHAR(255)',
             'text' => 'TEXT',
@@ -222,20 +219,20 @@ class SchemaSetup
             'timestamp' => 'TIMESTAMP',
             default => 'TEXT'
         };
-        
+
         $sql = "{$name} ";
-        
+
         if ($identity) {
             $sql .= "SERIAL PRIMARY KEY";
             return $sql;
         }
-        
+
         $sql .= $pgType;
-        
+
         if (!$nullable) {
             $sql .= " NOT NULL";
         }
-        
+
         if ($default) {
             if ($default === 'CURRENT_TIMESTAMP') {
                 $sql .= " DEFAULT CURRENT_TIMESTAMP";
@@ -245,10 +242,10 @@ class SchemaSetup
                 $sql .= " DEFAULT '{$default}'";
             }
         }
-        
+
         return $sql;
     }
-    
+
     /**
      * Create index
      */
@@ -257,18 +254,17 @@ class SchemaSetup
         $refId = (string)$index['referenceId'];
         $indexType = (string)($index['indexType'] ?? 'btree');
         $columnName = (string)$index->column['name'];
-        
+
         $sql = "CREATE INDEX {$refId} ON {$tableName} USING {$indexType} ({$columnName})";
-        
+
         Logger::debug("SchemaSetup: Creating index", ['sql' => $sql]);
-        
+
         try {
             $this->connection->exec($sql);
             Logger::info("SchemaSetup: Index {$refId} created successfully");
         } catch (\Exception $e) {
             Logger::error("SchemaSetup: Failed to create index {$refId}: " . $e->getMessage());
             echo "  ⚠ Warning creating index {$refId}: " . $e->getMessage() . "\n";
-            // Don't throw - indexes might already exist
         }
     }
 }

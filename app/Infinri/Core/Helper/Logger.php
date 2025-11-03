@@ -10,10 +10,6 @@ use Monolog\Handler\RotatingFileHandler;
 use Monolog\Formatter\LineFormatter;
 
 /**
- * Logger Helper
- * 
- * Provides centralized logging functionality using Monolog
- * 
  * Log files are organized by severity level:
  * - error.log: ERROR, CRITICAL, ALERT, EMERGENCY
  * - warning.log: WARNING

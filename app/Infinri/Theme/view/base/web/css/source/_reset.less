@@ -1,8 +1,3 @@
-/**
- * Reset / Normalize
- * Basic CSS reset for cross-browser consistency
- */
-
 // ============================================================================
 // Box Sizing
 // ============================================================================
@@ -10,7 +5,7 @@
 *,
 *::before,
 *::after {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 // ============================================================================
@@ -18,21 +13,21 @@
 // ============================================================================
 
 html {
-    line-height: @line-height-base;
-    -webkit-text-size-adjust: 100%;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  line-height: @line-height-base;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 body {
-    margin: 0;
-    font-family: @font-family-base;
-    font-size: @font-size-base;
-    font-weight: @font-weight-normal;
-    line-height: @line-height-base;
-    color: @text-color;
-    background-color: @body-bg;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  font-family: @font-family-base;
+  font-size: @font-size-base;
+  font-weight: @font-weight-normal;
+  line-height: @line-height-base;
+  color: @text-color;
+  background-color: @body-bg;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 // ============================================================================
@@ -40,15 +35,15 @@ body {
 // ============================================================================
 
 hr {
-    margin: @spacing-lg 0;
-    color: @border-color;
-    background-color: currentColor;
-    border: 0;
-    opacity: 0.25;
-    
-    &:not([size]) {
-        height: 1px;
-    }
+  margin: @spacing-lg 0;
+  color: @border-color;
+  background-color: currentColor;
+  border: 0;
+  opacity: 0.25;
+
+  &:not([size]) {
+    height: 1px;
+  }
 }
 
 // ============================================================================
@@ -56,84 +51,84 @@ hr {
 // ============================================================================
 
 h1, h2, h3, h4, h5, h6 {
-    margin-top: 0;
-    margin-bottom: @spacing-md;
-    font-weight: @font-weight-semibold;
-    line-height: @line-height-heading;
+  margin-top: 0;
+  margin-bottom: @spacing-md;
+  font-weight: @font-weight-semibold;
+  line-height: @line-height-heading;
 }
 
 p {
-    margin-top: 0;
-    margin-bottom: @spacing-md;
+  margin-top: 0;
+  margin-bottom: @spacing-md;
 }
 
 abbr[title] {
-    text-decoration: underline dotted;
-    cursor: help;
-    text-decoration-skip-ink: none;
+  text-decoration: underline dotted;
+  cursor: help;
+  text-decoration-skip-ink: none;
 }
 
 address {
-    margin-bottom: @spacing-md;
-    font-style: normal;
-    line-height: inherit;
+  margin-bottom: @spacing-md;
+  font-style: normal;
+  line-height: inherit;
 }
 
 ol,
 ul {
-    padding-left: 2rem;
-    margin-top: 0;
-    margin-bottom: @spacing-md;
+  padding-left: 2rem;
+  margin-top: 0;
+  margin-bottom: @spacing-md;
 }
 
 ol ol,
 ul ul,
 ol ul,
 ul ol {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 dt {
-    font-weight: @font-weight-bold;
+  font-weight: @font-weight-bold;
 }
 
 dd {
-    margin-bottom: @spacing-sm;
-    margin-left: 0;
+  margin-bottom: @spacing-sm;
+  margin-left: 0;
 }
 
 blockquote {
-    margin: 0 0 @spacing-md;
+  margin: 0 0 @spacing-md;
 }
 
 b,
 strong {
-    font-weight: @font-weight-bold;
+  font-weight: @font-weight-bold;
 }
 
 small {
-    font-size: @font-size-sm;
+  font-size: @font-size-sm;
 }
 
 mark {
-    padding: 0.2em;
-    background-color: #fcf8e3;
+  padding: 0.2em;
+  background-color: #fcf8e3;
 }
 
 sub,
 sup {
-    position: relative;
-    font-size: 0.75em;
-    line-height: 0;
-    vertical-align: baseline;
+  position: relative;
+  font-size: 0.75em;
+  line-height: 0;
+  vertical-align: baseline;
 }
 
 sub {
-    bottom: -0.25em;
+  bottom: -0.25em;
 }
 
 sup {
-    top: -0.5em;
+  top: -0.5em;
 }
 
 // ============================================================================
@@ -141,26 +136,26 @@ sup {
 // ============================================================================
 
 a {
-    color: @primary-color;
-    text-decoration: none;
-    
-    &:hover {
-        color: @primary-dark;
-        text-decoration: underline;
-    }
-    
-    &:focus-visible {
-        outline: 2px solid @primary-color;
-        outline-offset: 2px;
-    }
+  color: @primary-color;
+  text-decoration: none;
+
+  &:hover {
+    color: @primary-dark;
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid @primary-color;
+    outline-offset: 2px;
+  }
 }
 
 a:not([href]):not([class]) {
-    &,
-    &:hover {
-        color: inherit;
-        text-decoration: none;
-    }
+  &,
+  &:hover {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 
 // ============================================================================
@@ -171,34 +166,34 @@ pre,
 code,
 kbd,
 samp {
-    font-family: @font-family-monospace;
-    font-size: 1em;
+  font-family: @font-family-monospace;
+  font-size: 1em;
 }
 
 pre {
-    display: block;
-    margin-top: 0;
-    margin-bottom: @spacing-md;
-    overflow: auto;
-    font-size: @font-size-sm;
+  display: block;
+  margin-top: 0;
+  margin-bottom: @spacing-md;
+  overflow: auto;
+  font-size: @font-size-sm;
 }
 
 code {
-    font-size: @font-size-sm;
-    color: @danger-color;
-    word-wrap: break-word;
+  font-size: @font-size-sm;
+  color: @danger-color;
+  word-wrap: break-word;
 }
 
 a > code {
-    color: inherit;
+  color: inherit;
 }
 
 kbd {
-    padding: 0.2rem 0.4rem;
-    font-size: @font-size-sm;
-    color: @white;
-    background-color: @gray-900;
-    border-radius: @border-radius-sm;
+  padding: 0.2rem 0.4rem;
+  font-size: @font-size-sm;
+  color: @white;
+  background-color: @gray-900;
+  border-radius: @border-radius-sm;
 }
 
 // ============================================================================
@@ -206,17 +201,17 @@ kbd {
 // ============================================================================
 
 figure {
-    margin: 0 0 @spacing-md;
+  margin: 0 0 @spacing-md;
 }
 
 img,
 svg {
-    vertical-align: middle;
+  vertical-align: middle;
 }
 
 img {
-    max-width: 100%;
-    height: auto;
+  max-width: 100%;
+  height: auto;
 }
 
 // ============================================================================
@@ -224,20 +219,20 @@ img {
 // ============================================================================
 
 table {
-    caption-side: bottom;
-    border-collapse: collapse;
+  caption-side: bottom;
+  border-collapse: collapse;
 }
 
 caption {
-    padding-top: @spacing-sm;
-    padding-bottom: @spacing-sm;
-    color: @text-muted;
-    text-align: left;
+  padding-top: @spacing-sm;
+  padding-bottom: @spacing-sm;
+  color: @text-muted;
+  text-align: left;
 }
 
 th {
-    text-align: inherit;
-    text-align: -webkit-match-parent;
+  text-align: inherit;
+  text-align: -webkit-match-parent;
 }
 
 thead,
@@ -246,9 +241,9 @@ tfoot,
 tr,
 td,
 th {
-    border-color: inherit;
-    border-style: solid;
-    border-width: 0;
+  border-color: inherit;
+  border-style: solid;
+  border-width: 0;
 }
 
 // ============================================================================
@@ -256,16 +251,16 @@ th {
 // ============================================================================
 
 label {
-    display: inline-block;
-    margin-bottom: @spacing-xs;
+  display: inline-block;
+  margin-bottom: @spacing-xs;
 }
 
 button {
-    border-radius: 0;
+  border-radius: 0;
 }
 
 button:focus:not(:focus-visible) {
-    outline: 0;
+  outline: 0;
 }
 
 input,
@@ -273,68 +268,68 @@ button,
 select,
 optgroup,
 textarea {
-    margin: 0;
-    font-family: inherit;
-    font-size: inherit;
-    line-height: inherit;
+  margin: 0;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
 }
 
 button,
 select {
-    text-transform: none;
+  text-transform: none;
 }
 
 select {
-    word-wrap: normal;
-    
-    &:disabled {
-        opacity: 1;
-    }
+  word-wrap: normal;
+
+  &:disabled {
+    opacity: 1;
+  }
 }
 
 [list]::-webkit-calendar-picker-indicator {
-    display: none;
+  display: none;
 }
 
 button,
 [type="button"],
 [type="reset"],
 [type="submit"] {
-    -webkit-appearance: button;
-    
-    &:not(:disabled) {
-        cursor: pointer;
-    }
+  -webkit-appearance: button;
+
+  &:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
 ::-moz-focus-inner {
-    padding: 0;
-    border-style: none;
+  padding: 0;
+  border-style: none;
 }
 
 textarea {
-    resize: vertical;
+  resize: vertical;
 }
 
 fieldset {
-    min-width: 0;
-    padding: 0;
-    margin: 0;
-    border: 0;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
 }
 
 legend {
-    float: left;
-    width: 100%;
-    padding: 0;
-    margin-bottom: @spacing-sm;
-    font-size: @font-size-lg;
-    font-weight: @font-weight-medium;
-    line-height: inherit;
-    
-    + * {
-        clear: left;
-    }
+  float: left;
+  width: 100%;
+  padding: 0;
+  margin-bottom: @spacing-sm;
+  font-size: @font-size-lg;
+  font-weight: @font-weight-medium;
+  line-height: inherit;
+
+  + * {
+    clear: left;
+  }
 }
 
 // ============================================================================
@@ -342,7 +337,7 @@ legend {
 // ============================================================================
 
 progress {
-    vertical-align: baseline;
+  vertical-align: baseline;
 }
 
 // ============================================================================
@@ -350,5 +345,5 @@ progress {
 // ============================================================================
 
 [hidden] {
-    display: none !important;
+  display: none !important;
 }

@@ -7,15 +7,15 @@ use Infinri\Core\Model\ResourceModel\AbstractResource;
 use Infinri\Core\Model\ResourceModel\User as UserResource;
 
 /**
- * User Model
- * 
  * Example model implementation
  */
 class User extends AbstractModel
 {
     public function __construct(
-        private readonly UserResource $resource
+        private readonly UserResource $resource,
+        array $data = []
     ) {
+        parent::__construct($data);
     }
 
     /**

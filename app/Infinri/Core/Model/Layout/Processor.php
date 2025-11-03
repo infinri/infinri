@@ -6,8 +6,6 @@ namespace Infinri\Core\Model\Layout;
 use SimpleXMLElement;
 
 /**
- * Layout Processor
- * 
  * Processes layout XML directives (block, container, referenceBlock, move, remove, etc.)
  */
 class Processor
@@ -26,13 +24,13 @@ class Processor
     public function process(SimpleXMLElement $layout): SimpleXMLElement
     {
         $this->namedElements = [];
-        
+
         // First pass: collect all named elements
         $this->collectNamedElements($layout);
-        
+
         // Second pass: process directives
         $this->processDirectives($layout);
-        
+
         return $layout;
     }
 
@@ -45,10 +43,10 @@ class Processor
     private function collectNamedElements(SimpleXMLElement $element): void
     {
         if (isset($element['name'])) {
-            $name = (string) $element['name'];
+            $name = (string)$element['name'];
             $this->namedElements[$name] = $element;
         }
-        
+
         foreach ($element->children() as $child) {
             $this->collectNamedElements($child);
         }
@@ -64,10 +62,10 @@ class Processor
     {
         // Process <remove> directives
         $this->processRemoveDirectives($layout);
-        
+
         // Process <move> directives
         $this->processMoveDirectives($layout);
-        
+
         // Process <referenceBlock> and <referenceContainer>
         $this->processReferenceDirectives($layout);
     }
@@ -85,10 +83,10 @@ class Processor
             if (empty($removes)) {
                 break;
             }
-            
+
             foreach ($removes as $remove) {
-                $name = (string) $remove['name'];
-                
+                $name = (string)$remove['name'];
+
                 // Find and remove the named element
                 if ($namedElement = $layout->xpath("//*[@name='" . $name . "']")) {
                     foreach ($namedElement as $element) {
@@ -100,7 +98,7 @@ class Processor
                         }
                     }
                 }
-                
+
                 // Remove the <remove> directive itself
                 $dom = dom_import_simplexml($remove);
                 if ($dom && $dom->parentNode) {
@@ -108,7 +106,7 @@ class Processor
                 }
             }
         }
-        
+
         // Refresh named elements after removals
         $this->namedElements = [];
         $this->collectNamedElements($layout);
@@ -123,21 +121,21 @@ class Processor
     private function processMoveDirectives(SimpleXMLElement $layout): void
     {
         $moves = $layout->xpath('//move[@element and @destination]');
-        
+
         foreach ($moves as $move) {
-            $elementName = (string) $move['element'];
-            $destination = (string) $move['destination'];
-            $before = isset($move['before']) ? (string) $move['before'] : null;
-            $after = isset($move['after']) ? (string) $move['after'] : null;
-            
+            $elementName = (string)$move['element'];
+            $destination = (string)$move['destination'];
+            $before = isset($move['before']) ? (string)$move['before'] : null;
+            $after = isset($move['after']) ? (string)$move['after'] : null;
+
             if (isset($this->namedElements[$elementName]) && isset($this->namedElements[$destination])) {
                 $element = $this->namedElements[$elementName];
                 $dest = $this->namedElements[$destination];
-                
+
                 // Move element to destination
                 $this->moveElement($element, $dest, $before, $after);
             }
-            
+
             // Remove the <move> directive
             $dom = dom_import_simplexml($move);
             if ($dom && $dom->parentNode) {
@@ -158,30 +156,31 @@ class Processor
     private function moveElement(
         SimpleXMLElement $element,
         SimpleXMLElement $destination,
-        ?string $before,
-        ?string $after
-    ): void {
+        ?string          $before,
+        ?string          $after
+    ): void
+    {
         // Convert to DOM for manipulation
         $sourceDom = dom_import_simplexml($element);
         $destDom = dom_import_simplexml($destination);
-        
+
         if (!$sourceDom || !$destDom || !$sourceDom->parentNode) {
             return;
         }
-        
+
         // Import node into destination document
         $importedNode = $destDom->ownerDocument->importNode($sourceDom, true);
-        
+
         // Remove from original parent
         $sourceDom->parentNode->removeChild($sourceDom);
-        
+
         // Handle positioning with before/after
         if ($before !== null) {
             // Insert before specific sibling
             $siblings = $destDom->childNodes;
             foreach ($siblings as $sibling) {
-                if ($sibling->nodeType === XML_ELEMENT_NODE && 
-                    $sibling->hasAttribute('name') && 
+                if ($sibling->nodeType === XML_ELEMENT_NODE &&
+                    $sibling->hasAttribute('name') &&
                     $sibling->getAttribute('name') === $before) {
                     $destDom->insertBefore($importedNode, $sibling);
                     return;
@@ -199,8 +198,8 @@ class Processor
                     $destDom->insertBefore($importedNode, $sibling);
                     return;
                 }
-                if ($sibling->nodeType === XML_ELEMENT_NODE && 
-                    $sibling->hasAttribute('name') && 
+                if ($sibling->nodeType === XML_ELEMENT_NODE &&
+                    $sibling->hasAttribute('name') &&
                     $sibling->getAttribute('name') === $after) {
                     $found = true;
                 }
@@ -226,13 +225,13 @@ class Processor
             if (empty($references)) {
                 break;
             }
-            
+
             foreach ($references as $reference) {
-                $name = (string) $reference['name'];
-                
+                $name = (string)$reference['name'];
+
                 // Find the target element by name
                 $targets = $layout->xpath("//*[@name='" . $name . "']");
-                
+
                 if (!empty($targets)) {
                     $targetProcessed = false;
                     foreach ($targets as $target) {
@@ -240,14 +239,12 @@ class Processor
                         if ($target->getName() === 'referenceBlock' || $target->getName() === 'referenceContainer') {
                             continue;
                         }
-                        
+
                         $targetProcessed = true;
-                        
-                        // Merge children from reference into target
-                        // Use FALSE for $preserve_keys to get numeric indices instead of element names
+
                         // This prevents duplicate keys when multiple children have the same tag name
                         $children = iterator_to_array($reference->children(), false);
-                        
+
                         foreach ($children as $child) {
                             try {
                                 $this->appendElement($target, $child);
@@ -260,11 +257,11 @@ class Processor
                                 ]);
                             }
                         }
-                        
+
                         break; // Only process first matching target
                     }
                 }
-                
+
                 // Remove the reference directive
                 $dom = dom_import_simplexml($reference);
                 if ($dom && $dom->parentNode) {
@@ -272,7 +269,7 @@ class Processor
                 }
             }
         }
-        
+
         // Refresh named elements after processing
         $this->namedElements = [];
         $this->collectNamedElements($layout);
@@ -290,21 +287,21 @@ class Processor
         // Use DOM to properly clone and import the element
         $targetDom = dom_import_simplexml($target);
         $sourceDom = dom_import_simplexml($source);
-        
+
         if (!$targetDom || !$sourceDom) {
             return;
         }
-        
+
         // Import the source node (deep copy with all children)
         $importedNode = $targetDom->ownerDocument->importNode($sourceDom, true);
-        
+
         // Check for 'before' or 'after' attributes on the source
-        $before = isset($source['before']) ? (string) $source['before'] : null;
-        $after = isset($source['after']) ? (string) $source['after'] : null;
-        
-        $sourceName = isset($source['name']) ? (string) $source['name'] : 'unnamed';
-        $targetName = isset($target['name']) ? (string) $target['name'] : 'unnamed';
-        
+        $before = isset($source['before']) ? (string)$source['before'] : null;
+        $after = isset($source['after']) ? (string)$source['after'] : null;
+
+        $sourceName = isset($source['name']) ? (string)$source['name'] : 'unnamed';
+        $targetName = isset($target['name']) ? (string)$target['name'] : 'unnamed';
+
         if ($sourceName === 'admin.sidebar' || $targetName === 'main.content') {
             \Infinri\Core\Helper\Logger::info('Processor: Appending element', [
                 'source' => $sourceName,
@@ -313,18 +310,18 @@ class Processor
                 'after' => $after
             ]);
         }
-        
+
         if ($before !== null) {
             // Insert before specific sibling
             $siblings = $targetDom->childNodes;
             $found = false;
             foreach ($siblings as $sibling) {
-                if ($sibling->nodeType === XML_ELEMENT_NODE && 
-                    $sibling->hasAttribute('name') && 
+                if ($sibling->nodeType === XML_ELEMENT_NODE &&
+                    $sibling->hasAttribute('name') &&
                     $sibling->getAttribute('name') === $before) {
                     $targetDom->insertBefore($importedNode, $sibling);
                     $found = true;
-                    
+
                     if ($sourceName === 'admin.sidebar') {
                         \Infinri\Core\Helper\Logger::info('Processor: Inserted sidebar BEFORE content', [
                             'before' => $before,
@@ -352,8 +349,8 @@ class Processor
                     $targetDom->insertBefore($importedNode, $sibling);
                     return;
                 }
-                if ($sibling->nodeType === XML_ELEMENT_NODE && 
-                    $sibling->hasAttribute('name') && 
+                if ($sibling->nodeType === XML_ELEMENT_NODE &&
+                    $sibling->hasAttribute('name') &&
                     $sibling->getAttribute('name') === $after) {
                     $found = true;
                 }

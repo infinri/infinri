@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * Module Status Configuration
- * 
+ *
  * Defines which modules are enabled (1) or disabled (0).
  * Modules must be registered AND enabled to be loaded.
  */

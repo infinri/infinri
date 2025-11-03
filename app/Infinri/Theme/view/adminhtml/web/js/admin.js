@@ -1,15 +1,10 @@
-/**
- * Admin JavaScript
- * Core admin functionality
- */
-
-(function() {
+(function () {
     'use strict';
-    
+
     // Wait for DOM to be ready
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         console.log('Infinri Admin Theme Loaded');
-        
+
         // Initialize admin features
         initMobileMenu();
         initUserMenu();
@@ -17,54 +12,54 @@
         initAlertClose();
         initDeleteConfirmation();
     });
-    
+
     /**
      * Mobile menu toggle
      */
     function initMobileMenu() {
         const menuToggle = document.querySelector('.admin-menu-toggle');
         const navigation = document.querySelector('.admin-navigation');
-        
+
         if (menuToggle && navigation) {
-            menuToggle.addEventListener('click', function() {
+            menuToggle.addEventListener('click', function () {
                 navigation.classList.toggle('is-open');
             });
-            
+
             // Close menu when clicking outside
-            document.addEventListener('click', function(e) {
+            document.addEventListener('click', function (e) {
                 if (!navigation.contains(e.target) && !menuToggle.contains(e.target)) {
                     navigation.classList.remove('is-open');
                 }
             });
         }
     }
-    
+
     /**
      * Table row selection
      */
     function initTableCheckboxes() {
         // Select all checkbox in grid
         const selectAllCheckbox = document.querySelector('.grid-th-checkbox input[type="checkbox"]');
-        
+
         if (selectAllCheckbox) {
-            selectAllCheckbox.addEventListener('change', function() {
+            selectAllCheckbox.addEventListener('change', function () {
                 const checkboxes = document.querySelectorAll('.grid-td-checkbox input[type="checkbox"]');
-                checkboxes.forEach(function(checkbox) {
+                checkboxes.forEach(function (checkbox) {
                     checkbox.checked = selectAllCheckbox.checked;
                     updateRowSelection(checkbox);
                 });
             });
         }
-        
+
         // Individual row checkboxes
         const rowCheckboxes = document.querySelectorAll('.grid-td-checkbox input[type="checkbox"]');
-        rowCheckboxes.forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
+        rowCheckboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('change', function () {
                 updateRowSelection(checkbox);
             });
         });
     }
-    
+
     /**
      * Update row selection state
      */
@@ -78,7 +73,7 @@
             }
         }
     }
-    
+
     /**
      * User menu dropdown
      */
@@ -86,56 +81,56 @@
         const userTrigger = document.querySelector('.user-trigger');
         const dropdown = document.querySelector('.admin-user-dropdown');
         const userMenu = document.querySelector('.admin-user-menu');
-        
+
         if (userTrigger && dropdown) {
-            userTrigger.addEventListener('click', function(e) {
+            userTrigger.addEventListener('click', function (e) {
                 e.stopPropagation();
                 dropdown.hidden = !dropdown.hidden;
             });
         }
-        
+
         // Close dropdown when clicking outside
         if (userMenu && dropdown) {
-            document.addEventListener('click', function(event) {
+            document.addEventListener('click', function (event) {
                 if (!userMenu.contains(event.target)) {
                     dropdown.hidden = true;
                 }
             });
         }
     }
-    
+
     /**
      * Close alert messages
      */
     function initAlertClose() {
         const closeButtons = document.querySelectorAll('.alert-close');
-        
-        closeButtons.forEach(function(button) {
-            button.addEventListener('click', function() {
+
+        closeButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
                 const alert = button.closest('.admin-alert');
                 if (alert) {
                     alert.style.opacity = '0';
-                    setTimeout(function() {
+                    setTimeout(function () {
                         alert.remove();
                     }, 300);
                 }
             });
         });
     }
-    
+
     /**
      * Confirm delete action
      */
-    window.confirmDelete = function(message) {
+    window.confirmDelete = function (message) {
         return confirm(message || 'Are you sure you want to delete this item?');
     };
-    
+
     /**
      * Initialize delete confirmation on buttons/links
      */
     function initDeleteConfirmation() {
-        document.querySelectorAll('.button-delete').forEach(function(btn) {
-            btn.addEventListener('click', function(e) {
+        document.querySelectorAll('.button-delete').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
                 const message = this.getAttribute('data-confirm');
                 if (message && !confirm(message)) {
                     e.preventDefault();
@@ -143,6 +138,6 @@
             });
         });
     }
-    
-    
+
+
 })();

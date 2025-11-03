@@ -9,8 +9,6 @@ use Infinri\Core\Security\CsrfTokenManager;
 use Infinri\Core\Helper\Logger;
 
 /**
- * CSRF Protection Middleware
- * 
  * Validates CSRF tokens on state-changing requests (POST, PUT, DELETE, PATCH)
  */
 class CsrfProtectionMiddleware

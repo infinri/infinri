@@ -1,10 +1,6 @@
-/**
- * Infinri Utils
- * Utility functions for common tasks
- */
-(function() {
+(function () {
     'use strict';
-    
+
     const InfinriUtils = {
         /**
          * Initialize utilities
@@ -12,7 +8,7 @@
         init() {
             // Initialization code if needed
         },
-        
+
         /**
          * Debounce function execution
          * @param {Function} func Function to debounce
@@ -30,7 +26,7 @@
                 timeout = setTimeout(later, wait);
             };
         },
-        
+
         /**
          * Throttle function execution
          * @param {Function} func Function to throttle
@@ -39,7 +35,7 @@
          */
         throttle(func, limit = 300) {
             let inThrottle;
-            return function(...args) {
+            return function (...args) {
                 if (!inThrottle) {
                     func.apply(this, args);
                     inThrottle = true;
@@ -47,7 +43,7 @@
                 }
             };
         },
-        
+
         /**
          * Check if element is in viewport
          * @param {Element} element DOM element
@@ -62,7 +58,7 @@
                 rect.right <= (window.innerWidth || document.documentElement.clientWidth)
             );
         },
-        
+
         /**
          * Get query parameter from URL
          * @param {string} param Parameter name
@@ -72,7 +68,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(param);
         },
-        
+
         /**
          * Set cookie
          * @param {string} name Cookie name
@@ -85,7 +81,7 @@
             const expires = "expires=" + date.toUTCString();
             document.cookie = name + "=" + value + ";" + expires + ";path=/";
         },
-        
+
         /**
          * Get cookie
          * @param {string} name Cookie name
@@ -101,7 +97,7 @@
             }
             return null;
         },
-        
+
         /**
          * Delete cookie
          * @param {string} name Cookie name
@@ -109,7 +105,7 @@
         deleteCookie(name) {
             document.cookie = name + '=; Max-Age=-99999999;';
         },
-        
+
         /**
          * Scroll to element smoothly
          * @param {Element|string} element Element or selector
@@ -119,10 +115,10 @@
             const el = typeof element === 'string' ? document.querySelector(element) : element;
             if (el) {
                 const top = el.getBoundingClientRect().top + window.pageYOffset - offset;
-                window.scrollTo({ top, behavior: 'smooth' });
+                window.scrollTo({top, behavior: 'smooth'});
             }
         },
-        
+
         /**
          * Format number with thousand separators
          * @param {number} num Number to format
@@ -131,7 +127,7 @@
         formatNumber(num) {
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         },
-        
+
         /**
          * Escape HTML special characters
          * @param {string} text Text to escape
@@ -148,7 +144,7 @@
             return text.replace(/[&<>"']/g, m => map[m]);
         }
     };
-    
+
     // Expose to global scope
     window.InfinriUtils = InfinriUtils;
 })();

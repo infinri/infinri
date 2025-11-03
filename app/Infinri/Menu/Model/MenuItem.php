@@ -8,8 +8,6 @@ use Infinri\Core\Model\AbstractModel;
 use Infinri\Menu\Model\ResourceModel\MenuItem as MenuItemResource;
 
 /**
- * Menu Item Model
- * 
  * Represents an individual menu item within a menu
  */
 class MenuItem extends AbstractModel
@@ -28,7 +26,7 @@ class MenuItem extends AbstractModel
      */
     public function __construct(
         protected readonly MenuItemResource $resource,
-        array $data = []
+        array                               $data = []
     ) {
         parent::__construct($data);
     }
@@ -42,8 +40,6 @@ class MenuItem extends AbstractModel
     {
         return $this->resource;
     }
-
-    // ==================== GETTERS/SETTERS ====================
 
     /**
      * Get item ID
@@ -245,7 +241,7 @@ class MenuItem extends AbstractModel
      */
     public function getOpenInNewTab(): bool
     {
-        return (bool) $this->getData('open_in_new_tab');
+        return (bool)$this->getData('open_in_new_tab');
     }
 
     /**
@@ -266,7 +262,7 @@ class MenuItem extends AbstractModel
      */
     public function getSortOrder(): int
     {
-        return (int) $this->getData('sort_order');
+        return (int)$this->getData('sort_order');
     }
 
     /**
@@ -287,7 +283,7 @@ class MenuItem extends AbstractModel
      */
     public function isActive(): bool
     {
-        return (bool) $this->getData('is_active');
+        return (bool)$this->getData('is_active');
     }
 
     /**
@@ -320,8 +316,6 @@ class MenuItem extends AbstractModel
     {
         return $this->getData('updated_at');
     }
-
-    // ==================== VALIDATION ====================
 
     /**
      * Validate menu item data

@@ -26,12 +26,12 @@ class Timezone
             'Asia/Dubai' => 'Dubai',
             'Australia/Sydney' => 'Sydney',
         ];
-        
+
         $options = [];
         foreach ($timezones as $value => $label) {
             $options[] = ['value' => $value, 'label' => $label];
         }
-        
+
         return $options;
     }
 }

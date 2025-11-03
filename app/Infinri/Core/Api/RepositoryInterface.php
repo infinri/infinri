@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace Infinri\Core\Api;
 
 /**
- * Repository Interface
- * 
  * Standard interface for data repositories
  */
 interface RepositoryInterface

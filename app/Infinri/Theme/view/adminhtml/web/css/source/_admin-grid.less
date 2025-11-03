@@ -1,189 +1,184 @@
-/**
- * Admin Grid
- * Magento-inspired admin grid component styling (converted from CSS to LESS)
- */
-
 .admin-grid {
-    background: @white;
-    border: 1px solid @border-color;
-    border-radius: @border-radius-lg;
-    box-shadow: @shadow;
-    margin-bottom: @spacing-lg;
+  background: @white;
+  border: 1px solid @border-color;
+  border-radius: @border-radius-lg;
+  box-shadow: @shadow;
+  margin-bottom: @spacing-lg;
 }
 
 // Grid Toolbar
 .grid-toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: @spacing-md @spacing-lg;
-    border-bottom: 1px solid @border-color;
-    background: @surface-bg;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: @spacing-md @spacing-lg;
+  border-bottom: 1px solid @border-color;
+  background: @surface-bg;
 }
 
 .grid-toolbar-left,
 .grid-toolbar-right {
-    display: flex;
-    gap: @spacing-md;
-    align-items: center;
+  display: flex;
+  gap: @spacing-md;
+  align-items: center;
 }
 
 .grid-massactions {
-    display: flex;
-    gap: @spacing-sm;
-    align-items: center;
-    
-    select {
-        min-width: 200px;
-    }
+  display: flex;
+  gap: @spacing-sm;
+  align-items: center;
+
+  select {
+    min-width: 200px;
+  }
 }
 
 // Grid Table
 .grid-container {
-    overflow-x: auto;
+  overflow-x: auto;
 }
 
 .admin-grid-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: @font-family-body;
-    
-    thead {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: @font-family-body;
+
+  thead {
+    background: @surface-bg;
+    border-bottom: 2px solid @border-dark;
+
+    th {
+      padding: @spacing-md @spacing-lg;
+      text-align: left;
+      font-weight: @font-weight-semibold;
+      font-size: @font-size-sm;
+      color: @text-color;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid @border-color;
+      transition: @transition-fast;
+
+      &:hover {
         background: @surface-bg;
-        border-bottom: 2px solid @border-dark;
-        
-        th {
-            padding: @spacing-md @spacing-lg;
-            text-align: left;
-            font-weight: @font-weight-semibold;
-            font-size: @font-size-sm;
-            color: @text-color;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+      }
+
+      &:last-child td {
+        border-bottom: none;
+      }
     }
-    
-    tbody {
-        tr {
-            border-bottom: 1px solid @border-color;
-            transition: @transition-fast;
-            
-            &:hover {
-                background: @surface-bg;
-            }
-            
-            &:last-child td {
-                border-bottom: none;
-            }
-        }
-        
-        td {
-            padding: @spacing-md @spacing-lg;
-            font-size: @font-size-sm;
-            color: @text-muted;
-        }
+
+    td {
+      padding: @spacing-md @spacing-lg;
+      font-size: @font-size-sm;
+      color: @text-muted;
     }
+  }
 }
 
 // Checkbox Column
 .grid-th-checkbox,
 .grid-td-checkbox {
-    width: 40px;
-    text-align: center !important;
+  width: 40px;
+  text-align: center !important;
 }
 
 .grid-checkbox {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 // Empty State
 .grid-empty {
-    text-align: center !important;
-    padding: @spacing-3xl @spacing-lg !important;
-    color: @text-light;
-    font-style: italic;
+  text-align: center !important;
+  padding: @spacing-3xl @spacing-lg !important;
+  color: @text-light;
+  font-style: italic;
 }
 
 // Grid Actions
 .grid-actions {
-    display: flex;
-    gap: @spacing-md;
-    align-items: center;
+  display: flex;
+  gap: @spacing-md;
+  align-items: center;
 }
 
 .action-link {
-    color: @primary-color;
-    text-decoration: none;
-    font-weight: @font-weight-medium;
-    transition: @transition-base;
-    
-    &:hover {
-        color: @primary-dark;
-        text-decoration: underline;
-    }
+  color: @primary-color;
+  text-decoration: none;
+  font-weight: @font-weight-medium;
+  transition: @transition-base;
+
+  &:hover {
+    color: @primary-dark;
+    text-decoration: underline;
+  }
 }
 
 // Status Badge
 .status-badge {
-    display: inline-block;
-    padding: 4px @spacing-md;
-    border-radius: @border-radius-pill;
-    font-size: 12px;
-    font-weight: @font-weight-semibold;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  display: inline-block;
+  padding: 4px @spacing-md;
+  border-radius: @border-radius-pill;
+  font-size: 12px;
+  font-weight: @font-weight-semibold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .status-enabled {
-    background: fade(@success-color, 20%);
-    color: darken(@success-color, 30%);
+  background: fade(@success-color, 20%);
+  color: darken(@success-color, 30%);
 }
 
 .status-disabled {
-    background: fade(@danger-color, 20%);
-    color: darken(@danger-color, 20%);
+  background: fade(@danger-color, 20%);
+  color: darken(@danger-color, 20%);
 }
 
 // Grid Footer
 .grid-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: @spacing-md @spacing-lg;
-    border-top: 1px solid @border-color;
-    background: @surface-bg;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: @spacing-md @spacing-lg;
+  border-top: 1px solid @border-color;
+  background: @surface-bg;
 }
 
 .grid-info {
-    font-size: @font-size-sm;
-    color: @text-muted;
+  font-size: @font-size-sm;
+  color: @text-muted;
 }
 
 // Sort Icon
 .sort-icon {
-    margin-left: 4px;
-    color: @text-light;
-    font-size: 12px;
+  margin-left: 4px;
+  color: @text-light;
+  font-size: 12px;
 }
 
 // Responsive
 @media (max-width: @breakpoint-md) {
-    .grid-toolbar {
-        flex-direction: column;
-        gap: @spacing-md;
-        align-items: stretch;
+  .grid-toolbar {
+    flex-direction: column;
+    gap: @spacing-md;
+    align-items: stretch;
+  }
+
+  .grid-toolbar-left,
+  .grid-toolbar-right {
+    justify-content: center;
+  }
+
+  .admin-grid-table {
+    font-size: @font-size-sm;
+
+    th, td {
+      padding: @spacing-sm @spacing-md;
     }
-    
-    .grid-toolbar-left,
-    .grid-toolbar-right {
-        justify-content: center;
-    }
-    
-    .admin-grid-table {
-        font-size: @font-size-sm;
-        
-        th, td {
-            padding: @spacing-sm @spacing-md;
-        }
-    }
+  }
 }

@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace Infinri\Core\Block;
 
 /**
- * Text Block
- * 
  * A simple block that outputs text content.
  */
 class Text extends AbstractBlock
@@ -47,7 +45,7 @@ class Text extends AbstractBlock
         if ($dataText !== null) {
             return $dataText;
         }
-        
+
         // Fall back to text property
         return $this->text;
     }

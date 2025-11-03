@@ -1,23 +1,19 @@
 <?xml version="1.0"?>
-<!--
-/**
- * SEO Redirect Listing UI Component
- */
--->
-<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:infinri:framework:Ui/etc/ui_configuration.xsd">
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:infinri:framework:Ui/etc/ui_configuration.xsd">
     <argument name="data" xsi:type="array">
         <item name="js_config" xsi:type="array">
             <item name="provider" xsi:type="string">seo_redirect_listing.seo_redirect_listing_data_source</item>
         </item>
     </argument>
-    
+
     <settings>
         <spinner>seo_redirect_columns</spinner>
         <deps>
             <dep>seo_redirect_listing.seo_redirect_listing_data_source</dep>
         </deps>
     </settings>
-    
+
     <dataSource name="seo_redirect_listing_data_source">
         <argument name="dataProvider" xsi:type="string">Infinri\Seo\Ui\Component\Listing\RedirectDataProvider</argument>
         <argument name="data" xsi:type="array">
@@ -30,25 +26,26 @@
             </item>
         </argument>
     </dataSource>
-    
+
     <listingToolbar name="listing_top">
         <settings>
             <sticky>true</sticky>
         </settings>
-        
+
         <bookmark name="bookmarks"/>
-        
+
         <columnsControls name="columns_controls"/>
-        
+
         <filterSearch name="fulltext"/>
-        
+
         <filters name="listing_filters">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="templates" xsi:type="array">
                         <item name="filters" xsi:type="array">
                             <item name="select" xsi:type="array">
-                                <item name="component" xsi:type="string">Infinri_Ui/js/grid/filters/elements/ui-select</item>
+                                <item name="component" xsi:type="string">Infinri_Ui/js/grid/filters/elements/ui-select
+                                </item>
                                 <item name="template" xsi:type="string">ui/grid/filters/elements/ui-select</item>
                             </item>
                         </item>
@@ -56,7 +53,7 @@
                 </item>
             </argument>
         </filters>
-        
+
         <massaction name="listing_massaction">
             <action name="delete">
                 <settings>
@@ -84,23 +81,23 @@
                 </settings>
             </action>
         </massaction>
-        
+
         <paging name="listing_paging"/>
-        
+
         <button name="add">
             <url path="*/*/edit"/>
             <class>primary</class>
             <label translate="true">Add New Redirect</label>
         </button>
     </listingToolbar>
-    
+
     <columns name="seo_redirect_columns">
         <selectionsColumn name="ids">
             <settings>
                 <indexField>redirect_id</indexField>
             </settings>
         </selectionsColumn>
-        
+
         <column name="redirect_id">
             <settings>
                 <filter>textRange</filter>
@@ -108,21 +105,21 @@
                 <sorting>asc</sorting>
             </settings>
         </column>
-        
+
         <column name="from_path">
             <settings>
                 <filter>text</filter>
                 <label translate="true">From Path</label>
             </settings>
         </column>
-        
+
         <column name="to_path">
             <settings>
                 <filter>text</filter>
                 <label translate="true">To Path</label>
             </settings>
         </column>
-        
+
         <column name="redirect_code">
             <settings>
                 <filter>select</filter>
@@ -131,14 +128,14 @@
                 <dataType>select</dataType>
             </settings>
         </column>
-        
+
         <column name="priority">
             <settings>
                 <filter>textRange</filter>
                 <label translate="true">Priority</label>
             </settings>
         </column>
-        
+
         <column name="is_active" component="Infinri_Ui/js/grid/columns/select">
             <settings>
                 <filter>select</filter>
@@ -147,7 +144,7 @@
                 <label translate="true">Status</label>
             </settings>
         </column>
-        
+
         <column name="created_at" class="Infinri\Core\Ui\Component\Listing\Column\Date">
             <settings>
                 <filter>dateRange</filter>
@@ -155,7 +152,7 @@
                 <label translate="true">Created</label>
             </settings>
         </column>
-        
+
         <actionsColumn name="actions" class="Infinri\Seo\Ui\Component\Listing\Column\RedirectActions">
             <settings>
                 <indexField>redirect_id</indexField>

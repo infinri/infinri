@@ -14,12 +14,12 @@ use Psr\Log\LoggerInterface;
 class MassDelete extends AbstractAdminController
 {
     public function __construct(
-        \Infinri\Core\App\Request $request,
-        \Infinri\Core\App\Response $response,
+        \Infinri\Core\App\Request              $request,
+        \Infinri\Core\App\Response             $response,
         \Infinri\Core\Model\View\LayoutFactory $layoutFactory,
-        \Infinri\Core\Security\CsrfGuard $csrfGuard,
-        private RedirectManager $redirectManager,
-        private LoggerInterface $logger
+        \Infinri\Core\Security\CsrfGuard       $csrfGuard,
+        private RedirectManager                $redirectManager,
+        private LoggerInterface                $logger
     ) {
         parent::__construct($request, $response, $layoutFactory, $csrfGuard);
     }

@@ -8,8 +8,6 @@ use Infinri\Core\Model\AbstractModel;
 use Infinri\Menu\Model\ResourceModel\Menu as MenuResource;
 
 /**
- * Menu Model
- * 
  * Represents a menu container entity (e.g., "Main Navigation", "Footer Links")
  */
 class Menu extends AbstractModel
@@ -22,7 +20,7 @@ class Menu extends AbstractModel
      */
     public function __construct(
         protected readonly MenuResource $resource,
-        array $data = []
+        array                           $data = []
     ) {
         parent::__construct($data);
     }
@@ -36,8 +34,6 @@ class Menu extends AbstractModel
     {
         return $this->resource;
     }
-
-    // ==================== GETTERS/SETTERS ====================
 
     /**
      * Get menu ID
@@ -110,7 +106,7 @@ class Menu extends AbstractModel
      */
     public function isActive(): bool
     {
-        return (bool) $this->getData('is_active');
+        return (bool)$this->getData('is_active');
     }
 
     /**
@@ -143,8 +139,6 @@ class Menu extends AbstractModel
     {
         return $this->getData('updated_at');
     }
-
-    // ==================== VALIDATION ====================
 
     /**
      * Validate menu data

@@ -14,12 +14,12 @@ use Psr\Log\LoggerInterface;
 class Delete extends AbstractAdminController
 {
     public function __construct(
-        \Infinri\Core\App\Request $request,
-        \Infinri\Core\App\Response $response,
+        \Infinri\Core\App\Request              $request,
+        \Infinri\Core\App\Response             $response,
         \Infinri\Core\Model\View\LayoutFactory $layoutFactory,
-        \Infinri\Core\Security\CsrfGuard $csrfGuard,
-        private RedirectManager $redirectManager,
-        private LoggerInterface $logger
+        \Infinri\Core\Security\CsrfGuard       $csrfGuard,
+        private RedirectManager                $redirectManager,
+        private LoggerInterface                $logger
     ) {
         parent::__construct($request, $response, $layoutFactory, $csrfGuard);
     }
@@ -38,9 +38,9 @@ class Delete extends AbstractAdminController
             if ($result) {
                 return $this->redirect('/admin/seo/redirect');
             }
-            
+
             return $this->response->setStatusCode(404)->setBody('Redirect not found');
-            
+
         } catch (\Exception $e) {
             $this->logger->error('Failed to delete redirect', [
                 'redirect_id' => $redirectId,

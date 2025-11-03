@@ -8,8 +8,6 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Infinri\Core\Api\ObserverInterface;
 
 /**
- * Event Manager
- * 
  * Wrapper around Symfony EventDispatcher for managing application events
  * Provides observer pattern for extending functionality without modifying core code
  */
@@ -70,12 +68,13 @@ class Manager
      * @return void
      */
     public function addObserver(
-        string $eventName,
-        string $observerName,
+        string            $eventName,
+        string            $observerName,
         ObserverInterface $observer,
-        int $priority = 0,
-        bool $disabled = false
-    ): void {
+        int               $priority = 0,
+        bool              $disabled = false
+    ): void
+    {
         if (!isset($this->observers[$eventName])) {
             $this->observers[$eventName] = [];
         }

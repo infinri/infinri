@@ -6,8 +6,6 @@ namespace Infinri\Seo\Setup;
 use Infinri\Core\App\RouterInterface;
 
 /**
- * Register SEO-specific routes
- * 
  * Registers sitemap.xml and robots.txt routes directly
  */
 class RegisterSeoRoutes

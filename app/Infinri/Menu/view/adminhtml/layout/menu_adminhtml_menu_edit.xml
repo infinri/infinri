@@ -1,16 +1,8 @@
 <?xml version="1.0"?>
-<!--
-/**
- * Menu Edit Layout
- * Route: admin/menu/menu/edit
- * Uses UI Component for form display (menu_form)
- */
--->
 <layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <!-- Extend base admin layout (provides header, footer, navigation, CSS/JS) -->
     <update handle="admin_1column"/>
-    
-    <!-- Add UI Form (no template needed) -->
+
     <referenceContainer name="content">
         <block class="Infinri\Core\Block\UiForm" name="menu.menu.form">
             <arguments>

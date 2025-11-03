@@ -1,7 +1,7 @@
 <?php
 /**
  * Breadcrumb Template
- * 
+ *
  * @var \Infinri\Core\Block\Template $block
  * @var \Infinri\Theme\ViewModel\Breadcrumb $viewModel
  */
@@ -36,12 +36,12 @@ if (empty($breadcrumbs)) {
         <ol class="breadcrumb-list" itemscope itemtype="https://schema.org/BreadcrumbList">
             <?php $position = 1; ?>
             <?php foreach ($breadcrumbs as $crumb): ?>
-                <li class="breadcrumb-item" 
-                    itemprop="itemListElement" 
-                    itemscope 
+                <li class="breadcrumb-item"
+                    itemprop="itemListElement"
+                    itemscope
                     itemtype="https://schema.org/ListItem">
                     <?php if (isset($crumb['url'])): ?>
-                        <a href="<?= $block->escapeUrl($crumb['url']) ?>" 
+                        <a href="<?= $block->escapeUrl($crumb['url']) ?>"
                            class="breadcrumb-link"
                            itemprop="item">
                             <span itemprop="name"><?= $block->escapeHtml($crumb['label']) ?></span>

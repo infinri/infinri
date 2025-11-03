@@ -14,12 +14,12 @@ use Psr\Log\LoggerInterface;
 class Save extends AbstractAdminController
 {
     public function __construct(
-        \Infinri\Core\App\Request $request,
-        \Infinri\Core\App\Response $response,
+        \Infinri\Core\App\Request              $request,
+        \Infinri\Core\App\Response             $response,
         \Infinri\Core\Model\View\LayoutFactory $layoutFactory,
-        \Infinri\Core\Security\CsrfGuard $csrfGuard,
-        private RedirectManager $redirectManager,
-        private LoggerInterface $logger
+        \Infinri\Core\Security\CsrfGuard       $csrfGuard,
+        private RedirectManager                $redirectManager,
+        private LoggerInterface                $logger
     ) {
         parent::__construct($request, $response, $layoutFactory, $csrfGuard);
     }
@@ -60,7 +60,7 @@ class Save extends AbstractAdminController
             if (isset($data['back']) && $data['back'] === 'continue') {
                 return $this->redirectToRoute('/admin/seo/redirect/edit', ['id' => $redirect->getRedirectId()]);
             }
-            
+
             return $this->redirect('/admin/seo/redirect');
 
         } catch (\Exception $e) {

@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace Infinri\Core\App;
 
 /**
- * Router
- * 
  * Registers routes and matches URLs to controllers/actions
  */
 class Router implements RouterInterface
@@ -30,8 +28,9 @@ class Router implements RouterInterface
         string $path,
         string $controller,
         string $action = 'execute',
-        array $methods = ['GET', 'POST']
-    ): self {
+        array  $methods = ['GET', 'POST']
+    ): self
+    {
         $this->routes[$name] = [
             'path' => $path,
             'controller' => $controller,
@@ -40,10 +39,10 @@ class Router implements RouterInterface
             'pattern' => $this->convertToRegex($path),
             'specificity' => $this->calculateSpecificity($path),
         ];
-        
+
         return $this;
     }
-    
+
     /**
      * Calculate route specificity score (higher = more specific)
      * More specific routes should be matched first
@@ -54,10 +53,10 @@ class Router implements RouterInterface
     private function calculateSpecificity(string $path): int
     {
         $score = 0;
-        
+
         // Split path into segments
         $segments = explode('/', trim($path, '/'));
-        
+
         foreach ($segments as $segment) {
             if ($segment === '' || $segment === '*') {
                 // Wildcard - least specific
@@ -70,10 +69,10 @@ class Router implements RouterInterface
                 $score += 100;
             }
         }
-        
+
         // Prefer routes with more segments (more specific paths)
         $score += count($segments);
-        
+
         return $score;
     }
 
@@ -92,7 +91,7 @@ class Router implements RouterInterface
         uasort($sortedRoutes, function ($a, $b) {
             return ($b['specificity'] ?? 0) <=> ($a['specificity'] ?? 0);
         });
-        
+
         foreach ($sortedRoutes as $name => $route) {
             // Check if method is allowed
             if (!in_array($method, $route['methods'], true)) {
@@ -120,7 +119,7 @@ class Router implements RouterInterface
 
         return null;
     }
-    
+
     /**
      * Convert route path to regex pattern
      *
@@ -131,13 +130,13 @@ class Router implements RouterInterface
     {
         // Escape forward slashes
         $pattern = str_replace('/', '\/', $path);
-        
+
         // Convert :param to named capture group
         $pattern = preg_replace('/:([a-zA-Z_][a-zA-Z0-9_]*)/', '(?P<$1>[^\/]+)', $pattern);
-        
+
         // Convert * to wildcard
         $pattern = str_replace('*', '.*', $pattern);
-        
+
         return '/^' . $pattern . '$/';
     }
 
@@ -168,7 +167,7 @@ class Router implements RouterInterface
 
         // Replace :param with actual values
         foreach ($params as $key => $value) {
-            $path = str_replace(':' . $key, (string) $value, $path);
+            $path = str_replace(':' . $key, (string)$value, $path);
         }
 
         return $path;

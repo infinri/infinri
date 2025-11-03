@@ -8,8 +8,6 @@ use Infinri\Menu\Service\MenuBuilder;
 use Infinri\Core\App\Request;
 
 /**
- * Navigation ViewModel
- * 
  * Provides presentation logic for navigation menus
  */
 class Navigation
@@ -22,7 +20,7 @@ class Navigation
      */
     public function __construct(
         private readonly MenuBuilder $menuBuilder,
-        private readonly Request $request
+        private readonly Request     $request
     ) {}
 
     /**
@@ -89,22 +87,22 @@ class Navigation
     private function setActiveStates(array $items): array
     {
         $currentPath = $this->request->getPath();
-        
+
         foreach ($items as &$item) {
             // Check if current URL starts with this item's URL
             $item['active'] = $this->isActive($item['url'], $currentPath);
-            
+
             // Recursively set active states for children
             if (!empty($item['children'])) {
                 $item['children'] = $this->setActiveStates($item['children']);
-                
+
                 // If any child is active, parent should be active too
                 if (!$item['active']) {
                     $item['active'] = $this->hasActiveChild($item['children']);
                 }
             }
         }
-        
+
         return $items;
     }
 
@@ -121,12 +119,12 @@ class Navigation
         if ($itemUrl === '/' && $currentPath === '/') {
             return true;
         }
-        
+
         // For other pages, check if current path starts with item URL
         if ($itemUrl !== '/' && str_starts_with($currentPath, $itemUrl)) {
             return true;
         }
-        
+
         return false;
     }
 
@@ -142,12 +140,12 @@ class Navigation
             if ($child['active']) {
                 return true;
             }
-            
+
             if (!empty($child['children']) && $this->hasActiveChild($child['children'])) {
                 return true;
             }
         }
-        
+
         return false;
     }
 }

@@ -10,16 +10,15 @@ use Infinri\Admin\Model\ResourceModel\AdminUser as AdminUserResource;
 use Infinri\Core\Helper\Logger;
 
 /**
- * Authentication Middleware
- * 
  * Protects admin routes by verifying session authentication or remember token
  */
 class AuthenticationMiddleware
 {
     public function __construct(
         private readonly RememberTokenService $rememberTokenService,
-        private readonly AdminUserResource $adminUserResource
+        private readonly AdminUserResource    $adminUserResource
     ) {}
+
     /**
      * Routes that don't require authentication
      */
@@ -57,9 +56,9 @@ class AuthenticationMiddleware
                 // Continue to requested page
                 return $response;
             }
-            
+
             Logger::warning('Unauthenticated access attempt', ['path' => $path]);
-            
+
             // Redirect to login
             $response->setRedirect('/admin/auth/login/index?redirect=' . urlencode($path));
             return $response;
@@ -71,7 +70,7 @@ class AuthenticationMiddleware
                 'path' => $path,
                 'user_id' => $_SESSION['admin_user_id'] ?? null
             ]);
-            
+
             // Destroy session and redirect to login
             $this->destroySession();
             $response->setRedirect('/admin/auth/login/index?error=session_invalid');
@@ -103,17 +102,17 @@ class AuthenticationMiddleware
      */
     private function isAuthenticated(): bool
     {
-        $isAuth = isset($_SESSION['admin_authenticated']) 
+        $isAuth = isset($_SESSION['admin_authenticated'])
             && $_SESSION['admin_authenticated'] === true
             && isset($_SESSION['admin_user_id']);
-        
+
         Logger::debug('AuthMiddleware: Authentication check', [
             'is_authenticated' => $isAuth,
             'session_keys' => array_keys($_SESSION),
             'admin_authenticated' => $_SESSION['admin_authenticated'] ?? 'not set',
             'admin_user_id' => $_SESSION['admin_user_id'] ?? 'not set'
         ]);
-        
+
         return $isAuth;
     }
 
@@ -126,8 +125,8 @@ class AuthenticationMiddleware
             return false;
         }
 
-        $currentFingerprint = hash('sha256', 
-            $request->getClientIp() . 
+        $currentFingerprint = hash('sha256',
+            $request->getClientIp() .
             $request->getUserAgent()
         );
 
@@ -140,11 +139,11 @@ class AuthenticationMiddleware
     private function destroySession(): void
     {
         $_SESSION = [];
-        
+
         if (isset($_COOKIE[session_name()])) {
             setcookie(session_name(), '', time() - 3600, '/');
         }
-        
+
         session_destroy();
     }
 
@@ -153,7 +152,7 @@ class AuthenticationMiddleware
      */
     private function isTestEnvironment(): bool
     {
-        return defined('PHPUNIT_RUNNING') 
+        return defined('PHPUNIT_RUNNING')
             || (isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'testing')
             || (isset($_SERVER['APP_ENV']) && $_SERVER['APP_ENV'] === 'testing');
     }
@@ -165,29 +164,29 @@ class AuthenticationMiddleware
     {
         // Get remember token from cookie
         $token = $this->rememberTokenService->getRememberCookie();
-        
+
         if (!$token) {
             return false;
         }
-        
+
         // Validate token and get user ID
         $userId = $this->rememberTokenService->validateToken($token);
-        
+
         if (!$userId) {
             // Invalid token, delete cookie
             $this->rememberTokenService->deleteRememberCookie();
             return false;
         }
-        
+
         // Load user data
         $userData = $this->adminUserResource->findOneBy(['user_id' => $userId]);
-        
+
         if (!$userData || !$userData['is_active']) {
             Logger::warning('Remember Me token valid but user inactive/not found', ['user_id' => $userId]);
             $this->rememberTokenService->deleteRememberCookie();
             return false;
         }
-        
+
         // Create session (auto-login)
         session_regenerate_id(true);
         $_SESSION['admin_user_id'] = $userData['user_id'];
@@ -198,12 +197,12 @@ class AuthenticationMiddleware
         $_SESSION['admin_authenticated'] = true;
         $_SESSION['admin_login_time'] = time();
         $_SESSION['admin_fingerprint'] = hash('sha256', $request->getClientIp() . $request->getUserAgent());
-        
+
         Logger::info('User auto-logged in via Remember Me', [
             'user_id' => $userId,
             'username' => $userData['username']
         ]);
-        
+
         return true;
     }
 }

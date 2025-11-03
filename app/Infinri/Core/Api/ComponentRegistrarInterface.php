@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace Infinri\Core\Api;
 
 /**
- * Component Registrar Interface
- * 
  * Manages registration and retrieval of components (modules, themes, libraries, languages).
  */
 interface ComponentRegistrarInterface

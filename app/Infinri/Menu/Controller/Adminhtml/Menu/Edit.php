@@ -8,8 +8,6 @@ use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
 
 /**
- * Menu Edit Controller
- * 
  * Displays menu edit/create form
  */
 class Edit extends AbstractAdminController

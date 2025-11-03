@@ -8,8 +8,6 @@ use Infinri\Core\Block\AbstractBlock;
 use Infinri\Core\Helper\Logger;
 
 /**
- * Layout
- * 
  * Manages layout structure, blocks, and rendering
  * Like Magento's Layout system
  */
@@ -19,28 +17,27 @@ class Layout
      * @var array<string> Layout handles
      */
     private array $handles = [];
-    
+
     /**
      * @var array<string, AbstractBlock> Blocks by name
      */
     private array $blocks = [];
-    
+
     /**
      * @var array Layout structure from XML
      */
     private array $structure = [];
-    
+
     /**
      * @var string|null Output content
      */
     private ?string $output = null;
-    
+
     public function __construct(
         private readonly LayoutLoader $layoutLoader,
         private readonly BlockFactory $blockFactory
-    ) {
-    }
-    
+    ) {}
+
     /**
      * Add layout handle
      *
@@ -53,10 +50,10 @@ class Layout
             $this->handles[] = $handle;
             Logger::debug("Layout: Added handle {$handle}");
         }
-        
+
         return $this;
     }
-    
+
     /**
      * Get layout handles
      *
@@ -66,7 +63,7 @@ class Layout
     {
         return $this->handles;
     }
-    
+
     /**
      * Load layout XML files for all handles
      *
@@ -77,19 +74,19 @@ class Layout
         Logger::info('Layout: Loading layout', [
             'handles' => $this->handles
         ]);
-        
+
         // Load XML for each handle
         foreach ($this->handles as $handle) {
             $xml = $this->layoutLoader->load($handle);
-            
+
             if ($xml) {
                 $this->processLayoutXml($xml);
             }
         }
-        
+
         return $this;
     }
-    
+
     /**
      * Process layout XML and build structure
      *
@@ -103,7 +100,7 @@ class Layout
             $this->processBlockElements($xml->body);
         }
     }
-    
+
     /**
      * Process block elements from XML
      *
@@ -117,35 +114,35 @@ class Layout
             $name = (string)$blockNode['name'];
             $class = (string)$blockNode['class'];
             $template = (string)($blockNode['template'] ?? '');
-            
+
             Logger::debug("Layout: Creating block {$name}", [
                 'class' => $class,
                 'template' => $template
             ]);
-            
+
             // Create block instance
             $block = $this->blockFactory->create($class);
             $block->setName($name);
-            
+
             if ($template) {
                 $block->setTemplate($template);
             }
-            
+
             // Store block
             $this->blocks[$name] = $block;
-            
+
             // Process child blocks
             if (isset($blockNode->block)) {
                 $this->processBlockElements($blockNode, $name);
             }
-            
+
             // Set parent-child relationship
             if ($parentName && isset($this->blocks[$parentName])) {
                 $this->blocks[$parentName]->addChild($block);
             }
         }
     }
-    
+
     /**
      * Generate layout output
      *
@@ -154,11 +151,11 @@ class Layout
     public function generateBlocks(): self
     {
         Logger::info('Layout: Generating blocks');
-        
+
         // Blocks are already created, just need to render
         return $this;
     }
-    
+
     /**
      * Get block by name
      *
@@ -169,7 +166,7 @@ class Layout
     {
         return $this->blocks[$name] ?? null;
     }
-    
+
     /**
      * Create block and add to layout
      *
@@ -182,16 +179,16 @@ class Layout
     {
         $block = $this->blockFactory->create($class);
         $block->setName($name);
-        
+
         if ($template) {
             $block->setTemplate($template);
         }
-        
+
         $this->blocks[$name] = $block;
-        
+
         return $block;
     }
-    
+
     /**
      * Get rendered output
      *
@@ -202,7 +199,7 @@ class Layout
         if ($this->output === null) {
             // Find root block and render
             $rootBlock = $this->getBlock('root');
-            
+
             if ($rootBlock) {
                 $this->output = $rootBlock->toHtml();
             } else {
@@ -210,10 +207,10 @@ class Layout
                 $this->output = '';
             }
         }
-        
+
         return $this->output;
     }
-    
+
     /**
      * Render layout (shortcut for loadLayout + generateBlocks + getOutput)
      *
@@ -223,7 +220,7 @@ class Layout
     {
         $this->loadLayout();
         $this->generateBlocks();
-        
+
         return $this->getOutput();
     }
 }

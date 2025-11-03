@@ -7,25 +7,17 @@ use Infinri\Core\Helper\Logger;
 use Infinri\Core\App\Middleware\SecurityHeadersMiddleware;
 
 /**
- * Front Controller
- * 
  * Entry point for all HTTP requests. Orchestrates routing and dispatching.
- * 
- * Phase 3.1: SOLID Refactoring - Slimmed down to orchestration only
- * - Router handles route matching
- * - Dispatcher handles controller instantiation and execution
- * - FrontController orchestrates the flow
  */
 class FrontController
 {
     public function __construct(
-        private readonly RouterInterface $router,
-        private readonly Dispatcher $dispatcher,
-        private readonly Request $request,
-        private readonly SecurityHeadersMiddleware $securityHeaders,
+        private readonly RouterInterface                     $router,
+        private readonly Dispatcher                          $dispatcher,
+        private readonly Request                             $request,
+        private readonly SecurityHeadersMiddleware           $securityHeaders,
         private readonly Middleware\AuthenticationMiddleware $authMiddleware
-    ) {
-    }
+    ) {}
 
     /**
      * Dispatch request to controller
@@ -40,26 +32,26 @@ class FrontController
         try {
             $uri = $request->getPathInfo();
             $method = $request->getMethod();
-            
+
             Logger::debug('Attempting to match route', ['uri' => $uri, 'method' => $method]);
-            
+
             // Check for redirects first (highest priority)
             if ($redirectResponse = $this->handleRedirect($uri, $request, $response)) {
                 return $redirectResponse;
             }
-            
+
             // Check URL rewrites before routing
             if ($rewriteResponse = $this->handleUrlRewrite($uri, $request, $response)) {
                 return $rewriteResponse;
             }
-            
+
             // Match and dispatch route
             return $this->matchAndDispatchRoute($uri, $method, $request, $response);
 
         } catch (\Throwable $e) {
             // Log exception
             Logger::exception($e, 'Exception during request dispatch');
-            
+
             // Handle errors
             $response->setServerError()->setBody($this->formatError($e));
             return $this->securityHeaders->handle($request, $response);
@@ -77,7 +69,7 @@ class FrontController
         // Check environment to determine error display level
         $env = getenv('APP_ENV') ?: 'production';
         $isDevelopment = in_array($env, ['development', 'dev', 'local']);
-        
+
         if ($isDevelopment) {
             // Development: Show detailed error information
             return sprintf(
@@ -102,13 +94,13 @@ class FrontController
         if (!$redirect) {
             return null;
         }
-        
+
         Logger::info('Redirect applied', [
             'from' => $uri,
             'to' => $redirect['to_path'],
             'code' => $redirect['redirect_code']
         ]);
-        
+
         $response->setStatusCode($redirect['redirect_code']);
         $response->setHeader('Location', '/' . $redirect['to_path']);
         return $this->securityHeaders->handle($request, $response);
@@ -123,7 +115,7 @@ class FrontController
         if (!$urlRewrite) {
             return null;
         }
-        
+
         // Handle redirect types (301/302)
         if ($urlRewrite['redirect_type'] > 0) {
             Logger::info('URL rewrite redirect', [
@@ -131,16 +123,16 @@ class FrontController
                 'to' => $urlRewrite['target_path'],
                 'code' => $urlRewrite['redirect_type']
             ]);
-            
+
             $response->setStatusCode($urlRewrite['redirect_type']);
             $response->setHeader('Location', '/' . $urlRewrite['target_path']);
             return $this->securityHeaders->handle($request, $response);
         }
-        
+
         // Internal rewrite (no redirect)
         Logger::info('URL rewrite applied', ['from' => $uri, 'to' => $urlRewrite['target_path']]);
         $uri = $this->parseTargetPath($urlRewrite['target_path'], $request);
-        
+
         return null;
     }
 
@@ -156,13 +148,13 @@ class FrontController
             $response->setNotFound()->setBody('404 - Page Not Found');
             return $this->securityHeaders->handle($request, $response);
         }
-        
+
         $route = new Route(
             controller: $match['controller'],
             action: $match['action'],
             params: $match['params']
         );
-        
+
         Logger::info('Route matched successfully', [
             'uri' => $uri,
             'controller' => $route->controller,
@@ -190,8 +182,8 @@ class FrontController
     private function checkRedirect(string $uri): ?array
     {
         // Skip redirect check for admin, static, media, and special files
-        if (str_starts_with($uri, '/admin') || 
-            str_starts_with($uri, '/static') || 
+        if (str_starts_with($uri, '/admin') ||
+            str_starts_with($uri, '/static') ||
             str_starts_with($uri, '/media') ||
             str_ends_with($uri, '.xml') ||
             str_ends_with($uri, '.txt')) {
@@ -207,7 +199,7 @@ class FrontController
             // Manually build dependency chain
             $connection = new \Infinri\Core\Model\ResourceModel\Connection();
             $redirectResource = new \Infinri\Seo\Model\ResourceModel\Redirect($connection);
-            
+
             // Normalize path and find redirect
             $normalizedPath = trim($uri, '/');
             return $redirectResource->findByFromPath($normalizedPath);
@@ -230,8 +222,8 @@ class FrontController
     private function checkUrlRewrite(string $uri): ?array
     {
         // Skip URL rewrite check for admin, static, media, and special files
-        if (str_starts_with($uri, '/admin') || 
-            str_starts_with($uri, '/static') || 
+        if (str_starts_with($uri, '/admin') ||
+            str_starts_with($uri, '/static') ||
             str_starts_with($uri, '/media') ||
             str_ends_with($uri, '.xml') ||
             str_ends_with($uri, '.txt')) {
@@ -249,7 +241,7 @@ class FrontController
             $urlRewriteResource = new \Infinri\Seo\Model\ResourceModel\UrlRewrite($connection);
             $urlRewriteRepository = new \Infinri\Seo\Model\Repository\UrlRewriteRepository($urlRewriteResource);
             $resolver = new \Infinri\Seo\Service\UrlRewriteResolver($urlRewriteRepository);
-            
+
             return $resolver->resolve($uri);
         } catch (\Throwable $e) {
             // If SEO module not available or error, continue without rewrite
@@ -273,7 +265,7 @@ class FrontController
         // Split path and query string
         $parts = explode('?', $targetPath, 2);
         $path = $parts[0];
-        
+
         // Parse query string parameters and add to request
         if (isset($parts[1])) {
             parse_str($parts[1], $params);
@@ -281,7 +273,7 @@ class FrontController
                 $request->setParam($key, $value);
             }
         }
-        
+
         // Return clean path for routing
         return '/' . ltrim($path, '/');
     }

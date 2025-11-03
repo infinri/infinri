@@ -1,36 +1,31 @@
 <?xml version="1.0"?>
-<!--
-/**
- * Adminhtml Default Layout
- * Base theme layout for all admin pages
- * Extends Theme's base layout and adds admin-specific CSS/JS
- */
--->
 <layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <!-- Extend Theme's base layout (from base view area) -->
     <update handle="base_default"/>
-    
+
     <!-- Override body class for admin -->
     <referenceContainer name="body">
         <arguments>
             <argument name="htmlClass" xsi:type="string">admin-body</argument>
         </arguments>
     </referenceContainer>
-    
+
     <!-- Add adminhtml CSS (compiled from Theme + all modules) -->
     <referenceContainer name="head.styles">
         <block class="Infinri\Core\Block\Text" name="theme.admin.styles">
             <arguments>
-                <argument name="text" xsi:type="string"><![CDATA[<link rel="stylesheet" href="/static/adminhtml/css/styles.min.css">]]></argument>
+                <argument name="text" xsi:type="string">
+                    <![CDATA[<link rel="stylesheet" href="/static/adminhtml/css/styles.min.css">]]></argument>
             </arguments>
         </block>
     </referenceContainer>
-    
+
     <!-- Add adminhtml JS (compiled from Theme + all modules) -->
     <referenceContainer name="head.scripts">
         <block class="Infinri\Core\Block\Text" name="theme.admin.scripts">
             <arguments>
-                <argument name="text" xsi:type="string"><![CDATA[<script src="/static/adminhtml/js/scripts.min.js"></script>]]></argument>
+                <argument name="text" xsi:type="string">
+                    <![CDATA[<script src="/static/adminhtml/js/scripts.min.js"></script>]]></argument>
             </arguments>
         </block>
     </referenceContainer>

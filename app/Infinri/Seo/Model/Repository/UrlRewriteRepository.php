@@ -13,8 +13,7 @@ class UrlRewriteRepository
 {
     public function __construct(
         private readonly UrlRewriteResource $resource
-    ) {
-    }
+    ) {}
 
     /**
      * Get URL rewrite by ID
@@ -91,7 +90,7 @@ class UrlRewriteRepository
     public function save(UrlRewrite $urlRewrite): UrlRewrite
     {
         $data = $urlRewrite->getData();
-        
+
         if ($urlRewrite->getUrlRewriteId()) {
             // Update
             $this->resource->update($urlRewrite->getUrlRewriteId(), $data);
@@ -113,7 +112,7 @@ class UrlRewriteRepository
             return false;
         }
 
-        return $this->resource->delete($urlRewrite->getUrlRewriteId());
+        return $this->resource->delete($urlRewrite->getUrlRewriteId()) > 0;
     }
 
     /**

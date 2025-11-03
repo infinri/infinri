@@ -1,7 +1,7 @@
 <?php
 /**
  * Pagination Template
- * 
+ *
  * @var \Infinri\Core\Block\Template $block
  * @var \Infinri\Theme\ViewModel\Pagination $viewModel
  */
@@ -20,7 +20,7 @@ $pages = $viewModel->getPages(2);
         <!-- Previous -->
         <?php if ($viewModel->hasPrevious()): ?>
             <li class="pagination-item pagination-prev">
-                <a href="<?= $block->escapeUrl($viewModel->getPreviousUrl()) ?>" 
+                <a href="<?= $block->escapeUrl($viewModel->getPreviousUrl()) ?>"
                    class="pagination-link"
                    aria-label="<?= $block->escapeHtmlAttr('Previous page') ?>">
                     <span aria-hidden="true">←</span>
@@ -28,11 +28,11 @@ $pages = $viewModel->getPages(2);
                 </a>
             </li>
         <?php endif; ?>
-        
+
         <!-- First page -->
         <?php if ($viewModel->shouldShowFirst(2)): ?>
             <li class="pagination-item">
-                <a href="<?= $block->escapeUrl($viewModel->getPageUrl(1)) ?>" 
+                <a href="<?= $block->escapeUrl($viewModel->getPageUrl(1)) ?>"
                    class="pagination-link"
                    aria-label="<?= $block->escapeHtmlAttr('Page 1') ?>">
                     1
@@ -42,18 +42,18 @@ $pages = $viewModel->getPages(2);
                 <span class="pagination-link">...</span>
             </li>
         <?php endif; ?>
-        
+
         <!-- Page numbers -->
         <?php foreach ($pages as $page): ?>
             <li class="pagination-item <?= $page === $currentPage ? 'active' : '' ?>">
                 <?php if ($page === $currentPage): ?>
-                    <span class="pagination-link pagination-current" 
+                    <span class="pagination-link pagination-current"
                           aria-label="<?= $block->escapeHtmlAttr("Page {$page}") ?>"
                           aria-current="page">
                         <?= $block->escapeHtml((string)$page) ?>
                     </span>
                 <?php else: ?>
-                    <a href="<?= $block->escapeUrl($viewModel->getPageUrl($page)) ?>" 
+                    <a href="<?= $block->escapeUrl($viewModel->getPageUrl($page)) ?>"
                        class="pagination-link"
                        aria-label="<?= $block->escapeHtmlAttr("Page {$page}") ?>">
                         <?= $block->escapeHtml((string)$page) ?>
@@ -61,25 +61,25 @@ $pages = $viewModel->getPages(2);
                 <?php endif; ?>
             </li>
         <?php endforeach; ?>
-        
+
         <!-- Last page -->
         <?php if ($viewModel->shouldShowLast(2)): ?>
             <li class="pagination-item pagination-ellipsis" aria-hidden="true">
                 <span class="pagination-link">...</span>
             </li>
             <li class="pagination-item">
-                <a href="<?= $block->escapeUrl($viewModel->getPageUrl($totalPages)) ?>" 
+                <a href="<?= $block->escapeUrl($viewModel->getPageUrl($totalPages)) ?>"
                    class="pagination-link"
                    aria-label="<?= $block->escapeHtmlAttr("Page {$totalPages}") ?>">
                     <?= $block->escapeHtml((string)$totalPages) ?>
                 </a>
             </li>
         <?php endif; ?>
-        
+
         <!-- Next -->
         <?php if ($viewModel->hasNext()): ?>
             <li class="pagination-item pagination-next">
-                <a href="<?= $block->escapeUrl($viewModel->getNextUrl()) ?>" 
+                <a href="<?= $block->escapeUrl($viewModel->getNextUrl()) ?>"
                    class="pagination-link"
                    aria-label="<?= $block->escapeHtmlAttr('Next page') ?>">
                     <span class="sr-only">Next</span>
@@ -88,7 +88,7 @@ $pages = $viewModel->getPages(2);
             </li>
         <?php endif; ?>
     </ul>
-    
+
     <div class="pagination-info" aria-live="polite">
         <span class="pagination-text">
             Page <?= $block->escapeHtml((string)$currentPage) ?> of <?= $block->escapeHtml((string)$totalPages) ?>

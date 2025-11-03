@@ -31,10 +31,10 @@ class Redirect extends AbstractResource
              ORDER BY priority DESC, redirect_id DESC 
              LIMIT 1"
         );
-        
+
         $stmt->execute(['from_path' => ltrim($fromPath, '/')]);
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
-        
+
         return $result ?: null;
     }
 
@@ -49,7 +49,7 @@ class Redirect extends AbstractResource
              WHERE is_active = true 
              ORDER BY from_path"
         );
-        
+
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
@@ -62,7 +62,7 @@ class Redirect extends AbstractResource
         $stmt = $pdo->prepare(
             "DELETE FROM {$this->getMainTable()} WHERE from_path = :from_path"
         );
-        
+
         return $stmt->execute(['from_path' => $fromPath]);
     }
 }

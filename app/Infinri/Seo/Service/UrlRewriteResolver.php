@@ -7,16 +7,13 @@ use Infinri\Seo\Model\Repository\UrlRewriteRepository;
 use Infinri\Core\Helper\Logger;
 
 /**
- * URL Rewrite Resolver Service
- * 
  * Resolves friendly URLs to internal paths
  */
 class UrlRewriteResolver
 {
     public function __construct(
         private readonly UrlRewriteRepository $urlRewriteRepository
-    ) {
-    }
+    ) {}
 
     /**
      * Resolve a request path to a target path
@@ -29,7 +26,7 @@ class UrlRewriteResolver
     {
         // Remove leading/trailing slashes and normalize
         $requestPath = trim($requestPath, '/');
-        
+
         // Empty path or just slash = homepage, don't rewrite
         if ($requestPath === '' || $requestPath === '/') {
             return null;

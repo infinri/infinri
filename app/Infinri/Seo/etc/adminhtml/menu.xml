@@ -3,65 +3,65 @@
         xsi:noNamespaceSchemaLocation="urn:infinri:framework:Admin/etc/menu.xsd">
     <menu>
         <!-- Marketing Section (top level) -->
-        <add id="Infinri_Seo::marketing" 
-             title="Marketing" 
-             module="Infinri_Seo" 
-             sortOrder="50" 
+        <add id="Infinri_Seo::marketing"
+             title="Marketing"
+             module="Infinri_Seo"
+             sortOrder="50"
              resource="Infinri_Seo::marketing"
              icon="📊"/>
-        
+
         <!-- SEO Subsection -->
-        <add id="Infinri_Seo::seo" 
-             title="SEO" 
-             module="Infinri_Seo" 
+        <add id="Infinri_Seo::seo"
+             title="SEO"
+             module="Infinri_Seo"
              parent="Infinri_Seo::marketing"
-             sortOrder="10" 
+             sortOrder="10"
              resource="Infinri_Seo::seo"
              icon="🔍"/>
-        
+
         <!-- SEO > Sitemap -->
-        <add id="Infinri_Seo::sitemap" 
-             title="Sitemap" 
-             module="Infinri_Seo" 
+        <add id="Infinri_Seo::sitemap"
+             title="Sitemap"
+             module="Infinri_Seo"
              parent="Infinri_Seo::seo"
-             sortOrder="10" 
-             action="/admin/seo/sitemap/index" 
+             sortOrder="10"
+             action="/admin/seo/sitemap/index"
              resource="Infinri_Seo::sitemap"/>
-        
+
         <!-- SEO > Robots.txt -->
-        <add id="Infinri_Seo::robots" 
-             title="Robots.txt" 
-             module="Infinri_Seo" 
+        <add id="Infinri_Seo::robots"
+             title="Robots.txt"
+             module="Infinri_Seo"
              parent="Infinri_Seo::seo"
-             sortOrder="20" 
-             action="/admin/seo/robots/index" 
+             sortOrder="20"
+             action="/admin/seo/robots/index"
              resource="Infinri_Seo::robots"/>
-        
+
         <!-- Routing Subsection -->
-        <add id="Infinri_Seo::routing" 
-             title="Routing" 
-             module="Infinri_Seo" 
+        <add id="Infinri_Seo::routing"
+             title="Routing"
+             module="Infinri_Seo"
              parent="Infinri_Seo::marketing"
-             sortOrder="20" 
+             sortOrder="20"
              resource="Infinri_Seo::routing"
              icon="🔀"/>
-        
+
         <!-- Routing > URL Redirects -->
-        <add id="Infinri_Seo::redirects" 
-             title="URL Redirects" 
-             module="Infinri_Seo" 
+        <add id="Infinri_Seo::redirects"
+             title="URL Redirects"
+             module="Infinri_Seo"
              parent="Infinri_Seo::routing"
-             sortOrder="10" 
-             action="/admin/seo/redirect/index" 
+             sortOrder="10"
+             action="/admin/seo/redirect/index"
              resource="Infinri_Seo::redirects"/>
-        
+
         <!-- Routing > URL Rewrites -->
-        <add id="Infinri_Seo::url_rewrites" 
-             title="URL Rewrites" 
-             module="Infinri_Seo" 
+        <add id="Infinri_Seo::url_rewrites"
+             title="URL Rewrites"
+             module="Infinri_Seo"
              parent="Infinri_Seo::routing"
-             sortOrder="20" 
-             action="/admin/seo/urlrewrite/index" 
+             sortOrder="20"
+             action="/admin/seo/urlrewrite/index"
              resource="Infinri_Seo::url_rewrites"/>
     </menu>
 </config>

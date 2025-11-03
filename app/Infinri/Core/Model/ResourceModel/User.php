@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace Infinri\Core\Model\ResourceModel;
 
 /**
- * User Resource Model
- * 
  * Handles database operations for User model
  */
 class User extends AbstractResource
@@ -48,6 +46,6 @@ class User extends AbstractResource
             $params[] = $excludeId;
         }
 
-        return (int) $this->connection->fetchOne($sql, $params) > 0;
+        return (int)$this->connection->fetchOne($sql, $params) > 0;
     }
 }

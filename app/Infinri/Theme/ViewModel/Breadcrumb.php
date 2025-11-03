@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Infinri\Theme\ViewModel;
 
 /**
- * Breadcrumb ViewModel
- * 
  * Manages breadcrumb trail for navigation
  */
 class Breadcrumb
@@ -17,7 +15,7 @@ class Breadcrumb
      * @var array
      */
     private array $breadcrumbs = [];
-    
+
     /**
      * Add a breadcrumb item
      *
@@ -32,7 +30,7 @@ class Breadcrumb
             'url' => $url,
         ];
     }
-    
+
     /**
      * Get all breadcrumbs
      *
@@ -42,7 +40,7 @@ class Breadcrumb
     {
         return $this->breadcrumbs;
     }
-    
+
     /**
      * Check if breadcrumbs exist
      *
@@ -52,7 +50,7 @@ class Breadcrumb
     {
         return !empty($this->breadcrumbs);
     }
-    
+
     /**
      * Get breadcrumb count
      *
@@ -62,7 +60,7 @@ class Breadcrumb
     {
         return count($this->breadcrumbs);
     }
-    
+
     /**
      * Clear all breadcrumbs
      *
@@ -72,7 +70,7 @@ class Breadcrumb
     {
         $this->breadcrumbs = [];
     }
-    
+
     /**
      * Get JSON-LD structured data for breadcrumbs
      *
@@ -84,10 +82,10 @@ class Breadcrumb
         if (empty($this->breadcrumbs)) {
             return '';
         }
-        
+
         $items = [];
         $position = 1;
-        
+
         foreach ($this->breadcrumbs as $crumb) {
             $items[] = [
                 '@type' => 'ListItem',
@@ -96,13 +94,13 @@ class Breadcrumb
                 'item' => $crumb['url'] ? $baseUrl . $crumb['url'] : null,
             ];
         }
-        
+
         $schema = [
             '@context' => 'https://schema.org',
             '@type' => 'BreadcrumbList',
             'itemListElement' => $items,
         ];
-        
+
         return json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
     }
 }

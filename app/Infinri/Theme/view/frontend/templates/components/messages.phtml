@@ -2,7 +2,7 @@
 /**
  * Messages Template
  * Displays flash messages to the user
- * 
+ *
  * @var \Infinri\Core\Block\Template $block
  */
 
@@ -21,18 +21,17 @@ $messages = $messagesViewModel->getMessages();
         $type = $message['type'] ?? 'info';
         $text = $message['text'] ?? '';
         ?>
-        <div class="message message-<?= $block->escapeHtmlAttr($type) ?>" 
+        <div class="message message-<?= $block->escapeHtmlAttr($type) ?>"
              role="status"
              aria-live="polite">
             <div class="message-content">
                 <span class="message-text"><?= $block->escapeHtml($text) ?></span>
             </div>
-            <button type="button" 
-                    class="message-close" 
+            <button type="button"
+                    class="message-close"
                     aria-label="Close message">
                 &times;
             </button>
         </div>
     <?php endforeach; ?>
 </div>
-<!-- JavaScript handlers in: /Theme/view/base/web/js/messages.js -->

@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace Infinri\Core\Block;
 
 /**
- * JS Block
- * 
  * Renders a proper <script> tag for JavaScript files
  * More secure and maintainable than raw HTML in layout XML
  */
@@ -15,17 +13,17 @@ class Js extends AbstractBlock
      * @var string Script src
      */
     private string $src = '';
-    
+
     /**
      * @var bool Defer attribute
      */
     private bool $defer = true;
-    
+
     /**
      * @var bool Async attribute
      */
     private bool $async = false;
-    
+
     /**
      * Set script src
      *
@@ -37,7 +35,7 @@ class Js extends AbstractBlock
         $this->src = $src;
         return $this;
     }
-    
+
     /**
      * Get script src
      *
@@ -50,10 +48,10 @@ class Js extends AbstractBlock
         if ($dataSrc !== null) {
             return $dataSrc;
         }
-        
+
         return $this->src;
     }
-    
+
     /**
      * Set defer attribute
      *
@@ -65,7 +63,7 @@ class Js extends AbstractBlock
         $this->defer = $defer;
         return $this;
     }
-    
+
     /**
      * Get defer attribute
      *
@@ -77,10 +75,10 @@ class Js extends AbstractBlock
         if ($dataDefer !== null) {
             return filter_var($dataDefer, FILTER_VALIDATE_BOOLEAN);
         }
-        
+
         return $this->defer;
     }
-    
+
     /**
      * Set async attribute
      *
@@ -92,7 +90,7 @@ class Js extends AbstractBlock
         $this->async = $async;
         return $this;
     }
-    
+
     /**
      * Get async attribute
      *
@@ -104,10 +102,10 @@ class Js extends AbstractBlock
         if ($dataAsync !== null) {
             return filter_var($dataAsync, FILTER_VALIDATE_BOOLEAN);
         }
-        
+
         return $this->async;
     }
-    
+
     /**
      * Render script tag
      *
@@ -116,23 +114,23 @@ class Js extends AbstractBlock
     public function toHtml(): string
     {
         $src = $this->getSrc();
-        
+
         if (empty($src)) {
             return '';
         }
-        
+
         $attributes = [
             'src' => htmlspecialchars($src, ENT_QUOTES, 'UTF-8'),
         ];
-        
+
         if ($this->getDefer()) {
             $attributes['defer'] = 'defer';
         }
-        
+
         if ($this->getAsync()) {
             $attributes['async'] = 'async';
         }
-        
+
         $attributeString = [];
         foreach ($attributes as $key => $value) {
             if ($value === $key) {
@@ -142,7 +140,7 @@ class Js extends AbstractBlock
                 $attributeString[] = sprintf('%s="%s"', $key, $value);
             }
         }
-        
+
         return sprintf('<script %s></script>', implode(' ', $attributeString));
     }
 }

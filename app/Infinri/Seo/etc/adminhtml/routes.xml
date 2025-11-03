@@ -1,16 +1,5 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <!-- Admin Routes:
-        - /admin/seo/index/index        - SEO Dashboard
-        - /admin/seo/redirect/index     - URL Redirects Grid
-        - /admin/seo/redirect/edit      - Edit Redirect
-        - /admin/seo/redirect/save      - Save Redirect
-        - /admin/seo/redirect/delete    - Delete Redirect
-        - /admin/seo/urlrewrite/index   - URL Rewrites
-        - /admin/seo/sitemap/index      - Robots.txt
-Sitemap Management
-        - /admin/seo/robots/index       - Robots.txt Management
-    -->
     <router id="admin">
         <route id="seo_admin" frontName="seo" module="Infinri_Seo">
             <module name="Infinri_Seo"/>

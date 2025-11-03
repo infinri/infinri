@@ -15,8 +15,6 @@ use Infinri\Core\Model\ComponentRegistrar;
 use Infinri\Core\Model\Module\ModuleReader;
 
 /**
- * Module Status Command
- * 
  * Shows detailed status of a specific module
  */
 class ModuleStatusCommand extends Command
@@ -47,8 +45,7 @@ class ModuleStatusCommand extends Command
      */
     protected function configure(): void
     {
-        $this
-            ->setName('module:status')
+        $this->setName('module:status')
             ->setDescription('Show module status')
             ->setHelp('Displays detailed information about a specific module.')
             ->addArgument(

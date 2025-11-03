@@ -8,8 +8,6 @@ use Infinri\Core\Model\ResourceModel\AbstractResource;
 use Infinri\Seo\Model\ResourceModel\Redirect as RedirectResource;
 
 /**
- * Redirect Model
- * 
  * Represents a 301/302 redirect rule
  */
 class Redirect extends AbstractModel
@@ -19,7 +17,7 @@ class Redirect extends AbstractModel
      */
     public function __construct(
         protected readonly RedirectResource $resource,
-        array $data = []
+        array                               $data = []
     ) {
         parent::__construct($data);
     }
@@ -31,6 +29,7 @@ class Redirect extends AbstractModel
     {
         return $this->resource;
     }
+
     /**
      * Get redirect ID
      */

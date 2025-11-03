@@ -7,8 +7,6 @@ use Infinri\Core\Model\Module\ModuleManager;
 use Infinri\Core\App\Request;
 
 /**
- * Template Resolver
- * 
  * Resolves template file paths from module directories with fallback support.
  */
 class TemplateResolver
@@ -46,8 +44,7 @@ class TemplateResolver
         }
 
         [$moduleName, $filePath] = explode('::', $templatePath, 2);
-        
-        // 🔒 SECURITY (Phase 2.4): Validate template path to prevent directory traversal
+
         if (!$this->isValidTemplatePath($filePath)) {
             throw new \InvalidArgumentException(
                 "Invalid template path: Directory traversal attempt detected in '$filePath'"
@@ -134,8 +131,6 @@ class TemplateResolver
     {
         $this->templateCache = [];
     }
-    
-    // ==================== SECURITY (Phase 2.4) ====================
     
     /**
      * Validate template path to prevent directory traversal attacks

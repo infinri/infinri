@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Infinri\Core\Api;
 
 /**
- * Cache Interface
- * 
  * Provides caching capabilities for the application
  */
 interface CacheInterface

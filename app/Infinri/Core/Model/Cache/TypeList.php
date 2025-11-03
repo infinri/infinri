@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Infinri\Core\Model\Cache;
 
 /**
- * Cache Type List
- * 
  * Manages different cache types used by the framework
  * Each cache type can be enabled/disabled and cleared independently
  */

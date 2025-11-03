@@ -8,8 +8,6 @@ use Infinri\Core\Model\ResourceModel\AbstractResource;
 use Infinri\Seo\Model\ResourceModel\UrlRewrite as UrlRewriteResource;
 
 /**
- * URL Rewrite Model
- * 
  * Represents a URL rewrite rule that maps friendly URLs to internal paths
  */
 class UrlRewrite extends AbstractModel
@@ -19,7 +17,7 @@ class UrlRewrite extends AbstractModel
      */
     public function __construct(
         protected readonly UrlRewriteResource $resource,
-        array $data = []
+        array                                 $data = []
     ) {
         parent::__construct($data);
     }
@@ -31,6 +29,7 @@ class UrlRewrite extends AbstractModel
     {
         return $this->resource;
     }
+
     /**
      * Get URL Rewrite ID
      */

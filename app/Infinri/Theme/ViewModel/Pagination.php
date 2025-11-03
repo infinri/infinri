@@ -7,8 +7,6 @@ namespace Infinri\Theme\ViewModel;
 use Infinri\Core\Model\Url\Builder as UrlBuilder;
 
 /**
- * Pagination ViewModel
- * 
  * Manages pagination for list pages
  */
 class Pagination
@@ -19,35 +17,35 @@ class Pagination
      * @var int
      */
     private int $currentPage = 1;
-    
+
     /**
      * Total number of pages
      *
      * @var int
      */
     private int $totalPages = 1;
-    
+
     /**
      * Items per page
      *
      * @var int
      */
     private int $pageSize = 20;
-    
+
     /**
      * Total items count
      *
      * @var int
      */
     private int $totalItems = 0;
-    
+
     /**
      * Base URL for pagination links
      *
      * @var string
      */
     private string $baseUrl = '';
-    
+
     /**
      * Constructor
      *
@@ -56,7 +54,7 @@ class Pagination
     public function __construct(
         private UrlBuilder $urlBuilder
     ) {}
-    
+
     /**
      * Set pagination parameters
      *
@@ -72,7 +70,7 @@ class Pagination
         $this->pageSize = max(1, $pageSize);
         $this->totalPages = (int)ceil($this->totalItems / $this->pageSize);
     }
-    
+
     /**
      * Set base URL for pagination
      *
@@ -83,7 +81,7 @@ class Pagination
     {
         $this->baseUrl = $baseUrl;
     }
-    
+
     /**
      * Get current page number
      *
@@ -93,7 +91,7 @@ class Pagination
     {
         return $this->currentPage;
     }
-    
+
     /**
      * Get total pages
      *
@@ -103,7 +101,7 @@ class Pagination
     {
         return $this->totalPages;
     }
-    
+
     /**
      * Get page size
      *
@@ -113,7 +111,7 @@ class Pagination
     {
         return $this->pageSize;
     }
-    
+
     /**
      * Get total items
      *
@@ -123,7 +121,7 @@ class Pagination
     {
         return $this->totalItems;
     }
-    
+
     /**
      * Get URL for specific page
      *
@@ -134,7 +132,7 @@ class Pagination
     {
         return $this->baseUrl . '?page=' . $page;
     }
-    
+
     /**
      * Check if has previous page
      *
@@ -144,7 +142,7 @@ class Pagination
     {
         return $this->currentPage > 1;
     }
-    
+
     /**
      * Check if has next page
      *
@@ -154,7 +152,7 @@ class Pagination
     {
         return $this->currentPage < $this->totalPages;
     }
-    
+
     /**
      * Get previous page URL
      *
@@ -164,7 +162,7 @@ class Pagination
     {
         return $this->hasPrevious() ? $this->getPageUrl($this->currentPage - 1) : null;
     }
-    
+
     /**
      * Get next page URL
      *
@@ -174,7 +172,7 @@ class Pagination
     {
         return $this->hasNext() ? $this->getPageUrl($this->currentPage + 1) : null;
     }
-    
+
     /**
      * Get page numbers to display
      *
@@ -186,14 +184,14 @@ class Pagination
         $pages = [];
         $start = max(1, $this->currentPage - $delta);
         $end = min($this->totalPages, $this->currentPage + $delta);
-        
+
         for ($i = $start; $i <= $end; $i++) {
             $pages[] = $i;
         }
-        
+
         return $pages;
     }
-    
+
     /**
      * Check if should show first page link
      *
@@ -204,7 +202,7 @@ class Pagination
     {
         return $this->currentPage - $delta > 1;
     }
-    
+
     /**
      * Check if should show last page link
      *

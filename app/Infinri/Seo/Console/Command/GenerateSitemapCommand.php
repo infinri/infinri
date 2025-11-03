@@ -14,8 +14,6 @@ use Infinri\Seo\Service\SitemapGenerator;
 use Infinri\Core\Model\Config\ScopeConfig;
 
 /**
- * Generate Static Sitemap Command
- * 
  * Usage: php bin/console seo:sitemap:generate [--base-url=http://example.com]
  */
 class GenerateSitemapCommand extends Command
@@ -23,14 +21,14 @@ class GenerateSitemapCommand extends Command
     protected function configure(): void
     {
         $this->setName('seo:sitemap:generate')
-             ->setDescription('Generate static sitemap.xml file')
-             ->setHelp('This command generates a static sitemap.xml file in the pub/ directory for better performance on large sites')
-             ->addOption(
-                 'base-url',
-                 null,
-                 InputOption::VALUE_OPTIONAL,
-                 'Base URL for the sitemap (e.g., https://example.com). If not provided, reads from configuration.'
-             );
+            ->setDescription('Generate static sitemap.xml file')
+            ->setHelp('This command generates a static sitemap.xml file in the pub/ directory for better performance on large sites')
+            ->addOption(
+                'base-url',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Base URL for the sitemap (e.g., https://example.com). If not provided, reads from configuration.'
+            );
     }
 
     /**
@@ -39,16 +37,16 @@ class GenerateSitemapCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('<info>Generating static sitemap...</info>');
-        
+
         try {
             // Get dependencies via ObjectManager
             $objectManager = ObjectManager::getInstance();
             $pageRepository = $objectManager->get(PageRepository::class);
             $urlRewriteRepository = $objectManager->get(UrlRewriteRepository::class);
             $scopeConfig = $objectManager->get(ScopeConfig::class);
-            
+
             $generator = new SitemapGenerator($pageRepository, $urlRewriteRepository);
-            
+
             // Get base URL from option or config
             $baseUrl = $input->getOption('base-url');
             if (!$baseUrl) {
@@ -58,28 +56,28 @@ class GenerateSitemapCommand extends Command
                     $output->writeln('<comment>Warning: No base URL configured, using default: ' . $baseUrl . '</comment>');
                 }
             }
-            
+
             // Remove trailing slash
             $baseUrl = rtrim($baseUrl, '/');
-            
+
             $output->writeln('Base URL: ' . $baseUrl);
-            
+
             // Generate sitemap XML
             $xml = $generator->generate($baseUrl);
-            
+
             // Write to pub/sitemap.xml
             $sitemapPath = dirname(__DIR__, 5) . '/pub/sitemap.xml';
             $result = file_put_contents($sitemapPath, $xml);
-            
+
             if ($result === false) {
                 $output->writeln('<error>Failed to write sitemap to: ' . $sitemapPath . '</error>');
                 return Command::FAILURE;
             }
-            
+
             // Get page count from XML
             $xmlObj = simplexml_load_string($xml);
             $urlCount = count($xmlObj->url ?? []);
-            
+
             $output->writeln('');
             $output->writeln('<info>✓ Successfully generated sitemap!</info>');
             $output->writeln('  File: ' . $sitemapPath);
@@ -88,9 +86,9 @@ class GenerateSitemapCommand extends Command
             $output->writeln('');
             $output->writeln('<comment>Tip: Add this to your crontab for automatic updates:</comment>');
             $output->writeln('  0 2 * * * cd /path/to/project && php bin/console seo:sitemap:generate');
-            
+
             return Command::SUCCESS;
-            
+
         } catch (\Exception $e) {
             $output->writeln('<error>Error generating sitemap: ' . $e->getMessage() . '</error>');
             $output->writeln('<error>Stack trace:</error>');
@@ -98,7 +96,7 @@ class GenerateSitemapCommand extends Command
             return Command::FAILURE;
         }
     }
-    
+
     /**
      * Format bytes to human-readable string
      */

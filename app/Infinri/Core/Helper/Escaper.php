@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Infinri\Core\Helper;
 
 /**
- * Escaper Helper
- * 
  * XSS protection and output escaping utilities
  */
 class Escaper
@@ -44,13 +42,11 @@ class Escaper
     public function escapeJs(string $string): string
     {
         // Escape special characters for JavaScript
-        $string = str_replace(
+        return str_replace(
             ['\\', "'", '"', "\n", "\r", "\t", '<', '>'],
             ['\\\\', "\\'", '\\"', '\\n', '\\r', '\\t', '\\x3C', '\\x3E'],
             $string
         );
-
-        return $string;
     }
 
     /**
@@ -105,9 +101,7 @@ class Escaper
         $filename = str_replace(['/', '\\'], '', $filename);
 
         // Remove special characters
-        $filename = preg_replace('/[^a-zA-Z0-9._-]/', '_', $filename);
-
-        return $filename;
+        return preg_replace('/[^a-zA-Z0-9._-]/', '_', $filename);
     }
 
     /**

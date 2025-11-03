@@ -1,14 +1,8 @@
 <?xml version="1.0"?>
-<!--
-/**
- * SEO Dashboard Layout
- * Route: admin/seo/index/index
- */
--->
 <layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <!-- Extend base admin layout (provides header, footer, navigation, CSS/JS) -->
     <update handle="admin_1column"/>
-    
+
     <!-- Add dashboard content -->
     <referenceContainer name="content">
         <block class="Infinri\Core\Block\Template" name="seo.dashboard">

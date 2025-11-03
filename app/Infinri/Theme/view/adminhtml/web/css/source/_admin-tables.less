@@ -1,175 +1,170 @@
-/**
- * Admin Tables
- * Enhanced table styling for admin data display
- */
-
 .admin-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: @white;
-    border-radius: @border-radius-lg;
-    overflow: hidden;
-    box-shadow: @shadow-sm;
-    
-    thead {
-        background: @surface-bg;
-        
-        th {
-            padding: @spacing-md @spacing-lg;
-            text-align: left;
-            font-weight: @font-weight-semibold;
-            font-size: @font-size-sm;
-            color: @text-color;
-            border-bottom: 2px solid @border-color;
-            white-space: nowrap;
-            
-            &.sortable {
-                cursor: pointer;
-                user-select: none;
-                
-                &:hover {
-                    background: @gray-100;
-                }
-                
-                &:after {
-                    content: '⇅';
-                    margin-left: @spacing-xs;
-                    color: @text-light;
-                }
-                
-                &.sort-asc:after {
-                    content: '↑';
-                    color: @primary-color;
-                }
-                
-                &.sort-desc:after {
-                    content: '↓';
-                    color: @primary-color;
-                }
-            }
+  width: 100%;
+  border-collapse: collapse;
+  background: @white;
+  border-radius: @border-radius-lg;
+  overflow: hidden;
+  box-shadow: @shadow-sm;
+
+  thead {
+    background: @surface-bg;
+
+    th {
+      padding: @spacing-md @spacing-lg;
+      text-align: left;
+      font-weight: @font-weight-semibold;
+      font-size: @font-size-sm;
+      color: @text-color;
+      border-bottom: 2px solid @border-color;
+      white-space: nowrap;
+
+      &.sortable {
+        cursor: pointer;
+        user-select: none;
+
+        &:hover {
+          background: @gray-100;
         }
+
+        &:after {
+          content: '⇅';
+          margin-left: @spacing-xs;
+          color: @text-light;
+        }
+
+        &.sort-asc:after {
+          content: '↑';
+          color: @primary-color;
+        }
+
+        &.sort-desc:after {
+          content: '↓';
+          color: @primary-color;
+        }
+      }
     }
-    
-    tbody {
-        tr {
-            border-bottom: 1px solid @border-light;
-            transition: @transition-fast;
-            
-            &:hover {
-                background: @gray-100;
-            }
-            
-            &:last-child {
-                border-bottom: none;
-            }
-            
-            &.is-selected {
-                background: fade(@primary-color, 5%);
-            }
-        }
-        
-        td {
-            padding: @spacing-md @spacing-lg;
-            font-size: @font-size-sm;
-            color: @text-color;
-            vertical-align: middle;
-            
-            &.text-center {
-                text-align: center;
-            }
-            
-            &.text-right {
-                text-align: right;
-            }
-        }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid @border-light;
+      transition: @transition-fast;
+
+      &:hover {
+        background: @gray-100;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &.is-selected {
+        background: fade(@primary-color, 5%);
+      }
     }
+
+    td {
+      padding: @spacing-md @spacing-lg;
+      font-size: @font-size-sm;
+      color: @text-color;
+      vertical-align: middle;
+
+      &.text-center {
+        text-align: center;
+      }
+
+      &.text-right {
+        text-align: right;
+      }
+    }
+  }
 }
 
 // Table wrapper for horizontal scroll
 .admin-table-wrapper {
-    overflow-x: auto;
-    margin: 0 -@spacing-lg;
-    padding: 0 @spacing-lg;
-    
-    .admin-table {
-        min-width: 800px;
-    }
+  overflow-x: auto;
+  margin: 0 -@spacing-lg;
+  padding: 0 @spacing-lg;
+
+  .admin-table {
+    min-width: 800px;
+  }
 }
 
 // Table actions column
 .table-actions {
-    display: flex;
-    gap: @spacing-sm;
-    align-items: center;
-    
-    a, button {
-        color: @primary-color;
-        text-decoration: none;
-        font-weight: @font-weight-medium;
-        font-size: @font-size-sm;
-        transition: @transition-fast;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: @spacing-xs @spacing-sm;
-        border-radius: @border-radius-sm;
-        
-        &:hover {
-            background: @gray-100;
-            color: @primary-dark;
-        }
-        
-        &.delete {
-            color: @danger-color;
-            
-            &:hover {
-                background: fade(@danger-color, 10%);
-            }
-        }
+  display: flex;
+  gap: @spacing-sm;
+  align-items: center;
+
+  a, button {
+    color: @primary-color;
+    text-decoration: none;
+    font-weight: @font-weight-medium;
+    font-size: @font-size-sm;
+    transition: @transition-fast;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: @spacing-xs @spacing-sm;
+    border-radius: @border-radius-sm;
+
+    &:hover {
+      background: @gray-100;
+      color: @primary-dark;
     }
+
+    &.delete {
+      color: @danger-color;
+
+      &:hover {
+        background: fade(@danger-color, 10%);
+      }
+    }
+  }
 }
 
 // Status badges in tables
 .table-status {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: @border-radius-pill;
-    font-size: 12px;
-    font-weight: @font-weight-semibold;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    
-    &.status-active,
-    &.status-enabled {
-        background: fade(@success-color, 15%);
-        color: darken(@success-color, 20%);
-    }
-    
-    &.status-inactive,
-    &.status-disabled {
-        background: fade(@danger-color, 15%);
-        color: darken(@danger-color, 20%);
-    }
-    
-    &.status-pending {
-        background: fade(@warning-color, 15%);
-        color: darken(@warning-color, 25%);
-    }
-    
-    &.status-draft {
-        background: fade(@gray-500, 15%);
-        color: @gray-700;
-    }
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: @border-radius-pill;
+  font-size: 12px;
+  font-weight: @font-weight-semibold;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+
+  &.status-active,
+  &.status-enabled {
+    background: fade(@success-color, 15%);
+    color: darken(@success-color, 20%);
+  }
+
+  &.status-inactive,
+  &.status-disabled {
+    background: fade(@danger-color, 15%);
+    color: darken(@danger-color, 20%);
+  }
+
+  &.status-pending {
+    background: fade(@warning-color, 15%);
+    color: darken(@warning-color, 25%);
+  }
+
+  &.status-draft {
+    background: fade(@gray-500, 15%);
+    color: @gray-700;
+  }
 }
 
 // Responsive tables
 @media (max-width: @breakpoint-md) {
-    .admin-table {
-        font-size: @font-size-sm;
-        
-        thead th,
-        tbody td {
-            padding: @spacing-sm @spacing-md;
-        }
+  .admin-table {
+    font-size: @font-size-sm;
+
+    thead th,
+    tbody td {
+      padding: @spacing-sm @spacing-md;
     }
+  }
 }

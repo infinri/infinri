@@ -29,7 +29,7 @@ class RedirectDataProvider
         }
 
         $redirect = $this->redirectRepository->getById($redirectId);
-        
+
         if (!$redirect) {
             return [];
         }

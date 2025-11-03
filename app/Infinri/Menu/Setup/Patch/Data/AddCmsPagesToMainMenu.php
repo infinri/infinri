@@ -8,8 +8,6 @@ use Infinri\Core\Setup\Patch\DataPatchInterface;
 use PDO;
 
 /**
- * Add CMS Pages to Main Menu
- * 
  * Populates main-navigation menu with existing active CMS pages
  */
 class AddCmsPagesToMainMenu implements DataPatchInterface
@@ -34,14 +32,14 @@ class AddCmsPagesToMainMenu implements DataPatchInterface
         );
         $stmt->execute(['main-navigation']);
         $menu = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         if (!$menu) {
             // Menu doesn't exist yet, skip
             return;
         }
-        
+
         $menuId = $menu['menu_id'];
-        
+
         // Get active CMS pages (excluding error pages)
         $stmt = $this->connection->query(
             "SELECT page_id, title, url_key 
@@ -51,13 +49,13 @@ class AddCmsPagesToMainMenu implements DataPatchInterface
              ORDER BY page_id ASC"
         );
         $pages = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
+
         if (empty($pages)) {
             return;
         }
-        
+
         $sortOrder = 10;
-        
+
         foreach ($pages as $page) {
             // Check if menu item already exists for this page
             $stmt = $this->connection->prepare(
@@ -65,11 +63,11 @@ class AddCmsPagesToMainMenu implements DataPatchInterface
                  WHERE menu_id = ? AND link_type = 'cms_page' AND resource_id = ?"
             );
             $stmt->execute([$menuId, $page['page_id']]);
-            
+
             if ($stmt->fetchColumn()) {
                 continue; // Skip if already exists
             }
-            
+
             // Insert menu item
             $stmt = $this->connection->prepare(
                 "INSERT INTO menu_item (
@@ -88,7 +86,7 @@ class AddCmsPagesToMainMenu implements DataPatchInterface
                     updated_at
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
             );
-            
+
             $stmt->execute([
                 $menuId,
                 null,  // parent_item_id (root level)
@@ -102,7 +100,7 @@ class AddCmsPagesToMainMenu implements DataPatchInterface
                 $sortOrder,
                 'true'   // is_active
             ]);
-            
+
             $sortOrder += 10;
         }
     }

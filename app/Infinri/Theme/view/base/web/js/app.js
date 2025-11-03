@@ -1,10 +1,6 @@
-/**
- * Infinri App
- * Main application initialization
- */
-(function() {
+(function () {
     'use strict';
-    
+
     const InfinriApp = {
         /**
          * Initialize the application
@@ -12,7 +8,7 @@
         init() {
             this.ready();
         },
-        
+
         /**
          * Initialize all modules
          */
@@ -27,7 +23,7 @@
                 }
             });
         },
-        
+
         /**
          * DOM ready callback
          */
@@ -38,12 +34,12 @@
             };
 
             if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', initialize, { once: true });
+                document.addEventListener('DOMContentLoaded', initialize, {once: true});
             } else {
                 initialize();
             }
         },
-        
+
         /**
          * Remove splash screen or loading indicator
          */
@@ -76,10 +72,10 @@
             setTimeout(() => this.waitForModule(moduleName, callback, retries - 1), 50);
         }
     };
-    
+
     // Expose to global scope
     window.InfinriApp = InfinriApp;
-    
+
     // Initialize
     InfinriApp.init();
 })();

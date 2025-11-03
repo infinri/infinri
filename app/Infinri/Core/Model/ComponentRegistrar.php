@@ -8,8 +8,6 @@ use InvalidArgumentException;
 use Infinri\Core\Api\ComponentRegistrarInterface;
 
 /**
- * Component Registrar Implementation
- * 
  * Singleton registry for all components (modules, themes, libraries, languages).
  * Components register themselves by calling ComponentRegistrar::register() in their registration.php files.
  */
@@ -31,7 +29,6 @@ class ComponentRegistrar implements ComponentRegistrarInterface
      */
     private function __construct()
     {
-        // Initialize component type arrays
         $this->paths = [
             self::MODULE => [],
             self::THEME => [],
@@ -80,8 +77,8 @@ class ComponentRegistrar implements ComponentRegistrarInterface
     {
         if (!isset($this->paths[$type])) {
             throw new InvalidArgumentException(
-                sprintf('Invalid component type: %s. Must be one of: %s', 
-                    $type, 
+                sprintf('Invalid component type: %s. Must be one of: %s',
+                    $type,
                     implode(', ', [self::MODULE, self::THEME, self::LIBRARY, self::LANGUAGE])
                 )
             );
@@ -138,9 +135,7 @@ class ComponentRegistrar implements ComponentRegistrarInterface
     /**
      * Prevent cloning of singleton
      */
-    private function __clone()
-    {
-    }
+    private function __clone() {}
 
     /**
      * Prevent unserialization of singleton

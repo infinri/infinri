@@ -6,16 +6,13 @@ namespace Infinri\Seo\Service;
 use Infinri\Core\Model\ResourceModel\Connection;
 
 /**
- * Robots.txt Generator Service
- * 
  * Generates robots.txt content from database or defaults
  */
 class RobotsGenerator
 {
     public function __construct(
         private readonly Connection $connection
-    ) {
-    }
+    ) {}
 
     /**
      * Generate robots.txt content
@@ -27,11 +24,11 @@ class RobotsGenerator
     {
         // Try to get custom robots.txt from database
         $customRobots = $this->getCustomRobots();
-        
+
         if ($customRobots) {
             return $customRobots;
         }
-        
+
         // Return default robots.txt
         return $this->getDefaultRobots($baseUrl);
     }
@@ -52,7 +49,7 @@ class RobotsGenerator
                 ORDER BY robots_id DESC 
                 LIMIT 1
             ");
-            
+
             $result = $stmt->fetch(\PDO::FETCH_ASSOC);
             return $result ? $result['content'] : null;
         } catch (\Exception $e) {
@@ -69,7 +66,7 @@ class RobotsGenerator
     private function getDefaultRobots(string $baseUrl): string
     {
         $baseUrl = rtrim($baseUrl, '/');
-        
+
         return <<<ROBOTS
 # Robots.txt for Infinri
 User-agent: *

@@ -7,14 +7,7 @@ use Infinri\Core\Model\ObjectManager;
 use Infinri\Core\Helper\Logger;
 
 /**
- * UI Component Renderer
- * 
  * Factory class that orchestrates UI component rendering
- * 
- * Phase 3.2: SOLID Refactoring - Slimmed down to orchestration only
- * - ComponentResolver handles XML and DataProvider logic
- * - GridRenderer handles grid-specific rendering
- * - UiComponentRenderer orchestrates the flow
  */
 class UiComponentRenderer
 {
@@ -30,7 +23,7 @@ class UiComponentRenderer
 
     /**
      * Render a UI component by name
-     * 
+     *
      * @param string $componentName Component name (e.g., 'cms_page_listing')
      * @param array $params Additional parameters (e.g., menu_id, filters)
      * @return string Rendered HTML
@@ -41,7 +34,7 @@ class UiComponentRenderer
             'component' => $componentName,
             'params' => $params
         ]);
-        
+
         // Find and load XML configuration
         $xmlPath = $this->resolver->findComponentXml($componentName);
         if (!$xmlPath) {

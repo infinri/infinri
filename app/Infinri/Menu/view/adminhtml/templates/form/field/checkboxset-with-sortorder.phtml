@@ -1,8 +1,6 @@
 <?php
 /**
  * CMS Pages Checkbox List with Sort Order
- * 
- * Renders checkboxes for each CMS page with sort order input
  *
  * @var $block Infinri\Core\Block\Template
  */
@@ -13,61 +11,62 @@ $fieldName = $block->getData('name') ?? 'cms_pages';
 
 <?php if (empty($cmsPages)): ?>
     <div class="admin-message admin-message-notice">
-        <p>No active CMS pages found. Please create pages in <a href="/admin/cms/page/index">CMS &gt; Pages</a> first.</p>
+        <p>No active CMS pages found. Please create pages in <a href="/admin/cms/page/index">CMS &gt; Pages</a> first.
+        </p>
     </div>
 <?php else: ?>
     <div class="cms-pages-selector">
         <table class="admin-table">
             <thead>
-                <tr>
-                    <th style="width: 50px;">Include</th>
-                    <th>Page Title</th>
-                    <th style="width: 150px;">URL Key</th>
-                    <th style="width: 120px;">Sort Order</th>
-                </tr>
+            <tr>
+                <th style="width: 50px;">Include</th>
+                <th>Page Title</th>
+                <th style="width: 150px;">URL Key</th>
+                <th style="width: 120px;">Sort Order</th>
+            </tr>
             </thead>
             <tbody>
-                <?php foreach ($cmsPages as $page): ?>
-                    <tr class="cms-page-row <?php echo $page['selected'] ? 'selected' : ''; ?>">
-                        <td class="checkbox-cell">
-                            <input 
-                                type="checkbox" 
+            <?php foreach ($cmsPages as $page): ?>
+                <tr class="cms-page-row <?php echo $page['selected'] ? 'selected' : ''; ?>">
+                    <td class="checkbox-cell">
+                        <input
+                                type="checkbox"
                                 name="<?php echo $this->escapeHtmlAttr($fieldName); ?>[<?php echo $page['page_id']; ?>][selected]"
                                 value="1"
                                 id="page_<?php echo $page['page_id']; ?>"
                                 <?php echo $page['selected'] ? 'checked' : ''; ?>
                                 class="admin-control-checkbox page-checkbox"
                                 data-page-id="<?php echo $page['page_id']; ?>"
-                            />
-                            <input 
-                                type="hidden" 
+                        />
+                        <input
+                                type="hidden"
                                 name="<?php echo $this->escapeHtmlAttr($fieldName); ?>[<?php echo $page['page_id']; ?>][page_id]"
                                 value="<?php echo $page['page_id']; ?>"
-                            />
-                            <input 
-                                type="hidden" 
+                        />
+                        <input
+                                type="hidden"
                                 name="<?php echo $this->escapeHtmlAttr($fieldName); ?>[<?php echo $page['page_id']; ?>][title]"
                                 value="<?php echo $this->escapeHtmlAttr($page['title']); ?>"
-                            />
-                            <?php if (isset($page['item_id']) && $page['item_id']): ?>
-                                <input 
-                                    type="hidden" 
+                        />
+                        <?php if (isset($page['item_id']) && $page['item_id']): ?>
+                            <input
+                                    type="hidden"
                                     name="<?php echo $this->escapeHtmlAttr($fieldName); ?>[<?php echo $page['page_id']; ?>][item_id]"
                                     value="<?php echo $page['item_id']; ?>"
-                                />
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <label for="page_<?php echo $page['page_id']; ?>" class="page-title-label">
-                                <?php echo $this->escapeHtml($page['title']); ?>
-                            </label>
-                        </td>
-                        <td>
-                            <code><?php echo $this->escapeHtml($page['url_key']); ?></code>
-                        </td>
-                        <td>
-                            <input 
-                                type="number" 
+                            />
+                        <?php endif; ?>
+                    </td>
+                    <td>
+                        <label for="page_<?php echo $page['page_id']; ?>" class="page-title-label">
+                            <?php echo $this->escapeHtml($page['title']); ?>
+                        </label>
+                    </td>
+                    <td>
+                        <code><?php echo $this->escapeHtml($page['url_key']); ?></code>
+                    </td>
+                    <td>
+                        <input
+                                type="number"
                                 name="<?php echo $this->escapeHtmlAttr($fieldName); ?>[<?php echo $page['page_id']; ?>][sort_order]"
                                 value="<?php echo $page['sort_order']; ?>"
                                 class="admin-control-text sort-order-input"
@@ -75,10 +74,10 @@ $fieldName = $block->getData('name') ?? 'cms_pages';
                                 min="0"
                                 step="10"
                                 placeholder="10"
-                            />
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
+                        />
+                    </td>
+                </tr>
+            <?php endforeach; ?>
             </tbody>
         </table>
     </div>
@@ -87,10 +86,12 @@ $fieldName = $block->getData('name') ?? 'cms_pages';
         .cms-pages-selector {
             margin-top: 10px;
         }
+
         .cms-pages-selector .admin-table {
             width: 100%;
             border-collapse: collapse;
         }
+
         .cms-pages-selector .admin-table th {
             background: #f5f5f5;
             padding: 10px;
@@ -98,39 +99,48 @@ $fieldName = $block->getData('name') ?? 'cms_pages';
             border-bottom: 2px solid #ddd;
             font-weight: 600;
         }
+
         .cms-pages-selector .admin-table td {
             padding: 12px 10px;
             border-bottom: 1px solid #eee;
             vertical-align: middle;
         }
+
         .cms-page-row:hover {
             background-color: #f9f9f9;
         }
+
         .cms-page-row.selected {
             background-color: #f0f7ff;
         }
+
         .checkbox-cell {
             text-align: center;
         }
+
         .page-title-label {
             cursor: pointer;
             font-weight: 500;
         }
+
         .sort-order-input {
             padding: 6px 8px;
             border: 1px solid #ccc;
             border-radius: 3px;
         }
+
         .admin-message {
             padding: 15px;
             margin: 15px 0;
             border-radius: 4px;
         }
+
         .admin-message-notice {
             background-color: #fff3cd;
             border: 1px solid #ffc107;
             color: #856404;
         }
+
         .admin-message a {
             color: #004085;
             font-weight: 600;
@@ -139,9 +149,9 @@ $fieldName = $block->getData('name') ?? 'cms_pages';
 
     <script>
         // Highlight row when checkbox is checked
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.page-checkbox').forEach(function(checkbox) {
-                checkbox.addEventListener('change', function() {
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.page-checkbox').forEach(function (checkbox) {
+                checkbox.addEventListener('change', function () {
                     const row = this.closest('tr');
                     if (this.checked) {
                         row.classList.add('selected');

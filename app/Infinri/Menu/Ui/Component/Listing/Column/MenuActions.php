@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Infinri\Menu\Ui\Component\Listing\Column;
 
 /**
- * Menu Actions Column
- * 
  * Generates action links for menu grid rows
  */
 class MenuActions
@@ -39,7 +37,7 @@ class MenuActions
                 }
             }
         }
-        
+
         return $dataSource;
     }
 }

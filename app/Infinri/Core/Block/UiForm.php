@@ -7,7 +7,6 @@ use Infinri\Core\View\Element\UiFormRenderer;
 use Infinri\Core\Model\ObjectManager;
 
 /**
- * UI Form Block
  * Renders UI component forms within the layout system
  * No template needed - renders directly from UI component XML
  */

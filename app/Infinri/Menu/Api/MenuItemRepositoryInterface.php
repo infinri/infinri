@@ -7,8 +7,6 @@ namespace Infinri\Menu\Api;
 use Infinri\Menu\Model\MenuItem;
 
 /**
- * Menu Item Repository Interface
- * 
  * Provides CRUD operations for MenuItem entities
  */
 interface MenuItemRepositoryInterface
@@ -20,7 +18,7 @@ interface MenuItemRepositoryInterface
      * @return MenuItem|null
      */
     public function getById(int $id): ?MenuItem;
-    
+
     /**
      * Get all menu items for a specific menu
      *
@@ -29,7 +27,7 @@ interface MenuItemRepositoryInterface
      * @return MenuItem[]
      */
     public function getByMenuId(int $menuId, bool $activeOnly = false): array;
-    
+
     /**
      * Get menu items by menu identifier
      *
@@ -38,7 +36,7 @@ interface MenuItemRepositoryInterface
      * @return array Raw array data for performance
      */
     public function getByMenuIdentifier(string $identifier, bool $activeOnly = true): array;
-    
+
     /**
      * Get child items for a parent
      *
@@ -47,7 +45,7 @@ interface MenuItemRepositoryInterface
      * @return MenuItem[]
      */
     public function getChildren(int $parentItemId, bool $activeOnly = false): array;
-    
+
     /**
      * Save menu item
      *
@@ -56,7 +54,7 @@ interface MenuItemRepositoryInterface
      * @throws \RuntimeException
      */
     public function save(MenuItem $menuItem): MenuItem;
-    
+
     /**
      * Delete menu item
      *
@@ -65,7 +63,7 @@ interface MenuItemRepositoryInterface
      * @throws \RuntimeException
      */
     public function delete(int $itemId): bool;
-    
+
     /**
      * Reorder menu items
      *

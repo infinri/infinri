@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace Infinri\Core\Model\ResourceModel;
 
 /**
- * Abstract Resource Model
- * 
  * Base class for all resource models (database table interaction)
  */
 abstract class AbstractResource
@@ -14,17 +12,17 @@ abstract class AbstractResource
      * @var string Main database table name
      */
     protected string $mainTable;
-    
+
     /**
      * @var string Primary key field name
      */
     protected string $primaryKey;
-    
+
     /**
      * @var string Primary key field
      */
     protected string $idFieldName = 'id';
-    
+
     /**
      * @var array<string>|null Cached table columns
      */
@@ -32,8 +30,7 @@ abstract class AbstractResource
 
     public function __construct(
         protected readonly Connection $connection
-    ) {
-    }
+    ) {}
 
     /**
      * Get main table name
@@ -84,15 +81,15 @@ abstract class AbstractResource
             // Update existing
             $id = $data[$this->idFieldName];
             unset($data[$this->idFieldName]);
-            
+
             $this->connection->update(
                 $this->mainTable,
                 $data,
                 "{$this->idFieldName} = ?",
                 [$id]
             );
-            
-            return (int) $id;
+
+            return (int)$id;
         } else {
             // Insert new
             unset($data[$this->idFieldName]);
@@ -131,7 +128,7 @@ abstract class AbstractResource
         foreach ($criteria as $field => $value) {
             // Validate column name to prevent SQL injection
             $this->validateColumnName($field);
-            
+
             if ($value === null) {
                 $where[] = "{$field} IS NULL";
             } else {
@@ -182,7 +179,7 @@ abstract class AbstractResource
         foreach ($criteria as $field => $value) {
             // Validate column name to prevent SQL injection
             $this->validateColumnName($field);
-            
+
             if ($value === null) {
                 $where[] = "{$field} IS NULL";
             } else {
@@ -197,7 +194,7 @@ abstract class AbstractResource
             $sql .= ' WHERE ' . implode(' AND ', $where);
         }
 
-        return (int) $this->connection->fetchOne($sql, $params);
+        return (int)$this->connection->fetchOne($sql, $params);
     }
 
     /**
@@ -219,7 +216,7 @@ abstract class AbstractResource
     {
         return $this->primaryKey;
     }
-    
+
     /**
      * Get table columns from database schema
      *
@@ -229,7 +226,7 @@ abstract class AbstractResource
     {
         if ($this->tableColumns === null) {
             $driver = $this->connection->getDriver();
-            
+
             // Use database-specific SQL to get column names
             if ($driver === 'mysql') {
                 $sql = "SHOW COLUMNS FROM {$this->mainTable}";
@@ -250,10 +247,10 @@ abstract class AbstractResource
                 }
             }
         }
-        
+
         return $this->tableColumns;
     }
-    
+
     /**
      * Validate that field name is a valid column in the table
      *
@@ -264,7 +261,7 @@ abstract class AbstractResource
     protected function validateColumnName(string $field): void
     {
         $validColumns = $this->getTableColumns();
-        
+
         if (!in_array($field, $validColumns, true)) {
             throw new \InvalidArgumentException(
                 sprintf(

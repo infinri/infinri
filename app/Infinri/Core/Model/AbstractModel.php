@@ -6,8 +6,6 @@ namespace Infinri\Core\Model;
 use Infinri\Core\Model\ResourceModel\AbstractResource;
 
 /**
- * Abstract Model
- * 
  * Base class for all models (Active Record pattern)
  */
 abstract class AbstractModel

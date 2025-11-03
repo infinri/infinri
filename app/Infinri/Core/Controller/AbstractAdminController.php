@@ -10,11 +10,9 @@ use Infinri\Core\Security\CsrfGuard;
 use Infinri\Core\Helper\Logger;
 
 /**
- * Abstract Admin Controller
- * 
  * Base class for all admin/backend controllers.
  * Provides common functionality for admin panel operations.
- * 
+ *
  * @package Infinri\Core\Controller
  */
 abstract class AbstractAdminController extends AbstractController
@@ -23,17 +21,15 @@ abstract class AbstractAdminController extends AbstractController
     protected CsrfGuard $csrfGuard;
 
     public function __construct(
-        Request $request,
-        Response $response,
+        Request       $request,
+        Response      $response,
         LayoutFactory $layoutFactory,
-        CsrfGuard $csrfGuard
+        CsrfGuard     $csrfGuard
     ) {
         parent::__construct($request, $response);
         $this->layoutFactory = $layoutFactory;
         $this->csrfGuard = $csrfGuard;
     }
-
-    // ==================== LAYOUT RENDERING ====================
 
     /**
      * Render admin layout with given handle
@@ -47,8 +43,6 @@ abstract class AbstractAdminController extends AbstractController
         $html = $this->layoutFactory->render($handle, $data);
         return $this->response->setBody($html);
     }
-
-    // ==================== CSRF PROTECTION ====================
 
     /**
      * Validate CSRF token from request
@@ -65,7 +59,7 @@ abstract class AbstractAdminController extends AbstractController
     /**
      * Require valid CSRF token or return 403 response
      *
-     * @param string $tokenId Token identifier  
+     * @param string $tokenId Token identifier
      * @param string|null $token Token value from request
      * @return Response|null Returns Response with 403 if invalid, null if valid
      */
@@ -76,12 +70,12 @@ abstract class AbstractAdminController extends AbstractController
                 'token_id' => $tokenId,
                 'request_path' => $this->request->getPath()
             ]);
-            
+
             return $this->response
                 ->setForbidden()
                 ->setBody('403 Forbidden - Invalid or missing CSRF token');
         }
-        
+
         return null;
     }
 
@@ -97,8 +91,6 @@ abstract class AbstractAdminController extends AbstractController
         return is_string($token) ? $token : null;
     }
 
-    // ==================== REQUEST VALIDATION ====================
-
     /**
      * Require POST request or redirect
      *
@@ -110,11 +102,9 @@ abstract class AbstractAdminController extends AbstractController
         if (!$this->request->isPost()) {
             return $this->redirectToRoute($redirectRoute);
         }
-        
+
         return null;
     }
-
-    // ==================== REDIRECT HELPERS ====================
 
     /**
      * Redirect to route with query parameters
@@ -127,12 +117,12 @@ abstract class AbstractAdminController extends AbstractController
     protected function redirectToRoute(string $route, array $params = [], int $code = 302): Response
     {
         $url = $route;
-        
+
         if (!empty($params)) {
             $queryString = http_build_query($params);
             $url .= (str_contains($route, '?') ? '&' : '?') . $queryString;
         }
-        
+
         return $this->redirect($url, $code);
     }
 
@@ -146,11 +136,11 @@ abstract class AbstractAdminController extends AbstractController
     protected function redirectWithSuccess(string $route, string $message = ''): Response
     {
         $params = ['success' => '1'];
-        
+
         if (!empty($message)) {
             $params['message'] = $message;
         }
-        
+
         return $this->redirectToRoute($route, $params);
     }
 
@@ -164,15 +154,13 @@ abstract class AbstractAdminController extends AbstractController
     protected function redirectWithError(string $route, string $message = ''): Response
     {
         $params = ['error' => '1'];
-        
+
         if (!empty($message)) {
             $params['message'] = $message;
         }
-        
+
         return $this->redirectToRoute($route, $params);
     }
-
-    // ==================== ERROR HANDLING ====================
 
     /**
      * Return 403 Forbidden response
@@ -203,17 +191,15 @@ abstract class AbstractAdminController extends AbstractController
             'line' => $e->getLine(),
             'trace' => $e->getTraceAsString()
         ]);
-        
+
         $message = $showDetails
             ? '500 Internal Server Error - ' . $e->getMessage()
             : '500 Internal Server Error';
-        
+
         return $this->response
             ->setServerError()
             ->setBody($message);
     }
-
-    // ==================== UTILITY METHODS ====================
 
     /**
      * Get integer parameter from request with default
@@ -224,7 +210,7 @@ abstract class AbstractAdminController extends AbstractController
      */
     protected function getIntParam(string $name, int $default = 0): int
     {
-        return (int) $this->request->getParam($name, $default);
+        return (int)$this->request->getParam($name, $default);
     }
 
     /**
@@ -236,7 +222,7 @@ abstract class AbstractAdminController extends AbstractController
      */
     protected function getStringParam(string $name, string $default = ''): string
     {
-        return (string) $this->request->getParam($name, $default);
+        return (string)$this->request->getParam($name, $default);
     }
 
     /**
@@ -248,7 +234,7 @@ abstract class AbstractAdminController extends AbstractController
      */
     protected function getBoolParam(string $name, bool $default = false): bool
     {
-        return (bool) $this->request->getParam($name, $default);
+        return (bool)$this->request->getParam($name, $default);
     }
 
     /**

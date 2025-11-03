@@ -10,8 +10,6 @@ use Infinri\Core\App\Session;
  * Lightweight CSRF guard backed by PHP sessions.
  * Avoids external framework dependencies while keeping API compatible
  * with existing form renderer usage.
- * 
- * Phase 2.2: Migrated to use Session service for consistency
  */
 class CsrfGuard
 {
@@ -19,15 +17,14 @@ class CsrfGuard
 
     public function __construct(
         private readonly Session $session
-    ) {
-    }
+    ) {}
 
     public function generateToken(string $tokenId): string
     {
         $this->session->start();
 
         $token = bin2hex(random_bytes(32));
-        
+
         // Get existing tokens array or create new
         $tokens = $this->session->get(self::SESSION_KEY, []);
         $tokens[$tokenId] = [
@@ -49,7 +46,7 @@ class CsrfGuard
 
         $tokens = $this->session->get(self::SESSION_KEY, []);
         $stored = $tokens[$tokenId] ?? null;
-        
+
         if (!$stored) {
             return false;
         }

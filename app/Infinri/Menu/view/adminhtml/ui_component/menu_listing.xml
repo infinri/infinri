@@ -5,7 +5,7 @@
             <item name="provider" xsi:type="string">menu_listing.menu_listing_data_source</item>
         </item>
     </argument>
-    
+
     <dataSource name="menu_listing_data_source">
         <argument name="dataProvider" xsi:type="string">Infinri\Menu\Ui\Component\Listing\MenuDataProvider</argument>
         <argument name="data" xsi:type="array">
@@ -14,7 +14,7 @@
             </item>
         </argument>
     </dataSource>
-    
+
     <!-- Grid Settings -->
     <settings>
         <buttons>
@@ -29,7 +29,7 @@
             <dep>menu_listing.menu_listing_data_source</dep>
         </deps>
     </settings>
-    
+
     <listingToolbar name="listing_top">
         <bookmark name="bookmarks"/>
         <columnsControls name="columns_controls"/>
@@ -37,7 +37,7 @@
         <filters name="listing_filters"/>
         <paging name="listing_paging"/>
     </listingToolbar>
-    
+
     <columns name="menu_columns">
         <selectionsColumn name="ids">
             <argument name="data" xsi:type="array">
@@ -46,7 +46,7 @@
                 </item>
             </argument>
         </selectionsColumn>
-        
+
         <column name="menu_id">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
@@ -56,7 +56,7 @@
                 </item>
             </argument>
         </column>
-        
+
         <column name="title">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
@@ -65,7 +65,7 @@
                 </item>
             </argument>
         </column>
-        
+
         <column name="identifier">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
@@ -74,7 +74,7 @@
                 </item>
             </argument>
         </column>
-        
+
         <column name="is_active">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
@@ -85,7 +85,7 @@
                 </item>
             </argument>
         </column>
-        
+
         <column name="created_at" class="Infinri\Core\Ui\Component\Listing\Column\Date">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
@@ -96,7 +96,7 @@
                 </item>
             </argument>
         </column>
-        
+
         <column name="updated_at" class="Infinri\Core\Ui\Component\Listing\Column\Date">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
@@ -107,7 +107,7 @@
                 </item>
             </argument>
         </column>
-        
+
         <actionsColumn name="actions" class="Infinri\Menu\Ui\Component\Listing\Column\MenuActions">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">

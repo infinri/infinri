@@ -11,8 +11,6 @@ use Infinri\Seo\Service\UrlRewriteGenerator;
 use Infinri\Core\Model\ObjectManager;
 
 /**
- * Regenerate URL Rewrites Command
- * 
  * Usage: php bin/console seo:urlrewrite:regenerate
  */
 class RegenerateUrlRewritesCommand extends Command
@@ -20,8 +18,8 @@ class RegenerateUrlRewritesCommand extends Command
     protected function configure(): void
     {
         $this->setName('seo:urlrewrite:regenerate')
-             ->setDescription('Regenerate URL rewrites for all CMS pages')
-             ->setHelp('This command regenerates URL rewrites for all existing CMS pages');
+            ->setDescription('Regenerate URL rewrites for all CMS pages')
+            ->setHelp('This command regenerates URL rewrites for all existing CMS pages');
     }
 
     /**

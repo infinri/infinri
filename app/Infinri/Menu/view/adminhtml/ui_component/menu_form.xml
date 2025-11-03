@@ -6,7 +6,7 @@
         </item>
         <item name="label" xsi:type="string" translate="true">Menu Information</item>
     </argument>
-    
+
     <settings>
         <buttons>
             <button name="back">
@@ -36,7 +36,7 @@
             <dep>menu_form.menu_form_data_source</dep>
         </deps>
     </settings>
-    
+
     <dataSource name="menu_form_data_source">
         <argument name="data" xsi:type="array">
             <item name="js_config" xsi:type="array">
@@ -48,19 +48,19 @@
             <submitUrl path="menu/menu/save"/>
         </settings>
     </dataSource>
-    
+
     <fieldset name="general">
         <settings>
             <label translate="true">General Information</label>
         </settings>
-        
+
         <field name="menu_id" formElement="input">
             <settings>
                 <dataType>text</dataType>
                 <visible>false</visible>
             </settings>
         </field>
-        
+
         <field name="title" formElement="input">
             <settings>
                 <validation>
@@ -71,7 +71,7 @@
                 <dataScope>title</dataScope>
             </settings>
         </field>
-        
+
         <field name="identifier" formElement="input">
             <settings>
                 <validation>
@@ -81,10 +81,12 @@
                 <dataType>text</dataType>
                 <label translate="true">Identifier</label>
                 <dataScope>identifier</dataScope>
-                <notice translate="true">Unique identifier (e.g., main-navigation, footer-links). Use lowercase letters, numbers, hyphens, and underscores only.</notice>
+                <notice translate="true">Unique identifier (e.g., main-navigation, footer-links). Use lowercase letters,
+                    numbers, hyphens, and underscores only.
+                </notice>
             </settings>
         </field>
-        
+
         <field name="is_active" formElement="checkbox">
             <settings>
                 <dataType>boolean</dataType>
@@ -104,13 +106,14 @@
             </formElements>
         </field>
     </fieldset>
-    
+
     <fieldset name="cms_pages">
         <settings>
             <label translate="true">CMS Pages</label>
-            <notice translate="true">Select which CMS pages to include in this menu and set their display order.</notice>
+            <notice translate="true">Select which CMS pages to include in this menu and set their display order.
+            </notice>
         </settings>
-        
+
         <field name="cms_pages" formElement="checkboxset">
             <settings>
                 <dataType>array</dataType>

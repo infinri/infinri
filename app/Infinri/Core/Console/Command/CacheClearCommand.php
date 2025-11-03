@@ -12,8 +12,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Infinri\Core\Model\Cache\TypeList;
 
 /**
- * Cache Clear Command
- * 
  * Clears cache for specific types or all cache
  */
 class CacheClearCommand extends Command

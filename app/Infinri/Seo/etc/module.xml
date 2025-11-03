@@ -1,17 +1,4 @@
 <?xml version="1.0"?>
-<!--
-/**
- * SEO Module Configuration
- * 
- * Features:
- * - URL Rewrites (friendly URLs)
- * - 301/302 Redirects
- * - Sitemap generation
- * - Robots.txt management
- * - Canonical URLs
- * - Meta tags management
- */
--->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <module name="Infinri_Seo" version="1.0.0">
         <sequence>

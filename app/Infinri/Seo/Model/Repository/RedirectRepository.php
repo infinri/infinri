@@ -14,7 +14,7 @@ class RedirectRepository
 {
     public function __construct(
         private RedirectResource $resource,
-        private ObjectManager $objectManager
+        private ObjectManager    $objectManager
     ) {}
 
     /**
@@ -24,12 +24,12 @@ class RedirectRepository
     {
         /** @var Redirect $redirect */
         $redirect = $this->objectManager->create(Redirect::class);
-        $this->resource->load($redirect, $id);
-        
+        $this->resource->load($id);
+
         if (!$redirect->getRedirectId()) {
             return null;
         }
-        
+
         return $redirect;
     }
 
@@ -42,14 +42,14 @@ class RedirectRepository
         $stmt = $pdo->query(
             "SELECT * FROM {$this->resource->getMainTable()} ORDER BY priority DESC, from_path"
         );
-        
+
         $redirects = [];
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             /** @var Redirect $redirect */
             $redirect = $this->objectManager->create(Redirect::class, ['data' => $row]);
             $redirects[] = $redirect;
         }
-        
+
         return $redirects;
     }
 
@@ -60,13 +60,13 @@ class RedirectRepository
     {
         $rows = $this->resource->getAllActive();
         $redirects = [];
-        
+
         foreach ($rows as $row) {
             /** @var Redirect $redirect */
             $redirect = $this->objectManager->create(Redirect::class, ['data' => $row]);
             $redirects[] = $redirect;
         }
-        
+
         return $redirects;
     }
 
@@ -76,11 +76,11 @@ class RedirectRepository
     public function findByFromPath(string $fromPath): ?Redirect
     {
         $data = $this->resource->findByFromPath($fromPath);
-        
+
         if (!$data) {
             return null;
         }
-        
+
         return $this->objectManager->create(Redirect::class, ['data' => $data]);
     }
 
@@ -98,7 +98,7 @@ class RedirectRepository
      */
     public function delete(Redirect $redirect): bool
     {
-        return $this->resource->delete($redirect);
+        return $this->resource->delete($redirect->getRedirectId()) > 0;
     }
 
     /**
@@ -110,7 +110,7 @@ class RedirectRepository
         if (!$redirect) {
             return false;
         }
-        
+
         return $this->delete($redirect);
     }
 }

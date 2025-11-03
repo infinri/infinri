@@ -10,8 +10,6 @@ use Infinri\Cms\Model\Repository\PageRepository;
 use Infinri\Core\Helper\Logger;
 
 /**
- * Menu Form Data Provider
- * 
  * Provides data for menu edit/create form including available CMS pages
  */
 class MenuDataProvider
@@ -24,9 +22,9 @@ class MenuDataProvider
      * @param PageRepository $pageRepository
      */
     public function __construct(
-        private readonly MenuRepository $menuRepository,
+        private readonly MenuRepository     $menuRepository,
         private readonly MenuItemRepository $menuItemRepository,
-        private readonly PageRepository $pageRepository
+        private readonly PageRepository     $pageRepository
     ) {}
 
     /**
@@ -44,20 +42,20 @@ class MenuDataProvider
             'is_active' => true,
             'cms_pages' => $this->getAvailableCmsPages($menuId)
         ];
-        
+
         if ($menuId !== null) {
             $menu = $this->menuRepository->getById($menuId);
-            
+
             if ($menu) {
                 $data['identifier'] = $menu->getIdentifier();
                 $data['title'] = $menu->getTitle();
                 $data['is_active'] = $menu->isActive();
             }
         }
-        
+
         return $data;
     }
-    
+
     /**
      * Get available CMS pages with selection status
      *
@@ -69,7 +67,7 @@ class MenuDataProvider
         // Get all active CMS pages
         $pages = $this->pageRepository->getAll();
         $activePages = array_filter($pages, fn($page) => $page->isActive());
-        
+
         // Get currently selected pages for this menu (if editing)
         $selectedPages = [];
         if ($menuId) {
@@ -84,7 +82,7 @@ class MenuDataProvider
                 }
             }
         }
-        
+
         // Build available pages array
         $cmsPages = [];
         foreach ($activePages as $page) {
@@ -98,7 +96,7 @@ class MenuDataProvider
                 'item_id' => $selectedPages[$pageId]['item_id'] ?? null
             ];
         }
-        
+
         return $cmsPages;
     }
 }

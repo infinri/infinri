@@ -7,7 +7,6 @@ use Infinri\Core\View\Element\UiComponentRenderer;
 use Infinri\Core\Model\ObjectManager;
 
 /**
- * UI Component Block
  * Renders UI components within the layout system
  * No template needed - renders directly from UI component XML
  */
@@ -29,7 +28,7 @@ class UiComponent extends AbstractBlock
             $objectManager = ObjectManager::getInstance();
             $this->uiComponentRenderer = $objectManager->create(UiComponentRenderer::class);
         }
-        
+
         return $this->uiComponentRenderer;
     }
 
@@ -41,12 +40,12 @@ class UiComponent extends AbstractBlock
     {
         // Get component name from data (set via layout XML <argument name="component_name">)
         $componentName = $this->getData('component_name');
-        
+
         \Infinri\Core\Helper\Logger::debug('UiComponent::toHtml called', [
             'component_name' => $componentName,
             'all_data' => $this->getData()
         ]);
-        
+
         if (empty($componentName)) {
             \Infinri\Core\Helper\Logger::warning('UiComponent: No component_name provided');
             return '<div style="padding: 20px; border: 2px solid red;">UiComponent Error: No component_name specified in layout XML</div>';

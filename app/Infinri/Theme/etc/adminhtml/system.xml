@@ -1,10 +1,4 @@
 <?xml version="1.0"?>
-<!--
-/**
- * Theme System Configuration
- * Defines configuration sections for theme settings including footer
- */
--->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <system>
         <!-- Theme Footer Section -->
@@ -12,28 +6,31 @@
             <label>Theme - Footer</label>
             <tab>general</tab>
             <resource>Infinri_Theme::config</resource>
-            
+
             <!-- General Footer Settings -->
             <group id="general" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>General Footer Settings</label>
-                
-                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
                     <label>Enable Footer</label>
                     <source_model>Infinri\Core\Model\Config\Source\YesNo</source_model>
                     <comment>Show or hide the entire footer section</comment>
                 </field>
-                
-                <field id="copyright" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+
+                <field id="copyright" translate="label comment" type="text" sortOrder="20" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
                     <label>Copyright Text</label>
                     <comment>Footer copyright notice (e.g., "© 2025 Infinri. All rights reserved.")</comment>
                 </field>
             </group>
-            
+
             <!-- Social Links -->
             <group id="social" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Social Media Links</label>
-                
-                <field id="social_links" translate="label comment" type="textarea" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+
+                <field id="social_links" translate="label comment" type="textarea" sortOrder="10" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
                     <label>Social Links (JSON)</label>
                     <comment><![CDATA[
                         Enter social media links as JSON array. Example:<br/>
@@ -56,23 +53,26 @@
                     <validate>validate-json</validate>
                 </field>
             </group>
-            
+
             <!-- Newsletter -->
             <group id="newsletter" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Newsletter Subscription</label>
-                
-                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
                     <label>Enable Newsletter</label>
                     <source_model>Infinri\Core\Model\Config\Source\YesNo</source_model>
                     <comment>Show newsletter subscription form in footer</comment>
                 </field>
-                
-                <field id="heading" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+
+                <field id="heading" translate="label comment" type="text" sortOrder="20" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
                     <label>Newsletter Heading</label>
                     <comment>Heading text for newsletter section (e.g., "Subscribe to Our Newsletter")</comment>
                 </field>
-                
-                <field id="description" translate="label comment" type="textarea" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+
+                <field id="description" translate="label comment" type="textarea" sortOrder="30" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
                     <label>Newsletter Description</label>
                     <comment>Description text displayed above subscription form</comment>
                 </field>

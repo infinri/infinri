@@ -9,8 +9,6 @@ use Infinri\Core\Model\ResourceModel\Connection;
 use PDO;
 
 /**
- * Menu Resource Model
- * 
  * Handles database operations for Menu entity
  */
 class Menu extends AbstractResource
@@ -22,10 +20,11 @@ class Menu extends AbstractResource
      */
     public function __construct(Connection $connection)
     {
-        parent::__construct($connection);
         $this->mainTable = 'menu';
         $this->primaryKey = 'menu_id';
         $this->idFieldName = 'menu_id';
+
+        parent::__construct($connection);
     }
 
     /**
@@ -39,10 +38,10 @@ class Menu extends AbstractResource
         $stmt = $this->connection->getConnection()->prepare(
             "SELECT * FROM {$this->mainTable} WHERE identifier = :identifier LIMIT 1"
         );
-        
+
         $stmt->execute(['identifier' => $identifier]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         return $result ?: null;
     }
 
@@ -55,13 +54,13 @@ class Menu extends AbstractResource
     public function getAll(bool $activeOnly = false): array
     {
         $sql = "SELECT * FROM {$this->mainTable}";
-        
+
         if ($activeOnly) {
             $sql .= " WHERE is_active = true";
         }
-        
+
         $sql .= " ORDER BY title ASC";
-        
+
         $stmt = $this->connection->getConnection()->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

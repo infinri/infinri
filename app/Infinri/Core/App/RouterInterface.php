@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace Infinri\Core\App;
 
 /**
- * Router Interface
- * 
  * Common interface for all router implementations
  */
 interface RouterInterface
@@ -25,7 +23,7 @@ interface RouterInterface
         string $path,
         string $controller,
         string $action = 'execute',
-        array $methods = ['GET', 'POST']
+        array  $methods = ['GET', 'POST']
     ): self;
 
     /**

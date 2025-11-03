@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <menu>
-        <add id="Infinri_Menu::menus" 
-             title="Menus" 
-             module="Infinri_Menu" 
-             sortOrder="50" 
+        <add id="Infinri_Menu::menus"
+             title="Menus"
+             module="Infinri_Menu"
+             sortOrder="50"
              resource="Infinri_Menu::menus"/>
-        
-        <add id="Infinri_Menu::menu_management" 
-             title="Manage Menus" 
-             module="Infinri_Menu" 
-             sortOrder="10" 
-             action="/admin/menu/menu/index" 
-             resource="Infinri_Menu::menus" 
+
+        <add id="Infinri_Menu::menu_management"
+             title="Manage Menus"
+             module="Infinri_Menu"
+             sortOrder="10"
+             action="/admin/menu/menu/index"
+             resource="Infinri_Menu::menus"
              parent="Infinri_Menu::menus"/>
     </menu>
 </config>

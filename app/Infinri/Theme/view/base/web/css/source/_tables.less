@@ -1,33 +1,28 @@
-/**
- * Table Styles
- * Data table styling
- */
-
 // ============================================================================
 // Base Table
 // ============================================================================
 
 .table {
-    width: 100%;
-    margin-bottom: @spacing-md;
-    color: @text-color;
-    vertical-align: top;
-    border-color: @border-color;
-    
-    > :not(caption) > * > * {
-        padding: @spacing-sm @spacing-md;
-        background-color: transparent;
-        border-bottom-width: 1px;
-        box-shadow: inset 0 0 0 9999px transparent;
-    }
-    
-    > tbody {
-        vertical-align: inherit;
-    }
-    
-    > thead {
-        vertical-align: bottom;
-    }
+  width: 100%;
+  margin-bottom: @spacing-md;
+  color: @text-color;
+  vertical-align: top;
+  border-color: @border-color;
+
+  > :not(caption) > * > * {
+    padding: @spacing-sm @spacing-md;
+    background-color: transparent;
+    border-bottom-width: 1px;
+    box-shadow: inset 0 0 0 9999px transparent;
+  }
+
+  > tbody {
+    vertical-align: inherit;
+  }
+
+  > thead {
+    vertical-align: bottom;
+  }
 }
 
 // ============================================================================
@@ -35,27 +30,27 @@
 // ============================================================================
 
 .table-bordered {
-    border: 1px solid @border-color;
-    
-    > :not(caption) > * {
-        border-width: 1px 0;
-        
-        > * {
-            border-width: 0 1px;
-        }
+  border: 1px solid @border-color;
+
+  > :not(caption) > * {
+    border-width: 1px 0;
+
+    > * {
+      border-width: 0 1px;
     }
+  }
 }
 
 .table-striped {
-    > tbody > tr:nth-of-type(odd) > * {
-        background-color: fade(@gray-100, 50%);
-    }
+  > tbody > tr:nth-of-type(odd) > * {
+    background-color: fade(@gray-100, 50%);
+  }
 }
 
 .table-hover {
-    > tbody > tr:hover > * {
-        background-color: @gray-100;
-    }
+  > tbody > tr:hover > * {
+    background-color: @gray-100;
+  }
 }
 
 // ============================================================================
@@ -63,15 +58,15 @@
 // ============================================================================
 
 .table-sm {
-    > :not(caption) > * > * {
-        padding: @spacing-xs @spacing-sm;
-    }
+  > :not(caption) > * > * {
+    padding: @spacing-xs @spacing-sm;
+  }
 }
 
 .table-lg {
-    > :not(caption) > * > * {
-        padding: @spacing-md @spacing-lg;
-    }
+  > :not(caption) > * > * {
+    padding: @spacing-md @spacing-lg;
+  }
 }
 
 // ============================================================================
@@ -79,12 +74,12 @@
 // ============================================================================
 
 thead {
-    th {
-        font-weight: @font-weight-semibold;
-        text-align: left;
-        background-color: @gray-100;
-        border-bottom: 2px solid @border-color;
-    }
+  th {
+    font-weight: @font-weight-semibold;
+    text-align: left;
+    background-color: @gray-100;
+    border-bottom: 2px solid @border-color;
+  }
 }
 
 // ============================================================================
@@ -92,26 +87,26 @@ thead {
 // ============================================================================
 
 .table-responsive {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    
-    > .table {
-        margin-bottom: 0;
-    }
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  > .table {
+    margin-bottom: 0;
+  }
 }
 
 @media (max-width: (@tablet - 1)) {
-    .table-responsive-sm {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
+  .table-responsive-sm {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 @media (max-width: (@desktop - 1)) {
-    .table-responsive-md {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
+  .table-responsive-md {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 // ============================================================================
@@ -119,15 +114,15 @@ thead {
 // ============================================================================
 
 .align-top {
-    vertical-align: top !important;
+  vertical-align: top !important;
 }
 
 .align-middle {
-    vertical-align: middle !important;
+  vertical-align: middle !important;
 }
 
 .align-bottom {
-    vertical-align: bottom !important;
+  vertical-align: bottom !important;
 }
 
 // ============================================================================
@@ -135,48 +130,48 @@ thead {
 // ============================================================================
 
 .table-primary {
-    background-color: fade(@primary-color, 10%);
-    border-color: fade(@primary-color, 30%);
+  background-color: fade(@primary-color, 10%);
+  border-color: fade(@primary-color, 30%);
 }
 
 .table-secondary {
-    background-color: fade(@secondary-color, 10%);
-    border-color: fade(@secondary-color, 30%);
+  background-color: fade(@secondary-color, 10%);
+  border-color: fade(@secondary-color, 30%);
 }
 
 .table-success {
-    background-color: fade(@success-color, 10%);
-    border-color: fade(@success-color, 30%);
+  background-color: fade(@success-color, 10%);
+  border-color: fade(@success-color, 30%);
 }
 
 .table-danger {
-    background-color: fade(@danger-color, 10%);
-    border-color: fade(@danger-color, 30%);
+  background-color: fade(@danger-color, 10%);
+  border-color: fade(@danger-color, 30%);
 }
 
 .table-warning {
-    background-color: fade(@warning-color, 10%);
-    border-color: fade(@warning-color, 30%);
+  background-color: fade(@warning-color, 10%);
+  border-color: fade(@warning-color, 30%);
 }
 
 .table-info {
-    background-color: fade(@info-color, 10%);
-    border-color: fade(@info-color, 30%);
+  background-color: fade(@info-color, 10%);
+  border-color: fade(@info-color, 30%);
 }
 
 .table-light {
-    background-color: @gray-100;
-    border-color: @border-color;
+  background-color: @gray-100;
+  border-color: @border-color;
 }
 
 .table-dark {
-    color: @white;
-    background-color: @gray-800;
+  color: @white;
+  background-color: @gray-800;
+  border-color: @gray-700;
+
+  th, td {
     border-color: @gray-700;
-    
-    th, td {
-        border-color: @gray-700;
-    }
+  }
 }
 
 // ============================================================================
@@ -184,9 +179,9 @@ thead {
 // ============================================================================
 
 caption {
-    padding-top: @spacing-sm;
-    padding-bottom: @spacing-sm;
-    color: @text-muted;
-    text-align: left;
-    caption-side: bottom;
+  padding-top: @spacing-sm;
+  padding-bottom: @spacing-sm;
+  color: @text-muted;
+  text-align: left;
+  caption-side: bottom;
 }

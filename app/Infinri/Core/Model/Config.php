@@ -6,8 +6,6 @@ namespace Infinri\Core\Model;
 use Infinri\Core\Model\ResourceModel\Connection;
 
 /**
- * Configuration Model
- * 
  * Manages system configuration stored in core_config_data table
  * Similar to Magento's config system with scopes
  */

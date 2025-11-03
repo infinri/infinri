@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Infinri\Core\Model\Di;
 
-use Infinri\Core\Model\Di\Plugin\InterceptorInterface;
-
 /**
- * Plugin Manager
- * 
  * Manages plugins (interceptors) for Aspect-Oriented Programming (AOP)
  * Allows before/around/after method interception
  */
@@ -59,9 +55,10 @@ class PluginManager
         string $className,
         string $pluginName,
         string $pluginClass,
-        int $sortOrder = 10,
-        array $methods = []
-    ): void {
+        int    $sortOrder = 10,
+        array  $methods = []
+    ): void
+    {
         if (!isset($this->plugins[$className])) {
             $this->plugins[$className] = [];
         }
@@ -218,6 +215,7 @@ class PluginManager
      *
      * @param string $pluginClass Plugin class name
      * @return object Plugin instance
+     * @throws \Exception If plugin class is not found
      */
     private function getPluginInstance(string $pluginClass): object
     {

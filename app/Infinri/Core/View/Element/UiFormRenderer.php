@@ -9,15 +9,13 @@ use SimpleXMLElement;
 
 /**
  * UI Form Renderer
- * Renders Magento-style UI component forms from XML configuration
  */
 class UiFormRenderer
 {
     public function __construct(
         private readonly CsrfGuard $csrfGuard
-    ) {
-    }
-    
+    ) {}
+
     /**
      * Escape HTML attributes
      */
@@ -25,7 +23,7 @@ class UiFormRenderer
     {
         return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
-    
+
     /**
      * Escape HTML
      */
@@ -33,7 +31,7 @@ class UiFormRenderer
     {
         return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
-    
+
     /**
      * Escape URL
      */
@@ -113,7 +111,6 @@ class UiFormRenderer
      */
     private function findFormXml(string $formName): ?SimpleXMLElement
     {
-        // __DIR__ = app/Infinri/Core/View/Element
         // Navigate up to the app directory
         $appPath = realpath(__DIR__ . '/../../../../');
         if ($appPath === false) {
@@ -141,7 +138,7 @@ class UiFormRenderer
     private function buildForm(SimpleXMLElement $xml, array $data, string $formName): string
     {
         error_log("buildForm data: " . json_encode($data));
-        
+
         // Detect entity type from form name
         if (str_contains($formName, 'menu_item')) {
             $entityType = 'menuitem';
@@ -168,11 +165,11 @@ class UiFormRenderer
             $primaryField = 'page_id';
             $basePath = '/admin/cms/page';
         }
-        
+
         $entityLabel = ucfirst($entityType);
         $primaryId = $data[$primaryField] ?? null;
         $isNew = empty($primaryId);
-        
+
         // Build page title based on entity type
         if ($entityType === 'user') {
             $pageTitle = $isNew ? "New User" : "Edit User: " . ($data['username'] ?? '#' . $primaryId);
@@ -213,12 +210,12 @@ class UiFormRenderer
 
         foreach ($buttonNodes as $node) {
             $name = (string)$node['name'];
-            
+
             // Skip delete button for new pages
             if ($name === 'delete' && !$entityId) {
                 continue;
             }
-            
+
             $url = (string)($node->xpath('url')[0]['path'] ?? '#');
             // Replace Magento placeholders
             $normalizedBasePath = rtrim($basePath, '/') . '/';
@@ -234,7 +231,7 @@ class UiFormRenderer
                 'url' => $url,
             ];
         }
-        
+
         return $buttons;
     }
 
@@ -245,18 +242,18 @@ class UiFormRenderer
     {
         $fieldsets = [];
         $fieldsetNodes = $xml->xpath('//fieldset');
-        
+
         foreach ($fieldsetNodes as $node) {
             $name = (string)$node['name'];
             $label = (string)($node->xpath('settings/label')[0] ?? ucfirst($name));
             $collapsible = (string)($node->xpath('settings/collapsible')[0] ?? 'false') === 'true';
             $opened = (string)($node->xpath('settings/opened')[0] ?? 'true') === 'true';
-            
+
             $fields = [];
             foreach ($node->xpath('field') as $field) {
                 $fields[] = $this->parseField($field);
             }
-            
+
             $fieldsets[] = [
                 'name' => $name,
                 'label' => $label,
@@ -265,7 +262,7 @@ class UiFormRenderer
                 'fields' => $fields,
             ];
         }
-        
+
         return $fieldsets;
     }
 
@@ -276,14 +273,14 @@ class UiFormRenderer
     {
         $name = (string)$field['name'];
         $formElement = (string)$field['formElement'];
-        
+
         // Check for custom template
         $template = null;
         $templateNode = $field->xpath('formElements/' . $formElement . '/settings/template')[0] ?? null;
         if ($templateNode) {
             $template = (string)$templateNode;
         }
-        
+
         return [
             'name' => $name,
             'type' => $formElement,
@@ -302,10 +299,10 @@ class UiFormRenderer
      */
     private function renderFormHtml(
         string $pageTitle,
-        array $buttons,
-        array $fieldsets,
-        array $data,
-        bool $isNew,
+        array  $buttons,
+        array  $fieldsets,
+        array  $data,
+        bool   $isNew,
         string $entityType,
         string $basePath,
         string $primaryField
@@ -313,16 +310,15 @@ class UiFormRenderer
     {
         $csrfField = $this->csrfGuard->getHiddenField($this->buildTokenId($entityType));
         $csrfFieldName = '_csrf_token';
-        
+
         // Template lives in Theme module (presentation layer)
-        // __DIR__ is /app/Infinri/Core/View/Element
         // Go up 3 levels to /app/Infinri/, then to Theme
         $templatePath = __DIR__ . '/../../../Theme/view/adminhtml/templates/form.phtml';
-        
+
         if (!file_exists($templatePath)) {
             throw new \RuntimeException("Form template not found at: {$templatePath}");
         }
-        
+
         ob_start();
         include $templatePath;
         return ob_get_clean();

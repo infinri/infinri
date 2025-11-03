@@ -3,11 +3,10 @@ declare(strict_types=1);
 
 namespace Infinri\Core\Model\Layout;
 
+use Psr\Cache\InvalidArgumentException;
 use SimpleXMLElement;
 
 /**
- * Layout Merger
- * 
  * Merges multiple layout XML files into a single structure.
  */
 class Merger
@@ -22,13 +21,13 @@ class Merger
     {
         // Create base layout structure
         $merged = new SimpleXMLElement('<?xml version="1.0"?><layout/>');
-        
+
         // Merge each layout file in order
         foreach ($layouts as $moduleName => $xml) {
             \Infinri\Core\Helper\Logger::debug('Merger: Merging layout from module', ['module' => $moduleName]);
             $this->mergeXml($merged, $xml);
         }
-        
+
         return $merged;
     }
 
@@ -57,7 +56,7 @@ class Merger
     private function appendElement(SimpleXMLElement $target, SimpleXMLElement $source): void
     {
         $name = $source->getName();
-        
+
         $sourceName = isset($source['name']) ? (string)$source['name'] : null;
         if ($sourceName === 'admin.sidebar' || $sourceName === 'main.content') {
             $childNames = [];
@@ -65,7 +64,7 @@ class Merger
                 $childName = isset($child['name']) ? (string)$child['name'] : $child->getName();
                 $childNames[] = $childName;
             }
-            
+
             \Infinri\Core\Helper\Logger::info('Merger: Appending element', [
                 'type' => $name,
                 'name' => $sourceName,
@@ -74,23 +73,23 @@ class Merger
                 'children' => $childNames
             ]);
         }
-        
+
         // Create new child element
         $new = $target->addChild($name);
-        
+
         // Copy attributes
         foreach ($source->attributes() as $attrName => $attrValue) {
-            $new->addAttribute($attrName, (string) $attrValue);
+            $new->addAttribute($attrName, (string)$attrValue);
         }
-        
+
         // Copy text content if no children
         if ($source->count() === 0) {
-            $text = trim((string) $source);
+            $text = trim((string)$source);
             if ($text !== '') {
                 $new[0] = $text;
             }
         }
-        
+
         // Recursively copy children
         foreach ($source->children() as $child) {
             $this->appendElement($new, $child);
@@ -103,32 +102,33 @@ class Merger
      * @param SimpleXMLElement $layout
      * @param Loader $loader
      * @return SimpleXMLElement
+     * @throws InvalidArgumentException
      */
     public function processUpdates(SimpleXMLElement $layout, Loader $loader): SimpleXMLElement
     {
         $updates = $layout->xpath('//update[@handle]');
-        
+
         if (empty($updates)) {
             return $layout;
         }
-        
+
         foreach ($updates as $update) {
-            $handle = (string) $update['handle'];
-            
+            $handle = (string)$update['handle'];
+
             if ($handle) {
                 // Load the referenced handle
                 $includedLayouts = $loader->load($handle);
-                
+
                 // Merge included layouts before the update directive
                 foreach ($includedLayouts as $includedXml) {
                     $this->mergeXml($layout, $includedXml);
                 }
             }
-            
+
             // Remove the update directive
             unset($update[0]);
         }
-        
+
         return $layout;
     }
 }

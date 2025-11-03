@@ -1,23 +1,18 @@
-/**
- * Header Styles
- * Site header and logo styles
- */
-
 .header {
-    background-color: @white;
-    border-bottom: 1px solid @border-color;
-    position: sticky;
-    top: 0;
-    z-index: @z-index-sticky;
-    .box-shadow(@shadow-sm);
+  background-color: @white;
+  border-bottom: 1px solid @border-color;
+  position: sticky;
+  top: 0;
+  z-index: @z-index-sticky;
+  .box-shadow(@shadow-sm);
 }
 
 .header-content,
 .header-container {
-    .container();
-    .flex-between();
-    padding-top: @spacing-md;
-    padding-bottom: @spacing-md;
+  .container();
+  .flex-between();
+  padding-top: @spacing-md;
+  padding-bottom: @spacing-md;
 }
 
 // ============================================================================
@@ -25,26 +20,26 @@
 // ============================================================================
 
 .header-logo {
-    flex-shrink: 0;
+  flex-shrink: 0;
 }
 
 .logo {
-    display: inline-block;
-    line-height: 0;
-    
-    &:focus {
-        outline: 2px solid @primary-color;
-        outline-offset: 2px;
-    }
+  display: inline-block;
+  line-height: 0;
+
+  &:focus {
+    outline: 2px solid @primary-color;
+    outline-offset: 2px;
+  }
 }
 
 .logo-image {
-    height: 40px;
-    width: auto;
-    
-    .desktop-up({
-        height: 48px;
-    });
+  height: 40px;
+  width: auto;
+
+  .desktop-up({
+    height: 48px;
+  });
 }
 
 // ============================================================================
@@ -52,53 +47,53 @@
 // ============================================================================
 
 .header-search {
-    flex: 0 0 auto;
-    margin-left: @spacing-md;
-    
-    .mobile-only({
-        display: none;
-    });
+  flex: 0 0 auto;
+  margin-left: @spacing-md;
+
+  .mobile-only({
+    display: none;
+  });
 }
 
 .search-form {
-    display: flex;
-    align-items: center;
-    position: relative;
+  display: flex;
+  align-items: center;
+  position: relative;
 }
 
 .search-input {
-    .form-control();
-    width: 200px;
-    padding-right: 40px;
-    
-    .desktop-up({
-        width: 300px;
-    });
+  .form-control();
+  width: 200px;
+  padding-right: 40px;
+
+  .desktop-up({
+    width: 300px;
+  });
 }
 
 .search-button {
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    padding: @spacing-sm;
-    cursor: pointer;
-    color: @text-muted;
-    .transition();
-    
-    &:hover {
-        color: @primary-color;
-    }
-    
-    &:focus {
-        outline: 2px solid @primary-color;
-        outline-offset: 2px;
-    }
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: @spacing-sm;
+  cursor: pointer;
+  color: @text-muted;
+  .transition();
+
+  &:hover {
+    color: @primary-color;
+  }
+
+  &:focus {
+    outline: 2px solid @primary-color;
+    outline-offset: 2px;
+  }
 }
 
 .search-icon {
-    display: block;
-    font-size: 18px;
+  display: block;
+  font-size: 18px;
 }

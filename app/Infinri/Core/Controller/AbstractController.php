@@ -12,8 +12,6 @@ use Infinri\Core\Model\Layout\Builder;
 use Infinri\Core\Model\Layout\Renderer;
 
 /**
- * Abstract Controller
- * 
  * Base class for all controllers
  */
 abstract class AbstractController
@@ -29,7 +27,7 @@ abstract class AbstractController
     protected Response $response;
 
     public function __construct(
-        Request $request,
+        Request  $request,
         Response $response
     ) {
         $this->request = $request;
@@ -80,6 +78,7 @@ abstract class AbstractController
      *
      * @param mixed $data
      * @return Response
+     * @throws \JsonException
      */
     protected function json(mixed $data): Response
     {

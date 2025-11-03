@@ -7,8 +7,6 @@ namespace Infinri\Menu\Service;
 use Infinri\Menu\Model\Repository\MenuItemRepository;
 
 /**
- * Menu Builder
- * 
  * Business logic for building hierarchical menu trees with resolved URLs
  */
 class MenuBuilder
@@ -21,7 +19,7 @@ class MenuBuilder
      */
     public function __construct(
         private readonly MenuItemRepository $menuItemRepository,
-        private readonly MenuItemResolver $menuItemResolver
+        private readonly MenuItemResolver   $menuItemResolver
     ) {}
 
     /**
@@ -35,14 +33,14 @@ class MenuBuilder
     {
         // Get all menu items for this menu (flat array, sorted)
         $menuItems = $this->menuItemRepository->getByMenuIdentifier($identifier, $activeOnly);
-        
+
         if (empty($menuItems)) {
             return [];
         }
-        
+
         // Build tree structure (parent/child relationships)
         $tree = $this->buildTree($menuItems);
-        
+
         // Resolve URLs for each item based on link_type
         return $this->resolveUrls($tree);
     }
@@ -57,26 +55,26 @@ class MenuBuilder
     private function buildTree(array $items, ?int $parentId = null): array
     {
         $branch = [];
-        
+
         foreach ($items as $item) {
             // Match parent_item_id with $parentId
             $itemParentId = $item['parent_item_id'] ?? null;
-            
+
             if ($itemParentId == $parentId) {
                 // Found item belonging to this parent
                 $itemId = $item['item_id'];
-                
+
                 // Recursively get children
                 $children = $this->buildTree($items, $itemId);
-                
+
                 if (!empty($children)) {
                     $item['children'] = $children;
                 }
-                
+
                 $branch[] = $item;
             }
         }
-        
+
         return $branch;
     }
 
@@ -91,13 +89,13 @@ class MenuBuilder
         foreach ($items as &$item) {
             // Resolve URL for this item
             $item['url'] = $this->menuItemResolver->resolve($item);
-            
+
             // Recursively resolve child URLs
             if (!empty($item['children'])) {
                 $item['children'] = $this->resolveUrls($item['children']);
             }
         }
-        
+
         return $items;
     }
 

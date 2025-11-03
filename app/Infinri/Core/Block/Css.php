@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace Infinri\Core\Block;
 
 /**
- * CSS Block
- * 
  * Renders a proper <link> tag for CSS files
  * More secure and maintainable than raw HTML in layout XML
  */
@@ -15,17 +13,17 @@ class Css extends AbstractBlock
      * @var string CSS file path
      */
     private string $href = '';
-    
+
     /**
      * @var string Media attribute
      */
     private string $media = 'all';
-    
+
     /**
      * @var string Rel attribute
      */
     private string $rel = 'stylesheet';
-    
+
     /**
      * Set CSS href
      *
@@ -37,7 +35,7 @@ class Css extends AbstractBlock
         $this->href = $href;
         return $this;
     }
-    
+
     /**
      * Get CSS href
      *
@@ -50,10 +48,10 @@ class Css extends AbstractBlock
         if ($dataHref !== null) {
             return $dataHref;
         }
-        
+
         return $this->href;
     }
-    
+
     /**
      * Set media attribute
      *
@@ -65,7 +63,7 @@ class Css extends AbstractBlock
         $this->media = $media;
         return $this;
     }
-    
+
     /**
      * Get media attribute
      *
@@ -76,7 +74,7 @@ class Css extends AbstractBlock
         $dataMedia = $this->getData('media');
         return $dataMedia ?? $this->media;
     }
-    
+
     /**
      * Render CSS link tag
      *
@@ -85,22 +83,22 @@ class Css extends AbstractBlock
     public function toHtml(): string
     {
         $href = $this->getHref();
-        
+
         if (empty($href)) {
             return '';
         }
-        
+
         $attributes = [
             'rel' => $this->rel,
             'href' => htmlspecialchars($href, ENT_QUOTES, 'UTF-8'),
             'media' => htmlspecialchars($this->getMedia(), ENT_QUOTES, 'UTF-8'),
         ];
-        
+
         $attributeString = [];
         foreach ($attributes as $key => $value) {
             $attributeString[] = sprintf('%s="%s"', $key, $value);
         }
-        
+
         return sprintf('<link %s>', implode(' ', $attributeString));
     }
 }

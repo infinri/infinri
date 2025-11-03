@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * Application Autoloader
- * 
+ *
  * Loads Composer autoloader and executes module registration discovery.
  */
 

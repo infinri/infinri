@@ -7,10 +7,9 @@ namespace Infinri\Theme\ViewModel;
 use Infinri\Core\Model\Config\ScopeConfig;
 use Infinri\Core\Model\Url\Builder as UrlBuilder;
 use Infinri\Menu\ViewModel\Navigation as MenuNavigation;
+use Psr\Cache\InvalidArgumentException;
 
 /**
- * Header ViewModel
- * 
  * Provides data for the site header template
  */
 class Header
@@ -23,21 +22,22 @@ class Header
      * @param MenuNavigation $menuNavigation Menu navigation ViewModel
      */
     public function __construct(
-        private ScopeConfig $config,
-        private UrlBuilder $urlBuilder,
+        private ScopeConfig    $config,
+        private UrlBuilder     $urlBuilder,
         private MenuNavigation $menuNavigation
     ) {}
-    
+
     /**
      * Get logo path
      *
      * @return string Logo file path
+     * @throws InvalidArgumentException
      */
     public function getLogo(): string
     {
         return $this->config->getValue('theme/general/logo') ?? 'Infinri_Theme::images/logo.svg';
     }
-    
+
     /**
      * Get home page URL
      *
@@ -47,7 +47,7 @@ class Header
     {
         return $this->urlBuilder->build('home/index/index');
     }
-    
+
     /**
      * Get main navigation items
      *
@@ -55,10 +55,9 @@ class Header
      */
     public function getNavigation(): array
     {
-        // Load navigation from Menu module (replaces hardcoded links)
         return $this->menuNavigation->getMainNavigation();
     }
-    
+
     /**
      * Get search form URL
      *
@@ -68,7 +67,7 @@ class Header
     {
         return $this->urlBuilder->build('search/index/index');
     }
-    
+
     /**
      * Check if search is enabled
      *
@@ -78,7 +77,7 @@ class Header
     {
         return true; // Can be made configurable
     }
-    
+
     /**
      * Get mobile menu label
      *

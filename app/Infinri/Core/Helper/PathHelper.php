@@ -5,17 +5,13 @@ declare(strict_types=1);
 namespace Infinri\Core\Helper;
 
 /**
- * Path Helper
- * 
  * Centralized path calculations
- * 
- * Phase 4: DRY/KISS - Eliminates duplicate dirname() calls
  */
 class PathHelper
 {
     /**
      * Get application root path
-     * 
+     *
      * @return string Path to /app directory
      */
     public static function getAppPath(): string
@@ -25,7 +21,7 @@ class PathHelper
 
     /**
      * Get public directory path
-     * 
+     *
      * @return string Path to /pub directory
      */
     public static function getPubPath(): string
@@ -35,7 +31,7 @@ class PathHelper
 
     /**
      * Get media directory path
-     * 
+     *
      * @return string Path to /pub/media directory
      */
     public static function getMediaPath(): string
@@ -45,7 +41,7 @@ class PathHelper
 
     /**
      * Get static files directory path
-     * 
+     *
      * @return string Path to /pub/static directory
      */
     public static function getStaticPath(): string
@@ -55,7 +51,7 @@ class PathHelper
 
     /**
      * Get var directory path
-     * 
+     *
      * @return string Path to /var directory
      */
     public static function getVarPath(): string
@@ -65,7 +61,7 @@ class PathHelper
 
     /**
      * Get cache directory path
-     * 
+     *
      * @return string Path to /var/cache directory
      */
     public static function getCachePath(): string
@@ -75,7 +71,7 @@ class PathHelper
 
     /**
      * Get logs directory path
-     * 
+     *
      * @return string Path to /var/log directory
      */
     public static function getLogPath(): string

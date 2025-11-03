@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <!-- Repository Interfaces -->
-    <preference for="Infinri\Menu\Api\MenuRepositoryInterface" 
+    <preference for="Infinri\Menu\Api\MenuRepositoryInterface"
                 type="Infinri\Menu\Model\Repository\MenuRepository"/>
-    
-    <preference for="Infinri\Menu\Api\MenuItemRepositoryInterface" 
+
+    <preference for="Infinri\Menu\Api\MenuItemRepositoryInterface"
                 type="Infinri\Menu\Model\Repository\MenuItemRepository"/>
 </config>

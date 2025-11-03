@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace Infinri\Core\Api;
 
 /**
- * Configuration Interface
- * 
  * Provides access to system configuration values.
  */
 interface ConfigInterface

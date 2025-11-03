@@ -9,17 +9,14 @@ use Infinri\Core\Model\Module\ModuleManager;
 use Psr\Container\ContainerInterface;
 
 /**
- * Container Factory
- * 
  * Builds and configures the PHP-DI container by loading di.xml from all enabled modules.
  */
 class ContainerFactory
 {
     public function __construct(
         private readonly ModuleManager $moduleManager,
-        private readonly XmlReader $xmlReader
-    ) {
-    }
+        private readonly XmlReader     $xmlReader
+    ) {}
 
     /**
      * Create and configure the DI container
@@ -36,7 +33,7 @@ class ContainerFactory
         if ($useCache) {
             $cacheDir = __DIR__ . '/../../../../../var/cache/di';
             $proxiesDir = $cacheDir . '/proxies';
-            
+
             // Ensure cache directories exist
             if (!is_dir($cacheDir)) {
                 mkdir($cacheDir, 0755, true);
@@ -44,14 +41,14 @@ class ContainerFactory
             if (!is_dir($proxiesDir)) {
                 mkdir($proxiesDir, 0755, true);
             }
-            
+
             $builder->enableCompilation($cacheDir);
             $builder->writeProxiesToFile(true, $proxiesDir);
         }
 
         // Load DI definitions from all modules
         $definitions = $this->loadDefinitions();
-        
+
         $builder->addDefinitions($definitions);
 
         return $builder->build();
@@ -71,13 +68,13 @@ class ContainerFactory
 
         foreach ($modules as $moduleName) {
             $moduleData = $this->moduleManager->getModuleList()->getOne($moduleName);
-            
+
             if (!$moduleData || !isset($moduleData['path'])) {
                 continue;
             }
 
             $diConfig = $this->xmlReader->read($moduleData['path']);
-            
+
             if ($diConfig === null) {
                 continue;
             }
@@ -141,7 +138,7 @@ class ContainerFactory
     private function convertToPhpDiDefinitions(array $definitions): array
     {
         $phpDiDefinitions = [];
-        
+
         // Add singleton factories for classes with getInstance()
         $phpDiDefinitions['Infinri\Core\Model\ComponentRegistrar'] = \DI\factory(function () {
             return \Infinri\Core\Model\ComponentRegistrar::getInstance();
@@ -159,12 +156,12 @@ class ContainerFactory
             foreach ($definitions['types'] as $typeName => $typeConfig) {
                 if (!empty($typeConfig['arguments'])) {
                     $autowire = \DI\autowire($typeName);
-                    
+
                     // Set each constructor parameter individually
                     foreach ($this->convertArguments($typeConfig['arguments']) as $paramName => $paramValue) {
                         $autowire = $autowire->constructorParameter($paramName, $paramValue);
                     }
-                    
+
                     $phpDiDefinitions[$typeName] = $autowire;
                 }
             }

@@ -1,7 +1,7 @@
 <?php
 /**
  * Footer Template
- * 
+ *
  * @var \Infinri\Core\Block\Template $block
  */
 
@@ -14,45 +14,47 @@ $currentYear = date('Y');
             <?php if (method_exists($viewModel, 'getLinks')): ?>
                 <?php $links = $viewModel->getLinks() ?? []; ?>
                 <?php if (!empty($links)): ?>
-                <div class="footer-links">
-                    <h3 class="footer-heading">Quick Links</h3>
-                    <ul class="footer-list">
-                        <?php foreach ($links as $link): ?>
-                            <li class="footer-item">
-                                <a href="<?= $block->escapeUrl($link['url']) ?>" 
-                                   class="footer-link">
-                                    <?= $block->escapeHtml($link['title']) ?>
-                                </a>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
+                    <div class="footer-links">
+                        <h3 class="footer-heading">Quick Links</h3>
+                        <ul class="footer-list">
+                            <?php foreach ($links as $link): ?>
+                                <li class="footer-item">
+                                    <a href="<?= $block->escapeUrl($link['url']) ?>"
+                                       class="footer-link">
+                                        <?= $block->escapeHtml($link['title']) ?>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
                 <?php endif; ?>
             <?php endif; ?>
-            
+
             <?php if (method_exists($viewModel, 'getSocialLinks')): ?>
-                <?php $socialLinks = array_filter($viewModel->getSocialLinks() ?? [], static function ($link) { return isset($link['url'], $link['label']) || isset($link['url'], $link['platform']); }); ?>
+                <?php $socialLinks = array_filter($viewModel->getSocialLinks() ?? [], static function ($link) {
+                    return isset($link['url'], $link['label']) || isset($link['url'], $link['platform']);
+                }); ?>
                 <?php if (!empty($socialLinks)): ?>
-                <div class="footer-social">
-                    <h3 class="footer-heading">Follow Us</h3>
-                    <ul class="social-list">
-                        <?php foreach ($socialLinks as $social): ?>
-                            <?php $label = $social['label'] ?? $social['platform'] ?? 'Follow'; ?>
-                            <li class="social-item">
-                                <a href="<?= $block->escapeHtmlAttr($social['url']) ?>" 
-                                   class="social-link"
-                                   target="_blank"
-                                   rel="noopener noreferrer">
-                                    <?= $block->escapeHtml($label) ?>
-                                </a>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
+                    <div class="footer-social">
+                        <h3 class="footer-heading">Follow Us</h3>
+                        <ul class="social-list">
+                            <?php foreach ($socialLinks as $social): ?>
+                                <?php $label = $social['label'] ?? $social['platform'] ?? 'Follow'; ?>
+                                <li class="social-item">
+                                    <a href="<?= $block->escapeHtmlAttr($social['url']) ?>"
+                                       class="social-link"
+                                       target="_blank"
+                                       rel="noopener noreferrer">
+                                        <?= $block->escapeHtml($label) ?>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
                 <?php endif; ?>
             <?php endif; ?>
         <?php endif; ?>
-        
+
         <div class="footer-copyright">
             <p>&copy; <?= $currentYear ?> Infinri. Built with a proper Magento-style architecture.</p>
         </div>

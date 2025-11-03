@@ -6,8 +6,6 @@ namespace Infinri\Core\Helper;
 use Infinri\Core\Security\CsrfTokenManager;
 
 /**
- * CSRF Helper
- * 
  * Template helper for generating CSRF form fields
  */
 class Csrf
@@ -26,7 +24,7 @@ class Csrf
     {
         $token = $this->csrfManager->generateToken($tokenId);
         $escaper = new Escaper();
-        
+
         return sprintf(
             '<input type="hidden" name="_csrf_token" value="%s">' . "\n" .
             '<input type="hidden" name="_csrf_token_id" value="%s">',

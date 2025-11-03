@@ -1,10 +1,6 @@
-/**
- * Infinri Messages
- * Flash message functionality
- */
-(function() {
+(function () {
     'use strict';
-    
+
     const InfinriMessages = {
         /**
          * Initialize messages
@@ -13,7 +9,7 @@
             this.initCloseButtons();
             this.autoHideMessages();
         },
-        
+
         /**
          * Initialize close buttons
          */
@@ -28,7 +24,7 @@
                     }
                 });
             });
-            
+
             // Also handle .message-close class (without data attribute)
             const messageCloseButtons = document.querySelectorAll('.message-close');
             messageCloseButtons.forEach(button => {
@@ -40,21 +36,21 @@
                 });
             });
         },
-        
+
         /**
          * Auto-hide messages after timeout
          * @param {number} timeout Timeout in milliseconds
          */
         autoHideMessages(timeout = 5000) {
             const messages = document.querySelectorAll('.message:not(.message-error)');
-            
+
             messages.forEach(message => {
                 setTimeout(() => {
                     this.hideMessage(message);
                 }, timeout);
             });
         },
-        
+
         /**
          * Hide a message with animation
          * @param {Element} message Message element
@@ -63,12 +59,12 @@
             message.style.opacity = '0';
             message.style.transform = 'translateY(-10px)';
             message.style.transition = 'opacity 0.3s, transform 0.3s';
-            
+
             setTimeout(() => {
                 message.remove();
             }, 300);
         },
-        
+
         /**
          * Show a new message
          * @param {string} text Message text
@@ -76,12 +72,12 @@
          */
         showMessage(text, type = 'info') {
             const messagesContainer = document.querySelector('.messages') || this.createMessagesContainer();
-            
+
             const message = document.createElement('div');
             message.className = `message message-${type}`;
             message.setAttribute('role', 'alert');
             message.setAttribute('aria-live', 'polite');
-            
+
             message.innerHTML = `
                 <div class="message-content">
                     <span class="message-icon"></span>
@@ -91,19 +87,19 @@
                     ×
                 </button>
             `;
-            
+
             messagesContainer.appendChild(message);
-            
+
             // Initialize close button for new message
             const closeButton = message.querySelector('[data-dismiss="message"]');
             closeButton.addEventListener('click', () => this.hideMessage(message));
-            
+
             // Auto-hide after timeout
             if (type !== 'error') {
                 setTimeout(() => this.hideMessage(message), 5000);
             }
         },
-        
+
         /**
          * Create messages container if it doesn't exist
          * @returns {Element} Messages container
@@ -111,17 +107,17 @@
         createMessagesContainer() {
             const container = document.createElement('div');
             container.className = 'messages';
-            
+
             const mainContent = document.querySelector('.main-content');
             if (mainContent) {
                 mainContent.insertBefore(container, mainContent.firstChild);
             } else {
                 document.body.insertBefore(container, document.body.firstChild);
             }
-            
+
             return container;
         },
-        
+
         /**
          * Escape HTML
          * @param {string} text Text to escape
@@ -133,10 +129,10 @@
             return div.innerHTML;
         }
     };
-    
+
     // Expose to global scope
     window.InfinriMessages = InfinriMessages;
-    
+
     // Auto-initialize if messages exist
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => InfinriMessages.init());

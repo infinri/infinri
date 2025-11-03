@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace Infinri\Core\App;
 
 /**
- * HTTP Response
- * 
  * Wrapper for HTTP response (headers, body, status code)
  */
 class Response
@@ -130,7 +128,7 @@ class Response
     {
         return $this->setHeader('Content-Type', $contentType);
     }
-    
+
     /**
      * Set security headers
      *
@@ -141,16 +139,16 @@ class Response
     {
         // Prevent clickjacking attacks
         $this->setHeader('X-Frame-Options', 'SAMEORIGIN');
-        
+
         // Prevent MIME type sniffing
         $this->setHeader('X-Content-Type-Options', 'nosniff');
-        
+
         // Enable XSS protection in older browsers
         $this->setHeader('X-XSS-Protection', '1; mode=block');
-        
+
         // Referrer policy - don't send full URL to external sites
         $this->setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-        
+
         // Content Security Policy
         if ($strict) {
             // Strict CSP - only same origin
@@ -159,10 +157,10 @@ class Response
             // Lenient CSP - allows inline scripts/styles (for development)
             $this->setHeader('Content-Security-Policy', "default-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; frame-ancestors 'self'");
         }
-        
+
         // Permissions policy - disable unnecessary features
         $this->setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
-        
+
         return $this;
     }
 
@@ -182,12 +180,12 @@ class Response
                 sprintf('Invalid redirect URL: %s. Only relative URLs or same-host URLs are allowed.', $url)
             );
         }
-        
+
         $this->setStatusCode($code);
         $this->setHeader('Location', $url);
         return $this;
     }
-    
+
     /**
      * Convenience method for redirect (alias of setRedirect)
      *
@@ -206,6 +204,7 @@ class Response
      *
      * @param mixed $data
      * @return $this
+     * @throws \JsonException
      */
     public function setJson(mixed $data): self
     {
@@ -249,7 +248,7 @@ class Response
         if ($withSecurityHeaders && !isset($this->headers['X-Frame-Options'])) {
             $this->setSecurityHeaders();
         }
-        
+
         $this->sendHeaders();
         echo $this->body;
     }
@@ -293,7 +292,7 @@ class Response
     {
         return $this->setStatusCode(403);
     }
-    
+
     /**
      * Validate redirect URL to prevent open redirect attacks
      *
@@ -306,31 +305,31 @@ class Response
         if (str_starts_with($url, '/')) {
             return true;
         }
-        
+
         // Parse the URL
         $parsed = parse_url($url);
-        
+
         // If parsing fails, reject
         if ($parsed === false) {
             return false;
         }
-        
+
         // If no host, it's a relative URL (e.g., "path/to/page")
         if (!isset($parsed['host'])) {
             return true;
         }
-        
+
         // Get current host from server variables
         $currentHost = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? '';
-        
+
         // Strip port from current host if present
         $currentHost = explode(':', $currentHost)[0];
-        
+
         // Allow same-host redirects
         if (strcasecmp($parsed['host'], $currentHost) === 0) {
             return true;
         }
-        
+
         // Reject external redirects
         return false;
     }

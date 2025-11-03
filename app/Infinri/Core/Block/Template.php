@@ -8,8 +8,6 @@ use Infinri\Core\Helper\Logger;
 use Infinri\Core\Model\ObjectManager;
 
 /**
- * Template Block
- * 
  * A block that renders content from a PHTML template file.
  */
 class Template extends AbstractBlock
@@ -33,7 +31,7 @@ class Template extends AbstractBlock
      * @var object|null Cached ViewModel instance
      */
     private ?object $resolvedViewModel = null;
-    
+
     /**
      * @var array<string, string|null> Static cache for resolved template paths
      */
@@ -105,20 +103,11 @@ class Template extends AbstractBlock
     }
 
     /**
-     * Get ViewModel instance
-     * 
      * Returns the ViewModel configured for this template block via layout XML.
      * ViewModels provide presentation logic separate from business logic.
-     * 
+     *
      * Supports both object instances and class name strings (instantiated via ObjectManager).
      * Returns null if no ViewModel is configured or instantiation fails.
-     * 
-     * Example usage in layout XML:
-     * <block class="Infinri\Core\Block\Template" name="footer" template="footer.phtml">
-     *     <arguments>
-     *         <argument name="view_model" xsi:type="object">Infinri\Theme\ViewModel\Footer</argument>
-     *     </arguments>
-     * </block>
      *
      * @return object|null ViewModel instance or null if not configured
      */
@@ -156,10 +145,10 @@ class Template extends AbstractBlock
                 ]);
             }
         }
-        
+
         return null;
     }
-    
+
     /**
      * Clear template path cache (useful for testing)
      *
@@ -189,14 +178,14 @@ class Template extends AbstractBlock
 
         // Resolve template file path (with caching)
         $templateFile = $this->resolveTemplateFile();
-        
+
         Logger::debug('Template block: Resolved path', [
             'block_name' => $this->getName(),
             'template' => $this->template,
             'resolved_path' => $templateFile,
             'cached' => isset(self::$templatePathCache[$this->template])
         ]);
-        
+
         if (!$templateFile) {
             Logger::warning('Template block: Template file not found', [
                 'block_name' => $this->getName(),
@@ -208,12 +197,12 @@ class Template extends AbstractBlock
 
         // Render template
         $html = $this->renderTemplate($templateFile);
-        
+
         Logger::debug('Template block: Rendered', [
             'block_name' => $this->getName(),
             'html_length' => strlen($html)
         ]);
-        
+
         return $html;
     }
 
@@ -228,18 +217,18 @@ class Template extends AbstractBlock
         if (isset(self::$templatePathCache[$this->template])) {
             return self::$templatePathCache[$this->template];
         }
-        
+
         $resolvedPath = null;
-        
+
         if ($this->templateResolver) {
             $resolvedPath = $this->templateResolver->resolve($this->template);
         } elseif (str_contains($this->template, '::')) {
             // Fallback: try to resolve manually
             [$moduleName, $filePath] = explode('::', $this->template, 2);
-            
+
             // Try common paths
             $basePath = dirname(__DIR__, 4) . '/app/' . str_replace('_', '/', $moduleName);
-            
+
             $possiblePaths = [
                 $basePath . '/view/adminhtml/templates/' . $filePath,  // Admin area
                 $basePath . '/view/frontend/templates/' . $filePath,   // Frontend area
@@ -247,7 +236,7 @@ class Template extends AbstractBlock
                 $basePath . '/view/templates/' . $filePath,            // Legacy
                 $basePath . '/templates/' . $filePath,                 // Legacy
             ];
-            
+
             foreach ($possiblePaths as $path) {
                 if (file_exists($path)) {
                     $resolvedPath = $path;
@@ -255,10 +244,10 @@ class Template extends AbstractBlock
                 }
             }
         }
-        
+
         // Cache the resolved path (even if null)
         self::$templatePathCache[$this->template] = $resolvedPath;
-        
+
         return $resolvedPath;
     }
 
@@ -272,7 +261,9 @@ class Template extends AbstractBlock
     {
         // Create scoped renderer to avoid variable extraction
         $renderer = new class($this, $templateFile) {
-            public function __construct(private Template $block, private string $templateFile) {}
+            public function __construct(private Template $block, private string $templateFile)
+            {
+            }
 
             public function render(): string
             {

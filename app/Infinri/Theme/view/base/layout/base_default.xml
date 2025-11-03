@@ -12,7 +12,8 @@
                 </block>
                 <block class="Infinri\Core\Block\Text" name="head.meta.viewport">
                     <arguments>
-                        <argument name="text" xsi:type="string"><![CDATA[<meta name="viewport" content="width=device-width, initial-scale=1.0">]]></argument>
+                        <argument name="text" xsi:type="string">
+                            <![CDATA[<meta name="viewport" content="width=device-width, initial-scale=1.0">]]></argument>
                     </arguments>
                 </block>
                 <block class="Infinri\Core\Block\Text" name="head.fonts.google">
@@ -30,21 +31,21 @@
                 <container name="head.styles"/>
                 <container name="head.scripts"/>
             </container>
-            
+
             <!-- Body section -->
             <container name="body" htmlTag="body">
                 <container name="page.wrapper" htmlTag="div" htmlClass="page-wrapper">
                     <!-- Header container (for frontend/admin headers) -->
                     <container name="header.container"/>
-                    
+
                     <!-- Breadcrumbs container -->
                     <container name="breadcrumbs.wrapper"/>
-                    
+
                     <!-- Main content area -->
                     <container name="main.content" htmlTag="main" htmlClass="main-content">
                         <container name="content"/>
                     </container>
-                    
+
                     <!-- Footer container -->
                     <container name="footer.container"/>
                 </container>

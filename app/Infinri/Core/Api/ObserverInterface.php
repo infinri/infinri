@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Infinri\Core\Api;
 
 /**
- * Observer Interface
- * 
  * Observers respond to events dispatched by the Event Manager
  */
 interface ObserverInterface

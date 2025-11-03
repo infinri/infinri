@@ -13,8 +13,6 @@ use Infinri\Core\Model\Module\ModuleManager;
 use SimpleXMLElement;
 
 /**
- * Layout Builder
- * 
  * Builds a tree of block objects from processed layout XML.
  */
 class Builder
@@ -23,7 +21,7 @@ class Builder
      * @var array<string, AbstractBlock> Named blocks for reference
      */
     private array $blocks = [];
-    
+
     /**
      * @var array Layout data (page, category, product, etc.)
      */
@@ -31,8 +29,7 @@ class Builder
 
     public function __construct(
         private readonly TemplateResolver $templateResolver,
-    ) {
-    }
+    ) {}
 
     /**
      * Build block tree from processed layout XML
@@ -45,7 +42,7 @@ class Builder
     {
         $this->blocks = [];
         $this->data = $data;
-        
+
         // Find root element (usually a container)
         // Both frontend and admin layouts extend base_default from Theme
         foreach ($layout->children() as $element) {
@@ -55,7 +52,7 @@ class Builder
                 return $rootBlock;
             }
         }
-        
+
         return null;
     }
 
@@ -68,8 +65,8 @@ class Builder
     private function buildElement(SimpleXMLElement $element): AbstractBlock
     {
         $type = $element->getName();
-        $name = isset($element['name']) ? (string) $element['name'] : null;
-        
+        $name = isset($element['name']) ? (string)$element['name'] : null;
+
         if ($name === 'admin.sidebar' || $name === 'admin.navigation') {
             \Infinri\Core\Helper\Logger::info('Builder: Creating sidebar element', [
                 'name' => $name,
@@ -77,34 +74,34 @@ class Builder
                 'class' => isset($element['class']) ? (string)$element['class'] : 'N/A'
             ]);
         }
-        
+
         // Create block instance
         $block = $this->createBlock($element);
-        
+
         // Set block name
         if ($name) {
             $block->setName($name);
             $this->blocks[$name] = $block;
         }
-        
+
         // Set template on Template blocks
         if ($block instanceof Template && isset($element['template'])) {
-            $template = (string) $element['template'];
+            $template = (string)$element['template'];
             $block->setTemplate($template);
-            
+
             \Infinri\Core\Helper\Logger::debug('Builder: Created Template block', [
                 'name' => $name,
                 'template' => $template,
                 'class' => get_class($block)
             ]);
         }
-        
+
         // Set block data from attributes
         $this->setBlockData($block, $element);
-        
+
         // Process <arguments> children
         $this->processArguments($block, $element);
-        
+
         // Build and add children
         foreach ($element->children() as $child) {
             if (in_array($child->getName(), ['container', 'block'])) {
@@ -112,7 +109,7 @@ class Builder
                 $block->addChild($childBlock);
             }
         }
-        
+
         return $block;
     }
 
@@ -125,21 +122,21 @@ class Builder
     private function createBlock(SimpleXMLElement $element): AbstractBlock
     {
         $type = $element->getName();
-        
+
         // Determine block class
         if ($type === 'container') {
             return new Container();
         }
-        
+
         // For <block> elements, check if class is specified
         if (isset($element['class'])) {
-            $className = (string) $element['class'];
-            
+            $className = (string)$element['class'];
+
             // Try to create via ObjectManager (handles dependency injection)
             try {
                 $objectManager = ObjectManager::getInstance();
                 $block = $objectManager->create($className);
-                
+
                 if ($block instanceof AbstractBlock) {
                     // Inject TemplateResolver for Template blocks
                     if ($block instanceof Template && $this->templateResolver !== null) {
@@ -179,7 +176,7 @@ class Builder
                 }
             }
         }
-        
+
         // Default to Text block
         return new Text();
     }
@@ -195,7 +192,7 @@ class Builder
     {
         foreach ($element->attributes() as $key => $value) {
             if ($key !== 'class' && $key !== 'name' && $key !== 'template') {
-                $block->setData((string) $key, (string) $value);
+                $block->setData((string)$key, (string)$value);
             }
         }
     }
@@ -211,51 +208,51 @@ class Builder
     {
         // Find <arguments> child
         $argumentsNodes = $element->xpath('arguments');
-        
+
         if (empty($argumentsNodes)) {
             return;
         }
-        
+
         foreach ($argumentsNodes as $argumentsNode) {
             // Process each <argument> within <arguments>
             foreach ($argumentsNode->children() as $argument) {
                 if ($argument->getName() === 'argument') {
-                    $name = isset($argument['name']) ? (string) $argument['name'] : null;
+                    $name = isset($argument['name']) ? (string)$argument['name'] : null;
                     if (!$name) {
                         continue;
                     }
-                    
+
                     // Get the argument value (text content)
-                    $value = trim((string) $argument);
-                    
+                    $value = trim((string)$argument);
+
                     // Check for xsi:type attribute - try multiple methods
                     $xsiType = null;
-                    
+
                     // Method 1: Try with xsi namespace
                     $namespaces = $argument->getNameSpaces(true);
                     if (isset($namespaces['xsi'])) {
                         $xsiAttrs = $argument->attributes('xsi', true);
-                        $xsiType = isset($xsiAttrs['type']) ? (string) $xsiAttrs['type'] : null;
+                        $xsiType = isset($xsiAttrs['type']) ? (string)$xsiAttrs['type'] : null;
                     }
-                    
+
                     // Method 2: Try with http://www.w3.org/2001/XMLSchema-instance namespace directly
                     if (!$xsiType) {
                         $xsiAttrs = $argument->attributes('http://www.w3.org/2001/XMLSchema-instance', true);
-                        $xsiType = isset($xsiAttrs['type']) ? (string) $xsiAttrs['type'] : null;
+                        $xsiType = isset($xsiAttrs['type']) ? (string)$xsiAttrs['type'] : null;
                     }
-                    
+
                     // Method 3: Try as regular attribute (namespace might be stripped)
                     if (!$xsiType && isset($argument['type'])) {
-                        $xsiType = (string) $argument['type'];
+                        $xsiType = (string)$argument['type'];
                     }
-                    
+
                     \Infinri\Core\Helper\Logger::info('Builder: Processing argument', [
                         'name' => $name,
                         'value' => substr($value, 0, 100),
                         'xsiType' => $xsiType,
                         'block_name' => $block->getName()
                     ]);
-                    
+
                     // Handle different types
                     if ($xsiType === 'object') {
                         // Check if value is a data key reference (no namespace separator) or a class name
@@ -290,9 +287,9 @@ class Builder
                     } elseif ($xsiType === 'boolean') {
                         $value = filter_var($value, FILTER_VALIDATE_BOOLEAN);
                     } elseif ($xsiType === 'number' || $xsiType === 'int') {
-                        $value = (int) $value;
+                        $value = (int)$value;
                     }
-                    
+
                     // Special handling for 'template' argument on Template blocks
                     if ($name === 'template' && $block instanceof Template) {
                         $block->setTemplate($value);
@@ -320,7 +317,7 @@ class Builder
         if ($block instanceof Template) {
             $block->setLayout($layout);
         }
-        
+
         if ($block instanceof Container) {
             foreach ($block->getChildren() as $child) {
                 $this->setLayoutOnBlocks($child, $layout);

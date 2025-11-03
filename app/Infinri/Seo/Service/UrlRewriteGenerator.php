@@ -8,16 +8,13 @@ use Infinri\Seo\Model\Repository\UrlRewriteRepository;
 use Infinri\Core\Helper\Logger;
 
 /**
- * URL Rewrite Generator Service
- * 
  * Automatically generates URL rewrites for entities
  */
 class UrlRewriteGenerator
 {
     public function __construct(
         private readonly UrlRewriteRepository $urlRewriteRepository
-    ) {
-    }
+    ) {}
 
     /**
      * Generate URL rewrite for CMS page

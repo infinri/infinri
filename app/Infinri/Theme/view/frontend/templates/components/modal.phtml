@@ -2,7 +2,7 @@
 /**
  * Modal Template
  * Example modal structure
- * 
+ *
  * @var \Infinri\Core\Block\Template $block
  */
 ?>
@@ -11,15 +11,16 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title" id="modal-title"><?= $block->escapeHtml('Modal Title') ?></h3>
-                <button type="button" class="modal-close" data-modal-close aria-label="<?= $block->escapeHtmlAttr('Close') ?>">
+                <button type="button" class="modal-close" data-modal-close
+                        aria-label="<?= $block->escapeHtmlAttr('Close') ?>">
                     ×
                 </button>
             </div>
-            
+
             <div class="modal-body">
                 <p><?= $block->escapeHtml('Modal content goes here.') ?></p>
             </div>
-            
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-modal-close>
                     <?= $block->escapeHtml('Close') ?>

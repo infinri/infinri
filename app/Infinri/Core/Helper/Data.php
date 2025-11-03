@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Infinri\Core\Helper;
 
+use Random\RandomException;
+
 /**
- * Data Helper
- * 
  * General utility functions for data manipulation
  */
 class Data
@@ -153,6 +153,7 @@ class Data
      * @param int $length String length
      * @param string $characters Characters to use
      * @return string Random string
+     * @throws RandomException
      */
     public function randomString(int $length = 32, string $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'): string
     {

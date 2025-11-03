@@ -146,7 +146,7 @@
         <!-- Status Column -->
         <column name="is_active" component="Magento_Ui/js/grid/columns/select">
             <settings>
-                <options class="Magento\Config\Model\Config\Source\Yesno"/>
+                <options class="Infinri\Core\Model\Config\Source\YesNo"/>
                 <filter>select</filter>
                 <dataType>select</dataType>
                 <label translate="true">Status</label>

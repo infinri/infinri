@@ -1,7 +1,7 @@
 <?php
 /**
  * CMS Page View Template
- * 
+ *
  * @var \Infinri\Core\Block\Template $block
  * @var \Infinri\Cms\Model\Page $page
  */
@@ -19,11 +19,11 @@ if (!$page) {
             <h1 class="page-title"><?= $block->escapeHtml($page->getTitle()) ?></h1>
         </header>
     <?php endif; ?>
-    
+
     <div class="page-content">
         <?= /* Content is HTML from WYSIWYG, admin-controlled */ $page->getContent() ?>
     </div>
-    
+
     <!-- Widgets Section -->
     <?php
     // Only try to render widgets if we have a layout and the widget renderer block exists

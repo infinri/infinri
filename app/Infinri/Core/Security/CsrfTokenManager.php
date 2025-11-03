@@ -9,8 +9,6 @@ use Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator;
 use Symfony\Component\Security\Csrf\TokenStorage\NativeSessionTokenStorage;
 
 /**
- * CSRF Token Manager
- * 
  * Wrapper around Symfony Security CSRF for token generation and validation
  */
 class CsrfTokenManager
