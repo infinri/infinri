@@ -123,18 +123,15 @@
             <argument name="router" xsi:type="object">Infinri\Core\App\Router</argument>
             <argument name="objectManager" xsi:type="object">Infinri\Core\Model\ObjectManager</argument>
             <argument name="request" xsi:type="object">Infinri\Core\App\Request</argument>
-            <argument name="securityHeaders" xsi:type="object">Infinri\Core\App\Middleware\SecurityHeadersMiddleware
-            </argument>
-            <argument name="authMiddleware" xsi:type="object">Infinri\Core\App\Middleware\AuthenticationMiddleware
-            </argument>
+            <argument name="securityHeaders" xsi:type="object">Infinri\Core\App\Middleware\SecurityHeadersMiddleware</argument>
+            <argument name="authMiddleware" xsi:type="object">Infinri\Core\App\Middleware\AuthenticationMiddleware</argument>
         </arguments>
     </type>
 
     <!-- Authentication Middleware -->
     <type name="Infinri\Core\App\Middleware\AuthenticationMiddleware">
         <arguments>
-            <argument name="rememberTokenService" xsi:type="object">Infinri\Admin\Service\RememberTokenService
-            </argument>
+            <argument name="rememberTokenService" xsi:type="object">Infinri\Admin\Service\RememberTokenService</argument>
             <argument name="adminUserResource" xsi:type="object">Infinri\Admin\Model\ResourceModel\AdminUser</argument>
         </arguments>
     </type>
