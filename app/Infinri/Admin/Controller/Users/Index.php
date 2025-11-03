@@ -9,7 +9,6 @@ use Infinri\Core\App\Response;
 /**
  * Admin User List Controller
  * Route: admin/users/index
- * Displays admin users grid using UI Component and layout system
  */
 class Index extends AbstractAdminController
 {

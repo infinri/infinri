@@ -7,15 +7,13 @@ use Infinri\Core\Block\Template;
 use Infinri\Admin\Model\Menu\MenuLoader;
 
 /**
- * Admin Menu Block
  * Renders the admin navigation sidebar
  */
 class Menu extends Template
 {
     public function __construct(
         private readonly MenuLoader $menuLoader
-    ) {
-    }
+    ) {}
 
     /**
      * Get menu items loaded from menu.xml files
@@ -27,9 +25,7 @@ class Menu extends Template
         error_log("Menu items loaded: " . count($items));
         
         // Process all items recursively (add URL and active state)
-        $items = $this->processMenuItems($items);
-        
-        return $items;
+        return $this->processMenuItems($items);
     }
 
     /**
@@ -42,7 +38,7 @@ class Menu extends Template
                 $item['url'] = '/' . ltrim($item['action'], '/');
             }
             $item['active'] = $this->isActive($item);
-            
+
             // Recursively process children at any level
             if (!empty($item['children'])) {
                 $item['children'] = $this->processMenuItems($item['children']);

@@ -21,13 +21,13 @@ class View extends AbstractController
     private LayoutFactory $layoutFactory;
     private PageRepository $pageRepository;
     private ErrorHandler $errorHandler;
-    
+
     public function __construct(
-        Request $request,
-        Response $response,
-        LayoutFactory $layoutFactory,
+        Request        $request,
+        Response       $response,
+        LayoutFactory  $layoutFactory,
         PageRepository $pageRepository,
-        ErrorHandler $errorHandler
+        ErrorHandler   $errorHandler
     ) {
         parent::__construct($request, $response);
         $this->layoutFactory = $layoutFactory;
@@ -40,37 +40,36 @@ class View extends AbstractController
         try {
             // Get URL key from request parameter (from URL rewrite) or path
             $urlKey = $this->request->getParam('key');
-            
+
             if (!$urlKey) {
                 // Fallback to path if no 'key' parameter (e.g., '/about' => 'about')
                 $path = trim($this->request->getPath(), '/');
                 $urlKey = $path ?: 'home';
             }
-            
+
             Logger::info('CMS: Looking up page by URL key', [
                 'url_key' => $urlKey,
                 'from_param' => $this->request->getParam('key') ? 'yes' : 'no'
             ]);
-            
+
             // Load page by URL key
             $page = $this->pageRepository->getByUrlKey($urlKey);
-            
+
             if (!$page || !$page->getData('is_active')) {
                 // Page not found - use error handler for consistent 404 handling
                 return $this->errorHandler->handle404($this->response, $urlKey);
             }
-            
+
             // Render page layout with page data
             $html = $this->layoutFactory->render('cms_page_view', [
                 'page' => $page,
             ]);
-            
+
             $this->response->setBody($html);
-            
+
             return $this->response;
-            
+
         } catch (Throwable $e) {
-            // Unexpected error - use error handler for consistent 500 handling
             return $this->errorHandler->handle500($e, $this->response);
         }
     }

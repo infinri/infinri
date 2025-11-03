@@ -3,37 +3,37 @@
         xsi:noNamespaceSchemaLocation="urn:infinri:framework:Admin/etc/menu.xsd">
     <menu>
         <!-- Content Section -->
-        <add id="Infinri_Admin::content" 
-             title="Content" 
-             module="Infinri_Admin" 
-             sortOrder="20" 
+        <add id="Infinri_Admin::content"
+             title="Content"
+             module="Infinri_Admin"
+             sortOrder="20"
              resource="Infinri_Admin::content"
              icon="📄"/>
-        
+
         <!-- System Section -->
-        <add id="Infinri_Admin::system" 
-             title="System" 
-             module="Infinri_Admin" 
-             sortOrder="90" 
+        <add id="Infinri_Admin::system"
+             title="System"
+             module="Infinri_Admin"
+             sortOrder="90"
              resource="Infinri_Admin::system"
              icon="⚙️"/>
-        
+
         <!-- System > Configuration -->
-        <add id="Infinri_Admin::system_config" 
-             title="Configuration" 
-             module="Infinri_Admin" 
-             sortOrder="5" 
+        <add id="Infinri_Admin::system_config"
+             title="Configuration"
+             module="Infinri_Admin"
+             sortOrder="5"
              parent="Infinri_Admin::system"
-             action="admin/system/config/index" 
+             action="admin/system/config/index"
              resource="Infinri_Admin::system_config"/>
-        
+
         <!-- System > Users -->
-        <add id="Infinri_Admin::system_users" 
-             title="Admin Users" 
-             module="Infinri_Admin" 
-             sortOrder="10" 
+        <add id="Infinri_Admin::system_users"
+             title="Admin Users"
+             module="Infinri_Admin"
+             sortOrder="10"
              parent="Infinri_Admin::system"
-             action="admin/users/index" 
+             action="admin/users/index"
              resource="Infinri_Admin::system_users"/>
     </menu>
 </config>

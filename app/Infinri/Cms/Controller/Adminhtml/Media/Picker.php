@@ -11,23 +11,21 @@ use Infinri\Cms\Controller\Adminhtml\Media\CsrfTokenIds;
 
 /**
  * Media Picker Controller
- * 
- * Phase 3.4: SOLID Refactoring - Now uses MediaLibrary service
  */
 class Picker extends AbstractAdminController
 {
     private MediaLibrary $mediaLibrary;
 
     public function __construct(
-        \Infinri\Core\App\Request $request,
-        \Infinri\Core\App\Response $response,
+        \Infinri\Core\App\Request              $request,
+        \Infinri\Core\App\Response             $response,
         \Infinri\Core\Model\View\LayoutFactory $layoutFactory,
-        \Infinri\Core\Security\CsrfGuard $csrfGuard
+        \Infinri\Core\Security\CsrfGuard       $csrfGuard
     ) {
-        parent::__construct($request, $response, $layoutFactory, $csrfGuard);
-        
         $mediaPath = dirname(__DIR__, 6) . '/pub/media';
         $this->mediaLibrary = new MediaLibrary($mediaPath, '/media');
+
+        parent::__construct($request, $response, $layoutFactory, $csrfGuard);
     }
 
     public function execute(): Response
@@ -35,7 +33,7 @@ class Picker extends AbstractAdminController
         $csrfToken = $this->csrfGuard->generateToken(CsrfTokenIds::UPLOAD);
 
         $templatePath = dirname(__DIR__, 3) . '/view/adminhtml/templates/media/picker.phtml';
-        
+
         if (file_exists($templatePath)) {
             ob_start();
             include $templatePath;
@@ -62,7 +60,7 @@ class Picker extends AbstractAdminController
     private function getImages(string $relativePath): array
     {
         $fileInfoObjects = $this->mediaLibrary->getImages($relativePath);
-        
+
         // Convert FileInfo objects to arrays for template
         return array_map(fn($fileInfo) => [
             'name' => $fileInfo->name,
@@ -70,7 +68,4 @@ class Picker extends AbstractAdminController
             'modified' => $fileInfo->modifiedTime,
         ], $fileInfoObjects);
     }
-    
-    // Phase 5: Dead code removed (renderPicker, generateBreadcrumbs, renderFolders, renderImages)
-    // The controller now uses picker.phtml template with existing _image-picker.less styles
 }

@@ -8,16 +8,9 @@
  * - Admin sidebar navigation (from Theme)
  * - Admin footer (from Theme)
  * - Admin styling (LESS from Theme + Admin modules compiled together)
- * 
- * NOTE: Build system (npm run build) compiles all admin LESS files
- * (Theme + Admin) into /pub/static/adminhtml/css/styles.min.css
- * which is loaded by Theme's default.xml layout.
  */
 -->
 <layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <!-- Extend Theme's complete admin layout -->
     <update handle="admin_1column"/>
-    
-    <!-- No additional CSS needed - Admin module styles are compiled
-         into adminhtml/styles.min.css along with Theme styles -->
 </layout>

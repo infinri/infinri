@@ -15,11 +15,11 @@ use Infinri\Core\Helper\Logger;
 class Logout extends AbstractAdminController
 {
     public function __construct(
-        \Infinri\Core\App\Request $request,
-        \Infinri\Core\App\Response $response,
+        \Infinri\Core\App\Request              $request,
+        \Infinri\Core\App\Response             $response,
         \Infinri\Core\Model\View\LayoutFactory $layoutFactory,
-        \Infinri\Core\Security\CsrfGuard $csrfGuard,
-        private readonly RememberTokenService $rememberTokenService
+        \Infinri\Core\Security\CsrfGuard       $csrfGuard,
+        private readonly RememberTokenService  $rememberTokenService
     ) {
         parent::__construct($request, $response, $layoutFactory, $csrfGuard);
     }
@@ -63,7 +63,7 @@ class Logout extends AbstractAdminController
 
         // Unset all session variables
         $_SESSION = [];
-        
+
         // Delete session cookie
         if (ini_get("session.use_cookies")) {
             $params = session_get_cookie_params();
@@ -78,7 +78,6 @@ class Logout extends AbstractAdminController
             );
         }
 
-        // Destroy session
         session_destroy();
 
         Logger::info('Admin logged out', ['username' => $username]);

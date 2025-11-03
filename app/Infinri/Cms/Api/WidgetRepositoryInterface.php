@@ -6,8 +6,6 @@ namespace Infinri\Cms\Api;
 use Infinri\Cms\Model\Widget;
 
 /**
- * Widget Repository Interface
- * 
  * Service contract for CMS widget CRUD operations
  */
 interface WidgetRepositoryInterface
@@ -20,7 +18,7 @@ interface WidgetRepositoryInterface
      * @throws \RuntimeException if widget not found
      */
     public function getById(int $widgetId): Widget;
-    
+
     /**
      * Get all widgets for a page (sorted by sort_order)
      *
@@ -29,7 +27,7 @@ interface WidgetRepositoryInterface
      * @return Widget[]
      */
     public function getByPageId(int $pageId, bool $activeOnly = true): array;
-    
+
     /**
      * Save widget
      *
@@ -38,7 +36,7 @@ interface WidgetRepositoryInterface
      * @throws \InvalidArgumentException if validation fails
      */
     public function save(Widget $widget): Widget;
-    
+
     /**
      * Delete widget
      *
@@ -47,7 +45,7 @@ interface WidgetRepositoryInterface
      * @throws \RuntimeException if widget not found
      */
     public function delete(int $widgetId): bool;
-    
+
     /**
      * Reorder widgets for a page
      *

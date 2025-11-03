@@ -10,8 +10,7 @@ class Delete extends AbstractDeleteController
 {
     public function __construct(
         private readonly PageRepository $pageRepository
-    ) {
-    }
+    ) {}
 
     protected function getRepository(): PageRepository
     {

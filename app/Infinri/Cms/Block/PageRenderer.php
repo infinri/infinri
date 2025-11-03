@@ -16,24 +16,24 @@ class PageRenderer extends Template
      * @var WidgetRepository
      */
     private WidgetRepository $widgetRepository;
-    
+
     /**
      * @var WidgetFactory
      */
     private WidgetFactory $widgetFactory;
-    
+
     /**
      * @param WidgetRepository $widgetRepository
      * @param WidgetFactory $widgetFactory
      */
     public function __construct(
         WidgetRepository $widgetRepository,
-        WidgetFactory $widgetFactory
+        WidgetFactory    $widgetFactory
     ) {
         $this->widgetRepository = $widgetRepository;
         $this->widgetFactory = $widgetFactory;
     }
-    
+
     /**
      * @param int $pageId
      * @return string
@@ -42,13 +42,13 @@ class PageRenderer extends Template
     {
         try {
             $widgets = $this->widgetRepository->getByPageId($pageId, true);
-            
+
             if (empty($widgets)) {
                 return '';
             }
-            
+
             $output = '';
-            
+
             foreach ($widgets as $widget) {
                 try {
                     $widgetBlock = $this->widgetFactory->create($widget->getWidgetType());
@@ -63,7 +63,7 @@ class PageRenderer extends Template
                     ));
                 }
             }
-            
+
             return $output;
         } catch (\Exception $e) {
             error_log(sprintf(

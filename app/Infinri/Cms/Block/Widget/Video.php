@@ -16,23 +16,23 @@ class Video extends AbstractWidget
     public function toHtml(): string
     {
         $data = $this->getWidgetData();
-        
+
         $videoType = $data['video_type'] ?? 'youtube';
         $videoId = $data['video_id'] ?? '';
         $width = $data['width'] ?? '100%';
         $height = $data['height'] ?? '400px';
         $autoplay = $data['autoplay'] ?? false;
-        
+
         if (empty($videoId)) {
             return '';
         }
-        
+
         $embedUrl = $this->getEmbedUrl($videoType, $videoId, $autoplay);
-        
+
         if (!$embedUrl) {
             return '';
         }
-        
+
         return sprintf(
             '<div class="widget widget-video" data-widget-id="%d" data-widget-type="video" style="width: %s; height: %s;">
                 <iframe src="%s" 
@@ -48,7 +48,7 @@ class Video extends AbstractWidget
             $this->escapeUrl($embedUrl)
         );
     }
-    
+
     /**
      * @param string $type
      * @param string $videoId
@@ -57,7 +57,7 @@ class Video extends AbstractWidget
      */
     private function getEmbedUrl(string $type, string $videoId, bool $autoplay): ?string
     {
-        return match($type) {
+        return match ($type) {
             'youtube' => sprintf(
                 'https://www.youtube.com/embed/%s?autoplay=%d&rel=0',
                 urlencode($videoId),

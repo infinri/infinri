@@ -7,8 +7,6 @@ namespace Infinri\Admin\Block;
 use Infinri\Core\Block\Template;
 
 /**
- * Dashboard Block
- * 
  * Provides data for dashboard statistics and quick actions
  */
 class Dashboard extends Template
@@ -46,7 +44,7 @@ class Dashboard extends Template
             ]
         ];
     }
-    
+
     /**
      * Get quick action links
      */

@@ -9,8 +9,6 @@ use Infinri\Core\App\Response;
 use Infinri\Cms\Model\Repository\AbstractContentRepository;
 
 /**
- * Abstract Delete Controller
- * 
  * Base controller for deleting CMS content entities (Page, Block, etc.)
  * Provides common delete logic with minimal code duplication
  * 
@@ -18,8 +16,6 @@ use Infinri\Cms\Model\Repository\AbstractContentRepository;
  */
 abstract class AbstractDeleteController
 {
-    // ==================== ABSTRACT METHODS ====================
-
     /**
      * Get repository instance
      * Each child controller provides its specific repository
@@ -48,8 +44,6 @@ abstract class AbstractDeleteController
      * @return string
      */
     abstract protected function getEntityName(): string;
-
-    // ==================== COMMON DELETE LOGIC ====================
 
     /**
      * Execute delete action

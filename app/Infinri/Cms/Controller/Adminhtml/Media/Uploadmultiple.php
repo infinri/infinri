@@ -13,16 +13,12 @@ use Infinri\Core\Helper\JsonResponse;
 
 /**
  * Upload Multiple Images
- * 
- * Phase 4: DRY/KISS - Uses PathHelper and JsonResponse
  */
 class Uploadmultiple
 {
     private const CSRF_TOKEN_ID = CsrfTokenIds::UPLOAD;
-    
-    public function __construct(private readonly CsrfGuard $csrfGuard)
-    {
-    }
+
+    public function __construct(private readonly CsrfGuard $csrfGuard) {}
 
     public function execute(Request $request): Response
     {
@@ -34,8 +30,8 @@ class Uploadmultiple
             error_log('UploadMultiple called');
             error_log('$_FILES: ' . print_r($_FILES, true));
             error_log('$_POST: ' . print_r($_POST, true));
-            
-            // 🔒 SECURITY: Sanitize folder parameter to prevent directory traversal
+
+            // Sanitize folder parameter to prevent directory traversal
             $folder = $request->getParam('folder', '');
             if ($folder) {
                 // Remove any path traversal attempts
@@ -48,79 +44,79 @@ class Uploadmultiple
             }
             $mediaPath = PathHelper::getMediaPath();
             $targetPath = $mediaPath . ($folder ? '/' . $folder : '');
-            
+
             error_log('Target path: ' . $targetPath);
             error_log('Media path: ' . $mediaPath);
-            
+
             // Create target directory if it doesn't exist
             if (!is_dir($targetPath)) {
                 mkdir($targetPath, 0755, true);
                 error_log('Created directory: ' . $targetPath);
             }
-            
+
             if (!is_writable($targetPath)) {
                 throw new \RuntimeException('Target directory is not writable: ' . $targetPath);
             }
-            
+
             $uploaded = [];
             $errors = [];
-            
+
             if (!isset($_FILES['files'])) {
                 throw new \RuntimeException('No files uploaded. $_FILES is empty.');
             }
-            
+
             $files = $_FILES['files'];
             $fileCount = is_array($files['name']) ? count($files['name']) : 1;
-            
+
             error_log('File count: ' . $fileCount);
-            
+
             for ($i = 0; $i < $fileCount; $i++) {
                 $name = is_array($files['name']) ? $files['name'][$i] : $files['name'];
                 $tmpName = is_array($files['tmp_name']) ? $files['tmp_name'][$i] : $files['tmp_name'];
                 $error = is_array($files['error']) ? $files['error'][$i] : $files['error'];
-                
+
                 error_log("Processing file $i: $name, error: $error");
-                
+
                 if ($error !== UPLOAD_ERR_OK) {
                     $errorMsg = $this->getUploadErrorMessage($error);
                     $errors[] = "$name: $errorMsg";
                     error_log("Upload error for $name: $errorMsg");
                     continue;
                 }
-                
+
                 // Validate file type
                 $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
                 $finfo = finfo_open(FILEINFO_MIME_TYPE);
                 $mimeType = finfo_file($finfo, $tmpName);
                 finfo_close($finfo);
-                
+
                 error_log("File $name mime type: $mimeType");
-                
+
                 if (!in_array($mimeType, $allowedTypes)) {
                     $errors[] = "$name: Invalid file type ($mimeType)";
                     continue;
                 }
-                
-                // 🔒 SECURITY: Sanitize filename to prevent path traversal
+
+                // Sanitize filename to prevent path traversal
                 $filename = basename($name); // Remove path components
                 $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-                
+
                 // Whitelist allowed extensions
                 $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
                 if (!in_array($extension, $allowedExtensions)) {
                     $errors[] = "$name: Invalid file extension ($extension)";
                     continue;
                 }
-                
+
                 // Sanitize filename: keep only safe characters
                 $filename = preg_replace('/[^a-zA-Z0-9_.-]/', '_', $filename);
-                
+
                 // Add unique prefix to prevent collisions
                 $filename = uniqid('', true) . '_' . $filename;
                 $targetFile = $targetPath . '/' . $filename;
-                
+
                 error_log("Moving $tmpName to $targetFile");
-                
+
                 if (move_uploaded_file($tmpName, $targetFile)) {
                     chmod($targetFile, 0644);
                     $uploaded[] = $filename;
@@ -130,7 +126,7 @@ class Uploadmultiple
                     error_log("Failed to move $name");
                 }
             }
-            
+
             return JsonResponse::success([
                 'uploaded' => $uploaded,
                 'count' => count($uploaded),
@@ -143,7 +139,7 @@ class Uploadmultiple
             return JsonResponse::error($e->getMessage());
         }
     }
-    
+
     private function getUploadErrorMessage(int $error): string
     {
         $errors = [
@@ -155,7 +151,7 @@ class Uploadmultiple
             UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk',
             UPLOAD_ERR_EXTENSION => 'Upload stopped by extension'
         ];
-        
+
         return $errors[$error] ?? "Unknown upload error ($error)";
     }
 }

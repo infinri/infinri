@@ -14,7 +14,7 @@ class BlockReference extends AbstractWidget
      * @var BlockRepository
      */
     private BlockRepository $blockRepository;
-    
+
     /**
      * @param BlockRepository $blockRepository
      */
@@ -22,7 +22,7 @@ class BlockReference extends AbstractWidget
     {
         $this->blockRepository = $blockRepository;
     }
-    
+
     /**
      * Render block reference widget
      *
@@ -32,18 +32,18 @@ class BlockReference extends AbstractWidget
     {
         $data = $this->getWidgetData();
         $identifier = $data['block_identifier'] ?? null;
-        
+
         if (!$identifier) {
             return '';
         }
-        
+
         try {
             $block = $this->blockRepository->getByIdentifier($identifier);
-            
+
             if (!$block->isActive()) {
                 return '';
             }
-            
+
             return sprintf(
                 '<div class="widget widget-block" data-widget-id="%d" data-widget-type="block" data-block-identifier="%s">%s</div>',
                 $this->getWidgetId() ?? 0,

@@ -25,7 +25,7 @@ class Form extends Template
     {
         if (isset($_SESSION['login_error'])) {
             $error = $_SESSION['login_error'];
-            unset($_SESSION['login_error']); // Clear after displaying
+            unset($_SESSION['login_error']);
             return $error;
         }
         return '';
@@ -38,7 +38,7 @@ class Form extends Template
     {
         return isset($_SESSION['login_error']);
     }
-    
+
     /**
      * Get username from previous attempt
      */
@@ -46,7 +46,7 @@ class Form extends Template
     {
         if (isset($_SESSION['login_username'])) {
             $username = $_SESSION['login_username'];
-            unset($_SESSION['login_username']); // Clear after displaying
+            unset($_SESSION['login_username']);
             return $username;
         }
         return '';

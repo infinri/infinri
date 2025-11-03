@@ -21,10 +21,10 @@ class DataProvider
         // Get repository from ObjectManager
         $objectManager = ObjectManager::getInstance();
         $repository = $objectManager->get(AdminUserRepository::class);
-        
+
         // Get all users from repository
         $users = $repository->getAll();
-        
+
         $items = [];
         foreach ($users as $user) {
             $items[] = [
@@ -39,7 +39,7 @@ class DataProvider
                 'created_at' => $user->getData('created_at'),
             ];
         }
-        
+
         return [
             'items' => $items,
             'totalRecords' => count($items),

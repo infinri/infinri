@@ -17,11 +17,11 @@ class Html extends AbstractWidget
     {
         $data = $this->getWidgetData();
         $htmlContent = $data['html_content'] ?? '';
-        
+
         if (empty($htmlContent)) {
             return '';
         }
-        
+
         return sprintf(
             '<div class="widget widget-html" data-widget-id="%d" data-widget-type="html">%s</div>',
             $this->getWidgetId() ?? 0,

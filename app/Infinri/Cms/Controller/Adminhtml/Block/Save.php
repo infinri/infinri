@@ -18,16 +18,15 @@ class Save extends AbstractSaveController
     /**
      * @param BlockRepository $blockRepository
      * @param ContentSanitizer $contentSanitizer
+     * @param CsrfGuard $csrfGuard
      */
     public function __construct(
-        private readonly BlockRepository $blockRepository,
+        private readonly BlockRepository  $blockRepository,
         private readonly ContentSanitizer $contentSanitizer,
-        CsrfGuard $csrfGuard
+        CsrfGuard                         $csrfGuard
     ) {
         parent::__construct($csrfGuard);
     }
-
-    // ==================== REQUIRED ABSTRACT METHODS ====================
 
     /**
      * @return BlockRepository
@@ -76,18 +75,17 @@ class Save extends AbstractSaveController
     protected function extractEntityData(Request $request): array
     {
         $content = $request->getParam('content', '');
-        
-        // 🔒 SECURITY: Sanitize HTML content on SAVE to prevent XSS
+
         // Using 'rich' profile to allow formatting while blocking dangerous elements
         if (!empty($content)) {
             $content = $this->contentSanitizer->sanitize($content, 'rich');
         }
-        
+
         return [
             'title' => $request->getParam('title', ''),
             'identifier' => $request->getParam('identifier', ''),
             'content' => $content, // Sanitized content
-            'is_active' => (bool) $request->getParam('is_active', false),
+            'is_active' => (bool)$request->getParam('is_active', false),
         ];
     }
 

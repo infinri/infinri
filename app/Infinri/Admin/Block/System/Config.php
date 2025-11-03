@@ -17,7 +17,7 @@ class Config extends Template
     private ?SystemReader $systemReader = null;
     private ?ConfigModel $config = null;
     private ?Request $request = null;
-    
+
     /**
      * Get current section ID
      */
@@ -25,7 +25,7 @@ class Config extends Template
     {
         return $this->getRequest()->getParam('section', 'general');
     }
-    
+
     /**
      * Get all sections
      */
@@ -33,7 +33,7 @@ class Config extends Template
     {
         return $this->getSystemReader()->getSections();
     }
-    
+
     /**
      * Get current section data
      */
@@ -41,7 +41,7 @@ class Config extends Template
     {
         return $this->getSystemReader()->getSection($this->getCurrentSection());
     }
-    
+
     /**
      * Get configuration value
      */
@@ -49,7 +49,7 @@ class Config extends Template
     {
         return $this->getConfigModel()->getValue($path);
     }
-    
+
     /**
      * Get field options from source model
      */
@@ -58,7 +58,7 @@ class Config extends Template
         if (empty($sourceModel)) {
             return [];
         }
-        
+
         try {
             $source = new $sourceModel();
             return $source->toOptionArray();

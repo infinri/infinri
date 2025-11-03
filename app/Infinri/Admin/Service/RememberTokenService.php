@@ -5,10 +5,9 @@ namespace Infinri\Admin\Service;
 
 use Infinri\Admin\Model\ResourceModel\RememberToken as RememberTokenResource;
 use Infinri\Core\Helper\Logger;
+use Random\RandomException;
 
 /**
- * Remember Token Service
- * 
  * Handles remember-me token generation, validation, and cleanup
  */
 class RememberTokenService
@@ -23,17 +22,18 @@ class RememberTokenService
 
     /**
      * Generate and store a new remember token
-     * 
+     *
      * @return string The plaintext token to set in cookie
+     * @throws RandomException
      */
     public function generateToken(int $userId, string $ipAddress, string $userAgent): string
     {
         // Generate cryptographically secure random token
         $token = bin2hex(random_bytes(self::TOKEN_LENGTH));
-        
+
         // Hash the token before storing (never store plaintext)
         $tokenHash = hash('sha256', $token);
-        
+
         // Store in database
         $this->tokenResource->createToken(
             $userId,
@@ -42,9 +42,9 @@ class RememberTokenService
             $userAgent,
             self::TOKEN_LIFETIME_DAYS
         );
-        
+
         Logger::info('Remember token created', ['user_id' => $userId]);
-        
+
         return $token;
     }
 
@@ -54,14 +54,14 @@ class RememberTokenService
     public function validateToken(string $token): int|false
     {
         $tokenHash = hash('sha256', $token);
-        
+
         $tokenData = $this->tokenResource->findByTokenHash($tokenHash);
-        
+
         if (!$tokenData) {
             Logger::debug('Remember token not found', ['token_hash' => substr($tokenHash, 0, 8) . '...']);
             return false;
         }
-        
+
         // Check if token expired
         $expiresAt = strtotime($tokenData['expires_at']);
         if ($expiresAt < time()) {
@@ -69,15 +69,15 @@ class RememberTokenService
             $this->tokenResource->deleteByTokenHash($tokenHash);
             return false;
         }
-        
+
         // Update last used timestamp
         $this->tokenResource->updateLastUsed($tokenData['token_id']);
-        
+
         Logger::info('Remember token validated', [
             'user_id' => $tokenData['user_id'],
             'token_id' => $tokenData['token_id']
         ]);
-        
+
         return (int)$tokenData['user_id'];
     }
 
@@ -87,7 +87,7 @@ class RememberTokenService
     public function setRememberCookie(string $token): bool
     {
         $expires = time() + (self::TOKEN_LIFETIME_DAYS * 24 * 60 * 60);
-        
+
         return setcookie(
             self::COOKIE_NAME,
             $token,
@@ -95,9 +95,9 @@ class RememberTokenService
                 'expires' => $expires,
                 'path' => '/',
                 'domain' => '',
-                'secure' => true, // 🔒 SECURITY: Always require HTTPS for admin cookies
-                'httponly' => true, // Prevent JavaScript access
-                'samesite' => 'Strict' // 🔒 SECURITY: Strict for admin cookies (prevent CSRF)
+                'secure' => true,
+                'httponly' => true,
+                'samesite' => 'Strict'
             ]
         );
     }
@@ -116,14 +116,14 @@ class RememberTokenService
     public function deleteRememberCookie(): bool
     {
         unset($_COOKIE[self::COOKIE_NAME]);
-        
+
         return setcookie(
             self::COOKIE_NAME,
             '',
             [
                 'expires' => time() - 3600,
                 'path' => '/',
-                'secure' => true, // 🔒 SECURITY: Match cookie creation flags
+                'secure' => true,
                 'httponly' => true,
                 'samesite' => 'Strict'
             ]

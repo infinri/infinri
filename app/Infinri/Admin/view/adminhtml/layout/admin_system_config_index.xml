@@ -1,9 +1,4 @@
 <?xml version="1.0"?>
-<!--
-/**
- * System Configuration Page Layout
- */
--->
 <layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <update handle="admin_default"/>
     

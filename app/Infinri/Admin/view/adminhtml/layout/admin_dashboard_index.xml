@@ -2,18 +2,18 @@
 <layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <!-- Extend base admin layout -->
     <update handle="admin_default"/>
-    
+
     <!-- Set page title -->
     <referenceBlock name="page.title">
         <arguments>
             <argument name="page_title" xsi:type="string">Dashboard</argument>
         </arguments>
     </referenceBlock>
-    
+
     <!-- Dashboard Content -->
     <referenceContainer name="content">
-        <block class="Infinri\Admin\Block\Dashboard" 
-               name="admin.dashboard" 
+        <block class="Infinri\Admin\Block\Dashboard"
+               name="admin.dashboard"
                template="Infinri_Admin::dashboard/index.phtml"/>
     </referenceContainer>
 </layout>

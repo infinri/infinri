@@ -6,8 +6,6 @@ namespace Infinri\Admin\Model\ResourceModel;
 use Infinri\Core\Model\ResourceModel\AbstractResource;
 
 /**
- * Admin User Resource Model
- * 
  * Database operations for admin_users table
  */
 class AdminUser extends AbstractResource

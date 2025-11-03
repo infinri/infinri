@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:infinri:framework:Setup/Declaration/Schema/etc/schema.xsd">
-    
+
     <!-- Admin Users Table -->
     <table name="admin_users" resource="default" engine="innodb" comment="Admin User Accounts">
         <column xsi:type="int" name="user_id" unsigned="true" nullable="false" identity="true" comment="User ID"/>
@@ -9,34 +9,37 @@
         <column xsi:type="varchar" name="email" nullable="false" length="255" comment="Email Address"/>
         <column xsi:type="varchar" name="firstname" nullable="true" length="100" comment="First Name"/>
         <column xsi:type="varchar" name="lastname" nullable="true" length="100" comment="Last Name"/>
-        <column xsi:type="varchar" name="password" nullable="false" length="255" comment="Password Hash (bcrypt/argon2)"/>
+        <column xsi:type="varchar" name="password" nullable="false" length="255"
+                comment="Password Hash (bcrypt/argon2)"/>
         <column xsi:type="text" name="roles" nullable="false" comment="User Roles (JSON array)"/>
         <column xsi:type="boolean" name="is_active" nullable="false" default="true" comment="Is Active"/>
-        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" comment="Creation Time"/>
-        <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="true" comment="Update Time"/>
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="true"
+                comment="Update Time"/>
         <column xsi:type="timestamp" name="last_login_at" nullable="true" comment="Last Login Time"/>
-        
+
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="user_id"/>
         </constraint>
-        
+
         <constraint xsi:type="unique" referenceId="ADMIN_USERS_USERNAME">
             <column name="username"/>
         </constraint>
-        
+
         <constraint xsi:type="unique" referenceId="ADMIN_USERS_EMAIL">
             <column name="email"/>
         </constraint>
-        
+
         <index referenceId="ADMIN_USERS_IS_ACTIVE" indexType="btree">
             <column name="is_active"/>
         </index>
-        
+
         <index referenceId="ADMIN_USERS_LAST_LOGIN_AT" indexType="btree">
             <column name="last_login_at"/>
         </index>
     </table>
-    
+
     <!-- Admin Remember Me Tokens Table -->
     <table name="admin_user_remember_tokens" resource="default" engine="innodb" comment="Admin Remember Me Tokens">
         <column xsi:type="int" name="token_id" unsigned="true" nullable="false" identity="true" comment="Token ID"/>
@@ -44,29 +47,30 @@
         <column xsi:type="varchar" name="token_hash" nullable="false" length="64" comment="Token Hash (SHA256)"/>
         <column xsi:type="varchar" name="ip_address" nullable="true" length="45" comment="IP Address"/>
         <column xsi:type="varchar" name="user_agent" nullable="true" length="255" comment="User Agent"/>
-        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" comment="Created At"/>
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Created At"/>
         <column xsi:type="timestamp" name="expires_at" nullable="false" comment="Expires At"/>
         <column xsi:type="timestamp" name="last_used_at" nullable="true" comment="Last Used At"/>
-        
+
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="token_id"/>
         </constraint>
-        
-        <constraint xsi:type="foreign" referenceId="ADMIN_REMEMBER_TOKEN_USER_ID" 
-                    table="admin_user_remember_tokens" column="user_id" 
+
+        <constraint xsi:type="foreign" referenceId="ADMIN_REMEMBER_TOKEN_USER_ID"
+                    table="admin_user_remember_tokens" column="user_id"
                     referenceTable="admin_users" referenceColumn="user_id" onDelete="CASCADE"/>
-        
+
         <constraint xsi:type="unique" referenceId="ADMIN_REMEMBER_TOKEN_HASH">
             <column name="token_hash"/>
         </constraint>
-        
+
         <index referenceId="ADMIN_REMEMBER_TOKEN_USER_ID" indexType="btree">
             <column name="user_id"/>
         </index>
-        
+
         <index referenceId="ADMIN_REMEMBER_TOKEN_EXPIRES_AT" indexType="btree">
             <column name="expires_at"/>
         </index>
     </table>
-    
+
 </schema>

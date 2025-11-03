@@ -9,8 +9,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
- * Admin User Model
- * 
  * Represents an admin user account with Symfony Security integration
  */
 class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenticatedUserInterface
@@ -29,8 +27,6 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
     {
         return $this->resource;
     }
-
-    // ==================== Symfony Security Interface Methods ====================
 
     /**
      * Get user identifier (username)
@@ -74,10 +70,8 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
      */
     public function eraseCredentials(): void
     {
-        // No temporary credentials to erase
+        // No temporary credentials to erase. Deprecated function only defined for implementation
     }
-
-    // ==================== Admin User Specific Methods ====================
 
     /**
      * Get user ID

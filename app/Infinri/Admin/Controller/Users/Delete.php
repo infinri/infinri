@@ -15,11 +15,11 @@ use Infinri\Admin\Model\Repository\AdminUserRepository;
 class Delete extends AbstractAdminController
 {
     public function __construct(
-        \Infinri\Core\App\Request $request,
-        \Infinri\Core\App\Response $response,
+        \Infinri\Core\App\Request              $request,
+        \Infinri\Core\App\Response             $response,
         \Infinri\Core\Model\View\LayoutFactory $layoutFactory,
-        \Infinri\Core\Security\CsrfGuard $csrfGuard,
-        private readonly AdminUserRepository $repository
+        \Infinri\Core\Security\CsrfGuard       $csrfGuard,
+        private readonly AdminUserRepository   $repository
     ) {
         parent::__construct($request, $response, $layoutFactory, $csrfGuard);
     }
@@ -43,7 +43,7 @@ class Delete extends AbstractAdminController
 
             // Delete the user via repository
             $this->repository->delete($user);
-            
+
             Logger::info('User deleted successfully', [
                 'user_id' => $userId,
                 'username' => $user->getUsername()
@@ -56,7 +56,7 @@ class Delete extends AbstractAdminController
                 'user_id' => $userId,
                 'error' => $e->getMessage()
             ]);
-            
+
             return $this->redirectWithError('/admin/users/index');
         }
     }

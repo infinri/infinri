@@ -13,14 +13,10 @@ use Infinri\Core\Helper\JsonResponse;
 
 /**
  * Delete Image
- * 
- * Phase 4: DRY/KISS - Uses PathHelper and JsonResponse
  */
 class Delete
 {
-    public function __construct(private readonly CsrfGuard $csrfGuard)
-    {
-    }
+    public function __construct(private readonly CsrfGuard $csrfGuard) {}
 
     public function execute(Request $request): Response
     {
@@ -33,25 +29,25 @@ class Delete
             if (!$request->isPost() || !$this->csrfGuard->validateToken(CsrfTokenIds::DELETE, is_string($token) ? $token : null)) {
                 return JsonResponse::csrfError();
             }
-            
+
             if (empty($file)) {
                 throw new \RuntimeException('File name is required');
             }
-            
+
             $mediaPath = PathHelper::getMediaPath();
             $filePath = $mediaPath . ($folder ? '/' . $folder : '') . '/' . $file;
-            
+
             // Security check
             if (strpos(realpath(dirname($filePath)), realpath($mediaPath)) !== 0) {
                 throw new \RuntimeException('Invalid file path');
             }
-            
+
             if (!is_file($filePath)) {
                 throw new \RuntimeException('File not found');
             }
-            
+
             unlink($filePath);
-            
+
             return JsonResponse::success();
 
         } catch (\JsonException $e) {

@@ -1,10 +1,11 @@
 <?php
 declare(strict_types=1);
 
+use Infinri\Core\Api\ComponentRegistrarInterface;
 use Infinri\Core\Model\ComponentRegistrar;
 
 ComponentRegistrar::register(
-    ComponentRegistrar::MODULE,
+    ComponentRegistrarInterface::MODULE,
     'Infinri_Auth',
     __DIR__
 );

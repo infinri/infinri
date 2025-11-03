@@ -1,20 +1,14 @@
 <?xml version="1.0"?>
-<!--
-/**
- * Admin User Listing UI Component
- * Grid configuration for admin user management
- */
--->
-<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
-    
+
     <!-- Data Provider Configuration -->
     <argument name="data" xsi:type="array">
         <item name="js_config" xsi:type="array">
             <item name="provider" xsi:type="string">admin_user_listing.admin_user_listing_data_source</item>
         </item>
     </argument>
-    
+
     <!-- Grid Settings -->
     <settings>
         <buttons>
@@ -29,7 +23,7 @@
             <dep>admin_user_listing.admin_user_listing_data_source</dep>
         </deps>
     </settings>
-    
+
     <!-- Data Source -->
     <dataSource name="admin_user_listing_data_source" component="Magento_Ui/js/grid/provider">
         <settings>
@@ -46,7 +40,7 @@
             </settings>
         </dataProvider>
     </dataSource>
-    
+
     <!-- List Toolbar -->
     <listingToolbar name="listing_top">
         <settings>
@@ -89,17 +83,17 @@
         </massaction>
         <paging name="listing_paging"/>
     </listingToolbar>
-    
+
     <!-- Columns Definition -->
     <columns name="admin_user_columns">
-        
+
         <!-- Selection Column -->
         <selectionsColumn name="ids">
             <settings>
                 <indexField>user_id</indexField>
             </settings>
         </selectionsColumn>
-        
+
         <!-- ID Column -->
         <column name="user_id">
             <settings>
@@ -108,7 +102,7 @@
                 <sorting>asc</sorting>
             </settings>
         </column>
-        
+
         <!-- Username Column -->
         <column name="username">
             <settings>
@@ -116,7 +110,7 @@
                 <label translate="true">Username</label>
             </settings>
         </column>
-        
+
         <!-- Email Column -->
         <column name="email">
             <settings>
@@ -124,7 +118,7 @@
                 <label translate="true">Email</label>
             </settings>
         </column>
-        
+
         <!-- First Name Column -->
         <column name="firstname">
             <settings>
@@ -132,7 +126,7 @@
                 <label translate="true">First Name</label>
             </settings>
         </column>
-        
+
         <!-- Last Name Column -->
         <column name="lastname">
             <settings>
@@ -140,7 +134,7 @@
                 <label translate="true">Last Name</label>
             </settings>
         </column>
-        
+
         <!-- Roles Column -->
         <column name="roles">
             <settings>
@@ -148,7 +142,7 @@
                 <label translate="true">Roles</label>
             </settings>
         </column>
-        
+
         <!-- Status Column -->
         <column name="is_active" component="Magento_Ui/js/grid/columns/select">
             <settings>
@@ -158,32 +152,32 @@
                 <label translate="true">Status</label>
             </settings>
         </column>
-        
+
         <!-- Last Login Column -->
-        <column name="last_login_at" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date">
+        <column name="last_login_at" class="Magento\Ui\Component\Listing\Columns\Date"
+                component="Magento_Ui/js/grid/columns/date">
             <settings>
                 <filter>dateRange</filter>
                 <dataType>date</dataType>
                 <label translate="true">Last Login</label>
             </settings>
         </column>
-        
+
         <!-- Created At Column -->
-        <column name="created_at" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date">
+        <column name="created_at" class="Magento\Ui\Component\Listing\Columns\Date"
+                component="Magento_Ui/js/grid/columns/date">
             <settings>
                 <filter>dateRange</filter>
                 <dataType>date</dataType>
                 <label translate="true">Created</label>
             </settings>
         </column>
-        
+
         <!-- Actions Column -->
         <actionsColumn name="actions" class="Infinri\Admin\Ui\Component\Listing\Column\UserActions">
             <settings>
                 <indexField>user_id</indexField>
             </settings>
         </actionsColumn>
-        
     </columns>
-    
 </listing>

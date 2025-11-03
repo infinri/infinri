@@ -36,7 +36,6 @@ class DataProvider
             return [];
         }
 
-        // Return user data as array
         return [
             'user_id' => $user->getData('user_id'),
             'username' => $user->getUsername(),

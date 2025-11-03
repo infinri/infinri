@@ -8,8 +8,6 @@ use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
 
 /**
- * Admin Dashboard
- * 
  * Main landing page for admin panel
  */
 class Index extends AbstractAdminController

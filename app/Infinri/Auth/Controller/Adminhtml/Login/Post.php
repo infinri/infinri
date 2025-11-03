@@ -11,46 +11,44 @@ use Infinri\Admin\Service\RememberTokenService;
 use Infinri\Core\Security\CsrfGuard;
 use Infinri\Core\Helper\Logger;
 use Infinri\Core\Service\RateLimiter;
+use Random\RandomException;
 
 /**
- * Admin Login POST Handler
  * Route: /admin/auth/login/post
  * Processes login form submission with CSRF protection and Remember Me
- * 
- * Security (Phase 2.5): Rate limiting prevents brute force attacks
  */
 class Post
 {
     public function __construct(
-        private readonly AdminUserResource $adminUserResource,
-        private readonly CsrfGuard $csrfGuard,
+        private readonly AdminUserResource    $adminUserResource,
+        private readonly CsrfGuard            $csrfGuard,
         private readonly RememberTokenService $rememberTokenService,
-        private readonly RateLimiter $rateLimiter
-    ) {
-    }
+        private readonly RateLimiter          $rateLimiter
+    ) {}
 
+    /**
+     * @throws RandomException
+     */
     public function execute(Request $request): Response
     {
-        // Start session
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
-        // 🔒 SECURITY (Phase 2.5): Rate limiting - prevent brute force attacks
         // Default: 5 login attempts per 5 minutes per IP
         if (!$this->rateLimiter->attemptFromRequest($request, 'login')) {
             $retryAfter = $this->rateLimiter->retryAfter('login', $request->getClientIp() ?? 'unknown');
-            
+
             Logger::warning('Login rate limit exceeded', [
                 'ip' => $request->getClientIp(),
                 'retry_after' => $retryAfter
             ]);
-            
+
             $_SESSION['login_error'] = sprintf(
                 'Too many login attempts. Please try again in %d seconds.',
                 $retryAfter
             );
-            
+
             return $this->createRedirect('/admin/auth/login/index');
         }
 
@@ -119,7 +117,7 @@ class Post
                 $request->getClientIp(),
                 $request->getUserAgent()
             );
-            
+
             $this->rememberTokenService->setRememberCookie($token);
             Logger::info('Remember Me cookie set', ['user_id' => $user->getUserId()]);
         }
@@ -158,8 +156,8 @@ class Post
 
     private function getFingerprint(Request $request): string
     {
-        return hash('sha256', 
-            $request->getClientIp() . 
+        return hash('sha256',
+            $request->getClientIp() .
             $request->getUserAgent()
         );
     }

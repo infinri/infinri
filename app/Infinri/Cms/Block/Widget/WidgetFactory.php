@@ -15,7 +15,7 @@ class WidgetFactory
      * @var ObjectManager
      */
     private ObjectManager $objectManager;
-    
+
     /**
      * @var array
      */
@@ -25,7 +25,7 @@ class WidgetFactory
         Widget::TYPE_IMAGE => Image::class,
         Widget::TYPE_VIDEO => Video::class,
     ];
-    
+
     /**
      * @param ObjectManager $objectManager
      */
@@ -33,7 +33,7 @@ class WidgetFactory
     {
         $this->objectManager = $objectManager;
     }
-    
+
     /**
      * @param string $widgetType
      * @return AbstractWidget
@@ -50,15 +50,15 @@ class WidgetFactory
                 )
             );
         }
-        
+
         $className = $this->widgetTypes[$widgetType];
-        
+
         /** @var AbstractWidget $widgetBlock */
         $widgetBlock = $this->objectManager->get($className);
-        
+
         return $widgetBlock;
     }
-    
+
     /**
      * @param string $type
      * @param string $className

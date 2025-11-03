@@ -13,14 +13,10 @@ use Infinri\Core\Helper\JsonResponse;
 
 /**
  * Create New Folder
- * 
- * Phase 4: DRY/KISS - Uses PathHelper and JsonResponse
  */
 class Createfolder
 {
-    public function __construct(private readonly CsrfGuard $csrfGuard)
-    {
-    }
+    public function __construct(private readonly CsrfGuard $csrfGuard) {}
 
     public function execute(Request $request): Response
     {

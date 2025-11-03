@@ -10,7 +10,6 @@ use Infinri\Core\Helper\Logger;
 /**
  * Admin Login Page Controller
  * Route: /admin/auth/login/index
- * Displays the login form using layout/template system
  */
 class Index extends AbstractAdminController
 {

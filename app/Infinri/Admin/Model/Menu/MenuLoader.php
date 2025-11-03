@@ -6,16 +6,15 @@ namespace Infinri\Admin\Model\Menu;
 use SimpleXMLElement;
 
 /**
- * Menu Loader
  * Loads and merges menu.xml files from all modules
  */
 class MenuLoader
 {
     private const MENU_XML_PATH = 'etc/adminhtml/menu.xml';
-    
+
     private array $menuItems = [];
     private bool $loaded = false;
-    
+
     /**
      * Get all menu items
      */
@@ -26,46 +25,44 @@ class MenuLoader
             $this->buildMenuTree();
             $this->loaded = true;
         }
-        
+
         return $this->menuItems;
     }
-    
+
     /**
      * Load menu.xml files from all modules
      */
     private function loadMenuXml(): void
     {
-        // MenuLoader is at: app/Infinri/Admin/Model/Menu/MenuLoader.php
-        // We need to go up 3 levels to reach app/Infinri
-        $appDir = dirname(__DIR__, 3);  // app/Infinri
-        
+        $appDir = dirname(__DIR__, 3);
+
         if (!is_dir($appDir)) {
             error_log("MenuLoader: appDir not found: " . $appDir);
             return;
         }
-        
+
         error_log("MenuLoader: Scanning modules in: " . $appDir);
         $modules = scandir($appDir);
         $rawItems = [];
-        
+
         foreach ($modules as $module) {
             if ($module === '.' || $module === '..') {
                 continue;
             }
-            
+
             $menuFile = $appDir . '/' . $module . '/' . self::MENU_XML_PATH;
-            
+
             if (!file_exists($menuFile)) {
                 continue;
             }
-            
+
             error_log("MenuLoader: Found menu file: " . $menuFile);
             $xml = simplexml_load_file($menuFile);
             if ($xml === false) {
                 error_log("MenuLoader: Failed to parse XML: " . $menuFile);
                 continue;
             }
-            
+
             // Parse menu items from this module
             foreach ($xml->menu->add as $item) {
                 $id = (string)$item['id'];
@@ -81,28 +78,28 @@ class MenuLoader
                 ];
             }
         }
-        
+
         // Sort by sortOrder
-        uasort($rawItems, function($a, $b) {
+        uasort($rawItems, function ($a, $b) {
             return $a['sortOrder'] <=> $b['sortOrder'];
         });
-        
+
         error_log("MenuLoader: Total menu items loaded: " . count($rawItems));
         $this->menuItems = $rawItems;
     }
-    
+
     /**
      * Build hierarchical menu tree (supports unlimited nesting)
      */
     private function buildMenuTree(): void
     {
         $items = $this->menuItems;
-        
+
         // Initialize children array for all items
         foreach ($items as $id => $item) {
             $items[$id]['children'] = [];
         }
-        
+
         // Build tree recursively by attaching children to parents
         $tree = [];
         foreach ($items as $id => $item) {
@@ -114,13 +111,13 @@ class MenuLoader
                 $items[$item['parent']]['children'][$id] = $item;
             }
         }
-        
+
         // Now recursively attach grandchildren and beyond
         $tree = $this->attachNestedChildren($tree, $items);
-        
+
         $this->menuItems = $tree;
     }
-    
+
     /**
      * Recursively attach nested children to their parents
      */
@@ -133,6 +130,7 @@ class MenuLoader
                 $item['children'] = $this->attachNestedChildren($item['children'], $allItems);
             }
         }
+
         return $tree;
     }
 }

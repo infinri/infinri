@@ -7,16 +7,13 @@ use Infinri\Admin\Model\AdminUser;
 use Infinri\Admin\Model\ResourceModel\AdminUser as AdminUserResource;
 
 /**
- * Admin User Repository
- * 
  * Provides CRUD operations for admin users
  */
 class AdminUserRepository
 {
     public function __construct(
         private readonly AdminUserResource $resource
-    ) {
-    }
+    ) {}
 
     /**
      * Get user by ID
@@ -79,9 +76,9 @@ class AdminUserRepository
      * Delete user by ID
      *
      * @param int $id
-     * @return bool
+     * @return bool | AdminUser
      */
-    public function deleteById(int $id): bool
+    public function deleteById(int $id): bool | AdminUser
     {
         $user = $this->getById($id);
         

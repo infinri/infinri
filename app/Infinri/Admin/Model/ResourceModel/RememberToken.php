@@ -20,7 +20,7 @@ class RememberToken extends AbstractResource
     public function createToken(int $userId, string $tokenHash, string $ipAddress, string $userAgent, int $expiresInDays = 30): int
     {
         $expiresAt = date('Y-m-d H:i:s', strtotime("+{$expiresInDays} days"));
-        
+
         return $this->connection->insert(
             $this->mainTable,
             [

@@ -1,10 +1,4 @@
 <?xml version="1.0"?>
-<!--
-/**
- * Admin User Form UI Component
- * Provides form for creating/editing admin users
- */
--->
 <form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
 

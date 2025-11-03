@@ -19,10 +19,7 @@ abstract class AbstractSaveController
 
     public function __construct(
         private readonly CsrfGuard $csrfGuard
-    ) {
-    }
-
-    // ==================== ABSTRACT METHODS ====================
+    ) {}
 
     /**
      * Each child controller provides its specific repository
@@ -68,8 +65,6 @@ abstract class AbstractSaveController
      */
     abstract protected function validateRequiredFields(array $data): void;
 
-    // ==================== COMMON SAVE LOGIC ====================
-
     /**
      * Execute save action
      * Common logic for all save controllers
@@ -89,7 +84,7 @@ abstract class AbstractSaveController
             }
 
             // Get entity ID (0 for new entities)
-            $entityId = (int) $request->getParam($this->getIdParam(), 0);
+            $entityId = (int)$request->getParam($this->getIdParam(), 0);
 
             // Extract data from request
             $data = $this->extractEntityData($request);

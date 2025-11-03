@@ -11,8 +11,7 @@ class Delete extends AbstractDeleteController
 {
     public function __construct(
         private readonly BlockRepository $blockRepository
-    ) {
-    }
+    ) {}
 
     protected function getRepository(): BlockRepository
     {

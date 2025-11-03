@@ -11,8 +11,6 @@ use Infinri\Core\Helper\JsonResponse;
 
 /**
  * List Images from Media Gallery
- * 
- * Phase 4: DRY/KISS - Uses PathHelper and JsonResponse
  */
 class Gallery extends AbstractAdminController
 {
@@ -21,13 +19,13 @@ class Gallery extends AbstractAdminController
         try {
             $images = $this->scanForImages(PathHelper::getMediaPath());
             return JsonResponse::success(['images' => $images]);
-            
+
         } catch (\Throwable $e) {
             error_log('Gallery exception: ' . $e->getMessage());
             return JsonResponse::error($e->getMessage());
         }
     }
-    
+
     /**
      * Recursively scan for images in media directory
      */
@@ -35,27 +33,27 @@ class Gallery extends AbstractAdminController
     {
         $images = [];
         $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-        
+
         if (!is_dir($path)) {
             return $images;
         }
-        
+
         $items = scandir($path);
-        
+
         foreach ($items as $item) {
             if ($item === '.' || $item === '..' || $item === '.gitkeep') {
                 continue;
             }
-            
+
             $fullPath = $path . '/' . $item;
             $itemRelativePath = $relativePath ? $relativePath . '/' . $item : $item;
-            
+
             if (is_dir($fullPath)) {
                 // Recursively scan subdirectories
                 $images = array_merge($images, $this->scanForImages($fullPath, $itemRelativePath));
             } elseif (is_file($fullPath)) {
                 $extension = strtolower(pathinfo($item, PATHINFO_EXTENSION));
-                
+
                 if (in_array($extension, $allowedExtensions)) {
                     $images[] = [
                         'url' => '/media/' . $itemRelativePath,
@@ -67,7 +65,7 @@ class Gallery extends AbstractAdminController
                 }
             }
         }
-        
+
         return $images;
     }
 }

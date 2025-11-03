@@ -140,48 +140,6 @@
             <argument name="connection" xsi:type="object">Infinri\Core\Model\ResourceModel\Connection</argument>
         </arguments>
     </type>
-    
-    <!-- Admin: User Management -->
-    <type name="Infinri\Admin\Controller\Adminhtml\User\Index">
-        <arguments>
-            <argument name="uiComponentRenderer" xsi:type="object">Infinri\Core\View\Element\UiComponentRenderer</argument>
-            <argument name="adminLayout" xsi:type="object">Infinri\Cms\Helper\AdminLayout</argument>
-        </arguments>
-    </type>
-    
-    <type name="Infinri\Admin\Controller\Adminhtml\User\Edit">
-        <arguments>
-            <argument name="adminUserResource" xsi:type="object">Infinri\Admin\Model\ResourceModel\AdminUser</argument>
-            <argument name="adminLayout" xsi:type="object">Infinri\Cms\Helper\AdminLayout</argument>
-        </arguments>
-    </type>
-    
-    <type name="Infinri\Admin\Controller\Adminhtml\User\Create">
-        <arguments>
-            <argument name="adminLayout" xsi:type="object">Infinri\Cms\Helper\AdminLayout</argument>
-        </arguments>
-    </type>
-    
-    <type name="Infinri\Admin\Controller\Adminhtml\User\Save">
-        <arguments>
-            <argument name="adminUserResource" xsi:type="object">Infinri\Admin\Model\ResourceModel\AdminUser</argument>
-        </arguments>
-    </type>
-    
-    <type name="Infinri\Admin\Controller\Adminhtml\User\Delete">
-        <arguments>
-            <argument name="adminUserResource" xsi:type="object">Infinri\Admin\Model\ResourceModel\AdminUser</argument>
-        </arguments>
-    </type>
-    
-    <!-- Note: DataProvider parameters (name, primaryFieldName, requestFieldName) are passed by UiComponentRenderer -->
-    <!-- We only configure the injected dependencies here -->
-    
-    <type name="Infinri\Admin\Block\Adminhtml\User\Grid">
-        <arguments>
-            <argument name="adminUserResource" xsi:type="object">Infinri\Admin\Model\ResourceModel\AdminUser</argument>
-        </arguments>
-    </type>
 </config>
 
 

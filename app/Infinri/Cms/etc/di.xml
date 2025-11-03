@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <!-- Repository Interfaces -->
-    <preference for="Infinri\Cms\Api\PageRepositoryInterface" 
+    <preference for="Infinri\Cms\Api\PageRepositoryInterface"
                 type="Infinri\Cms\Model\Repository\PageRepository"/>
-    
-    <preference for="Infinri\Cms\Api\BlockRepositoryInterface" 
+
+    <preference for="Infinri\Cms\Api\BlockRepositoryInterface"
                 type="Infinri\Cms\Model\Repository\BlockRepository"/>
-    
-    <preference for="Infinri\Cms\Api\WidgetRepositoryInterface" 
+
+    <preference for="Infinri\Cms\Api\WidgetRepositoryInterface"
                 type="Infinri\Cms\Model\Repository\WidgetRepository"/>
 </config>

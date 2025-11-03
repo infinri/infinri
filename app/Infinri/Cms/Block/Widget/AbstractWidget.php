@@ -15,7 +15,7 @@ abstract class AbstractWidget extends Template
      * @var Widget
      */
     protected Widget $widget;
-    
+
     /**
      * @param Widget $widget
      * @return $this
@@ -25,7 +25,7 @@ abstract class AbstractWidget extends Template
         $this->widget = $widget;
         return $this;
     }
-    
+
     /**
      * @return Widget
      */
@@ -33,7 +33,7 @@ abstract class AbstractWidget extends Template
     {
         return $this->widget;
     }
-    
+
     /**
      * @return array
      */
@@ -41,7 +41,7 @@ abstract class AbstractWidget extends Template
     {
         return $this->widget->getWidgetData();
     }
-    
+
     /**
      * @return int|null
      */
@@ -49,10 +49,9 @@ abstract class AbstractWidget extends Template
     {
         return $this->widget->getWidgetId();
     }
-    
+
     /**
      * Render widget HTML
-     * 
      * Child classes should override this method to provide widget-specific rendering
      *
      * @return string

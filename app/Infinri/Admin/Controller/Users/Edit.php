@@ -9,15 +9,13 @@ use Infinri\Core\App\Response;
 /**
  * Edit/Create User Controller
  * Route: admin/users/edit?id={user_id}
- * Uses layout system with UI Component form
- * Follows Magento pattern: edit?id=123 (edit) or edit (new)
  */
 class Edit extends AbstractAdminController
 {
     public function execute(): Response
     {
         $userId = $this->getIntParam('id');
-        
+
         // Render using layout system (proper separation of concerns)
         return $this->renderAdminLayout('admin_users_edit', [
             'id' => $userId ?: null
