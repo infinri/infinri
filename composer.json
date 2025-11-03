@@ -5,14 +5,7 @@
   "license": "MIT",
   "autoload": {
     "psr-4": {
-      "Modules\\": "modules/",
-      "Infinri\\Admin\\": "app/Infinri/Admin",
-      "Infinri\\Auth\\": "app/Infinri/Auth",
-      "Infinri\\Cms\\": "app/Infinri/Cms",
-      "Infinri\\Core\\": "app/Infinri/Core",
-      "Infinri\\Menu\\": "app/Infinri/Menu",
-      "Infinri\\Seo\\": "app/Infinri/Seo",
-      "Infinri\\Theme\\": "app/Infinri/Theme"
+      "Infinri\\": "app/Infinri/"
     }
   },
   "autoload-dev": {
@@ -65,6 +58,11 @@
     "phpstan/phpstan": "^2.1",
     "phpunit/phpunit": "^12.4",
     "pestphp/pest": "^4.1",
-    "mockery/mockery": "^1.6"
+    "mockery/mockery": "^1.6",
+    "phpstan/extension-installer": "^1.4",
+    "phpstan/phpstan-symfony": "^2.0",
+    "phpstan/phpstan-strict-rules": "^2.0",
+    "squizlabs/php_codesniffer": "^4.0",
+    "friendsofphp/php-cs-fixer": "^3.89"
   }
 }

@@ -35,7 +35,7 @@ class Builder
      * Build block tree from processed layout XML
      *
      * @param SimpleXMLElement $layout Processed layout XML
-     * @param array $data Layout data to pass to blocks
+     * @param array<string, mixed> $data Layout data to pass to blocks
      * @return AbstractBlock|null Root block
      */
     public function build(SimpleXMLElement $layout, array $data = []): ?AbstractBlock
@@ -104,7 +104,7 @@ class Builder
 
         // Build and add children
         foreach ($element->children() as $child) {
-            if (in_array($child->getName(), ['container', 'block'])) {
+            if (in_array($child->getName(), ['container', 'block'], true)) {
                 $childBlock = $this->buildElement($child);
                 $block->addChild($childBlock);
             }
@@ -203,6 +203,7 @@ class Builder
      * @param AbstractBlock $block
      * @param SimpleXMLElement $element
      * @return void
+     * @throws \Throwable
      */
     private function processArguments(AbstractBlock $block, SimpleXMLElement $element): void
     {

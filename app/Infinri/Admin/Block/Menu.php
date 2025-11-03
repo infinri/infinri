@@ -17,12 +17,12 @@ class Menu extends Template
 
     /**
      * Get menu items loaded from menu.xml files
+     * 
+     * @return array<string, mixed>
      */
     public function getMenuItems(): array
     {
-        error_log("Menu::getMenuItems() called");
         $items = $this->menuLoader->getMenuItems();
-        error_log("Menu items loaded: " . count($items));
         
         // Process all items recursively (add URL and active state)
         return $this->processMenuItems($items);
@@ -30,17 +30,20 @@ class Menu extends Template
 
     /**
      * Recursively process menu items to add URLs and active states
+     * 
+     * @param array<string, mixed> $items
+     * @return array<string, mixed>
      */
     private function processMenuItems(array $items): array
     {
         foreach ($items as &$item) {
-            if (!empty($item['action'])) {
+            if (isset($item['action']) && $item['action'] !== '') {
                 $item['url'] = '/' . ltrim($item['action'], '/');
             }
             $item['active'] = $this->isActive($item);
 
             // Recursively process children at any level
-            if (!empty($item['children'])) {
+            if (isset($item['children']) && is_array($item['children']) && count($item['children']) > 0) {
                 $item['children'] = $this->processMenuItems($item['children']);
             }
         }
@@ -50,6 +53,8 @@ class Menu extends Template
 
     /**
      * Check if menu item is active
+     * 
+     * @param array<string, mixed> $item
      */
     public function isActive(array $item): bool
     {
@@ -58,10 +63,12 @@ class Menu extends Template
 
     /**
      * Check if menu item has children
+     * 
+     * @param array<string, mixed> $item
      */
     public function hasChildren(array $item): bool
     {
-        return !empty($item['children']);
+        return isset($item['children']) && is_array($item['children']) && count($item['children']) > 0;
     }
 
     /**
@@ -69,6 +76,6 @@ class Menu extends Template
      */
     public function getTemplate(): string
     {
-        return $this->template ?: 'Infinri_Theme::html/menu.phtml';
+        return $this->template !== null ? $this->template : 'Infinri_Theme::html/menu.phtml';
     }
 }

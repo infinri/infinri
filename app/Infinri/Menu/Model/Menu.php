@@ -16,7 +16,7 @@ class Menu extends AbstractModel
      * Constructor
      *
      * @param MenuResource $resource
-     * @param array $data
+     * @param array<string, mixed> $data
      */
     public function __construct(
         protected readonly MenuResource $resource,

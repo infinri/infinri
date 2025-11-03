@@ -19,7 +19,7 @@ abstract class AbstractContentEntity extends AbstractModel
      * Constructor
      *
      * @param AbstractResource $resource
-     * @param array $data
+     * @param array<string, mixed> $data
      */
     public function __construct(
         protected readonly AbstractResource $resource,

@@ -25,7 +25,7 @@ class Data
     /**
      * Get value from array by path with dot notation
      *
-     * @param array $array Array to search
+     * @param array<string, mixed> $array Array to search
      * @param string $path Path (e.g., 'user.address.city')
      * @param mixed $default Default value if not found
      * @return mixed Value or default
@@ -48,7 +48,7 @@ class Data
     /**
      * Set value in array by path with dot notation
      *
-     * @param array &$array Array to modify
+     * @param array<string, mixed> &$array Array to modify
      * @param string $path Path (e.g., 'user.address.city')
      * @param mixed $value Value to set
      * @return void
@@ -72,7 +72,7 @@ class Data
     /**
      * Convert array to XML
      *
-     * @param array $array Array to convert
+     * @param array<string, mixed> $array Array to convert
      * @param string $rootElement Root element name
      * @return string XML string
      */
@@ -81,13 +81,17 @@ class Data
         $xml = new \SimpleXMLElement("<{$rootElement}/>");
         $this->arrayToXmlRecursive($array, $xml);
 
-        return $xml->asXML();
+        $result = $xml->asXML();
+        if ($result === false) {
+            throw new \RuntimeException('Failed to convert array to XML');
+        }
+        return $result;
     }
 
     /**
      * Recursive helper for array to XML conversion
      *
-     * @param array $array Array data
+     * @param array<string, mixed> $array Array data
      * @param \SimpleXMLElement $xml XML element
      * @return void
      */
@@ -106,9 +110,9 @@ class Data
     /**
      * Flatten multi-dimensional array
      *
-     * @param array $array Array to flatten
+     * @param array<string, mixed> $array Array to flatten
      * @param string $prefix Key prefix
-     * @return array Flattened array
+     * @return array<string, mixed> Flattened array
      */
     public function flattenArray(array $array, string $prefix = ''): array
     {
@@ -157,8 +161,16 @@ class Data
      */
     public function randomString(int $length = 32, string $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'): string
     {
+        if ($length <= 0) {
+            return '';
+        }
+        
         $result = '';
         $max = strlen($characters) - 1;
+        
+        if ($max < 0) {
+            throw new \InvalidArgumentException('Characters string cannot be empty');
+        }
 
         for ($i = 0; $i < $length; $i++) {
             $result .= $characters[random_int(0, $max)];
@@ -198,9 +210,15 @@ class Data
 
         // Remove special characters
         $string = preg_replace('/[^a-z0-9\s-]/', '', $string);
+        if ($string === null) {
+            throw new \RuntimeException('Failed to remove special characters');
+        }
 
         // Replace whitespace and multiple separators
         $string = preg_replace('/[\s-]+/', $separator, $string);
+        if ($string === null) {
+            throw new \RuntimeException('Failed to replace whitespace');
+        }
 
         // Trim separators from ends
         return trim($string, $separator);
@@ -240,8 +258,14 @@ class Data
     {
         // Handle sequences of capital letters
         $string = preg_replace('/([A-Z]+)([A-Z][a-z])/', '$1_$2', $string);
+        if ($string === null) {
+            throw new \RuntimeException('Failed to process capital letter sequences');
+        }
         // Handle normal camelCase
         $string = preg_replace('/([a-z\d])([A-Z])/', '$1_$2', $string);
+        if ($string === null) {
+            throw new \RuntimeException('Failed to process camelCase');
+        }
         return strtolower($string);
     }
 

@@ -31,9 +31,10 @@ class LayoutFactory
     /**
      * Render layout for given handle(s) with optional data
      *
-     * @param string|array $handles Layout handle(s)
-     * @param array $data Data to pass to blocks
+     * @param string|array<string> $handles Layout handle(s)
+     * @param array<string, mixed> $data Data to pass to blocks
      * @return string Rendered HTML
+     * @throws InvalidArgumentException
      */
     public function render(string|array $handles, array $data = []): string
     {
@@ -130,9 +131,9 @@ class LayoutFactory
     /**
      * Load handles recursively, following <update handle="..."/> directives
      *
-     * @param array $handles Initial handles to load
-     * @param array $loaded Already loaded handles (to prevent infinite loops)
-     * @return array Array of SimpleXMLElement objects
+     * @param array<string> $handles Initial handles to load
+     * @param array<string> $loaded Already loaded handles (to prevent infinite loops)
+     * @return array<SimpleXMLElement> Array of SimpleXMLElement objects
      * @throws InvalidArgumentException
      */
     private function loadHandlesRecursively(array $handles, array &$loaded = []): array
@@ -196,7 +197,7 @@ class LayoutFactory
      * Set data on blocks in the tree
      *
      * @param AbstractBlock $block
-     * @param array $data
+     * @param array<string, mixed> $data
      * @return void
      */
     private function setBlockData(AbstractBlock $block, array $data): void

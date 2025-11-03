@@ -38,7 +38,9 @@ class Index extends AbstractAdminController
         $currentPath = $mediaPath . ($currentFolder ? '/' . $currentFolder : '');
 
         // Security: prevent directory traversal
-        if (strpos(realpath($currentPath), realpath($mediaPath)) !== 0) {
+        $realCurrentPath = realpath($currentPath);
+        $realMediaPath = realpath($mediaPath);
+        if ($realCurrentPath === false || $realMediaPath === false || strpos($realCurrentPath, $realMediaPath) !== 0) {
             $currentPath = $mediaPath;
             $currentFolder = '';
         }
@@ -85,10 +87,11 @@ class Index extends AbstractAdminController
 
             $fullPath = $path . '/' . $item;
             if (is_dir($fullPath)) {
+                $globResult = glob($fullPath . '/*');
                 $folders[] = [
                     'name' => $item,
                     'path' => $fullPath,
-                    'count' => count(glob($fullPath . '/*'))
+                    'count' => is_array($globResult) ? count($globResult) : 0
                 ];
             }
         }
@@ -114,14 +117,16 @@ class Index extends AbstractAdminController
             $fullPath = $path . '/' . $item;
             if (is_file($fullPath)) {
                 $ext = strtolower(pathinfo($item, PATHINFO_EXTENSION));
-                if (in_array($ext, $allowedExtensions)) {
+                if (in_array($ext, $allowedExtensions, true)) {
                     $relativePath = str_replace(PathHelper::getMediaPath(), '', $fullPath);
+                    $fileSize = filesize($fullPath);
+                    $fileTime = filemtime($fullPath);
                     $images[] = [
                         'name' => $item,
                         'path' => $fullPath,
                         'url' => $this->baseUrl . $relativePath,
-                        'size' => filesize($fullPath),
-                        'modified' => filemtime($fullPath)
+                        'size' => $fileSize !== false ? $fileSize : 0,
+                        'modified' => $fileTime !== false ? $fileTime : 0
                     ];
                 }
             }

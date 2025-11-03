@@ -22,7 +22,7 @@ class MenuItem extends AbstractModel
      * Constructor
      *
      * @param MenuItemResource $resource
-     * @param array $data
+     * @param array<string, mixed> $data
      */
     public function __construct(
         protected readonly MenuItemResource $resource,
@@ -341,7 +341,7 @@ class MenuItem extends AbstractModel
         $linkType = $this->getLinkType();
         if (empty($linkType)) {
             $errors[] = 'Link type is required';
-        } elseif (!in_array($linkType, [self::LINK_TYPE_CMS_PAGE, self::LINK_TYPE_CATEGORY, self::LINK_TYPE_CUSTOM_URL, self::LINK_TYPE_EXTERNAL])) {
+        } elseif (!in_array($linkType, [self::LINK_TYPE_CMS_PAGE, self::LINK_TYPE_CATEGORY, self::LINK_TYPE_CUSTOM_URL, self::LINK_TYPE_EXTERNAL], true)) {
             $errors[] = 'Invalid link type';
         }
 

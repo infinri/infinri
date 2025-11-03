@@ -79,8 +79,9 @@ class SchemaSetup
 
             if ($exists) {
                 Logger::debug("SchemaSetup: Table {$tableName} exists, checking for updates");
-                // TODO: Implement table update logic
-                // For now, skip existing tables
+                if ($this->updateTable($tableNode)) {
+                    $updated++;
+                }
             } else {
                 Logger::info("SchemaSetup: Creating table {$tableName}");
                 $this->createTable($tableNode);
@@ -247,6 +248,468 @@ class SchemaSetup
     }
 
     /**
+     * Update existing table to match XML definition
+     *
+     * @param \SimpleXMLElement $tableNode Table XML definition
+     * @return bool True if table was updated
+     * @throws \Exception
+     */
+    private function updateTable(\SimpleXMLElement $tableNode): bool
+    {
+        $tableName = (string)$tableNode['name'];
+        $updated = false;
+
+        Logger::info("SchemaSetup: Analyzing table {$tableName} for updates");
+
+        try {
+            // Get current table structure
+            $currentColumns = $this->getTableColumns($tableName);
+            $currentIndexes = $this->getTableIndexes($tableName);
+            $currentConstraints = $this->getTableConstraints($tableName);
+
+            // Process column changes
+            $updated |= $this->processColumnChanges($tableName, $tableNode, $currentColumns);
+
+            // Process index changes
+            $updated |= $this->processIndexChanges($tableName, $tableNode, $currentIndexes);
+
+            // Process constraint changes
+            $updated |= $this->processConstraintChanges($tableName, $tableNode, $currentConstraints);
+
+            if ($updated) {
+                Logger::info("SchemaSetup: Table {$tableName} updated successfully");
+                echo "  ✅ Table '{$tableName}' updated\n";
+            } else {
+                Logger::debug("SchemaSetup: Table {$tableName} is up to date");
+                echo "  ✓ Table '{$tableName}' is up to date\n";
+            }
+
+        } catch (\Exception $e) {
+            Logger::error("SchemaSetup: Failed to update table {$tableName}: " . $e->getMessage());
+            echo "  ❌ Error updating table {$tableName}: " . $e->getMessage() . "\n";
+            throw $e;
+        }
+
+        return $updated > 0;
+    }
+
+    /**
+     * Get current table columns
+     *
+     * @param string $tableName Table name
+     * @return array Column information
+     */
+    private function getTableColumns(string $tableName): array
+    {
+        $sql = "
+            SELECT 
+                column_name,
+                data_type,
+                is_nullable,
+                column_default,
+                character_maximum_length,
+                numeric_precision,
+                numeric_scale
+            FROM information_schema.columns 
+            WHERE table_name = :table_name 
+            AND table_schema = 'public'
+            ORDER BY ordinal_position
+        ";
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute(['table_name' => $tableName]);
+        
+        $columns = [];
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $columns[$row['column_name']] = $row;
+        }
+
+        return $columns;
+    }
+
+    /**
+     * Get current table indexes
+     *
+     * @param string $tableName Table name
+     * @return array Index information
+     */
+    private function getTableIndexes(string $tableName): array
+    {
+        $sql = "
+            SELECT 
+                i.indexname,
+                i.indexdef,
+                array_agg(a.attname ORDER BY a.attnum) as columns
+            FROM pg_indexes i
+            JOIN pg_class c ON c.relname = i.tablename
+            JOIN pg_index idx ON idx.indexrelid = (i.schemaname||'.'||i.indexname)::regclass
+            JOIN pg_attribute a ON a.attrelid = c.oid AND a.attnum = ANY(idx.indkey)
+            WHERE i.tablename = :table_name 
+            AND i.schemaname = 'public'
+            AND NOT idx.indisprimary
+            GROUP BY i.indexname, i.indexdef
+        ";
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute(['table_name' => $tableName]);
+        
+        $indexes = [];
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $indexes[$row['indexname']] = $row;
+        }
+
+        return $indexes;
+    }
+
+    /**
+     * Get current table constraints
+     *
+     * @param string $tableName Table name
+     * @return array Constraint information
+     */
+    private function getTableConstraints(string $tableName): array
+    {
+        $sql = "
+            SELECT 
+                tc.constraint_name,
+                tc.constraint_type,
+                kcu.column_name,
+                ccu.table_name AS foreign_table_name,
+                ccu.column_name AS foreign_column_name,
+                rc.delete_rule
+            FROM information_schema.table_constraints tc
+            LEFT JOIN information_schema.key_column_usage kcu 
+                ON tc.constraint_name = kcu.constraint_name
+            LEFT JOIN information_schema.constraint_column_usage ccu 
+                ON tc.constraint_name = ccu.constraint_name
+            LEFT JOIN information_schema.referential_constraints rc 
+                ON tc.constraint_name = rc.constraint_name
+            WHERE tc.table_name = :table_name 
+            AND tc.table_schema = 'public'
+            AND tc.constraint_type != 'CHECK'
+        ";
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute(['table_name' => $tableName]);
+        
+        $constraints = [];
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $constraints[$row['constraint_name']] = $row;
+        }
+
+        return $constraints;
+    }
+
+    /**
+     * Process column changes (add, modify, remove)
+     *
+     * @param string $tableName Table name
+     * @param \SimpleXMLElement $tableNode Table XML definition
+     * @param array<string, mixed> $currentColumns Current column information
+     * @return bool True if changes were made
+     * @throws \Exception
+     */
+    private function processColumnChanges(string $tableName, \SimpleXMLElement $tableNode, array $currentColumns): bool
+    {
+        $updated = false;
+        $xmlColumns = [];
+
+        // Collect XML column definitions
+        foreach ($tableNode->column as $column) {
+            $columnName = (string)$column['name'];
+            $xmlColumns[$columnName] = $column;
+        }
+
+        // Add new columns
+        foreach ($xmlColumns as $columnName => $column) {
+            if (!isset($currentColumns[$columnName])) {
+                $this->addColumn($tableName, $column);
+                $updated = true;
+            } else {
+                // Check if column needs modification
+                if ($this->columnNeedsUpdate($currentColumns[$columnName], $column)) {
+                    $this->modifyColumn($tableName, $column, $currentColumns[$columnName]);
+                    $updated = true;
+                }
+            }
+        }
+
+        // Note: We don't automatically remove columns for safety
+        // This would require explicit migration scripts
+
+        return $updated;
+    }
+
+    /**
+     * Add new column to table
+     *
+     * @param string $tableName Table name
+     * @param \SimpleXMLElement $column Column XML definition
+     * @throws \Exception
+     */
+    private function addColumn(string $tableName, \SimpleXMLElement $column): void
+    {
+        $columnName = (string)$column['name'];
+        $columnDef = $this->buildColumnDefinition($column);
+        
+        $sql = "ALTER TABLE {$tableName} ADD COLUMN {$columnDef}";
+        
+        Logger::info("SchemaSetup: Adding column {$columnName} to {$tableName}");
+        Logger::debug("SchemaSetup: Add column SQL", ['sql' => $sql]);
+        
+        try {
+            $this->connection->exec($sql);
+            echo "    + Added column '{$columnName}'\n";
+        } catch (\Exception $e) {
+            Logger::error("SchemaSetup: Failed to add column {$columnName}: " . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
+     * Modify existing column
+     *
+     * @param string $tableName Table name
+     * @param \SimpleXMLElement $column Column XML definition
+     * @param array<string, mixed> $currentColumn Current column information
+     * @throws \Exception
+     */
+    private function modifyColumn(string $tableName, \SimpleXMLElement $column, array $currentColumn): void
+    {
+        $columnName = (string)$column['name'];
+        $type = (string)$column['type'];
+        $nullable = ((string)($column['nullable'] ?? 'true')) === 'true';
+        $default = (string)($column['default'] ?? '');
+        $length = (string)($column['length'] ?? '');
+
+        Logger::info("SchemaSetup: Modifying column {$columnName} in {$tableName}");
+
+        try {
+            // Change data type if needed
+            $newType = $this->mapXmlTypeToPostgres($type, $length);
+            $currentType = $this->normalizePostgresType($currentColumn['data_type'], $currentColumn['character_maximum_length']);
+            
+            if ($newType !== $currentType) {
+                $sql = "ALTER TABLE {$tableName} ALTER COLUMN {$columnName} TYPE {$newType}";
+                $this->connection->exec($sql);
+                echo "    ~ Modified column '{$columnName}' type to {$newType}\n";
+            }
+
+            // Change nullable constraint if needed
+            $currentNullable = $currentColumn['is_nullable'] === 'YES';
+            if ($nullable !== $currentNullable) {
+                $constraint = $nullable ? 'DROP NOT NULL' : 'SET NOT NULL';
+                $sql = "ALTER TABLE {$tableName} ALTER COLUMN {$columnName} {$constraint}";
+                $this->connection->exec($sql);
+                echo "    ~ Modified column '{$columnName}' nullable to " . ($nullable ? 'YES' : 'NO') . "\n";
+            }
+
+            // Change default value if needed
+            if ($default && $default !== ($currentColumn['column_default'] ?? '')) {
+                $defaultValue = $this->formatDefaultValue($default);
+                $sql = "ALTER TABLE {$tableName} ALTER COLUMN {$columnName} SET DEFAULT {$defaultValue}";
+                $this->connection->exec($sql);
+                echo "    ~ Modified column '{$columnName}' default value\n";
+            }
+
+        } catch (\Exception $e) {
+            Logger::error("SchemaSetup: Failed to modify column {$columnName}: " . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
+     * Check if column needs update
+     *
+     * @param array $currentColumn Current column information
+     * @param \SimpleXMLElement $xmlColumn XML column definition
+     * @return bool True if column needs update
+     */
+    /**
+     * @param array<string, mixed> $currentColumn
+     */
+    private function columnNeedsUpdate(array $currentColumn, \SimpleXMLElement $xmlColumn): bool
+    {
+        $type = (string)$xmlColumn['type'];
+        $nullable = ((string)($xmlColumn['nullable'] ?? 'true')) === 'true';
+        $default = (string)($xmlColumn['default'] ?? '');
+        $length = (string)($xmlColumn['length'] ?? '');
+
+        // Check type
+        $newType = $this->mapXmlTypeToPostgres($type, $length);
+        $currentType = $this->normalizePostgresType($currentColumn['data_type'], $currentColumn['character_maximum_length']);
+        if ($newType !== $currentType) {
+            return true;
+        }
+
+        // Check nullable
+        $currentNullable = $currentColumn['is_nullable'] === 'YES';
+        if ($nullable !== $currentNullable) {
+            return true;
+        }
+
+        // Check default (simplified check)
+        if ($default && $default !== ($currentColumn['column_default'] ?? '')) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Map XML type to PostgreSQL type
+     *
+     * @param string $type XML type
+     * @param string $length Length specification
+     * @return string PostgreSQL type
+     */
+    private function mapXmlTypeToPostgres(string $type, string $length = ''): string
+    {
+        return match ($type) {
+            'int' => 'integer',
+            'varchar' => $length ? "character varying({$length})" : 'character varying(255)',
+            'text' => 'text',
+            'boolean' => 'boolean',
+            'timestamp' => 'timestamp without time zone',
+            default => 'text'
+        };
+    }
+
+    /**
+     * Normalize PostgreSQL type for comparison
+     *
+     * @param string $type PostgreSQL type
+     * @param int|null $length Character maximum length
+     * @return string Normalized type
+     */
+    private function normalizePostgresType(string $type, ?int $length): string
+    {
+        return match ($type) {
+            'character varying' => $length ? "character varying({$length})" : 'character varying(255)',
+            'timestamp without time zone' => 'timestamp without time zone',
+            default => $type
+        };
+    }
+
+    /**
+     * Format default value for SQL
+     *
+     * @param string $default Default value
+     * @return string Formatted default value
+     */
+    private function formatDefaultValue(string $default): string
+    {
+        if ($default === 'CURRENT_TIMESTAMP') {
+            return 'CURRENT_TIMESTAMP';
+        } elseif ($default === 'true' || $default === 'false') {
+            return $default;
+        } else {
+            return "'{$default}'";
+        }
+    }
+
+    /**
+     * Process index changes
+     *
+     * @param string $tableName Table name
+     * @param \SimpleXMLElement $tableNode Table XML definition
+     * @param array $currentIndexes Current index information
+     * @return bool True if changes were made
+     */
+    private function processIndexChanges(string $tableName, \SimpleXMLElement $tableNode, array $currentIndexes): bool
+    {
+        $updated = false;
+        $xmlIndexes = [];
+
+        // Collect XML index definitions
+        foreach ($tableNode->index as $index) {
+            $refId = (string)$index['referenceId'];
+            $xmlIndexes[$refId] = $index;
+        }
+
+        // Add new indexes
+        foreach ($xmlIndexes as $refId => $index) {
+            if (!isset($currentIndexes[$refId])) {
+                $this->createIndex($tableName, $index);
+                $updated = true;
+            }
+        }
+
+        // Remove obsolete indexes (optional - could be dangerous)
+        // For now, we only add new indexes, don't remove existing ones
+
+        return $updated;
+    }
+
+    /**
+     * Process constraint changes
+     *
+     * @param string $tableName Table name
+     * @param \SimpleXMLElement $tableNode Table XML definition
+     * @param array $currentConstraints Current constraint information
+     * @return bool True if changes were made
+     */
+    private function processConstraintChanges(string $tableName, \SimpleXMLElement $tableNode, array $currentConstraints): bool
+    {
+        $updated = false;
+        $xmlConstraints = [];
+
+        // Collect XML constraint definitions
+        foreach ($tableNode->constraint as $constraint) {
+            $refId = (string)$constraint['referenceId'];
+            $xmlConstraints[$refId] = $constraint;
+        }
+
+        // Add new constraints
+        foreach ($xmlConstraints as $refId => $constraint) {
+            if (!isset($currentConstraints[$refId])) {
+                $this->addConstraint($tableName, $constraint);
+                $updated = true;
+            }
+        }
+
+        return $updated;
+    }
+
+    /**
+     * Add constraint to table
+     *
+     * @param string $tableName Table name
+     * @param \SimpleXMLElement $constraint Constraint XML definition
+     */
+    private function addConstraint(string $tableName, \SimpleXMLElement $constraint): void
+    {
+        $refId = (string)$constraint['referenceId'];
+        $type = (string)$constraint['type'];
+
+        if ($type === 'unique') {
+            $column = (string)$constraint->column['name'];
+            $sql = "ALTER TABLE {$tableName} ADD CONSTRAINT {$refId} UNIQUE ({$column})";
+        } elseif ($type === 'foreign') {
+            $column = (string)$constraint['column'];
+            $refTable = (string)$constraint['referenceTable'];
+            $refColumn = (string)$constraint['referenceColumn'];
+            $onDelete = (string)($constraint['onDelete'] ?? 'NO ACTION');
+            
+            $sql = "ALTER TABLE {$tableName} ADD CONSTRAINT {$refId} " .
+                   "FOREIGN KEY ({$column}) REFERENCES {$refTable}({$refColumn}) ON DELETE {$onDelete}";
+        } else {
+            return; // Skip unsupported constraint types
+        }
+
+        Logger::info("SchemaSetup: Adding constraint {$refId} to {$tableName}");
+        Logger::debug("SchemaSetup: Add constraint SQL", ['sql' => $sql]);
+
+        try {
+            $this->connection->exec($sql);
+            echo "    + Added constraint '{$refId}'\n";
+        } catch (\Exception $e) {
+            Logger::error("SchemaSetup: Failed to add constraint {$refId}: " . $e->getMessage());
+            echo "    ⚠ Warning adding constraint {$refId}: " . $e->getMessage() . "\n";
+        }
+    }
+
+    /**
      * Create index
      */
     private function createIndex(string $tableName, \SimpleXMLElement $index): void
@@ -262,6 +725,7 @@ class SchemaSetup
         try {
             $this->connection->exec($sql);
             Logger::info("SchemaSetup: Index {$refId} created successfully");
+            echo "    + Added index '{$refId}'\n";
         } catch (\Exception $e) {
             Logger::error("SchemaSetup: Failed to create index {$refId}: " . $e->getMessage());
             echo "  ⚠ Warning creating index {$refId}: " . $e->getMessage() . "\n";

@@ -1,0 +1,51 @@
+parameters:
+    # Analysis level (0-9, 9 being the strictest)
+    level: 8
+    
+    # Paths to analyze
+    paths:
+        - app/Infinri
+        - bin/console
+    
+    # Paths to exclude from analysis
+    excludePaths:
+        - app/Infinri/*/Test/*
+        - app/Infinri/*/Tests/*
+        - tests/*
+        - var/*
+        - pub/*
+    
+    # Bootstrap file for autoloading
+    bootstrapFiles:
+        - app/bootstrap.php
+    
+    # Ignore specific errors (use sparingly)
+    ignoreErrors:
+        # Allow mixed types in legacy code during transition
+        - '#Parameter \#\d+ \$\w+ of method .* expects .*, mixed given#'
+        # Allow dynamic properties in SimpleXMLElement
+        - '#Access to an undefined property SimpleXMLElement::\$\w+#'
+        # Allow error suppression in specific cases
+        - '#Call to function is_dir\(\) with .* will always evaluate to false#'
+        # Allow SimpleXMLElement array access
+        - '#Cannot access offset .* on SimpleXMLElement#'
+        # Temporarily ignore missing array type specifications during migration
+        - '#Method .* has no value type specified in iterable type array#'
+        - '#Property .* has no value type specified in iterable type array#'
+        # Temporarily ignore strict comparison issues during migration
+        - '#Construct empty\(\) is not allowed#'
+        - '#Short ternary operator is not allowed#'
+        - '#Loose comparison via "==" is not allowed#'
+        # Temporarily ignore boolean type issues during migration
+        - '#Only booleans are allowed in .*, .* given#'
+        # Temporarily ignore method signature issues during migration
+        - '#Call to an undefined method .*#'
+        - '#Cannot call method .* on .*#'
+    
+    # Report unused variables and parameters
+    reportUnmatchedIgnoredErrors: false
+    checkTooWideReturnTypesInProtectedAndPublicMethods: true
+    checkUninitializedProperties: true
+    
+    # Cache directory
+    tmpDir: var/cache/phpstan

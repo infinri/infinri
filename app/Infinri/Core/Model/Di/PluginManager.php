@@ -48,7 +48,7 @@ class PluginManager
      * @param string $pluginName Plugin identifier
      * @param string $pluginClass Plugin class name
      * @param int $sortOrder Execution order (lower = earlier)
-     * @param array $methods Methods to intercept (empty = all)
+     * @param array<string> $methods Methods to intercept (empty = all)
      * @return void
      */
     public function registerPlugin(
@@ -102,8 +102,9 @@ class PluginManager
      *
      * @param object $subject Target object
      * @param string $method Method name
-     * @param array $arguments Method arguments
-     * @return array Modified arguments
+     * @param array<mixed> $arguments Method arguments
+     * @return array<mixed> Modified arguments
+     * @throws \Exception
      */
     public function executeBefore(object $subject, string $method, array $arguments): array
     {
@@ -133,8 +134,9 @@ class PluginManager
      * @param object $subject Target object
      * @param callable $proceed Original method
      * @param string $method Method name
-     * @param array $arguments Method arguments
+     * @param array<mixed> $arguments Method arguments
      * @return mixed Result
+     * @throws \Exception
      */
     public function executeAround(object $subject, callable $proceed, string $method, array $arguments): mixed
     {
@@ -168,8 +170,9 @@ class PluginManager
      * @param object $subject Target object
      * @param mixed $result Method result
      * @param string $method Method name
-     * @param array $arguments Method arguments
+     * @param array<mixed> $arguments Method arguments
      * @return mixed Modified result
+     * @throws \Exception
      */
     public function executeAfter(object $subject, mixed $result, string $method, array $arguments): mixed
     {
@@ -202,7 +205,7 @@ class PluginManager
 
         foreach ($plugins as $pluginName => $pluginData) {
             // If methods array is empty, plugin applies to all methods
-            if (empty($pluginData['methods']) || in_array($method, $pluginData['methods'])) {
+            if (empty($pluginData['methods']) || in_array($method, $pluginData['methods'], true)) {
                 $filtered[$pluginName] = $pluginData;
             }
         }

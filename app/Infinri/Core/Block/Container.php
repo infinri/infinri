@@ -39,7 +39,7 @@ class Container extends AbstractBlock
         $attributeString = $attributes ? ' ' . implode(' ', $attributes) : '';
 
         // Self-closing tags
-        if (in_array($htmlTag, ['br', 'hr', 'img', 'input', 'meta', 'link'])) {
+        if (in_array($htmlTag, ['br', 'hr', 'img', 'input', 'meta', 'link'], true)) {
             return sprintf('<%s%s />', $htmlTag, $attributeString);
         }
 

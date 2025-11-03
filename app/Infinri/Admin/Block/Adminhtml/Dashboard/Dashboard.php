@@ -12,6 +12,8 @@ class Dashboard extends Template
 {
     /**
      * Get logged in user data
+     * 
+     * @return array<string, mixed>
      */
     public function getUser(): array
     {

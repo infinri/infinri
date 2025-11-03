@@ -12,13 +12,6 @@ use Infinri\Core\App\Router;
 class Builder
 {
     /**
-     * Router instance
-     *
-     * @var Router|null
-     */
-    private ?Router $router;
-
-    /**
      * Base URL
      *
      * @var string
@@ -35,13 +28,11 @@ class Builder
     /**
      * Constructor
      *
-     * @param Router|null $router Router instance
      * @param string|null $baseUrl Base URL (null = auto-detect)
      * @param bool $secure Use HTTPS
      */
-    public function __construct(?Router $router = null, ?string $baseUrl = null, bool $secure = false)
+    public function __construct(?string $baseUrl = null, bool $secure = false)
     {
-        $this->router = $router;
         $this->baseUrl = $baseUrl ?? $this->detectBaseUrl();
         $this->secure = $secure;
     }
@@ -50,8 +41,8 @@ class Builder
      * Build URL from route name
      *
      * @param string $routeName Route name or path
-     * @param array $params Route parameters
-     * @param array $query Query string parameters
+     * @param array<string, mixed> $params Route parameters
+     * @param array<string, mixed> $query Query string parameters
      * @return string Generated URL
      */
     public function build(string $routeName, array $params = [], array $query = []): string
@@ -90,8 +81,8 @@ class Builder
      * Build URL with route name lookup (if router available)
      *
      * @param string $routeName Route name
-     * @param array $params Route parameters
-     * @param array $query Query string parameters
+     * @param array<string, mixed> $params Route parameters
+     * @param array<string, mixed> $query Query string parameters
      * @return string Generated URL
      */
     public function route(string $routeName, array $params = [], array $query = []): string
@@ -105,8 +96,8 @@ class Builder
      * Build absolute URL
      *
      * @param string $path Path or route name
-     * @param array $params Route parameters
-     * @param array $query Query string parameters
+     * @param array<string, mixed> $params Route parameters
+     * @param array<string, mixed> $query Query string parameters
      * @return string Absolute URL
      */
     public function absolute(string $path, array $params = [], array $query = []): string
@@ -130,8 +121,8 @@ class Builder
      * Build secure (HTTPS) URL
      *
      * @param string $path Path or route name
-     * @param array $params Route parameters
-     * @param array $query Query string parameters
+     * @param array<string, mixed> $params Route parameters
+     * @param array<string, mixed> $query Query string parameters
      * @return string Secure URL
      */
     public function secure(string $path, array $params = [], array $query = []): string

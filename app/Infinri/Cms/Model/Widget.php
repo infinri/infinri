@@ -31,7 +31,7 @@ class Widget extends AbstractModel
      * Constructor
      *
      * @param \Infinri\Cms\Model\ResourceModel\Widget $resource
-     * @param array $data
+     * @param array<string, mixed> $data
      */
     public function __construct(
         \Infinri\Cms\Model\ResourceModel\Widget $resource,
@@ -156,7 +156,7 @@ class Widget extends AbstractModel
     /**
      * Set widget data (configuration)
      *
-     * @param array $data
+     * @param array<string, mixed> $data
      * @return $this
      */
     public function setWidgetData(array $data): self

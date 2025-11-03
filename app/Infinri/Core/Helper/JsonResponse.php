@@ -14,7 +14,7 @@ class JsonResponse
     /**
      * Create success JSON response
      *
-     * @param array $data Additional data to include
+     * @param array<string, mixed> $data Additional data to include
      * @return Response
      */
     public static function success(array $data = []): Response
@@ -23,7 +23,11 @@ class JsonResponse
         $response->setHeader('Content-Type', 'application/json');
 
         $payload = array_merge(['success' => true], $data);
-        $response->setBody(json_encode($payload));
+        $json = json_encode($payload);
+        if ($json === false) {
+            throw new \RuntimeException('Failed to encode JSON response');
+        }
+        $response->setBody($json);
 
         return $response;
     }
@@ -33,7 +37,7 @@ class JsonResponse
      *
      * @param string $message Error message
      * @param int $httpCode HTTP status code (default 500)
-     * @param array $additionalData Additional error data
+     * @param array<string, mixed> $additionalData Additional error data
      * @return Response
      */
     public static function error(string $message, int $httpCode = 500, array $additionalData = []): Response
@@ -47,7 +51,11 @@ class JsonResponse
             'error' => $message
         ], $additionalData);
 
-        $response->setBody(json_encode($payload));
+        $json = json_encode($payload);
+        if ($json === false) {
+            throw new \RuntimeException('Failed to encode JSON response');
+        }
+        $response->setBody($json);
 
         return $response;
     }

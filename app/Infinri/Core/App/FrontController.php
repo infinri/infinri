@@ -14,7 +14,6 @@ class FrontController
     public function __construct(
         private readonly RouterInterface                     $router,
         private readonly Dispatcher                          $dispatcher,
-        private readonly Request                             $request,
         private readonly SecurityHeadersMiddleware           $securityHeaders,
         private readonly Middleware\AuthenticationMiddleware $authMiddleware
     ) {}
@@ -68,7 +67,7 @@ class FrontController
     {
         // Check environment to determine error display level
         $env = getenv('APP_ENV') ?: 'production';
-        $isDevelopment = in_array($env, ['development', 'dev', 'local']);
+        $isDevelopment = in_array($env, ['development', 'dev', 'local'], true);
 
         if ($isDevelopment) {
             // Development: Show detailed error information

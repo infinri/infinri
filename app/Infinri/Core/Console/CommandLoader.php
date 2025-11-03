@@ -8,9 +8,12 @@ use Symfony\Component\Console\Command\Command;
 use Infinri\Core\Model\ComponentRegistrar;
 use Infinri\Core\Api\ComponentRegistrarInterface;
 use Infinri\Core\Console\Command\CacheClearCommand;
+use Infinri\Core\Console\Command\CacheInfoCommand;
 use Infinri\Core\Console\Command\CacheStatusCommand;
 use Infinri\Core\Console\Command\ModuleListCommand;
 use Infinri\Core\Console\Command\ModuleStatusCommand;
+use Infinri\Core\Console\Command\SchemaMigrateCommand;
+use Infinri\Core\Console\Command\SetupInstallCommand;
 use Infinri\Core\Console\Command\SetupUpgradeCommand;
 
 /**
@@ -67,9 +70,12 @@ class CommandLoader
     {
         $coreCommandClasses = [
             CacheClearCommand::class,
+            CacheInfoCommand::class,
             CacheStatusCommand::class,
             ModuleListCommand::class,
             ModuleStatusCommand::class,
+            SchemaMigrateCommand::class,
+            SetupInstallCommand::class,
             SetupUpgradeCommand::class,
         ];
 

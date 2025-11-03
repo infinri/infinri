@@ -160,6 +160,54 @@ class MediaLibrary
     }
 
     /**
+     * Count total media files recursively
+     *
+     * @param string $relativePath Relative path from media root (empty for all)
+     * @return int Total count of media files
+     */
+    public function countFiles(string $relativePath = ''): int
+    {
+        $fullPath = $this->getFullPath($relativePath);
+
+        if (!is_dir($fullPath)) {
+            return 0;
+        }
+
+        return $this->countFilesRecursive($fullPath);
+    }
+
+    /**
+     * Recursively count files in directory
+     *
+     * @param string $path Directory path
+     * @return int File count
+     */
+    private function countFilesRecursive(string $path): int
+    {
+        $count = 0;
+
+        foreach (scandir($path) ?: [] as $item) {
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+
+            $itemPath = $path . '/' . $item;
+
+            if (is_dir($itemPath)) {
+                $count += $this->countFilesRecursive($itemPath);
+            } elseif (is_file($itemPath)) {
+                // Check if it's a valid media file
+                $extension = strtolower(pathinfo($itemPath, PATHINFO_EXTENSION));
+                if (in_array($extension, self::ALLOWED_EXTENSIONS, true)) {
+                    $count++;
+                }
+            }
+        }
+
+        return $count;
+    }
+
+    /**
      * Get base media path
      *
      * @return string

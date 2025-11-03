@@ -5,6 +5,7 @@ namespace Infinri\Cms\Block;
 
 use Infinri\Core\Block\Template;
 use Infinri\Cms\Model\Repository\WidgetRepository;
+use Infinri\Core\Helper\Logger;
 use Infinri\Cms\Block\Widget\WidgetFactory;
 
 /**
@@ -56,21 +57,19 @@ class PageRenderer extends Template
                     $output .= $widgetBlock->toHtml();
                 } catch (\Exception $e) {
                     // Log error but continue rendering other widgets
-                    error_log(sprintf(
-                        'Error rendering widget %d: %s',
-                        $widget->getWidgetId(),
-                        $e->getMessage()
-                    ));
+                    Logger::warning('Error rendering widget', [
+                        'widget_id' => $widget->getWidgetId(),
+                        'error' => $e->getMessage()
+                    ]);
                 }
             }
 
             return $output;
         } catch (\Exception $e) {
-            error_log(sprintf(
-                'Error rendering widgets for page %d: %s',
-                $pageId,
-                $e->getMessage()
-            ));
+            Logger::error('Error rendering widgets for page', [
+                'page_id' => $pageId,
+                'error' => $e->getMessage()
+            ]);
             return '';
         }
     }

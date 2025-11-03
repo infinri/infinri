@@ -33,6 +33,12 @@ class Request
      */
     private array $params = [];
 
+    /**
+     * @param array<string, mixed>|null $query
+     * @param array<string, mixed>|null $post
+     * @param array<string, mixed>|null $server
+     * @param array<string, mixed>|null $cookies
+     */
     public function __construct(
         ?array $query = null,
         ?array $post = null,
@@ -209,8 +215,8 @@ class Request
      * Get parameter as array
      *
      * @param string $key Parameter name
-     * @param array $default Default value if not found
-     * @return array Validated array
+     * @param array<string, mixed> $default Default value if not found
+     * @return array<string, mixed> Validated array
      */
     public function getArray(string $key, array $default = []): array
     {
@@ -390,7 +396,7 @@ class Request
      * Check if request is from a trusted proxy
      *
      * @param string $remoteAddr
-     * @param array $trustedProxies
+     * @param array<string> $trustedProxies
      * @return bool
      */
     private function isFromTrustedProxy(string $remoteAddr, array $trustedProxies): bool

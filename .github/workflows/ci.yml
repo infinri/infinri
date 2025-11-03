@@ -1,0 +1,177 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  static-analysis:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        php-version: ['8.4']
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-version }}
+        extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_pgsql, redis
+        coverage: none
+    
+    - name: Cache Composer packages
+      id: composer-cache
+      uses: actions/cache@v3
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-${{ matrix.php-version }}-
+    
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest --dev
+    
+    - name: Create cache directories
+      run: |
+        mkdir -p var/cache/phpstan
+        mkdir -p var/cache
+        chmod -R 755 var/
+    
+    - name: Run PHPStan
+      run: vendor/bin/phpstan analyse --memory-limit=1G --no-progress
+    
+    - name: Run PHP_CodeSniffer
+      run: vendor/bin/phpcs --report=checkstyle --report-file=var/phpcs-report.xml
+    
+    - name: Upload PHPCS results
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: phpcs-report
+        path: var/phpcs-report.xml
+
+  code-style:
+    name: Code Style
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.4'
+        extensions: mbstring, xml, ctype, iconv, intl
+        coverage: none
+    
+    - name: Cache Composer packages
+      uses: actions/cache@v3
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-8.4-${{ hashFiles('**/composer.lock') }}
+    
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --dev
+    
+    - name: Create cache directory
+      run: mkdir -p var/cache
+    
+    - name: Check code style with PHP CS Fixer
+      run: vendor/bin/php-cs-fixer fix --dry-run --diff --verbose
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: infinri_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    strategy:
+      matrix:
+        php-version: ['8.4']
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-version }}
+        extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_pgsql
+        coverage: xdebug
+    
+    - name: Cache Composer packages
+      uses: actions/cache@v3
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+    
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --dev
+    
+    - name: Create directories
+      run: |
+        mkdir -p var/cache var/log
+        chmod -R 755 var/
+    
+    - name: Setup environment
+      run: |
+        cp .env.example .env
+        echo "DB_HOST=localhost" >> .env
+        echo "DB_PORT=5432" >> .env
+        echo "DB_NAME=infinri_test" >> .env
+        echo "DB_USER=postgres" >> .env
+        echo "DB_PASSWORD=postgres" >> .env
+    
+    - name: Run tests
+      run: vendor/bin/phpunit --coverage-clover=coverage.xml
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+
+  security:
+    name: Security Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.4'
+        extensions: mbstring, xml, ctype, iconv, intl
+        coverage: none
+    
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --dev
+    
+    - name: Security check
+      run: |
+        composer audit
+        # Add additional security tools here if needed

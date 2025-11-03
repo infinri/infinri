@@ -19,8 +19,7 @@ class SitemapGenerator
     private const CHANGEFREQ_MONTHLY = 'monthly';
 
     public function __construct(
-        private readonly PageRepository       $pageRepository,
-        private readonly UrlRewriteRepository $urlRewriteRepository
+        private readonly PageRepository $pageRepository
     ) {}
 
     /**
@@ -28,6 +27,7 @@ class SitemapGenerator
      *
      * @param string $baseUrl Base URL of the site
      * @return string XML sitemap content
+     * @throws \DateMalformedStringException
      */
     public function generate(string $baseUrl): string
     {
@@ -49,6 +49,7 @@ class SitemapGenerator
      *
      * @param \SimpleXMLElement $xml
      * @param string $baseUrl
+     * @throws \DateMalformedStringException
      */
     private function addCmsPages(\SimpleXMLElement $xml, string $baseUrl): void
     {
@@ -63,7 +64,7 @@ class SitemapGenerator
 
             // Skip error pages (404, 500, maintenance)
             $urlKey = $page->getData('url_key');
-            if (in_array($urlKey, ['404', '500', 'maintenance'])) {
+            if (in_array($urlKey, ['404', '500', 'maintenance'], true)) {
                 continue;
             }
 

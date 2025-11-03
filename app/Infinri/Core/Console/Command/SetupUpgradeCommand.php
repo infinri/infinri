@@ -18,7 +18,7 @@ use Infinri\Core\Setup\Patch\PatchApplier;
  */
 class SetupUpgradeCommand extends Command
 {
-    protected static $defaultName = 'setup:upgrade';
+    protected static string $defaultName = 'setup:upgrade';
 
     public function __construct(
         private readonly ?ModuleManager $moduleManager = null,

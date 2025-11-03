@@ -14,7 +14,7 @@ class DataProvider
     /**
      * Get data for grid
      *
-     * @return array ['items' => [], 'totalRecords' => int]
+     * @return array<string, mixed> ['items' => [], 'totalRecords' => int]
      */
     public function getData(): array
     {

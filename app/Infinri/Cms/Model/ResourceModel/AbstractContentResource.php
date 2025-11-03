@@ -140,6 +140,29 @@ abstract class AbstractContentResource extends AbstractResource
     }
 
     /**
+     * Get total count of entities
+     * Efficient database count without loading all records
+     *
+     * @param bool $activeOnly Count only active entities
+     * @return int
+     */
+    public function count(bool $activeOnly = false): int
+    {
+        $sql = "SELECT COUNT(*) FROM {$this->getMainTable()}";
+        $params = [];
+
+        if ($activeOnly) {
+            $sql .= " WHERE is_active = :is_active";
+            $params['is_active'] = 1;
+        }
+
+        $stmt = $this->getConnection()->prepare($sql);
+        $stmt->execute($params);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
      * Before delete hook
      * Override in child classes to add delete restrictions
      *

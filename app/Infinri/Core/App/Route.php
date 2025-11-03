@@ -9,6 +9,9 @@ namespace Infinri\Core\App;
  */
 class Route
 {
+    /**
+     * @param array<string, mixed> $params
+     */
     public function __construct(
         public readonly string $controller,
         public readonly string $action,

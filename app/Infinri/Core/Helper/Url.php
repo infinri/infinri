@@ -33,8 +33,8 @@ class Url
      * Generate URL
      *
      * @param string $path Path or route name
-     * @param array $params Route parameters
-     * @param array $query Query string parameters
+     * @param array<string, mixed> $params Route parameters
+     * @param array<string, mixed> $query Query string parameters
      * @return string Generated URL
      */
     public function url(string $path, array $params = [], array $query = []): string
@@ -46,8 +46,8 @@ class Url
      * Generate route URL
      *
      * @param string $routeName Route name
-     * @param array $params Route parameters
-     * @param array $query Query string parameters
+     * @param array<string, mixed> $params Route parameters
+     * @param array<string, mixed> $query Query string parameters
      * @return string Generated URL
      */
     public function route(string $routeName, array $params = [], array $query = []): string
@@ -59,8 +59,8 @@ class Url
      * Generate absolute URL
      *
      * @param string $path Path or route name
-     * @param array $params Route parameters
-     * @param array $query Query string parameters
+     * @param array<string, mixed> $params Route parameters
+     * @param array<string, mixed> $query Query string parameters
      * @return string Absolute URL
      */
     public function absolute(string $path, array $params = [], array $query = []): string
@@ -72,8 +72,8 @@ class Url
      * Generate secure (HTTPS) URL
      *
      * @param string $path Path or route name
-     * @param array $params Route parameters
-     * @param array $query Query string parameters
+     * @param array<string, mixed> $params Route parameters
+     * @param array<string, mixed> $query Query string parameters
      * @return string Secure URL
      */
     public function secure(string $path, array $params = [], array $query = []): string

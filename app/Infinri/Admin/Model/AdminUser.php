@@ -30,10 +30,16 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
 
     /**
      * Get user identifier (username)
+     * 
+     * @return non-empty-string
      */
     public function getUserIdentifier(): string
     {
-        return $this->getUsername() ?? '';
+        $username = $this->getUsername();
+        if (empty($username)) {
+            throw new \RuntimeException('User must have a non-empty username');
+        }
+        return $username;
     }
 
     /**
@@ -161,9 +167,9 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
         $parts = array_filter([
             $this->getFirstname(),
             $this->getLastname()
-        ]);
+        ], fn($value) => !empty($value));
         
-        return implode(' ', $parts) ?: $this->getUsername() ?? 'Unknown User';
+        return !empty($parts) ? implode(' ', $parts) : ($this->getUsername() ?? 'Unknown User');
     }
 
     /**
@@ -176,6 +182,8 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
 
     /**
      * Set roles
+     * 
+     * @param array<string> $roles
      */
     public function setRoles(array $roles): self
     {

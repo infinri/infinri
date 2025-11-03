@@ -59,7 +59,7 @@ abstract class AbstractSaveController
     /**
      * Override to add custom validation before save
      *
-     * @param array $data
+     * @param array<string, mixed> $data
      * @return void
      * @throws \InvalidArgumentException
      */

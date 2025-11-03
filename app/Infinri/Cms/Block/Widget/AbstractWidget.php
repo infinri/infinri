@@ -12,9 +12,9 @@ use Infinri\Cms\Model\Widget;
 abstract class AbstractWidget extends Template
 {
     /**
-     * @var Widget
+     * @var Widget|null
      */
-    protected Widget $widget;
+    protected ?Widget $widget = null;
 
     /**
      * @param Widget $widget
@@ -27,9 +27,9 @@ abstract class AbstractWidget extends Template
     }
 
     /**
-     * @return Widget
+     * @return Widget|null
      */
-    public function getWidget(): Widget
+    public function getWidget(): ?Widget
     {
         return $this->widget;
     }

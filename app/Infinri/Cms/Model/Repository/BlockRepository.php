@@ -26,7 +26,7 @@ class BlockRepository extends AbstractContentRepository implements BlockReposito
     /**
      * Create model instance (implements abstract method)
      *
-     * @param array $data
+     * @param array<string, mixed> $data
      * @return Block
      */
     protected function createModel(array $data = []): Block
@@ -48,7 +48,7 @@ class BlockRepository extends AbstractContentRepository implements BlockReposito
      * Create a new block instance
      * Public factory method for creating empty blocks
      *
-     * @param array $data
+     * @param array<string, mixed> $data
      * @return Block
      */
     public function create(array $data = []): Block

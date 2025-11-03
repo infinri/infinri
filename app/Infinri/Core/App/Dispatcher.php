@@ -143,7 +143,6 @@ class Dispatcher
 
     /**
      * Sanitize class name part to prevent injection
-     *
      * Public so it can be passed to Route::getControllerClass()
      *
      * @param string $value
@@ -152,7 +151,11 @@ class Dispatcher
     public function sanitizeClassName(string $value): string
     {
         // Remove any characters that aren't alphanumeric or underscore. This prevents path traversal (../) and namespace injection (\)
-        return preg_replace('/[^a-zA-Z0-9_]/', '', $value);
+        $result = preg_replace('/[^a-zA-Z0-9_]/', '', $value);
+        if ($result === null) {
+            throw new \RuntimeException('Failed to sanitize class name');
+        }
+        return $result;
     }
 
     /**

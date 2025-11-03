@@ -26,7 +26,7 @@ class PageRepository extends AbstractContentRepository implements PageRepository
     /**
      * Create model instance (implements abstract method)
      *
-     * @param array $data
+     * @param array<string, mixed> $data
      * @return Page
      */
     protected function createModel(array $data = []): Page
@@ -48,7 +48,7 @@ class PageRepository extends AbstractContentRepository implements PageRepository
      * Create a new page instance
      * Public factory method for creating empty pages
      *
-     * @param array $data
+     * @param array<string, mixed> $data
      * @return Page
      */
     public function create(array $data = []): Page

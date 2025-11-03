@@ -14,6 +14,9 @@ class BlockActions
      */
     private array $data;
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function __construct(array $data = [])
     {
         $this->data = $data;
@@ -34,6 +37,9 @@ class BlockActions
 
     /**
      * Prepare Data Source
+     *
+     * @param array<string, mixed> $dataSource
+     * @return array<string, mixed>
      */
     public function prepareDataSource(array $dataSource): array
     {
@@ -62,6 +68,9 @@ class BlockActions
         return $dataSource;
     }
 
+    /**
+     * @param array<string, mixed> $params
+     */
     private function buildUrl(string $path, array $params = []): string
     {
         $query = http_build_query($params);

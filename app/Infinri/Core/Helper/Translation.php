@@ -95,7 +95,7 @@ class Translation
             return false;
         }
 
-        if (in_array($filePath, $this->loadedFiles)) {
+        if (in_array($filePath, $this->loadedFiles, true)) {
             return true;
         }
 
@@ -149,7 +149,7 @@ class Translation
      * Add translations for a locale
      *
      * @param string $locale Locale code
-     * @param array $translations Translation key-value pairs
+     * @param array<string, string> $translations Translation key-value pairs
      * @return void
      */
     public function addTranslations(string $locale, array $translations): void

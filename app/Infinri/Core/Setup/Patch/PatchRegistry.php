@@ -112,7 +112,7 @@ class PatchRegistry
         // Visit dependencies first
         $dependencies = $patch::getDependencies();
         foreach ($dependencies as $dependency) {
-            if (in_array($dependency, $allPatches)) {
+            if (in_array($dependency, $allPatches, true)) {
                 $this->visitPatch($dependency, $allPatches, $sorted, $visited);
             }
         }

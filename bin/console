@@ -10,7 +10,9 @@ use Symfony\Component\Console\Application;
 use Infinri\Core\Console\CommandLoader;
 use Infinri\Core\Model\Module\ModuleManager;
 use Infinri\Core\Model\Setup\SchemaSetup;
+use Infinri\Core\Console\Command\SetupInstallCommand;
 use Infinri\Core\Console\Command\SetupUpgradeCommand;
+use Infinri\Core\Console\Command\SchemaMigrateCommand;
 
 /**
  * Infinri Console Application
@@ -39,16 +41,19 @@ $objectManager = getObjectManager();
 // Create console application
 $application = new Application('Infinri Framework', '1.0.0');
 
-// Get dependencies for setup command
+// Get dependencies for setup commands
 $moduleManager = $objectManager->get(ModuleManager::class);
 $schemaSetup = $objectManager->get(SchemaSetup::class);
+$connection = $objectManager->get(\PDO::class);
 
 // Load commands from command loader
 $commandLoader = new CommandLoader();
 $commands = $commandLoader->loadCommands();
 
-// Add setup:upgrade command with proper dependencies
+// Add setup commands with proper dependencies
+$commands[] = new SetupInstallCommand($moduleManager, $schemaSetup, $connection);
 $commands[] = new SetupUpgradeCommand($moduleManager, $schemaSetup);
+$commands[] = new SchemaMigrateCommand($moduleManager, $schemaSetup, $connection);
 
 // Register all commands
 $application->addCommands($commands);

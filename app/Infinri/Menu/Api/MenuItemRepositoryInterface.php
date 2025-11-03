@@ -67,7 +67,7 @@ interface MenuItemRepositoryInterface
     /**
      * Reorder menu items
      *
-     * @param array $orderData Array of [item_id => sort_order]
+     * @param array<string, mixed> $orderData Array of [item_id => sort_order]
      * @return bool
      */
     public function reorder(array $orderData): bool;

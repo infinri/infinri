@@ -12,7 +12,7 @@ interface ObserverInterface
     /**
      * Execute observer
      *
-     * @param array $data Event data
+     * @param array<string, mixed> $data Event data
      * @return void
      */
     public function execute(array $data = []): void;

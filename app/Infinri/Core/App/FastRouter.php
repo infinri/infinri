@@ -34,7 +34,7 @@ class FastRouter implements RouterInterface
      * @param string $path URL pattern (e.g., '/product/view/:id')
      * @param string $controller Controller class
      * @param string $action Action method
-     * @param array<string, mixed> $methods Allowed HTTP methods
+     * @param array<string> $methods Allowed HTTP methods
      * @return $this
      */
     public function addRoute(
@@ -173,7 +173,11 @@ class FastRouter implements RouterInterface
     private function convertToFastRoutePattern(string $path): string
     {
         // Convert :param to {param}
-        return preg_replace('/:([a-zA-Z_][a-zA-Z0-9_]*)/', '{$1}', $path);
+        $result = preg_replace('/:([a-zA-Z_][a-zA-Z0-9_]*)/', '{$1}', $path);
+        if ($result === null) {
+            throw new \RuntimeException('Failed to convert route pattern');
+        }
+        return $result;
     }
 
     /**

@@ -92,7 +92,7 @@ class AdminUserRepository
     /**
      * Create a new user instance
      *
-     * @param array $data
+     * @param array<string, mixed> $data
      * @return AdminUser
      */
     public function create(array $data = []): AdminUser
@@ -101,9 +101,65 @@ class AdminUserRepository
     }
 
     /**
+     * Get user by username
+     *
+     * @param string $username
+     * @return AdminUser|null
+     */
+    public function getByUsername(string $username): ?AdminUser
+    {
+        $data = $this->resource->loadByUsername($username);
+        
+        if (!$data) {
+            return null;
+        }
+        
+        return $this->createModel($data);
+    }
+
+    /**
+     * Get user by email
+     *
+     * @param string $email
+     * @return AdminUser|null
+     */
+    public function getByEmail(string $email): ?AdminUser
+    {
+        $data = $this->resource->loadByEmail($email);
+        
+        if (!$data) {
+            return null;
+        }
+        
+        return $this->createModel($data);
+    }
+
+    /**
+     * Check if username exists
+     *
+     * @param string $username
+     * @return bool
+     */
+    public function usernameExists(string $username): bool
+    {
+        return $this->getByUsername($username) !== null;
+    }
+
+    /**
+     * Check if email exists
+     *
+     * @param string $email
+     * @return bool
+     */
+    public function emailExists(string $email): bool
+    {
+        return $this->getByEmail($email) !== null;
+    }
+
+    /**
      * Create model instance
      *
-     * @param array $data
+     * @param array<string, mixed> $data
      * @return AdminUser
      */
     protected function createModel(array $data = []): AdminUser

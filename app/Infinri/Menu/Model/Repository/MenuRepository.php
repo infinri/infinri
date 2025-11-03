@@ -25,7 +25,7 @@ class MenuRepository implements MenuRepositoryInterface
     /**
      * Create a new menu instance
      *
-     * @param array $data
+     * @param array<string, mixed> $data
      * @return Menu
      */
     public function create(array $data = []): Menu

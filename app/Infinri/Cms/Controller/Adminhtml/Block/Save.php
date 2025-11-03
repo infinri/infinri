@@ -90,7 +90,7 @@ class Save extends AbstractSaveController
     }
 
     /**
-     * @param array $data
+     * @param array<string, mixed> $data
      * @return void
      * @throws \InvalidArgumentException
      */

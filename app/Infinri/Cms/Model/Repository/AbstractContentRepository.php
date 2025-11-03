@@ -28,7 +28,7 @@ abstract class AbstractContentRepository
      * Create model instance with data
      * Each repository must implement its specific model creation
      *
-     * @param array $data
+     * @param array<string, mixed> $data
      * @return AbstractContentEntity
      */
     abstract protected function createModel(array $data = []): AbstractContentEntity;
@@ -133,12 +133,16 @@ abstract class AbstractContentRepository
 
     /**
      * Get total count of entities
+     * Uses efficient database count query instead of loading all records
      *
      * @param bool $activeOnly Count only active entities
      * @return int
      */
     public function count(bool $activeOnly = false): int
     {
-        return count($this->getAll($activeOnly));
+        // Cast to AbstractContentResource to use the correct count method
+        /** @var \Infinri\Cms\Model\ResourceModel\AbstractContentResource $resource */
+        $resource = $this->resource;
+        return $resource->count($activeOnly);
     }
 }

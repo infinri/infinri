@@ -216,7 +216,7 @@ class Logger
      * Log emergency message
      *
      * @param string $message
-     * @param array $context
+     * @param array<string, mixed> $context
      * @return void
      */
     public static function emergency(string $message, array $context = []): void
@@ -228,7 +228,7 @@ class Logger
      * Log alert message
      *
      * @param string $message
-     * @param array $context
+     * @param array<string, mixed> $context
      * @return void
      */
     public static function alert(string $message, array $context = []): void
@@ -240,7 +240,7 @@ class Logger
      * Log critical message
      *
      * @param string $message
-     * @param array $context
+     * @param array<string, mixed> $context
      * @return void
      */
     public static function critical(string $message, array $context = []): void
@@ -252,7 +252,7 @@ class Logger
      * Log error message
      *
      * @param string $message
-     * @param array $context
+     * @param array<string, mixed> $context
      * @return void
      */
     public static function error(string $message, array $context = []): void
@@ -264,7 +264,7 @@ class Logger
      * Log warning message
      *
      * @param string $message
-     * @param array $context
+     * @param array<string, mixed> $context
      * @return void
      */
     public static function warning(string $message, array $context = []): void
@@ -276,7 +276,7 @@ class Logger
      * Log notice message
      *
      * @param string $message
-     * @param array $context
+     * @param array<string, mixed> $context
      * @return void
      */
     public static function notice(string $message, array $context = []): void
@@ -288,7 +288,7 @@ class Logger
      * Log info message
      *
      * @param string $message
-     * @param array $context
+     * @param array<string, mixed> $context
      * @return void
      */
     public static function info(string $message, array $context = []): void
@@ -300,7 +300,7 @@ class Logger
      * Log debug message
      *
      * @param string $message
-     * @param array $context
+     * @param array<string, mixed> $context
      * @return void
      */
     public static function debug(string $message, array $context = []): void

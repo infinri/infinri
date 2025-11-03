@@ -91,7 +91,6 @@ class GridRenderer
             $buttonNodes = $xml->xpath('//button');
         }
 
-        error_log("Found " . count($buttonNodes) . " button nodes");
 
         foreach ($buttonNodes as $node) {
             $name = (string)$node['name'];
@@ -102,7 +101,6 @@ class GridRenderer
 
             $url = !empty($urlNode) ? (string)$urlNode[0]['path'] : '#';
 
-            error_log("Button: $name, URL: $url");
 
             $buttons[] = [
                 'name' => $name,
@@ -132,14 +130,12 @@ class GridRenderer
         $className = (string)($actionsNode['class'] ?? '');
 
         if (!$className || !class_exists($className)) {
-            error_log("ActionsColumn class not found: $className");
             return null;
         }
 
         try {
             return $this->objectManager->get($className);
         } catch (\Throwable $e) {
-            error_log("Failed to instantiate ActionsColumn: " . $e->getMessage());
             return null;
         }
     }
@@ -155,12 +151,10 @@ class GridRenderer
     private function prepareActionsData(object $actionsColumn, array $items, int $totalRecords): array
     {
         $data = ['data' => ['items' => $items], 'totalRecords' => $totalRecords];
-        error_log("Before prepareDataSource: " . count($items) . " items");
 
         $data = $actionsColumn->prepareDataSource($data);
         $items = $data['data']['items'] ?? [];
 
-        error_log("After prepareDataSource: " . count($items) . " items");
 
         return $items;
     }

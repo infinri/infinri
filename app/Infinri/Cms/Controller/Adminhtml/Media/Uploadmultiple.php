@@ -87,12 +87,16 @@ class Uploadmultiple
                 // Validate file type
                 $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
                 $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                if ($finfo === false) {
+                    $errors[] = "$name: Failed to initialize file info";
+                    continue;
+                }
                 $mimeType = finfo_file($finfo, $tmpName);
                 finfo_close($finfo);
 
                 error_log("File $name mime type: $mimeType");
 
-                if (!in_array($mimeType, $allowedTypes)) {
+                if (!in_array($mimeType, $allowedTypes, true)) {
                     $errors[] = "$name: Invalid file type ($mimeType)";
                     continue;
                 }
@@ -103,7 +107,7 @@ class Uploadmultiple
 
                 // Whitelist allowed extensions
                 $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
-                if (!in_array($extension, $allowedExtensions)) {
+                if (!in_array($extension, $allowedExtensions, true)) {
                     $errors[] = "$name: Invalid file extension ($extension)";
                     continue;
                 }

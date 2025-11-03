@@ -83,7 +83,7 @@ class ModuleManager
         // Filter to only enabled modules
         $modules = array_filter(
             $allModules,
-            fn($name) => in_array($name, $enabledNames),
+            fn($name) => in_array($name, $enabledNames, true),
             ARRAY_FILTER_USE_KEY
         );
 

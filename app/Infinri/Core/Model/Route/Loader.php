@@ -56,7 +56,7 @@ class Loader
      *
      * @param RouterInterface $router
      * @param string $moduleName
-     * @param array $moduleData
+     * @param array<string, mixed> $moduleData
      * @return void
      */
     private function loadModuleRoutes(RouterInterface $router, string $moduleName, array $moduleData): void
@@ -102,7 +102,7 @@ class Loader
      * @param RouterInterface $router
      * @param string $moduleName
      * @param \SimpleXMLElement $xml
-     * @param array $moduleData
+     * @param array<string, mixed> $moduleData
      * @return void
      */
     private function parseRoutesXml(RouterInterface $router, string $moduleName, \SimpleXMLElement $xml, array $moduleData): void
@@ -130,7 +130,7 @@ class Loader
 
             // Process any other router types not in the priority list
             foreach ($routers as $routerId => $routerNode) {
-                if (!in_array($routerId, $order)) {
+                if (!in_array($routerId, $order, true)) {
                     Logger::debug("RouteLoader: Processing {$routerId} routes for {$moduleName}");
 
                     foreach ($routerNode->route as $routeNode) {

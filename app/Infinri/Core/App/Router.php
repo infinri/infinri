@@ -20,7 +20,7 @@ class Router implements RouterInterface
      * @param string $path URL pattern (e.g., '/product/view/:id')
      * @param string $controller Controller class
      * @param string $action Action method
-     * @param array<string, mixed> $methods Allowed HTTP methods
+     * @param array<string> $methods Allowed HTTP methods
      * @return $this
      */
     public function addRoute(

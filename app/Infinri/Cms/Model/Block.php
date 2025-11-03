@@ -15,7 +15,7 @@ class Block extends AbstractContentEntity
      * Constructor
      *
      * @param BlockResource $resource
-     * @param array $data
+     * @param array<string, mixed> $data
      */
     public function __construct(
         BlockResource $resource,

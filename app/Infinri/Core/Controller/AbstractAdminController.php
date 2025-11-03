@@ -35,7 +35,7 @@ abstract class AbstractAdminController extends AbstractController
      * Render admin layout with given handle
      *
      * @param string $handle Layout handle (e.g., 'admin_users_index')
-     * @param array $data Additional data to pass to layout
+     * @param array<string, mixed> $data Additional data to pass to layout
      * @return Response
      */
     protected function renderAdminLayout(string $handle, array $data = []): Response
@@ -110,7 +110,7 @@ abstract class AbstractAdminController extends AbstractController
      * Redirect to route with query parameters
      *
      * @param string $route Route path (e.g., '/admin/users/index')
-     * @param array $params Query parameters
+     * @param array<string, mixed> $params Query parameters
      * @param int $code HTTP status code (default: 302)
      * @return Response
      */

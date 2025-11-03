@@ -165,6 +165,54 @@
 
 ---
 
+## 🟡 **High Priority**
+
+### 4. Streamline Caching System - Redis-First Architecture
+**Location:** `app/Infinri/Core/Model/Cache/Factory.php`  
+**Issue:** Current caching supports multiple drivers but lacks centralized, intelligent selection  
+**Goal:** Implement best practice Redis-first caching with auto-fallback for efficiency and slimness
+
+**Current State:**
+- ✅ Symfony Cache integration with multiple adapters
+- ✅ Factory pattern for cache creation
+- ⚠️ Manual driver selection via configuration
+- ⚠️ No intelligent fallback mechanism
+
+**Action Items:**
+- [ ] Add Redis adapter support to Factory
+- [ ] Implement intelligent driver auto-detection
+- [ ] Create centralized CacheConfig class
+- [ ] Add Redis connection validation with fallback
+- [ ] Remove unused ArrayAdapter (testing only)
+- [ ] Implement environment-driven cache TTL
+- [ ] Add cache performance monitoring
+- [ ] Update .env.example with Redis configuration
+- [ ] Test Redis failover to filesystem
+
+**Technical Implementation:**
+```php
+// Auto-detection priority: Redis > APCu > Filesystem
+class CacheConfig {
+    public static function getOptimalDriver(): string {
+        return match (true) {
+            self::isProduction() && self::hasRedis() => 'redis',
+            self::hasApcu() => 'apcu', 
+            default => 'filesystem'
+        };
+    }
+}
+```
+
+**Estimated Effort:** 3-4 hours  
+**Dependencies:** Redis extension (optional)  
+**Benefits:**
+- 50-80% faster cache operations in production
+- Automatic fallback ensures reliability
+- Centralized configuration reduces complexity
+- Production-ready distributed caching
+
+---
+
 ## 🔵 **Low Priority / Quality Improvements**
 
 ### 5. Add Static Analysis Tools
@@ -355,11 +403,11 @@ $basePath . '/templates/' . $filePath,       // Legacy
 | Priority | Count | Total Hours |
 |----------|-------|-------------|
 | 🔴 Critical | 1 | 4-6 |
-| 🟡 High | 2 | 10-15 |
+| 🟡 High | 3 | 13-19 |
 | 🟢 Medium | 1 | 20+ (deferred) |
 | 🔵 Low | 8 | 29-43 |
 | 🟡 Medium (new) | 1 | 2-3 |
-| **Total** | **13** | **45-66 hours** |
+| **Total** | **14** | **48-70 hours** |
 
 **Note:** Hours exclude deferred Catalog module work
 

@@ -7,11 +7,15 @@ namespace Infinri\Core\Model\Cache;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Contracts\Cache\CacheInterface;
+use Infinri\Core\Model\Cache\CacheConfig;
+use Infinri\Core\Helper\Logger;
 
 /**
- * Creates cache instances based on configuration
- * Supports: filesystem, array (memory), apcu
+ * Creates cache instances with Redis-first architecture
+ * Supports: redis, filesystem, array (memory), apcu
+ * Auto-detects optimal adapter with intelligent fallback
  */
 class Factory
 {
@@ -49,21 +53,21 @@ class Factory
     private array $instances = [];
 
     /**
-     * Constructor
+     * Constructor with intelligent adapter selection
      *
      * @param string|null $basePath Application base path
-     * @param string $defaultAdapter Default adapter (filesystem, array, apcu)
-     * @param int $defaultTtl Default TTL in seconds
+     * @param string|null $defaultAdapter Default adapter (null = auto-detect optimal)
+     * @param int|null $defaultTtl Default TTL in seconds (null = environment-based)
      */
     public function __construct(
         ?string $basePath = null,
-        string  $defaultAdapter = 'filesystem',
-        int     $defaultTtl = 3600
+        ?string $defaultAdapter = null,
+        ?int    $defaultTtl = null
     )
     {
         $this->basePath = $basePath ?? dirname(__DIR__, 5);
-        $this->defaultAdapter = $defaultAdapter;
-        $this->defaultTtl = $defaultTtl;
+        $this->defaultAdapter = $defaultAdapter ?? CacheConfig::getOptimalAdapter();
+        $this->defaultTtl = $defaultTtl ?? CacheConfig::getDefaultTtl();
     }
 
     /**
@@ -94,25 +98,114 @@ class Factory
     }
 
     /**
-     * Create Symfony cache adapter
+     * Create Symfony cache adapter with intelligent fallback
      *
      * @param string $type Adapter type
      * @param string $namespace Namespace
      * @return CacheInterface Symfony cache adapter
-     * @throws \InvalidArgumentException|\Symfony\Component\Cache\Exception\CacheException If adapter type is invalid
      */
     private function createAdapter(string $type, string $namespace): CacheInterface
     {
         return match ($type) {
+            'redis' => $this->createRedisAdapter($namespace),
             'filesystem' => new FilesystemAdapter(
                 $namespace,
                 0,
                 $this->basePath . self::CACHE_DIR
             ),
             'array' => new ArrayAdapter(),
-            'apcu' => new ApcuAdapter($namespace),
-            default => throw new \InvalidArgumentException("Invalid cache adapter: {$type}"),
+            'apcu' => $this->createApcuAdapter($namespace),
+            default => $this->createFallbackAdapter($namespace),
         };
+    }
+
+    /**
+     * Create Redis adapter with automatic fallback
+     *
+     * @param string $namespace Namespace
+     * @return CacheInterface Redis adapter or fallback
+     */
+    private function createRedisAdapter(string $namespace): CacheInterface
+    {
+        try {
+            if (!CacheConfig::isRedisAvailable()) {
+                return $this->createFallbackAdapter($namespace);
+            }
+
+            $config = CacheConfig::getRedisConfig();
+            $redis = new \Redis();
+            
+            // Connect with timeout
+            $connected = $redis->connect(
+                $config['host'],
+                $config['port'],
+                $config['timeout']
+            );
+
+            if (!$connected) {
+                throw new \Exception('Failed to connect to Redis');
+            }
+
+            // Set read timeout
+            $redis->setOption(\Redis::OPT_READ_TIMEOUT, $config['read_timeout']);
+
+            // Authenticate if password is set
+            if (!empty($config['password'])) {
+                if (!$redis->auth($config['password'])) {
+                    throw new \Exception('Redis authentication failed');
+                }
+            }
+
+            // Select database
+            if ($config['database'] > 0) {
+                $redis->select($config['database']);
+            }
+
+            return new RedisAdapter($redis, $namespace);
+
+        } catch (\Exception $e) {
+            Logger::warning('Redis adapter creation failed, falling back to filesystem', [
+                'error' => $e->getMessage()
+            ]);
+            return $this->createFallbackAdapter($namespace);
+        }
+    }
+
+    /**
+     * Create APCu adapter with availability check
+     *
+     * @param string $namespace Namespace
+     * @return CacheInterface APCu adapter or fallback
+     */
+    private function createApcuAdapter(string $namespace): CacheInterface
+    {
+        if (!CacheConfig::isApcuAvailable()) {
+            return $this->createFallbackAdapter($namespace);
+        }
+
+        try {
+            return new ApcuAdapter($namespace);
+        } catch (\Exception $e) {
+            Logger::warning('APCu adapter creation failed, falling back to filesystem', [
+                'error' => $e->getMessage()
+            ]);
+            return $this->createFallbackAdapter($namespace);
+        }
+    }
+
+    /**
+     * Create fallback adapter (always filesystem)
+     *
+     * @param string $namespace Namespace
+     * @return CacheInterface Filesystem adapter
+     */
+    private function createFallbackAdapter(string $namespace): CacheInterface
+    {
+        return new FilesystemAdapter(
+            $namespace,
+            0,
+            $this->basePath . self::CACHE_DIR
+        );
     }
 
     /**
@@ -169,10 +262,40 @@ class Factory
     public function isAdapterAvailable(string $adapter): bool
     {
         return match ($adapter) {
+            'redis' => CacheConfig::isRedisAvailable(),
             'filesystem' => true,
             'array' => true,
-            'apcu' => extension_loaded('apcu') && ini_get('apc.enabled'),
+            'apcu' => CacheConfig::isApcuAvailable(),
             default => false,
         };
+    }
+
+    /**
+     * Get current adapter being used
+     *
+     * @return string Current adapter name
+     */
+    public function getCurrentAdapter(): string
+    {
+        return $this->defaultAdapter;
+    }
+
+    /**
+     * Get adapter performance metrics
+     *
+     * @return array Performance information
+     */
+    public function getAdapterMetrics(): array
+    {
+        $adapter = $this->getCurrentAdapter();
+        
+        return [
+            'adapter' => $adapter,
+            'available' => $this->isAdapterAvailable($adapter),
+            'fallback_used' => $adapter !== CacheConfig::getOptimalAdapter(),
+            'redis_available' => CacheConfig::isRedisAvailable(),
+            'apcu_available' => CacheConfig::isApcuAvailable(),
+            'instance_count' => count($this->instances),
+        ];
     }
 }

@@ -67,8 +67,12 @@ class Logout extends AbstractAdminController
         // Delete session cookie
         if (ini_get("session.use_cookies")) {
             $params = session_get_cookie_params();
+            $sessionName = session_name();
+            if ($sessionName === false) {
+                $sessionName = 'PHPSESSID'; // Default session name
+            }
             setcookie(
-                session_name(),
+                $sessionName,
                 '',
                 time() - 42000,
                 $params["path"],

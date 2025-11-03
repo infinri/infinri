@@ -27,6 +27,9 @@ class ComponentResolver
     {
         // From /app/Infinri/Core/View/Element/, go up 4 levels to /app/
         $appPath = realpath(__DIR__ . '/../../../../');
+        if ($appPath === false) {
+            throw new \RuntimeException('Failed to get path for: ' . __DIR__ . '/../../../../');
+        }
 
         // Try Cms module first (where cms_page_listing lives)
         $path = $appPath . '/Infinri/Cms/view/adminhtml/ui_component/' . $componentName . '.xml';

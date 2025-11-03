@@ -29,6 +29,30 @@ abstract class AbstractDataProvider
     ) {}
 
     /**
+     * Get component name
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Get primary field name
+     */
+    public function getPrimaryFieldName(): string
+    {
+        return $this->primaryFieldName;
+    }
+
+    /**
+     * Get request field name
+     */
+    public function getRequestFieldName(): string
+    {
+        return $this->requestFieldName;
+    }
+
+    /**
      * Get repository class name
      * Each child provider specifies its repository
      *
@@ -50,12 +74,15 @@ abstract class AbstractDataProvider
      * Common logic for all listing data providers
      *
      * @return array ['items' => [], 'totalRecords' => int]
+     * @throws \Throwable
      */
     public function getData(): array
     {
         // Get repository from ObjectManager
         $objectManager = \Infinri\Core\Model\ObjectManager::getInstance();
-        $repository = $objectManager->get($this->getRepositoryClass());
+        /** @var class-string<mixed> $repositoryClass */
+        $repositoryClass = $this->getRepositoryClass();
+        $repository = $objectManager->get($repositoryClass);
 
         // Fetch all entities
         $entities = $repository->getAll();

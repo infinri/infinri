@@ -228,7 +228,7 @@ class WidgetRepository implements WidgetRepositoryInterface
      * Reorder widgets for a page
      *
      * @param int $pageId
-     * @param array $widgetIds Array of widget IDs in desired order
+     * @param array<int> $widgetIds Array of widget IDs in desired order
      * @return bool
      * @throws \RuntimeException if reorder fails
      */

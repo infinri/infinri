@@ -10,16 +10,15 @@ class UserActions
 {
     /**
      * Prepare Data Source
+     * 
+     * @param array<string, mixed> $dataSource
+     * @return array<string, mixed>
      */
     public function prepareDataSource(array $dataSource): array
     {
-        error_log("UserActions::prepareDataSource called");
-        error_log("DataSource items count: " . count($dataSource['data']['items'] ?? []));
-        
         if (isset($dataSource['data']['items'])) {
             foreach ($dataSource['data']['items'] as &$item) {
                 if (isset($item['user_id'])) {
-                    error_log("Adding actions for user_id: " . $item['user_id']);
                     $item['actions']['edit'] = [
                         'href' => '/admin/users/edit?id=' . $item['user_id'],
                         'label' => 'Edit'
@@ -36,7 +35,6 @@ class UserActions
             }
         }
         
-        error_log("Returning dataSource with actions");
         return $dataSource;
     }
 }

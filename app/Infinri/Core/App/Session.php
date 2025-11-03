@@ -308,7 +308,11 @@ class Session
     public function getId(): string
     {
         $this->ensureStarted();
-        return session_id();
+        $id = session_id();
+        if ($id === false) {
+            throw new \RuntimeException('Failed to get session ID');
+        }
+        return $id;
     }
 
     /**
@@ -318,7 +322,11 @@ class Session
      */
     public function getName(): string
     {
-        return session_name();
+        $name = session_name();
+        if ($name === false) {
+            throw new \RuntimeException('Failed to get session name');
+        }
+        return $name;
     }
 
     /**

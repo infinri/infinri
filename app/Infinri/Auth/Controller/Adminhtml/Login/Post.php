@@ -112,10 +112,21 @@ class Post
         // Handle Remember Me BEFORE session operations (must be before headers are sent)
         $rememberMe = $request->getPost('remember_me', '0');
         if ($rememberMe === '1') {
+            $userId = $user->getUserId();
+            $clientIp = $request->getClientIp();
+            $userAgent = $request->getUserAgent();
+            
+            if ($userId === null) {
+                throw new \RuntimeException('User ID cannot be null for remember token');
+            }
+            if ($clientIp === null) {
+                $clientIp = '0.0.0.0'; // Fallback IP
+            }
+            
             $token = $this->rememberTokenService->generateToken(
-                $user->getUserId(),
-                $request->getClientIp(),
-                $request->getUserAgent()
+                $userId,
+                $clientIp,
+                $userAgent
             );
 
             $this->rememberTokenService->setRememberCookie($token);
@@ -134,7 +145,10 @@ class Post
         $_SESSION['admin_fingerprint'] = $this->getFingerprint($request);
 
         // Update last login
-        $this->adminUserResource->updateLastLogin($user->getUserId());
+        $userId = $user->getUserId();
+        if ($userId !== null) {
+            $this->adminUserResource->updateLastLogin($userId);
+        }
 
         Logger::info('Admin login successful', [
             'user_id' => $user->getUserId(),

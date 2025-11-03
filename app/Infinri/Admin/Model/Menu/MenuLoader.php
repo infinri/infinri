@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Infinri\Admin\Model\Menu;
 
 use SimpleXMLElement;
+use Infinri\Core\Helper\Logger;
 
 /**
  * Loads and merges menu.xml files from all modules
@@ -37,11 +38,9 @@ class MenuLoader
         $appDir = dirname(__DIR__, 3);
 
         if (!is_dir($appDir)) {
-            error_log("MenuLoader: appDir not found: " . $appDir);
+            Logger::warning('MenuLoader: appDir not found', ['path' => $appDir]);
             return;
         }
-
-        error_log("MenuLoader: Scanning modules in: " . $appDir);
         $modules = scandir($appDir);
         $rawItems = [];
 
@@ -56,10 +55,9 @@ class MenuLoader
                 continue;
             }
 
-            error_log("MenuLoader: Found menu file: " . $menuFile);
             $xml = simplexml_load_file($menuFile);
             if ($xml === false) {
-                error_log("MenuLoader: Failed to parse XML: " . $menuFile);
+                Logger::warning('MenuLoader: Failed to parse XML', ['file' => $menuFile]);
                 continue;
             }
 
@@ -84,7 +82,6 @@ class MenuLoader
             return $a['sortOrder'] <=> $b['sortOrder'];
         });
 
-        error_log("MenuLoader: Total menu items loaded: " . count($rawItems));
         $this->menuItems = $rawItems;
     }
 
@@ -120,6 +117,10 @@ class MenuLoader
 
     /**
      * Recursively attach nested children to their parents
+     * 
+     * @param array<string, mixed> $tree
+     * @param array<string, mixed> $allItems
+     * @return array<string, mixed>
      */
     private function attachNestedChildren(array $tree, array $allItems): array
     {

@@ -69,14 +69,18 @@ class Escaper
     public function escapeCss(string $string): string
     {
         // Remove potentially dangerous characters
-        return preg_replace('/[^a-zA-Z0-9\s\-_]/', '', $string);
+        $result = preg_replace('/[^a-zA-Z0-9\s\-_]/', '', $string);
+        if ($result === null) {
+            throw new \RuntimeException('Failed to escape CSS string');
+        }
+        return $result;
     }
 
     /**
      * Strip HTML tags
      *
      * @param string $string String to clean
-     * @param array $allowedTags Allowed tags (e.g., ['p', 'br'])
+     * @param array<string> $allowedTags Allowed tags (e.g., ['p', 'br'])
      * @return string Cleaned string
      */
     public function stripTags(string $string, array $allowedTags = []): string
@@ -101,7 +105,11 @@ class Escaper
         $filename = str_replace(['/', '\\'], '', $filename);
 
         // Remove special characters
-        return preg_replace('/[^a-zA-Z0-9._-]/', '_', $filename);
+        $result = preg_replace('/[^a-zA-Z0-9._-]/', '_', $filename);
+        if ($result === null) {
+            throw new \RuntimeException('Failed to sanitize filename');
+        }
+        return $result;
     }
 
     /**
@@ -112,10 +120,14 @@ class Escaper
      */
     public function sanitizeEmail(string $email): ?string
     {
-        $email = filter_var($email, FILTER_SANITIZE_EMAIL);
+        $sanitized = filter_var($email, FILTER_SANITIZE_EMAIL);
+        
+        if ($sanitized === false) {
+            return null;
+        }
 
-        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return $email;
+        if (filter_var($sanitized, FILTER_VALIDATE_EMAIL)) {
+            return $sanitized;
         }
 
         return null;
@@ -129,10 +141,14 @@ class Escaper
      */
     public function sanitizeUrl(string $url): ?string
     {
-        $url = filter_var($url, FILTER_SANITIZE_URL);
+        $sanitized = filter_var($url, FILTER_SANITIZE_URL);
+        
+        if ($sanitized === false) {
+            return null;
+        }
 
-        if (filter_var($url, FILTER_VALIDATE_URL)) {
-            return $url;
+        if (filter_var($sanitized, FILTER_VALIDATE_URL)) {
+            return $sanitized;
         }
 
         return null;
@@ -146,7 +162,11 @@ class Escaper
      */
     public function alphanumeric(string $string): string
     {
-        return preg_replace('/[^a-zA-Z0-9]/', '', $string);
+        $result = preg_replace('/[^a-zA-Z0-9]/', '', $string);
+        if ($result === null) {
+            throw new \RuntimeException('Failed to clean alphanumeric string');
+        }
+        return $result;
     }
 
     /**
@@ -164,7 +184,11 @@ class Escaper
             $string = $this->stripTags($string, $safeTags);
 
             // Remove dangerous attributes
-            $string = preg_replace('/<([a-z]+)[^>]*?(on\w+\s*=)[^>]*>/i', '<$1>', $string);
+            $cleaned = preg_replace('/<([a-z]+)[^>]*?(on\w+\s*=)[^>]*>/i', '<$1>', $string);
+            if ($cleaned === null) {
+                throw new \RuntimeException('Failed to remove dangerous attributes');
+            }
+            $string = $cleaned;
         } else {
             $string = strip_tags($string);
         }
@@ -181,7 +205,11 @@ class Escaper
      */
     public function escapeJson(mixed $data, int $options = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP): string
     {
-        return json_encode($data, $options);
+        $result = json_encode($data, $options);
+        if ($result === false) {
+            throw new \RuntimeException('Failed to encode JSON');
+        }
+        return $result;
     }
 
     /**

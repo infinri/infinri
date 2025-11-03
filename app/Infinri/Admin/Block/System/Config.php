@@ -70,7 +70,9 @@ class Config extends Template
     private function getSystemReader(): SystemReader
     {
         if ($this->systemReader === null) {
-            $this->systemReader = ObjectManager::getInstance()->create(SystemReader::class);
+            /** @var SystemReader $systemReader */
+            $systemReader = ObjectManager::getInstance()->create(SystemReader::class);
+            $this->systemReader = $systemReader;
         }
         return $this->systemReader;
     }
@@ -78,7 +80,9 @@ class Config extends Template
     private function getConfigModel(): ConfigModel
     {
         if ($this->config === null) {
-            $this->config = ObjectManager::getInstance()->create(ConfigModel::class);
+            /** @var ConfigModel $config */
+            $config = ObjectManager::getInstance()->create(ConfigModel::class);
+            $this->config = $config;
         }
         return $this->config;
     }
@@ -86,7 +90,9 @@ class Config extends Template
     private function getRequest(): Request
     {
         if ($this->request === null) {
-            $this->request = ObjectManager::getInstance()->get(Request::class);
+            /** @var Request $request */
+            $request = ObjectManager::getInstance()->get(Request::class);
+            $this->request = $request;
         }
         return $this->request;
     }

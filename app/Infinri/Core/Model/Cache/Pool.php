@@ -120,9 +120,9 @@ class Pool implements CacheInterface
     /**
      * Get multiple items from cache
      *
-     * @param array $keys Array of cache keys
+     * @param array<string> $keys Array of cache keys
      * @param mixed $default Default value for missing items
-     * @return array Array of values indexed by keys
+     * @return array<string, mixed> Array of values indexed by keys
      */
     public function getMultiple(array $keys, mixed $default = null): array
     {
@@ -139,7 +139,7 @@ class Pool implements CacheInterface
     /**
      * Store multiple items in cache
      *
-     * @param array $values Array of key-value pairs
+     * @param array<string, mixed> $values Array of key-value pairs
      * @param int|null $ttl Time to live in seconds
      * @return bool True on success
      * @throws InvalidArgumentException
@@ -160,7 +160,7 @@ class Pool implements CacheInterface
     /**
      * Delete multiple items from cache
      *
-     * @param array $keys Array of cache keys
+     * @param array<string> $keys Array of cache keys
      * @return bool True on success
      * @throws InvalidArgumentException
      */

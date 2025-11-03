@@ -5,6 +5,7 @@ namespace Infinri\Core\View\Element;
 
 use Infinri\Core\Model\ObjectManager;
 use Infinri\Core\Security\CsrfGuard;
+use Infinri\Core\Helper\Logger;
 use SimpleXMLElement;
 
 /**
@@ -73,7 +74,7 @@ class UiFormRenderer
                 // Fallback: look for dataProvider as a child element
                 $dataProviderNode = $xml->xpath('//dataSource/dataProvider')[0] ?? null;
                 if (!$dataProviderNode) {
-                    error_log('No dataProvider found in form XML');
+                    Logger::warning('No dataProvider found in form XML');
                     return [];
                 }
                 $providerClass = (string)$dataProviderNode['class'];
@@ -83,7 +84,7 @@ class UiFormRenderer
             }
 
             if ($providerClass === '') {
-                error_log('DataProvider class is empty');
+                Logger::warning('DataProvider class is empty');
                 return [];
             }
 
@@ -101,7 +102,10 @@ class UiFormRenderer
 
             return [];
         } catch (\Throwable $e) {
-            error_log('Form DataProvider error: ' . $e->getMessage());
+            Logger::error('Form DataProvider error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return [];
         }
     }
@@ -114,7 +118,7 @@ class UiFormRenderer
         // Navigate up to the app directory
         $appPath = realpath(__DIR__ . '/../../../../');
         if ($appPath === false) {
-            return null;
+            throw new \RuntimeException('Failed to get path for: ' . __DIR__ . '/../../../../');
         }
 
         $relativePath = '/view/adminhtml/ui_component/' . $formName . '.xml';
@@ -137,8 +141,6 @@ class UiFormRenderer
 
     private function buildForm(SimpleXMLElement $xml, array $data, string $formName): string
     {
-        error_log("buildForm data: " . json_encode($data));
-
         // Detect entity type from form name
         if (str_contains($formName, 'menu_item')) {
             $entityType = 'menuitem';
@@ -176,9 +178,7 @@ class UiFormRenderer
         } else {
             $pageTitle = $isNew ? "New $entityLabel" : "Edit $entityLabel: " . ($data['title'] ?? '#' . $primaryId);
         }
-
-        error_log("Form entity: $entityLabel, ID: " . ($primaryId ?? 'null') . ", Title: $pageTitle");
-
+        
         // Get buttons
         $buttons = $this->getButtons($xml, $primaryId, $basePath);
 

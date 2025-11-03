@@ -41,7 +41,7 @@ class Manager
      * Dispatch an event
      *
      * @param string $eventName Event name
-     * @param array $data Event data
+     * @param array<string, mixed> $data Event data
      * @return void
      */
     public function dispatch(string $eventName, array $data = []): void

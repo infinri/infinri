@@ -20,7 +20,7 @@ class Page extends AbstractContentEntity
      * Constructor
      *
      * @param PageResource $resource
-     * @param array $data
+     * @param array<string, mixed> $data
      */
     public function __construct(
         PageResource $resource,

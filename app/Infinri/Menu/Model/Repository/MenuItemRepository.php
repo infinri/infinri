@@ -25,7 +25,7 @@ class MenuItemRepository implements MenuItemRepositoryInterface
     /**
      * Create a new menu item instance
      *
-     * @param array $data
+     * @param array<string, mixed> $data
      * @return MenuItem
      */
     public function create(array $data = []): MenuItem
@@ -120,6 +120,8 @@ class MenuItemRepository implements MenuItemRepositoryInterface
 
     /**
      * @inheritDoc
+     * @param array<string, mixed> $orderData
+     * @throws \Exception
      */
     public function reorder(array $orderData): bool
     {

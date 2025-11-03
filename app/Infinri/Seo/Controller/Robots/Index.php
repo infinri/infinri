@@ -31,7 +31,7 @@ class Index
         $baseUrl = $request->getScheme() . '://' . $cleanHost;
         $port = $request->getPort();
 
-        if ($port && !in_array($port, [80, 443])) {
+        if ($port && !in_array($port, [80, 443], true)) {
             $baseUrl .= ':' . $port;
         }
 

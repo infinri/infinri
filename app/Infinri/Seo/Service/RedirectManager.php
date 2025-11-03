@@ -142,7 +142,7 @@ class RedirectManager
             $errors[] = 'To path is required';
         }
 
-        if (isset($data['redirect_code']) && !in_array($data['redirect_code'], [301, 302])) {
+        if (isset($data['redirect_code']) && !in_array($data['redirect_code'], [301, 302], true)) {
             $errors[] = 'Redirect code must be 301 or 302';
         }
 

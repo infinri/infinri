@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Infinri\Menu\Service;
 
 use Infinri\Cms\Model\Repository\PageRepository;
+use Infinri\Core\Helper\Logger;
 
 /**
  * Resolves URLs for menu items based on link type
@@ -39,7 +40,6 @@ class MenuItemResolver
             'cms_page' => $this->resolveCmsPageUrl($resourceId),
             'custom_url' => $item['custom_url'] ?? '/',
             'external' => $item['custom_url'] ?? '/',
-            // Future: 'category' => $this->resolveCategoryUrl($resourceId),
             default => '/'
         };
     }
@@ -74,27 +74,11 @@ class MenuItemResolver
             return '/' . $urlKey;
         } catch (\Exception $e) {
             // Log error and return fallback
-            error_log('MenuItemResolver: Failed to resolve page URL for ID ' . $pageId . ': ' . $e->getMessage());
+            Logger::warning('MenuItemResolver: Failed to resolve page URL', [
+                'page_id' => $pageId,
+                'error' => $e->getMessage()
+            ]);
             return '/';
         }
-    }
-
-    /**
-     * Resolve category URL (future implementation)
-     *
-     * @param int|null $categoryId
-     * @return string
-     */
-    private function resolveCategoryUrl(?int $categoryId): string
-    {
-        if (!$categoryId) {
-            return '/';
-        }
-
-        // TODO: Implement when Catalog module is added
-        // $category = $this->categoryRepository->getById($categoryId);
-        // return '/catalog/category/view?id=' . $categoryId;
-
-        return '/';
     }
 }

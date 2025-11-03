@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<ruleset name="Infinri Coding Standard">
+    <description>Coding standard for Infinri Framework based on PSR-12</description>
+
+    <!-- Base standard -->
+    <rule ref="PSR12"/>
+
+    <!-- Additional Symfony and modern PHP rules -->
+    <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+    <rule ref="Generic.Formatting.SpaceAfterNot"/>
+    <rule ref="Generic.Functions.CallTimePassByReference"/>
+    <rule ref="Generic.NamingConventions.UpperCaseConstantName"/>
+    <rule ref="Generic.PHP.LowerCaseKeyword"/>
+    <rule ref="Generic.Strings.UnnecessaryStringConcat"/>
+    <rule ref="Generic.WhiteSpace.IncrementDecrementSpacing"/>
+
+    <!-- Squiz rules for better code quality -->
+    <rule ref="Squiz.Arrays.ArrayBracketSpacing"/>
+    <rule ref="Squiz.Classes.ValidClassName"/>
+    <rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing"/>
+    <rule ref="Squiz.Scope.MethodScope"/>
+    <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace"/>
+
+    <!-- Files to check -->
+    <file>app/Infinri</file>
+    <file>bin/console</file>
+
+    <!-- Files to exclude -->
+    <exclude-pattern>*/Tests/*</exclude-pattern>
+    <exclude-pattern>*/Test/*</exclude-pattern>
+    <exclude-pattern>var/*</exclude-pattern>
+    <exclude-pattern>pub/*</exclude-pattern>
+    <exclude-pattern>vendor/*</exclude-pattern>
+
+    <!-- Show progress -->
+    <arg name="report" value="full"/>
+    <arg name="colors"/>
+    <arg value="p"/>
+
+    <!-- Parallel processing -->
+    <arg name="parallel" value="8"/>
+
+    <!-- Cache for faster subsequent runs -->
+    <arg name="cache" value="var/cache/phpcs"/>
+
+    <!-- Custom configuration -->
+    <config name="ignore_warnings_on_exit" value="1"/>
+    <config name="ignore_errors_on_exit" value="0"/>
+
+    <!-- Specific rule customizations -->
+    <rule ref="PSR12.Files.FileHeader">
+        <exclude name="PSR12.Files.FileHeader.SpacingAfterBlock"/>
+    </rule>
+
+    <!-- Allow longer lines for specific cases -->
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="120"/>
+            <property name="absoluteLineLimit" value="150"/>
+        </properties>
+    </rule>
+
+    <!-- Enforce declare(strict_types=1) -->
+    <rule ref="Generic.PHP.RequireStrictTypes"/>
+</ruleset>

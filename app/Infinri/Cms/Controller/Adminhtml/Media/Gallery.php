@@ -8,6 +8,7 @@ use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
 use Infinri\Core\Helper\PathHelper;
 use Infinri\Core\Helper\JsonResponse;
+use Infinri\Core\Helper\Logger;
 
 /**
  * List Images from Media Gallery
@@ -21,7 +22,7 @@ class Gallery extends AbstractAdminController
             return JsonResponse::success(['images' => $images]);
 
         } catch (\Throwable $e) {
-            error_log('Gallery exception: ' . $e->getMessage());
+            Logger::error('Gallery exception', ['error' => $e->getMessage()]);
             return JsonResponse::error($e->getMessage());
         }
     }
@@ -54,7 +55,7 @@ class Gallery extends AbstractAdminController
             } elseif (is_file($fullPath)) {
                 $extension = strtolower(pathinfo($item, PATHINFO_EXTENSION));
 
-                if (in_array($extension, $allowedExtensions)) {
+                if (in_array($extension, $allowedExtensions, true)) {
                     $images[] = [
                         'url' => '/media/' . $itemRelativePath,
                         'name' => $item,

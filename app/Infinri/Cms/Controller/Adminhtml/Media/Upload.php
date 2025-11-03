@@ -10,6 +10,7 @@ use Infinri\Core\Security\CsrfGuard;
 use Infinri\Cms\Controller\Adminhtml\Media\CsrfTokenIds;
 use Infinri\Core\Helper\PathHelper;
 use Infinri\Core\Helper\JsonResponse;
+use Infinri\Core\Helper\Logger;
 
 /**
  * Upload Single Image for Image Picker
@@ -52,10 +53,13 @@ class Upload
             // Validate file type
             $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            if ($finfo === false) {
+                throw new \RuntimeException('Failed to initialize file info');
+            }
             $mimeType = finfo_file($finfo, $file['tmp_name']);
             finfo_close($finfo);
 
-            if (!in_array($mimeType, $allowedTypes)) {
+            if (!in_array($mimeType, $allowedTypes, true)) {
                 throw new \RuntimeException('Invalid file type: ' . $mimeType);
             }
 
@@ -70,7 +74,7 @@ class Upload
 
             // Whitelist allowed extensions
             $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-            if (!in_array($extension, $allowedExtensions)) {
+            if (!in_array($extension, $allowedExtensions, true)) {
                 throw new \RuntimeException('Invalid file extension: ' . $extension);
             }
 
@@ -93,7 +97,7 @@ class Upload
             }
 
         } catch (\Throwable $e) {
-            error_log('Upload exception: ' . $e->getMessage());
+            Logger::error('Upload exception', ['error' => $e->getMessage()]);
             return JsonResponse::error($e->getMessage());
         }
     }

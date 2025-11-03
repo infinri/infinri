@@ -16,7 +16,7 @@ class DataProvider
      * Get form data
      *
      * @param int|null $entityId Entity ID (null for new entity)
-     * @return array Form data
+     * @return array<string, mixed> Form data
      */
     public function getData(?int $entityId = null): array
     {
@@ -46,6 +46,9 @@ class DataProvider
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function getDefaultData(): array
     {
         return [
