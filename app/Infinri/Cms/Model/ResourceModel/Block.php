@@ -7,10 +7,7 @@ namespace Infinri\Cms\Model\ResourceModel;
 use Infinri\Core\Model\ResourceModel\Connection;
 
 /**
- * CMS Block Resource Model
- * 
  * Handles database operations for CMS blocks.
- * Now extends AbstractContentResource for shared functionality.
  */
 class Block extends AbstractContentResource
 {
@@ -23,8 +20,6 @@ class Block extends AbstractContentResource
     {
         parent::__construct($connection);
     }
-
-    // ==================== REQUIRED ABSTRACT METHODS ====================
 
     /**
      * Get table name (implements abstract method)
@@ -66,8 +61,6 @@ class Block extends AbstractContentResource
         return 'block';
     }
 
-    // ==================== BLOCK-SPECIFIC METHODS ====================
-
     /**
      * Get block by identifier
      *
@@ -84,7 +77,4 @@ class Block extends AbstractContentResource
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
         return $result ?: null;
     }
-
-    // Note: Common methods (getAll, uniqueness checking, validation, timestamps) 
-    // are now inherited from AbstractContentResource
 }

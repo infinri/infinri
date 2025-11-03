@@ -7,8 +7,6 @@ use Infinri\Core\Setup\Patch\DataPatchInterface;
 use PDO;
 
 /**
- * Install Default CMS Pages
- * 
  * Creates essential CMS pages: home, 404, 500, maintenance
  */
 class InstallDefaultCmsPages implements DataPatchInterface

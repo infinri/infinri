@@ -8,8 +8,6 @@ use Infinri\Core\Model\ResourceModel\AbstractResource;
 use Infinri\Core\Model\ResourceModel\Connection;
 
 /**
- * Abstract Content Resource Model
- * 
  * Base resource model for all CMS content entities
  * Provides common database operations and validation
  * 
@@ -25,15 +23,12 @@ abstract class AbstractContentResource extends AbstractResource
      */
     public function __construct(Connection $connection)
     {
-        parent::__construct($connection);
-
-        // Initialize from child class methods
         $this->mainTable = $this->getTableName();
         $this->primaryKey = $this->getEntityIdField();
         $this->idFieldName = $this->getEntityIdField();
-    }
 
-    // ==================== ABSTRACT METHODS ====================
+        parent::__construct($connection);
+    }
 
     /**
      * Get database table name (e.g., 'cms_page', 'cms_block')
@@ -62,8 +57,6 @@ abstract class AbstractContentResource extends AbstractResource
      * @return string
      */
     abstract protected function getEntityName(): string;
-
-    // ==================== COMMON DATABASE OPERATIONS ====================
 
     /**
      * Get all entities
@@ -110,8 +103,6 @@ abstract class AbstractContentResource extends AbstractResource
 
         return (int) $stmt->fetchColumn() > 0;
     }
-
-    // ==================== LIFECYCLE HOOKS ====================
 
     /**
      * Before save validation

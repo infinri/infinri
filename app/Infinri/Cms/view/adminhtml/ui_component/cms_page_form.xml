@@ -1,13 +1,7 @@
 <?xml version="1.0"?>
-<!--
-/**
- * CMS Page Form UI Component
- * Magento-style form for creating and editing CMS pages
- */
--->
-<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
-    
+
     <!-- Form Settings -->
     <argument name="data" xsi:type="array">
         <item name="js_config" xsi:type="array">
@@ -15,7 +9,7 @@
         </item>
         <item name="label" xsi:type="string" translate="true">Page Information</item>
     </argument>
-    
+
     <settings>
         <buttons>
             <button name="back">
@@ -45,7 +39,7 @@
             <dep>cms_page_form.page_form_data_source</dep>
         </deps>
     </settings>
-    
+
     <!-- Data Source -->
     <dataSource name="page_form_data_source">
         <argument name="data" xsi:type="array">
@@ -64,13 +58,13 @@
             </settings>
         </dataProvider>
     </dataSource>
-    
+
     <!-- Form Fieldsets -->
     <fieldset name="general">
         <settings>
             <label translate="true">General Information</label>
         </settings>
-        
+
         <!-- Page ID (hidden) -->
         <field name="page_id" formElement="input">
             <settings>
@@ -79,7 +73,7 @@
                 <dataScope>page_id</dataScope>
             </settings>
         </field>
-        
+
         <!-- Title -->
         <field name="title" formElement="input">
             <settings>
@@ -91,7 +85,7 @@
                 <dataScope>title</dataScope>
             </settings>
         </field>
-        
+
         <!-- URL Key -->
         <field name="url_key" formElement="input">
             <settings>
@@ -102,10 +96,12 @@
                 <dataType>text</dataType>
                 <label translate="true">URL Key</label>
                 <dataScope>url_key</dataScope>
-                <notice translate="true">Used in the page URL. Lowercase letters, numbers, hyphens, and underscores only.</notice>
+                <notice translate="true">Used in the page URL. Lowercase letters, numbers, hyphens, and underscores
+                    only.
+                </notice>
             </settings>
         </field>
-        
+
         <!-- Is Active -->
         <field name="is_active" formElement="checkbox">
             <settings>
@@ -126,7 +122,7 @@
             </formElements>
         </field>
     </fieldset>
-    
+
     <!-- Content Fieldset -->
     <fieldset name="content">
         <settings>
@@ -134,7 +130,7 @@
             <collapsible>true</collapsible>
             <opened>true</opened>
         </settings>
-        
+
         <!-- Content -->
         <field name="content" formElement="textarea">
             <settings>
@@ -151,7 +147,7 @@
             </formElements>
         </field>
     </fieldset>
-    
+
     <!-- SEO Fieldset -->
     <fieldset name="search_engine_optimization">
         <settings>
@@ -159,7 +155,7 @@
             <collapsible>true</collapsible>
             <opened>false</opened>
         </settings>
-        
+
         <!-- Meta Title -->
         <field name="meta_title" formElement="input">
             <settings>
@@ -169,7 +165,7 @@
                 <notice translate="true">Recommended: 50-60 characters</notice>
             </settings>
         </field>
-        
+
         <!-- Meta Description -->
         <field name="meta_description" formElement="textarea">
             <settings>
@@ -186,7 +182,7 @@
                 </textarea>
             </formElements>
         </field>
-        
+
         <!-- Meta Keywords -->
         <field name="meta_keywords" formElement="textarea">
             <settings>

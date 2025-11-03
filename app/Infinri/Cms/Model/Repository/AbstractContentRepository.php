@@ -8,11 +8,9 @@ use Infinri\Cms\Model\AbstractContentEntity;
 use Infinri\Core\Model\ResourceModel\AbstractResource;
 
 /**
- * Abstract Content Repository
- * 
  * Base repository for all CMS content entities
  * Provides common CRUD operations with consistent interface
- * 
+ *
  * @package Infinri\Cms\Model\Repository
  */
 abstract class AbstractContentRepository
@@ -24,10 +22,7 @@ abstract class AbstractContentRepository
      */
     public function __construct(
         protected readonly AbstractResource $resource
-    ) {
-    }
-
-    // ==================== ABSTRACT METHODS ====================
+    ) {}
 
     /**
      * Create model instance with data
@@ -44,8 +39,6 @@ abstract class AbstractContentRepository
      * @return string
      */
     abstract protected function getEntityIdField(): string;
-
-    // ==================== COMMON CRUD OPERATIONS ====================
 
     /**
      * Get entity by ID

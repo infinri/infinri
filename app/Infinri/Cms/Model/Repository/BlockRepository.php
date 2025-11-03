@@ -9,10 +9,7 @@ use Infinri\Cms\Model\Block;
 use Infinri\Cms\Model\ResourceModel\Block as BlockResource;
 
 /**
- * CMS Block Repository
- * 
  * Provides CRUD operations for CMS blocks.
- * Now extends AbstractContentRepository for shared functionality.
  */
 class BlockRepository extends AbstractContentRepository implements BlockRepositoryInterface
 {
@@ -25,8 +22,6 @@ class BlockRepository extends AbstractContentRepository implements BlockReposito
     {
         parent::__construct($resource);
     }
-
-    // ==================== REQUIRED ABSTRACT METHODS ====================
 
     /**
      * Create model instance (implements abstract method)
@@ -49,8 +44,6 @@ class BlockRepository extends AbstractContentRepository implements BlockReposito
         return 'block_id';
     }
 
-    // ==================== PUBLIC FACTORY METHOD ====================
-
     /**
      * Create a new block instance
      * Public factory method for creating empty blocks
@@ -62,8 +55,6 @@ class BlockRepository extends AbstractContentRepository implements BlockReposito
     {
         return $this->createModel($data);
     }
-
-    // ==================== OVERRIDE WITH SPECIFIC TYPES ====================
 
     /**
      * Get block by ID (override with specific return type)
@@ -101,8 +92,6 @@ class BlockRepository extends AbstractContentRepository implements BlockReposito
         /** @var Block */
         return parent::save($block);
     }
-
-    // ==================== BLOCK-SPECIFIC METHODS ====================
 
     /**
      * Get block by identifier

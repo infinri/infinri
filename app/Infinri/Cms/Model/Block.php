@@ -7,11 +7,7 @@ namespace Infinri\Cms\Model;
 use Infinri\Cms\Model\ResourceModel\Block as BlockResource;
 
 /**
- * CMS Block Model
- *
  * Represents a reusable content block (similar to Magento static blocks).
- * 
- * Now extends AbstractContentEntity for shared functionality with other content types.
  */
 class Block extends AbstractContentEntity
 {
@@ -23,12 +19,10 @@ class Block extends AbstractContentEntity
      */
     public function __construct(
         BlockResource $resource,
-        array $data = []
+        array         $data = []
     ) {
         parent::__construct($resource, $data);
     }
-
-    // ==================== REQUIRED ABSTRACT METHODS ====================
 
     /**
      * Get identifier field name (implements abstract method)
@@ -49,10 +43,6 @@ class Block extends AbstractContentEntity
     {
         return 'block';
     }
-    
-    // Note: getId() is inherited from AbstractModel and uses block_id field
-
-    // ==================== BLOCK-SPECIFIC METHODS ====================
 
     /**
      * Get block ID
@@ -95,8 +85,4 @@ class Block extends AbstractContentEntity
     {
         return $this->setData('identifier', $identifier);
     }
-
-    // Note: Common methods (getTitle, setTitle, getContent, setContent, 
-    // isActive, setIsActive, getCreatedAt, getUpdatedAt) are now 
-    // inherited from AbstractContentEntity
 }

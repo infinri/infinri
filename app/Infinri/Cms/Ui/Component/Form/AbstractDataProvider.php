@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace Infinri\Cms\Ui\Component\Form;
 
 /**
- * Abstract Form Data Provider
- * 
  * Base data provider for UI Component forms
  * Eliminates duplication across Page, Block, and future entity forms
- * 
+ *
  * @package Infinri\Cms\Ui\Component\Form
  */
 abstract class AbstractDataProvider
@@ -26,10 +24,7 @@ abstract class AbstractDataProvider
         private readonly string $name = '',
         private readonly string $primaryFieldName = 'id',
         private readonly string $requestFieldName = 'id'
-    ) {
-    }
-
-    // ==================== ABSTRACT METHODS ====================
+    ) {}
 
     /**
      * Get repository class name
@@ -55,8 +50,6 @@ abstract class AbstractDataProvider
      * @return array Associative array of field => value
      */
     abstract protected function mapEntityToArray($entity): array;
-
-    // ==================== COMMON FORM LOGIC ====================
 
     /**
      * Get form data

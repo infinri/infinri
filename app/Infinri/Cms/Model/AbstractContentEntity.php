@@ -8,8 +8,6 @@ use Infinri\Core\Model\AbstractModel;
 use Infinri\Core\Model\ResourceModel\AbstractResource;
 
 /**
- * Abstract Content Entity
- * 
  * Base class for all CMS content entities (Page, Block, Widget, etc.)
  * Provides common functionality and enforces consistent interface
  * 
@@ -39,8 +37,6 @@ abstract class AbstractContentEntity extends AbstractModel
     {
         return $this->resource;
     }
-
-    // ==================== ABSTRACT METHODS ====================
     
     /**
      * Get identifier field name (e.g., 'url_key', 'identifier')
@@ -57,11 +53,6 @@ abstract class AbstractContentEntity extends AbstractModel
      * @return string
      */
     abstract protected function getEntityType(): string;
-    
-    // Note: getId() is inherited from AbstractModel and returns the value
-    // of the field specified by getIdFieldName() from the resource model
-
-    // ==================== COMMON GETTERS/SETTERS ====================
 
     /**
      * Get title
@@ -145,8 +136,6 @@ abstract class AbstractContentEntity extends AbstractModel
     {
         return $this->getData('updated_at');
     }
-
-    // ==================== VALIDATION ====================
 
     /**
      * Validate entity data

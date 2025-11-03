@@ -6,30 +6,27 @@ namespace Infinri\Cms\Model;
 use Infinri\Core\Model\AbstractModel;
 
 /**
- * CMS Widget Model
- * 
  * Represents a widget (drag-and-drop content block) on a CMS page
  */
 class Widget extends AbstractModel
 {
-    // Widget types
     const TYPE_HTML = 'html';
     const TYPE_BLOCK = 'block';
     const TYPE_IMAGE = 'image';
     const TYPE_VIDEO = 'video';
-    
+
     const VALID_TYPES = [
         self::TYPE_HTML,
         self::TYPE_BLOCK,
         self::TYPE_IMAGE,
         self::TYPE_VIDEO,
     ];
-    
+
     /**
      * @var \Infinri\Cms\Model\ResourceModel\Widget
      */
     protected $resource;
-    
+
     /**
      * Constructor
      *
@@ -38,12 +35,13 @@ class Widget extends AbstractModel
      */
     public function __construct(
         \Infinri\Cms\Model\ResourceModel\Widget $resource,
-        array $data = []
+        array                                   $data = []
     ) {
         $this->resource = $resource;
+
         parent::__construct($data);
     }
-    
+
     /**
      * Get resource model
      *
@@ -53,7 +51,7 @@ class Widget extends AbstractModel
     {
         return $this->resource;
     }
-    
+
     /**
      * Get widget ID
      *
@@ -64,7 +62,7 @@ class Widget extends AbstractModel
         $id = $this->getData('widget_id');
         return $id !== null ? (int)$id : null;
     }
-    
+
     /**
      * Get ID (alias for AbstractSaveController compatibility)
      *
@@ -74,7 +72,7 @@ class Widget extends AbstractModel
     {
         return $this->getWidgetId();
     }
-    
+
     /**
      * Set widget ID
      *
@@ -85,7 +83,7 @@ class Widget extends AbstractModel
     {
         return $this->setData('widget_id', $widgetId);
     }
-    
+
     /**
      * Get page ID
      *
@@ -95,7 +93,7 @@ class Widget extends AbstractModel
     {
         return (int)$this->getData('page_id');
     }
-    
+
     /**
      * Set page ID
      *
@@ -106,7 +104,7 @@ class Widget extends AbstractModel
     {
         return $this->setData('page_id', $pageId);
     }
-    
+
     /**
      * Get widget type
      *
@@ -116,7 +114,7 @@ class Widget extends AbstractModel
     {
         return (string)$this->getData('widget_type');
     }
-    
+
     /**
      * Set widget type
      *
@@ -137,7 +135,7 @@ class Widget extends AbstractModel
         }
         return $this->setData('widget_type', $type);
     }
-    
+
     /**
      * Get widget data (configuration)
      *
@@ -146,15 +144,15 @@ class Widget extends AbstractModel
     public function getWidgetData(): array
     {
         $data = $this->getData('widget_data');
-        
+
         if (is_string($data)) {
             $decoded = json_decode($data, true);
             return $decoded ?: [];
         }
-        
+
         return is_array($data) ? $data : [];
     }
-    
+
     /**
      * Set widget data (configuration)
      *
@@ -165,7 +163,7 @@ class Widget extends AbstractModel
     {
         return $this->setData('widget_data', json_encode($data));
     }
-    
+
     /**
      * Get sort order
      *
@@ -175,7 +173,7 @@ class Widget extends AbstractModel
     {
         return (int)$this->getData('sort_order');
     }
-    
+
     /**
      * Set sort order
      *
@@ -186,7 +184,7 @@ class Widget extends AbstractModel
     {
         return $this->setData('sort_order', $sortOrder);
     }
-    
+
     /**
      * Get is active
      *
@@ -196,7 +194,7 @@ class Widget extends AbstractModel
     {
         return (bool)$this->getData('is_active');
     }
-    
+
     /**
      * Set is active
      *
@@ -207,7 +205,7 @@ class Widget extends AbstractModel
     {
         return $this->setData('is_active', $isActive);
     }
-    
+
     /**
      * Get created at timestamp
      *
@@ -217,7 +215,7 @@ class Widget extends AbstractModel
     {
         return $this->getData('created_at');
     }
-    
+
     /**
      * Get updated at timestamp
      *
@@ -227,7 +225,7 @@ class Widget extends AbstractModel
     {
         return $this->getData('updated_at');
     }
-    
+
     /**
      * Validate widget data
      *
@@ -240,12 +238,12 @@ class Widget extends AbstractModel
         if (!$this->getPageId()) {
             throw new \InvalidArgumentException('Page ID is required');
         }
-        
+
         // Widget type is required and must be valid
         if (!$this->getWidgetType()) {
             throw new \InvalidArgumentException('Widget type is required');
         }
-        
+
         if (!in_array($this->getWidgetType(), self::VALID_TYPES, true)) {
             throw new \InvalidArgumentException(
                 sprintf(
@@ -255,7 +253,7 @@ class Widget extends AbstractModel
                 )
             );
         }
-        
+
         // Widget data must be an array
         if (!is_array($this->getWidgetData())) {
             throw new \InvalidArgumentException('Widget data must be an array');

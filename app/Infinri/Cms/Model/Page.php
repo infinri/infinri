@@ -7,10 +7,7 @@ namespace Infinri\Cms\Model;
 use Infinri\Cms\Model\ResourceModel\Page as PageResource;
 
 /**
- * CMS Page Model
- * 
  * Represents a CMS page entity.
- * Now extends AbstractContentEntity for shared functionality with other content types.
  */
 class Page extends AbstractContentEntity
 {
@@ -18,7 +15,7 @@ class Page extends AbstractContentEntity
      * Homepage ID - cannot be deleted
      */
     public const HOMEPAGE_ID = 1;
-    
+
     /**
      * Constructor
      *
@@ -27,12 +24,10 @@ class Page extends AbstractContentEntity
      */
     public function __construct(
         PageResource $resource,
-        array $data = []
+        array        $data = []
     ) {
         parent::__construct($resource, $data);
     }
-
-    // ==================== REQUIRED ABSTRACT METHODS ====================
 
     /**
      * Get identifier field name (implements abstract method)
@@ -53,10 +48,6 @@ class Page extends AbstractContentEntity
     {
         return 'page';
     }
-    
-    // Note: getId() is inherited from AbstractModel and uses page_id field
-
-    // ==================== PAGE-SPECIFIC METHODS ====================
 
     /**
      * Get page ID
@@ -185,8 +176,4 @@ class Page extends AbstractContentEntity
     {
         return $this->setData('is_homepage', $isHomepage);
     }
-    
-    // Note: Common methods (getTitle, setTitle, getContent, setContent, 
-    // isActive, setIsActive, getCreatedAt, getUpdatedAt, validate) are now 
-    // inherited from AbstractContentEntity
 }

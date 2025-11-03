@@ -7,11 +7,9 @@ namespace Infinri\Cms\Ui\Component\Listing;
 use Infinri\Cms\Model\Repository\AbstractContentRepository;
 
 /**
- * Abstract Listing Data Provider
- * 
  * Base data provider for UI Component grids
  * Eliminates duplication across Page, Block, and future entity grids
- * 
+ *
  * @package Infinri\Cms\Ui\Component\Listing
  */
 abstract class AbstractDataProvider
@@ -28,10 +26,7 @@ abstract class AbstractDataProvider
         private readonly string $name = '',
         private readonly string $primaryFieldName = 'id',
         private readonly string $requestFieldName = 'id'
-    ) {
-    }
-
-    // ==================== ABSTRACT METHODS ====================
+    ) {}
 
     /**
      * Get repository class name
@@ -49,8 +44,6 @@ abstract class AbstractDataProvider
      * @return array Associative array of field => value
      */
     abstract protected function mapEntityToArray($entity): array;
-
-    // ==================== COMMON LISTING LOGIC ====================
 
     /**
      * Get data for grid

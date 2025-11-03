@@ -8,10 +8,7 @@ use Infinri\Core\Model\ResourceModel\Connection;
 use Infinri\Cms\Model\Page as PageModel;
 
 /**
- * CMS Page Resource Model
- * 
  * Handles database operations for CMS pages.
- * Now extends AbstractContentResource for shared functionality.
  */
 class Page extends AbstractContentResource
 {
@@ -24,8 +21,6 @@ class Page extends AbstractContentResource
     {
         parent::__construct($connection);
     }
-
-    // ==================== REQUIRED ABSTRACT METHODS ====================
 
     /**
      * Get table name (implements abstract method)
@@ -66,8 +61,6 @@ class Page extends AbstractContentResource
     {
         return 'page';
     }
-
-    // ==================== PAGE-SPECIFIC METHODS ====================
 
     /**
      * Get page by URL key
@@ -135,7 +128,4 @@ class Page extends AbstractContentResource
 
         return parent::_beforeDelete($object);
     }
-
-    // Note: Common methods (getAll, uniqueness checking, validation, timestamps) 
-    // are now inherited from AbstractContentResource
 }

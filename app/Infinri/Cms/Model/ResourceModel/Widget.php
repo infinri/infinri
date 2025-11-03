@@ -6,8 +6,6 @@ namespace Infinri\Cms\Model\ResourceModel;
 use Infinri\Core\Model\ResourceModel\AbstractResource;
 
 /**
- * CMS Widget Resource Model
- * 
  * Handles database operations for widgets
  */
 class Widget extends AbstractResource

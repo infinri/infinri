@@ -9,10 +9,7 @@ use Infinri\Cms\Model\Page;
 use Infinri\Cms\Model\ResourceModel\Page as PageResource;
 
 /**
- * CMS Page Repository
- * 
  * Provides CRUD operations for CMS pages with homepage protection.
- * Now extends AbstractContentRepository for shared functionality.
  */
 class PageRepository extends AbstractContentRepository implements PageRepositoryInterface
 {
@@ -25,8 +22,6 @@ class PageRepository extends AbstractContentRepository implements PageRepository
     {
         parent::__construct($resource);
     }
-
-    // ==================== REQUIRED ABSTRACT METHODS ====================
 
     /**
      * Create model instance (implements abstract method)
@@ -49,8 +44,6 @@ class PageRepository extends AbstractContentRepository implements PageRepository
         return 'page_id';
     }
 
-    // ==================== PUBLIC FACTORY METHOD ====================
-
     /**
      * Create a new page instance
      * Public factory method for creating empty pages
@@ -62,8 +55,6 @@ class PageRepository extends AbstractContentRepository implements PageRepository
     {
         return $this->createModel($data);
     }
-
-    // ==================== OVERRIDE WITH SPECIFIC TYPES ====================
 
     /**
      * Get page by ID (override with specific return type)
@@ -104,7 +95,7 @@ class PageRepository extends AbstractContentRepository implements PageRepository
 
     /**
      * Delete page (override with homepage protection)
-     * 
+     *
      * @param int $pageId
      * @return bool
      * @throws \RuntimeException if trying to delete homepage
@@ -121,8 +112,6 @@ class PageRepository extends AbstractContentRepository implements PageRepository
 
         return parent::delete($pageId);
     }
-
-    // ==================== PAGE-SPECIFIC METHODS ====================
 
     /**
      * Get page by URL key
@@ -171,8 +160,4 @@ class PageRepository extends AbstractContentRepository implements PageRepository
     {
         return $this->resource->isHomepage($pageId);
     }
-
-    // Note: Common CRUD methods (getById, getAll, save, exists, count) are 
-    // inherited from AbstractContentRepository
-    // Removed duplicate methods: getAllPages() and deleteById() - use getAll() and delete() instead
 }
