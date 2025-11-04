@@ -1,41 +1,43 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Admin\Controller\System\Config;
 
-use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
+use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\Model\Config;
 use Infinri\Core\Model\Message\MessageManager;
 
 /**
- * System Configuration Save Controller
+ * System Configuration Save Controller.
  */
 class Save extends AbstractAdminController
 {
     public function __construct(
-        \Infinri\Core\App\Request              $request,
-        \Infinri\Core\App\Response             $response,
+        \Infinri\Core\App\Request $request,
+        Response $response,
         \Infinri\Core\Model\View\LayoutFactory $layoutFactory,
-        \Infinri\Core\Security\CsrfGuard       $csrfGuard,
-        private readonly Config                $config,
-        private readonly MessageManager        $messageManager
+        \Infinri\Core\Security\CsrfGuard $csrfGuard,
+        private readonly Config $config,
+        private readonly MessageManager $messageManager
     ) {
         parent::__construct($request, $response, $layoutFactory, $csrfGuard);
     }
 
     /**
-     * Save configuration
+     * Save configuration.
      */
     public function execute(): Response
     {
         $section = $this->getStringParam('section', 'general');
+        /** @var array<string, mixed> $groups */
         $groups = $this->request->getParam('groups', []);
 
         try {
             // Process each group's fields
             foreach ($groups as $groupId => $groupData) {
-                if (!isset($groupData['fields'])) {
+                if (! isset($groupData['fields'])) {
                     continue;
                 }
 
@@ -43,7 +45,7 @@ class Save extends AbstractAdminController
                     $value = $fieldData['value'] ?? null;
                     $path = $section . '/' . $groupId . '/' . $fieldId;
 
-                    if ($value !== null) {
+                    if (null !== $value) {
                         $this->config->saveValue($path, $value);
                     }
                 }

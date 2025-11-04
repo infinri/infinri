@@ -1,10 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Model\Di;
 
 use DI\ContainerBuilder;
-use Exception;
 use Infinri\Core\Model\Module\ModuleManager;
 use Psr\Container\ContainerInterface;
 
@@ -15,15 +15,16 @@ class ContainerFactory
 {
     public function __construct(
         private readonly ModuleManager $moduleManager,
-        private readonly XmlReader     $xmlReader
-    ) {}
+        private readonly XmlReader $xmlReader
+    ) {
+    }
 
     /**
-     * Create and configure the DI container
+     * Create and configure the DI container.
      *
      * @param bool $useCache Whether to use compiled container cache
-     * @return ContainerInterface
-     * @throws Exception
+     *
+     * @throws \Exception
      */
     public function create(bool $useCache = false): ContainerInterface
     {
@@ -35,10 +36,10 @@ class ContainerFactory
             $proxiesDir = $cacheDir . '/proxies';
 
             // Ensure cache directories exist
-            if (!is_dir($cacheDir)) {
+            if (! is_dir($cacheDir)) {
                 mkdir($cacheDir, 0755, true);
             }
-            if (!is_dir($proxiesDir)) {
+            if (! is_dir($proxiesDir)) {
                 mkdir($proxiesDir, 0755, true);
             }
 
@@ -55,7 +56,7 @@ class ContainerFactory
     }
 
     /**
-     * Load DI definitions from all enabled modules
+     * Load DI definitions from all enabled modules.
      *
      * @return array<string, mixed>
      */
@@ -69,13 +70,13 @@ class ContainerFactory
         foreach ($modules as $moduleName) {
             $moduleData = $this->moduleManager->getModuleList()->getOne($moduleName);
 
-            if (!$moduleData || !isset($moduleData['path'])) {
+            if (! $moduleData || ! isset($moduleData['path'])) {
                 continue;
             }
 
             $diConfig = $this->xmlReader->read($moduleData['path']);
 
-            if ($diConfig === null) {
+            if (null === $diConfig) {
                 continue;
             }
 
@@ -87,10 +88,11 @@ class ContainerFactory
     }
 
     /**
-     * Merge DI configurations
+     * Merge DI configurations.
      *
      * @param array<string, mixed> $base
      * @param array<string, mixed> $new
+     *
      * @return array<string, mixed>
      */
     private function mergeDefinitions(array $base, array $new): array
@@ -130,9 +132,10 @@ class ContainerFactory
     }
 
     /**
-     * Convert XML definitions to PHP-DI format
+     * Convert XML definitions to PHP-DI format.
      *
      * @param array<string, mixed> $definitions
+     *
      * @return array<string, mixed>
      */
     private function convertToPhpDiDefinitions(array $definitions): array
@@ -154,7 +157,7 @@ class ContainerFactory
         // Convert type configurations
         if (isset($definitions['types'])) {
             foreach ($definitions['types'] as $typeName => $typeConfig) {
-                if (!empty($typeConfig['arguments'])) {
+                if (! empty($typeConfig['arguments'])) {
                     $autowire = \DI\autowire($typeName);
 
                     // Set each constructor parameter individually
@@ -171,9 +174,10 @@ class ContainerFactory
     }
 
     /**
-     * Convert XML arguments to PHP-DI parameter format
+     * Convert XML arguments to PHP-DI parameter format.
      *
      * @param array<string, array<string, mixed>> $arguments
+     *
      * @return array<string, mixed>
      */
     private function convertArguments(array $arguments): array
@@ -184,7 +188,7 @@ class ContainerFactory
             $type = $argument['type'];
             $value = $argument['value'];
 
-            if ($type === 'object') {
+            if ('object' === $type) {
                 // Object references should use DI\get() - must use full namespace to avoid conflicts
                 $converted[$name] = \DI\get($value);
             } else {

@@ -9,17 +9,13 @@ use Infinri\Core\Model\ResourceModel\Connection;
 
 /**
  * Base resource model for all CMS content entities
- * Provides common database operations and validation
- * 
- * @package Infinri\Cms\Model\ResourceModel
+ * Provides common database operations and validation.
  */
 abstract class AbstractContentResource extends AbstractResource
 {
     /**
      * Constructor
-     * Initializes table name and ID field from child class
-     *
-     * @param Connection $connection
+     * Initializes table name and ID field from child class.
      */
     public function __construct(Connection $connection)
     {
@@ -31,60 +27,51 @@ abstract class AbstractContentResource extends AbstractResource
     }
 
     /**
-     * Get database table name (e.g., 'cms_page', 'cms_block')
-     *
-     * @return string
+     * Get database table name (e.g., 'cms_page', 'cms_block').
      */
     abstract protected function getTableName(): string;
 
     /**
-     * Get entity ID field name (e.g., 'page_id', 'block_id')
-     *
-     * @return string
+     * Get entity ID field name (e.g., 'page_id', 'block_id').
      */
     abstract protected function getEntityIdField(): string;
 
     /**
-     * Get unique field name for uniqueness validation (e.g., 'url_key', 'identifier')
-     *
-     * @return string
+     * Get unique field name for uniqueness validation (e.g., 'url_key', 'identifier').
      */
     abstract protected function getUniqueField(): string;
 
     /**
-     * Get entity name for error messages (e.g., 'page', 'block')
-     *
-     * @return string
+     * Get entity name for error messages (e.g., 'page', 'block').
      */
     abstract protected function getEntityName(): string;
 
     /**
-     * Get all entities
+     * Get all entities.
      *
      * @param bool $activeOnly Filter to only active entities
-     * @return array
      */
     public function getAll(bool $activeOnly = false): array
     {
         $sql = "SELECT * FROM {$this->getMainTable()}";
 
         if ($activeOnly) {
-            $sql .= " WHERE is_active = true";
+            $sql .= ' WHERE is_active = true';
         }
 
         $sql .= " ORDER BY {$this->primaryKey} ASC";
 
         $stmt = $this->getConnection()->query($sql);
+
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     /**
      * Check if unique field value exists (excluding specified entity ID)
-     * Used for validation to prevent duplicates
+     * Used for validation to prevent duplicates.
      *
-     * @param string $value Value to check
+     * @param string   $value     Value to check
      * @param int|null $excludeId Entity ID to exclude from check (for updates)
-     * @return bool
      */
     protected function uniqueFieldExists(string $value, ?int $excludeId = null): bool
     {
@@ -92,7 +79,7 @@ abstract class AbstractContentResource extends AbstractResource
         $sql = "SELECT COUNT(*) FROM {$this->getMainTable()} WHERE {$field} = :{$field}";
         $params = [$field => $value];
 
-        if ($excludeId !== null) {
+        if (null !== $excludeId) {
             $idField = $this->getEntityIdField();
             $sql .= " AND {$idField} != :{$idField}";
             $params[$idField] = $excludeId;
@@ -106,10 +93,8 @@ abstract class AbstractContentResource extends AbstractResource
 
     /**
      * Before save validation
-     * Validates entity and checks uniqueness
+     * Validates entity and checks uniqueness.
      *
-     * @param \Infinri\Core\Model\AbstractModel $object
-     * @return self
      * @throws \RuntimeException
      */
     protected function _beforeSave(\Infinri\Core\Model\AbstractModel $object): self
@@ -123,36 +108,40 @@ abstract class AbstractContentResource extends AbstractResource
         $entityId = $object->getData($this->getEntityIdField());
 
         if ($uniqueValue && $this->uniqueFieldExists($uniqueValue, $entityId)) {
-            throw new \RuntimeException(
-                sprintf(
-                    'A %s with %s "%s" already exists',
-                    $this->getEntityName(),
-                    $uniqueField,
-                    $uniqueValue
-                )
-            );
+            throw new \RuntimeException(\sprintf('A %s with %s "%s" already exists', $this->getEntityName(), $uniqueField, $uniqueValue));
         }
 
         // Set updated timestamp
         $object->setData('updated_at', date('Y-m-d H:i:s'));
 
-        return parent::_beforeSave($object);
+        // Parent hook (if exists in AbstractResource)
+        if (method_exists(parent::class, '_beforeSave')) {
+            parent::_beforeSave($object);
+        }
+
+        return $this;
     }
 
     /**
-     * Get total count of entities
-     * Efficient database count without loading all records
+     * Count entities with optional active filter
+     * Overrides parent to add activeOnly convenience parameter.
      *
-     * @param bool $activeOnly Count only active entities
-     * @return int
+     * @param array<string, mixed>|bool $criteria Criteria array or bool for activeOnly (backward compat)
      */
-    public function count(bool $activeOnly = false): int
+    public function count(array|bool $criteria = []): int
     {
+        // Handle backward compatibility: if bool passed, treat as activeOnly
+        $activeOnly = false;
+        if (\is_bool($criteria)) {
+            $activeOnly = $criteria;
+            $criteria = [];
+        }
+
         $sql = "SELECT COUNT(*) FROM {$this->getMainTable()}";
         $params = [];
 
-        if ($activeOnly) {
-            $sql .= " WHERE is_active = :is_active";
+        if ($activeOnly || (isset($criteria['is_active']) && $criteria['is_active'])) {
+            $sql .= ' WHERE is_active = :is_active';
             $params['is_active'] = 1;
         }
 
@@ -164,15 +153,18 @@ abstract class AbstractContentResource extends AbstractResource
 
     /**
      * Before delete hook
-     * Override in child classes to add delete restrictions
+     * Override in child classes to add delete restrictions.
      *
-     * @param \Infinri\Core\Model\AbstractModel $object
-     * @return self
      * @throws \RuntimeException
      */
     protected function _beforeDelete(\Infinri\Core\Model\AbstractModel $object): self
     {
         // Child classes can override to add restrictions
-        return parent::_beforeDelete($object);
+        // Parent hook (if exists in AbstractResource)
+        if (method_exists(parent::class, '_beforeDelete')) {
+            parent::_beforeDelete($object);
+        }
+
+        return $this;
     }
 }

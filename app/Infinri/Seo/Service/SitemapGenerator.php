@@ -1,32 +1,33 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Seo\Service;
 
 use Infinri\Cms\Model\Repository\PageRepository;
-use Infinri\Seo\Model\Repository\UrlRewriteRepository;
 
 /**
- * Generates XML sitemaps for search engines
+ * Generates XML sitemaps for search engines.
  */
 class SitemapGenerator
 {
     private const PRIORITY_HIGH = '1.0';
     private const PRIORITY_MEDIUM = '0.8';
-    private const PRIORITY_LOW = '0.5';
     private const CHANGEFREQ_DAILY = 'daily';
     private const CHANGEFREQ_WEEKLY = 'weekly';
-    private const CHANGEFREQ_MONTHLY = 'monthly';
 
     public function __construct(
         private readonly PageRepository $pageRepository
-    ) {}
+    ) {
+    }
 
     /**
-     * Generate complete sitemap XML
+     * Generate complete sitemap XML.
      *
      * @param string $baseUrl Base URL of the site
+     *
      * @return string XML sitemap content
+     *
      * @throws \DateMalformedStringException
      */
     public function generate(string $baseUrl): string
@@ -41,14 +42,14 @@ class SitemapGenerator
         // Add CMS pages
         $this->addCmsPages($xml, $baseUrl);
 
-        return $xml->asXML();
+        $result = $xml->asXML();
+
+        return false !== $result ? $result : '';
     }
 
     /**
-     * Add CMS pages to sitemap
+     * Add CMS pages to sitemap.
      *
-     * @param \SimpleXMLElement $xml
-     * @param string $baseUrl
      * @throws \DateMalformedStringException
      */
     private function addCmsPages(\SimpleXMLElement $xml, string $baseUrl): void
@@ -58,13 +59,13 @@ class SitemapGenerator
         foreach ($pages as $page) {
             // Skip disabled pages
             $isActive = $page->getData('is_active');
-            if (!$isActive) {
+            if (! $isActive) {
                 continue;
             }
 
             // Skip error pages (404, 500, maintenance)
             $urlKey = $page->getData('url_key');
-            if (in_array($urlKey, ['404', '500', 'maintenance'], true)) {
+            if (\in_array($urlKey, ['404', '500', 'maintenance'], true)) {
                 continue;
             }
 
@@ -72,8 +73,8 @@ class SitemapGenerator
             $url = $baseUrl . '/' . $urlKey;
 
             // Determine priority and changefreq based on page
-            $priority = ($urlKey === 'home') ? self::PRIORITY_HIGH : self::PRIORITY_MEDIUM;
-            $changefreq = ($urlKey === 'home') ? self::CHANGEFREQ_DAILY : self::CHANGEFREQ_WEEKLY;
+            $priority = ('home' === $urlKey) ? self::PRIORITY_HIGH : self::PRIORITY_MEDIUM;
+            $changefreq = ('home' === $urlKey) ? self::CHANGEFREQ_DAILY : self::CHANGEFREQ_WEEKLY;
 
             // Get last modified date
             $lastmod = $page->getData('update_time') ?? $page->getData('creation_time');
@@ -83,23 +84,22 @@ class SitemapGenerator
     }
 
     /**
-     * Add URL to sitemap
+     * Add URL to sitemap.
      *
-     * @param \SimpleXMLElement $xml
-     * @param string $loc URL location
-     * @param string $priority Priority (0.0 to 1.0)
-     * @param string $changefreq Change frequency
-     * @param string|null $lastmod Last modification date
+     * @param string      $loc        URL location
+     * @param string      $priority   Priority (0.0 to 1.0)
+     * @param string      $changefreq Change frequency
+     * @param string|null $lastmod    Last modification date
+     *
      * @throws \DateMalformedStringException
      */
     private function addUrl(
         \SimpleXMLElement $xml,
-        string            $loc,
-        string            $priority = self::PRIORITY_MEDIUM,
-        string            $changefreq = self::CHANGEFREQ_WEEKLY,
-        ?string           $lastmod = null
-    ): void
-    {
+        string $loc,
+        string $priority = self::PRIORITY_MEDIUM,
+        string $changefreq = self::CHANGEFREQ_WEEKLY,
+        ?string $lastmod = null
+    ): void {
         $urlNode = $xml->addChild('url');
         $urlNode->addChild('loc', htmlspecialchars($loc));
         $urlNode->addChild('priority', $priority);

@@ -12,9 +12,7 @@ use Infinri\Core\Model\ResourceModel\Connection;
 class Block extends AbstractContentResource
 {
     /**
-     * Constructor
-     *
-     * @param Connection $connection
+     * Constructor.
      */
     public function __construct(Connection $connection)
     {
@@ -22,9 +20,7 @@ class Block extends AbstractContentResource
     }
 
     /**
-     * Get table name (implements abstract method)
-     *
-     * @return string
+     * Get table name (implements abstract method).
      */
     protected function getTableName(): string
     {
@@ -32,9 +28,7 @@ class Block extends AbstractContentResource
     }
 
     /**
-     * Get entity ID field name (implements abstract method)
-     *
-     * @return string
+     * Get entity ID field name (implements abstract method).
      */
     protected function getEntityIdField(): string
     {
@@ -42,9 +36,7 @@ class Block extends AbstractContentResource
     }
 
     /**
-     * Get unique field name (implements abstract method)
-     *
-     * @return string
+     * Get unique field name (implements abstract method).
      */
     protected function getUniqueField(): string
     {
@@ -52,9 +44,7 @@ class Block extends AbstractContentResource
     }
 
     /**
-     * Get entity name (implements abstract method)
-     *
-     * @return string
+     * Get entity name (implements abstract method).
      */
     protected function getEntityName(): string
     {
@@ -62,10 +52,7 @@ class Block extends AbstractContentResource
     }
 
     /**
-     * Get block by identifier
-     *
-     * @param string $identifier
-     * @return array|null
+     * Get block by identifier.
      */
     public function getByIdentifier(string $identifier): ?array
     {
@@ -75,6 +62,7 @@ class Block extends AbstractContentResource
         $stmt->execute(['identifier' => $identifier]);
 
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
         return $result ?: null;
     }
 }

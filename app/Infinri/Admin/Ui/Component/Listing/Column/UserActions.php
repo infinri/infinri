@@ -1,17 +1,19 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Admin\Ui\Component\Listing\Column;
 
 /**
- * Admin User Actions Column
+ * Admin User Actions Column.
  */
 class UserActions
 {
     /**
-     * Prepare Data Source
-     * 
+     * Prepare Data Source.
+     *
      * @param array<string, mixed> $dataSource
+     *
      * @return array<string, mixed>
      */
     public function prepareDataSource(array $dataSource): array
@@ -21,20 +23,20 @@ class UserActions
                 if (isset($item['user_id'])) {
                     $item['actions']['edit'] = [
                         'href' => '/admin/users/edit?id=' . $item['user_id'],
-                        'label' => 'Edit'
+                        'label' => 'Edit',
                     ];
                     $item['actions']['delete'] = [
                         'href' => '/admin/users/delete?id=' . $item['user_id'],
                         'label' => 'Delete',
                         'confirm' => [
                             'title' => 'Delete User',
-                            'message' => 'Are you sure you want to delete this user?'
-                        ]
+                            'message' => 'Are you sure you want to delete this user?',
+                        ],
                     ];
                 }
             }
         }
-        
+
         return $dataSource;
     }
 }

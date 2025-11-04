@@ -4,38 +4,37 @@ declare(strict_types=1);
 
 namespace Infinri\Menu\ViewModel;
 
-use Infinri\Menu\Service\MenuBuilder;
 use Infinri\Core\App\Request;
+use Infinri\Menu\Service\MenuBuilder;
 
 /**
- * Provides presentation logic for navigation menus
+ * Provides presentation logic for navigation menus.
  */
 class Navigation
 {
     /**
-     * Constructor
-     *
-     * @param MenuBuilder $menuBuilder
-     * @param Request $request
+     * Constructor.
      */
     public function __construct(
         private readonly MenuBuilder $menuBuilder,
-        private readonly Request     $request
-    ) {}
+        private readonly Request $request
+    ) {
+    }
 
     /**
-     * Get main navigation menu with active states
+     * Get main navigation menu with active states.
      *
      * @return array Menu items with active flags
      */
     public function getMainNavigation(): array
     {
         $menuItems = $this->menuBuilder->buildMenu('main-navigation');
+
         return $this->setActiveStates($menuItems);
     }
 
     /**
-     * Get footer navigation menu
+     * Get footer navigation menu.
      *
      * @return array Menu items
      */
@@ -45,7 +44,7 @@ class Navigation
     }
 
     /**
-     * Get mobile navigation menu
+     * Get mobile navigation menu.
      *
      * @return array Menu items
      */
@@ -56,22 +55,23 @@ class Navigation
     }
 
     /**
-     * Get menu by identifier
+     * Get menu by identifier.
      *
      * @param string $identifier Menu identifier
+     *
      * @return array Menu items with active states
      */
     public function getMenu(string $identifier): array
     {
         $menuItems = $this->menuBuilder->buildMenu($identifier);
+
         return $this->setActiveStates($menuItems);
     }
 
     /**
-     * Check if menu has items
+     * Check if menu has items.
      *
      * @param string $identifier Menu identifier
-     * @return bool
      */
     public function hasItems(string $identifier): bool
     {
@@ -79,10 +79,11 @@ class Navigation
     }
 
     /**
-     * Set active states based on current URL
+     * Set active states based on current URL.
      *
-     * @param array $items Menu items
-     * @return array Menu items with active flags
+     * @param array<int, array<string, mixed>> $items Menu items
+     *
+     * @return array<int, array<string, mixed>> Menu items with active flags
      */
     private function setActiveStates(array $items): array
     {
@@ -93,11 +94,11 @@ class Navigation
             $item['active'] = $this->isActive($item['url'], $currentPath);
 
             // Recursively set active states for children
-            if (!empty($item['children'])) {
+            if (! empty($item['children'])) {
                 $item['children'] = $this->setActiveStates($item['children']);
 
                 // If any child is active, parent should be active too
-                if (!$item['active']) {
+                if (! $item['active']) {
                     $item['active'] = $this->hasActiveChild($item['children']);
                 }
             }
@@ -107,21 +108,20 @@ class Navigation
     }
 
     /**
-     * Check if URL is active
+     * Check if URL is active.
      *
-     * @param string $itemUrl Menu item URL
+     * @param string $itemUrl     Menu item URL
      * @param string $currentPath Current request path
-     * @return bool
      */
     private function isActive(string $itemUrl, string $currentPath): bool
     {
         // Exact match for homepage
-        if ($itemUrl === '/' && $currentPath === '/') {
+        if ('/' === $itemUrl && '/' === $currentPath) {
             return true;
         }
 
         // For other pages, check if current path starts with item URL
-        if ($itemUrl !== '/' && str_starts_with($currentPath, $itemUrl)) {
+        if ('/' !== $itemUrl && str_starts_with($currentPath, $itemUrl)) {
             return true;
         }
 
@@ -129,10 +129,9 @@ class Navigation
     }
 
     /**
-     * Check if any child is active
+     * Check if any child is active.
      *
-     * @param array $children Child items
-     * @return bool
+     * @param array<int, array<string, mixed>> $children Child items
      */
     private function hasActiveChild(array $children): bool
     {
@@ -141,7 +140,7 @@ class Navigation
                 return true;
             }
 
-            if (!empty($child['children']) && $this->hasActiveChild($child['children'])) {
+            if (! empty($child['children']) && $this->hasActiveChild($child['children'])) {
                 return true;
             }
         }

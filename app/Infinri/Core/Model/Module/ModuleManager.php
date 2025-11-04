@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Model\Module;
@@ -21,39 +22,37 @@ class ModuleManager
 
     public function __construct(
         private readonly ModuleList $moduleList,
-        ?string                     $configPath = null
+        ?string $configPath = null
     ) {
         $this->configPath = $configPath ?? __DIR__ . '/../../../../etc/config.php';
     }
 
     /**
-     * Check if a module is enabled
-     *
-     * @param string $moduleName
-     * @return bool
+     * Check if a module is enabled.
      */
     public function isEnabled(string $moduleName): bool
     {
         $enabledModules = $this->getEnabledModules();
-        return isset($enabledModules[$moduleName]) && $enabledModules[$moduleName] === 1;
+
+        return isset($enabledModules[$moduleName]) && 1 === $enabledModules[$moduleName];
     }
 
     /**
-     * Get all enabled modules
+     * Get all enabled modules.
      *
      * @return array<string, int> Array of module_name => 1 (enabled) or 0 (disabled)
      */
     public function getEnabledModules(): array
     {
-        if ($this->enabledModules === null) {
+        if (null === $this->enabledModules) {
             $this->loadEnabledModules();
         }
 
-        return $this->enabledModules;
+        return $this->enabledModules ?? [];
     }
 
     /**
-     * Get list of enabled module names only
+     * Get list of enabled module names only.
      *
      * @return string[]
      */
@@ -62,7 +61,7 @@ class ModuleManager
         $enabled = [];
 
         foreach ($this->getEnabledModules() as $moduleName => $status) {
-            if ($status === 1) {
+            if (1 === $status) {
                 $enabled[] = $moduleName;
             }
         }
@@ -71,7 +70,7 @@ class ModuleManager
     }
 
     /**
-     * Get modules in dependency order (respecting module sequence)
+     * Get modules in dependency order (respecting module sequence).
      *
      * @return string[] Module names sorted by dependency order
      */
@@ -83,37 +82,37 @@ class ModuleManager
         // Filter to only enabled modules
         $modules = array_filter(
             $allModules,
-            fn($name) => in_array($name, $enabledNames, true),
-            ARRAY_FILTER_USE_KEY
+            fn ($name) => \in_array($name, $enabledNames, true),
+            \ARRAY_FILTER_USE_KEY
         );
 
         return $this->sortByDependency($modules);
     }
 
     /**
-     * Load enabled modules from app/etc/config.php
-     *
-     * @return void
+     * Load enabled modules from app/etc/config.php.
      */
     private function loadEnabledModules(): void
     {
         $this->enabledModules = [];
 
-        if (!file_exists($this->configPath)) {
+        if (! file_exists($this->configPath)) {
             // No config file, enable all registered modules by default
             foreach ($this->moduleList->getNames() as $moduleName) {
                 $this->enabledModules[$moduleName] = 1;
             }
+
             return;
         }
 
         $config = include $this->configPath;
 
-        if (!isset($config['modules']) || !is_array($config['modules'])) {
+        if (! isset($config['modules']) || ! \is_array($config['modules'])) {
             // Invalid config structure, enable all by default
             foreach ($this->moduleList->getNames() as $moduleName) {
                 $this->enabledModules[$moduleName] = 1;
             }
+
             return;
         }
 
@@ -121,9 +120,10 @@ class ModuleManager
     }
 
     /**
-     * Sort modules by dependency order (topological sort)
+     * Sort modules by dependency order (topological sort).
      *
      * @param array<string, array<string, mixed>> $modules
+     *
      * @return string[]
      */
     private function sortByDependency(array $modules): array
@@ -139,28 +139,25 @@ class ModuleManager
     }
 
     /**
-     * Visit module for topological sort (depth-first)
+     * Visit module for topological sort (depth-first).
      *
-     * @param string $moduleName
      * @param array<string, array<string, mixed>> $modules
-     * @param array<string, bool> $visited
-     * @param string[] $sorted
-     * @return void
+     * @param array<string, bool>                 $visited
+     * @param string[]                            $sorted
      */
     private function visitModule(
         string $moduleName,
-        array  $modules,
-        array  &$visited,
-        array  &$sorted
-    ): void
-    {
+        array $modules,
+        array &$visited,
+        array &$sorted
+    ): void {
         // Already visited
         if (isset($visited[$moduleName])) {
             return;
         }
 
         // Module not in list (might be disabled dependency)
-        if (!isset($modules[$moduleName])) {
+        if (! isset($modules[$moduleName])) {
             return;
         }
 
@@ -178,9 +175,7 @@ class ModuleManager
     }
 
     /**
-     * Get ModuleList instance
-     *
-     * @return ModuleList
+     * Get ModuleList instance.
      */
     public function getModuleList(): ModuleList
     {
@@ -188,9 +183,7 @@ class ModuleManager
     }
 
     /**
-     * Clear cached data
-     *
-     * @return void
+     * Clear cached data.
      */
     public function clearCache(): void
     {

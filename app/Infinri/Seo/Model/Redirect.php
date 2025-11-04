@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Seo\Model;
@@ -8,22 +9,22 @@ use Infinri\Core\Model\ResourceModel\AbstractResource;
 use Infinri\Seo\Model\ResourceModel\Redirect as RedirectResource;
 
 /**
- * Represents a 301/302 redirect rule
+ * Represents a 301/302 redirect rule.
  */
 class Redirect extends AbstractModel
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct(
         protected readonly RedirectResource $resource,
-        array                               $data = []
+        array $data = []
     ) {
         parent::__construct($data);
     }
 
     /**
-     * Get resource model
+     * Get resource model.
      */
     protected function getResource(): AbstractResource
     {
@@ -31,7 +32,7 @@ class Redirect extends AbstractModel
     }
 
     /**
-     * Get redirect ID
+     * Get redirect ID.
      */
     public function getRedirectId(): ?int
     {
@@ -39,7 +40,7 @@ class Redirect extends AbstractModel
     }
 
     /**
-     * Set redirect ID
+     * Set redirect ID.
      */
     public function setRedirectId(int $redirectId): self
     {
@@ -47,7 +48,7 @@ class Redirect extends AbstractModel
     }
 
     /**
-     * Get from path
+     * Get from path.
      */
     public function getFromPath(): ?string
     {
@@ -55,7 +56,7 @@ class Redirect extends AbstractModel
     }
 
     /**
-     * Set from path
+     * Set from path.
      */
     public function setFromPath(string $fromPath): self
     {
@@ -63,7 +64,7 @@ class Redirect extends AbstractModel
     }
 
     /**
-     * Get to path
+     * Get to path.
      */
     public function getToPath(): ?string
     {
@@ -71,7 +72,7 @@ class Redirect extends AbstractModel
     }
 
     /**
-     * Set to path
+     * Set to path.
      */
     public function setToPath(string $toPath): self
     {
@@ -79,7 +80,7 @@ class Redirect extends AbstractModel
     }
 
     /**
-     * Get redirect code (301 or 302)
+     * Get redirect code (301 or 302).
      */
     public function getRedirectCode(): ?int
     {
@@ -87,7 +88,7 @@ class Redirect extends AbstractModel
     }
 
     /**
-     * Set redirect code
+     * Set redirect code.
      */
     public function setRedirectCode(int $redirectCode): self
     {
@@ -95,7 +96,7 @@ class Redirect extends AbstractModel
     }
 
     /**
-     * Get description
+     * Get description.
      */
     public function getDescription(): ?string
     {
@@ -103,7 +104,7 @@ class Redirect extends AbstractModel
     }
 
     /**
-     * Set description
+     * Set description.
      */
     public function setDescription(?string $description): self
     {
@@ -111,15 +112,15 @@ class Redirect extends AbstractModel
     }
 
     /**
-     * Is active
+     * Is active.
      */
     public function isActive(): bool
     {
-        return (bool)$this->getData('is_active');
+        return (bool) $this->getData('is_active');
     }
 
     /**
-     * Set is active
+     * Set is active.
      */
     public function setIsActive(bool $isActive): self
     {

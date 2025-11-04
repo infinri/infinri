@@ -6,12 +6,12 @@ namespace Infinri\Core\Model\Message;
 
 /**
  * Manages flash messages stored in session
- * Messages are displayed once and then removed
+ * Messages are displayed once and then removed.
  */
 class MessageManager
 {
     /**
-     * Message types
+     * Message types.
      */
     public const TYPE_SUCCESS = 'success';
     public const TYPE_ERROR = 'error';
@@ -19,24 +19,22 @@ class MessageManager
     public const TYPE_INFO = 'info';
 
     /**
-     * Session key for messages (namespaced by area)
+     * Session key for messages (namespaced by area).
      */
     private const SESSION_KEY_PREFIX = 'infinri_messages_';
 
     /**
-     * Get the session key for current area (admin vs frontend)
+     * Get the session key for current area (admin vs frontend).
      */
     private function getSessionKey(): string
     {
         $isAdmin = isset($_SERVER['REQUEST_URI']) && str_starts_with($_SERVER['REQUEST_URI'], '/admin');
+
         return self::SESSION_KEY_PREFIX . ($isAdmin ? 'admin' : 'frontend');
     }
 
     /**
-     * Add a success message
-     *
-     * @param string $message
-     * @return self
+     * Add a success message.
      */
     public function addSuccess(string $message): self
     {
@@ -44,10 +42,7 @@ class MessageManager
     }
 
     /**
-     * Add an error message
-     *
-     * @param string $message
-     * @return self
+     * Add an error message.
      */
     public function addError(string $message): self
     {
@@ -55,10 +50,7 @@ class MessageManager
     }
 
     /**
-     * Add a warning message
-     *
-     * @param string $message
-     * @return self
+     * Add a warning message.
      */
     public function addWarning(string $message): self
     {
@@ -66,10 +58,7 @@ class MessageManager
     }
 
     /**
-     * Add an info message
-     *
-     * @param string $message
-     * @return self
+     * Add an info message.
      */
     public function addInfo(string $message): self
     {
@@ -77,11 +66,7 @@ class MessageManager
     }
 
     /**
-     * Add a message
-     *
-     * @param string $type
-     * @param string $message
-     * @return self
+     * Add a message.
      */
     public function addMessage(string $type, string $message): self
     {
@@ -89,7 +74,7 @@ class MessageManager
 
         $sessionKey = $this->getSessionKey();
 
-        if (!isset($_SESSION[$sessionKey])) {
+        if (! isset($_SESSION[$sessionKey])) {
             $_SESSION[$sessionKey] = [];
         }
 
@@ -103,10 +88,9 @@ class MessageManager
     }
 
     /**
-     * Get all messages
+     * Get all messages.
      *
      * @param bool $clear Whether to clear messages after retrieving
-     * @return array
      */
     public function getMessages(bool $clear = true): array
     {
@@ -123,11 +107,9 @@ class MessageManager
     }
 
     /**
-     * Get messages by type
+     * Get messages by type.
      *
-     * @param string $type
      * @param bool $clear Whether to clear those messages after retrieving
-     * @return array
      */
     public function getMessagesByType(string $type, bool $clear = true): array
     {
@@ -135,13 +117,13 @@ class MessageManager
 
         $sessionKey = $this->getSessionKey();
         $allMessages = $_SESSION[$sessionKey] ?? [];
-        $filtered = array_filter($allMessages, fn($msg) => $msg['type'] === $type);
+        $filtered = array_filter($allMessages, fn ($msg) => $msg['type'] === $type);
 
-        if ($clear && !empty($filtered)) {
+        if ($clear && ! empty($filtered)) {
             // Remove only the filtered messages
             $_SESSION[$sessionKey] = array_filter(
                 $allMessages,
-                fn($msg) => $msg['type'] !== $type
+                fn ($msg) => $msg['type'] !== $type
             );
             $_SESSION[$sessionKey] = array_values($_SESSION[$sessionKey]);
         }
@@ -150,10 +132,9 @@ class MessageManager
     }
 
     /**
-     * Check if there are any messages
+     * Check if there are any messages.
      *
      * @param string|null $type Optional type to check
-     * @return bool
      */
     public function hasMessages(?string $type = null): bool
     {
@@ -162,17 +143,15 @@ class MessageManager
         $sessionKey = $this->getSessionKey();
         $messages = $_SESSION[$sessionKey] ?? [];
 
-        if ($type === null) {
-            return !empty($messages);
+        if (null === $type) {
+            return ! empty($messages);
         }
 
-        return !empty(array_filter($messages, fn($msg) => $msg['type'] === $type));
+        return ! empty(array_filter($messages, fn ($msg) => $msg['type'] === $type));
     }
 
     /**
-     * Clear all messages
-     *
-     * @return self
+     * Clear all messages.
      */
     public function clearMessages(): self
     {
@@ -185,10 +164,9 @@ class MessageManager
     }
 
     /**
-     * Get message count
+     * Get message count.
      *
      * @param string|null $type Optional type to count
-     * @return int
      */
     public function getCount(?string $type = null): int
     {
@@ -197,21 +175,19 @@ class MessageManager
         $sessionKey = $this->getSessionKey();
         $messages = $_SESSION[$sessionKey] ?? [];
 
-        if ($type === null) {
-            return count($messages);
+        if (null === $type) {
+            return \count($messages);
         }
 
-        return count(array_filter($messages, fn($msg) => $msg['type'] === $type));
+        return \count(array_filter($messages, fn ($msg) => $msg['type'] === $type));
     }
 
     /**
-     * Start session if not already started
-     *
-     * @return void
+     * Start session if not already started.
      */
     private function startSession(): void
     {
-        if (session_status() === PHP_SESSION_NONE) {
+        if (\PHP_SESSION_NONE === session_status()) {
             session_start();
         }
     }

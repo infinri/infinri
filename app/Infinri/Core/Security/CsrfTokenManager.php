@@ -1,15 +1,16 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Security;
 
-use Symfony\Component\Security\Csrf\CsrfTokenManager as SymfonyCsrfTokenManager;
 use Symfony\Component\Security\Csrf\CsrfToken;
+use Symfony\Component\Security\Csrf\CsrfTokenManager as SymfonyCsrfTokenManager;
 use Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator;
 use Symfony\Component\Security\Csrf\TokenStorage\NativeSessionTokenStorage;
 
 /**
- * Wrapper around Symfony Security CSRF for token generation and validation
+ * Wrapper around Symfony Security CSRF for token generation and validation.
  */
 class CsrfTokenManager
 {
@@ -18,7 +19,7 @@ class CsrfTokenManager
     public function __construct()
     {
         // Start session if not already started
-        if (session_status() === PHP_SESSION_NONE) {
+        if (\PHP_SESSION_NONE === session_status()) {
             session_start();
         }
 
@@ -30,10 +31,9 @@ class CsrfTokenManager
     }
 
     /**
-     * Generate CSRF token for given ID
+     * Generate CSRF token for given ID.
      *
      * @param string $tokenId Token identifier (e.g., 'page_form', 'delete_action')
-     * @return string
      */
     public function generateToken(string $tokenId = 'default'): string
     {
@@ -41,11 +41,10 @@ class CsrfTokenManager
     }
 
     /**
-     * Validate CSRF token
+     * Validate CSRF token.
      *
      * @param string $tokenId Token identifier
-     * @param string $token Token value to validate
-     * @return bool
+     * @param string $token   Token value to validate
      */
     public function validateToken(string $tokenId, string $token): bool
     {
@@ -53,10 +52,7 @@ class CsrfTokenManager
     }
 
     /**
-     * Remove token from storage
-     *
-     * @param string $tokenId
-     * @return void
+     * Remove token from storage.
      */
     public function removeToken(string $tokenId): void
     {
@@ -64,14 +60,14 @@ class CsrfTokenManager
     }
 
     /**
-     * Refresh token (remove old, generate new)
+     * Refresh token (remove old, generate new).
      *
-     * @param string $tokenId
      * @return string New token
      */
     public function refreshToken(string $tokenId): string
     {
         $this->removeToken($tokenId);
+
         return $this->generateToken($tokenId);
     }
 }

@@ -7,15 +7,14 @@ namespace Infinri\Core\Helper;
 use Infinri\Core\App\Response;
 
 /**
- * Standardized JSON responses for API endpoints
+ * Standardized JSON responses for API endpoints.
  */
 class JsonResponse
 {
     /**
-     * Create success JSON response
+     * Create success JSON response.
      *
      * @param array<string, mixed> $data Additional data to include
-     * @return Response
      */
     public static function success(array $data = []): Response
     {
@@ -24,7 +23,7 @@ class JsonResponse
 
         $payload = array_merge(['success' => true], $data);
         $json = json_encode($payload);
-        if ($json === false) {
+        if (false === $json) {
             throw new \RuntimeException('Failed to encode JSON response');
         }
         $response->setBody($json);
@@ -33,12 +32,11 @@ class JsonResponse
     }
 
     /**
-     * Create error JSON response
+     * Create error JSON response.
      *
-     * @param string $message Error message
-     * @param int $httpCode HTTP status code (default 500)
+     * @param string               $message        Error message
+     * @param int                  $httpCode       HTTP status code (default 500)
      * @param array<string, mixed> $additionalData Additional error data
-     * @return Response
      */
     public static function error(string $message, int $httpCode = 500, array $additionalData = []): Response
     {
@@ -48,11 +46,11 @@ class JsonResponse
 
         $payload = array_merge([
             'success' => false,
-            'error' => $message
+            'error' => $message,
         ], $additionalData);
 
         $json = json_encode($payload);
-        if ($json === false) {
+        if (false === $json) {
             throw new \RuntimeException('Failed to encode JSON response');
         }
         $response->setBody($json);
@@ -61,10 +59,9 @@ class JsonResponse
     }
 
     /**
-     * Create forbidden (403) JSON response
+     * Create forbidden (403) JSON response.
      *
      * @param string $message Error message (default: 'Forbidden')
-     * @return Response
      */
     public static function forbidden(string $message = 'Forbidden'): Response
     {
@@ -72,10 +69,9 @@ class JsonResponse
     }
 
     /**
-     * Create unauthorized (401) JSON response
+     * Create unauthorized (401) JSON response.
      *
      * @param string $message Error message (default: 'Unauthorized')
-     * @return Response
      */
     public static function unauthorized(string $message = 'Unauthorized'): Response
     {
@@ -83,10 +79,9 @@ class JsonResponse
     }
 
     /**
-     * Create bad request (400) JSON response
+     * Create bad request (400) JSON response.
      *
      * @param string $message Error message
-     * @return Response
      */
     public static function badRequest(string $message): Response
     {
@@ -94,10 +89,9 @@ class JsonResponse
     }
 
     /**
-     * Create not found (404) JSON response
+     * Create not found (404) JSON response.
      *
      * @param string $message Error message (default: 'Not Found')
-     * @return Response
      */
     public static function notFound(string $message = 'Not Found'): Response
     {
@@ -105,9 +99,7 @@ class JsonResponse
     }
 
     /**
-     * Create CSRF token error response
-     *
-     * @return Response
+     * Create CSRF token error response.
      */
     public static function csrfError(): Response
     {

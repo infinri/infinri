@@ -4,52 +4,43 @@ declare(strict_types=1);
 
 namespace Infinri\Core\Model\Event\Config;
 
-use Infinri\Core\Model\ComponentRegistrar;
 use Infinri\Core\Api\ComponentRegistrarInterface;
+use Infinri\Core\Model\ComponentRegistrar;
 use Infinri\Core\Model\Module\ModuleList;
 use Infinri\Core\Model\Module\ModuleReader;
 
 /**
- * Reads events.xml from all modules and parses observer configurations
+ * Reads events.xml from all modules and parses observer configurations.
  */
 class Reader
 {
     /**
-     * Component Registrar
-     *
-     * @var ComponentRegistrarInterface
+     * Component Registrar.
      */
     private ComponentRegistrarInterface $componentRegistrar;
 
     /**
-     * Module List
-     *
-     * @var ModuleList|null
+     * Module List.
      */
     private ?ModuleList $moduleList = null;
 
     /**
-     * Constructor
-     *
-     * @param ComponentRegistrarInterface|null $componentRegistrar
-     * @param ModuleList|null $moduleList
+     * Constructor.
      */
     public function __construct(
         ?ComponentRegistrarInterface $componentRegistrar = null,
-        ?ModuleList                  $moduleList = null
+        ?ModuleList $moduleList = null
     ) {
         $this->componentRegistrar = $componentRegistrar ?? ComponentRegistrar::getInstance();
         $this->moduleList = $moduleList;
     }
 
     /**
-     * Get module list (lazy initialization)
-     *
-     * @return ModuleList
+     * Get module list (lazy initialization).
      */
     private function getModuleList(): ModuleList
     {
-        if ($this->moduleList === null) {
+        if (null === $this->moduleList) {
             $this->moduleList = new ModuleList(
                 ComponentRegistrar::getInstance(),
                 new ModuleReader()
@@ -60,9 +51,10 @@ class Reader
     }
 
     /**
-     * Read events.xml from a specific module
+     * Read events.xml from a specific module.
      *
      * @param string $moduleName Module name
+     *
      * @return array|null Parsed events configuration or null if not found
      */
     public function read(string $moduleName): ?array
@@ -72,13 +64,13 @@ class Reader
             $moduleName
         );
 
-        if ($modulePath === null) {
+        if (null === $modulePath) {
             return null;
         }
 
         $eventsFile = $modulePath . '/etc/events.xml';
 
-        if (!file_exists($eventsFile)) {
+        if (! file_exists($eventsFile)) {
             return null;
         }
 
@@ -86,7 +78,7 @@ class Reader
     }
 
     /**
-     * Read events.xml from all modules
+     * Read events.xml from all modules.
      *
      * @return array Array of events indexed by event name
      */
@@ -98,10 +90,10 @@ class Reader
         foreach ($modules as $moduleName) {
             $moduleEvents = $this->read($moduleName);
 
-            if ($moduleEvents !== null) {
+            if (null !== $moduleEvents) {
                 // Merge events from this module
                 foreach ($moduleEvents as $eventName => $observers) {
-                    if (!isset($allEvents[$eventName])) {
+                    if (! isset($allEvents[$eventName])) {
                         $allEvents[$eventName] = [];
                     }
 
@@ -115,9 +107,10 @@ class Reader
     }
 
     /**
-     * Parse events.xml file
+     * Parse events.xml file.
      *
      * @param string $filePath Path to events.xml
+     *
      * @return array Parsed configuration
      */
     private function parseXml(string $filePath): array
@@ -127,8 +120,9 @@ class Reader
 
         $xml = @simplexml_load_file($filePath);
 
-        if ($xml === false) {
+        if (false === $xml) {
             libxml_clear_errors();
+
             return [];
         }
 
@@ -138,16 +132,16 @@ class Reader
 
         // Parse each event
         foreach ($xml->event as $event) {
-            $eventName = (string)$event['name'];
+            $eventName = (string) $event['name'];
             $events[$eventName] = [];
 
             // Parse observers for this event
             foreach ($event->observer as $observer) {
-                $observerName = (string)$observer['name'];
+                $observerName = (string) $observer['name'];
                 $events[$eventName][$observerName] = [
-                    'instance' => (string)$observer['instance'],
-                    'method' => (string)($observer['method'] ?? 'execute'),
-                    'disabled' => filter_var((string)($observer['disabled'] ?? 'false'), FILTER_VALIDATE_BOOLEAN),
+                    'instance' => (string) $observer['instance'],
+                    'method' => (string) ($observer['method'] ?? 'execute'),
+                    'disabled' => filter_var((string) ($observer['disabled'] ?? 'false'), \FILTER_VALIDATE_BOOLEAN),
                 ];
             }
         }
@@ -156,9 +150,10 @@ class Reader
     }
 
     /**
-     * Validate events.xml file exists
+     * Validate events.xml file exists.
      *
      * @param string $moduleName Module name
+     *
      * @return bool True if file exists
      */
     public function validate(string $moduleName): bool
@@ -168,7 +163,7 @@ class Reader
             $moduleName
         );
 
-        if ($modulePath === null) {
+        if (null === $modulePath) {
             return false;
         }
 

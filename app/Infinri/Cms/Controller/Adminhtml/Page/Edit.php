@@ -1,14 +1,15 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Cms\Controller\Adminhtml\Page;
 
-use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
+use Infinri\Core\Controller\AbstractAdminController;
 
 /**
  * Edit/Create Page Controller
- * Route: admin/cms/page/edit?id={page_id}
+ * Route: admin/cms/page/edit?id={page_id}.
  */
 class Edit extends AbstractAdminController
 {
@@ -17,7 +18,7 @@ class Edit extends AbstractAdminController
         $pageId = $this->getIntParam('id');
 
         return $this->renderAdminLayout('cms_adminhtml_page_edit', [
-            'id' => $pageId ?: null
+            'id' => $pageId ?: null,
         ]);
     }
 }

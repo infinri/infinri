@@ -1,17 +1,16 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Cms\Block\Widget;
 
 /**
- * Embeds YouTube, Vimeo, or local videos
+ * Embeds YouTube, Vimeo, or local videos.
  */
 class Video extends AbstractWidget
 {
     /**
-     * Render video widget
-     *
-     * @return string
+     * Render video widget.
      */
     public function toHtml(): string
     {
@@ -29,11 +28,11 @@ class Video extends AbstractWidget
 
         $embedUrl = $this->getEmbedUrl($videoType, $videoId, $autoplay);
 
-        if (!$embedUrl) {
+        if (! $embedUrl) {
             return '';
         }
 
-        return sprintf(
+        return \sprintf(
             '<div class="widget widget-video" data-widget-id="%d" data-widget-type="video" style="width: %s; height: %s;">
                 <iframe src="%s" 
                         width="100%%" 
@@ -49,21 +48,15 @@ class Video extends AbstractWidget
         );
     }
 
-    /**
-     * @param string $type
-     * @param string $videoId
-     * @param bool $autoplay
-     * @return string|null
-     */
     private function getEmbedUrl(string $type, string $videoId, bool $autoplay): ?string
     {
         return match ($type) {
-            'youtube' => sprintf(
+            'youtube' => \sprintf(
                 'https://www.youtube.com/embed/%s?autoplay=%d&rel=0',
                 urlencode($videoId),
                 $autoplay ? 1 : 0
             ),
-            'vimeo' => sprintf(
+            'vimeo' => \sprintf(
                 'https://player.vimeo.com/video/%s?autoplay=%d',
                 urlencode($videoId),
                 $autoplay ? 1 : 0

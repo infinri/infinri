@@ -4,21 +4,19 @@ declare(strict_types=1);
 
 namespace Infinri\Cms\Controller\Adminhtml\Media;
 
-use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
-use Infinri\Core\Model\Media\MediaLibrary;
-use Infinri\Cms\Controller\Adminhtml\Media\CsrfTokenIds;
+use Infinri\Core\Controller\AbstractAdminController;
 
 /**
- * Media Picker Controller
+ * Media Picker Controller.
  */
 class Picker extends AbstractAdminController
 {
     public function __construct(
-        \Infinri\Core\App\Request              $request,
-        \Infinri\Core\App\Response             $response,
+        \Infinri\Core\App\Request $request,
+        Response $response,
         \Infinri\Core\Model\View\LayoutFactory $layoutFactory,
-        \Infinri\Core\Security\CsrfGuard       $csrfGuard
+        \Infinri\Core\Security\CsrfGuard $csrfGuard
     ) {
         parent::__construct($request, $response, $layoutFactory, $csrfGuard);
     }
@@ -27,13 +25,13 @@ class Picker extends AbstractAdminController
     {
         $csrfToken = $this->csrfGuard->generateToken(CsrfTokenIds::UPLOAD);
 
-        $templatePath = dirname(__DIR__, 3) . '/view/adminhtml/templates/media/picker.phtml';
+        $templatePath = \dirname(__DIR__, 3) . '/view/adminhtml/templates/media/picker.phtml';
 
         if (file_exists($templatePath)) {
             ob_start();
             include $templatePath;
             $html = ob_get_clean();
-            if ($html === false) {
+            if (false === $html) {
                 $html = '<p>Error: Failed to capture template output</p>';
             }
         } else {

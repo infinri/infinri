@@ -106,9 +106,11 @@ describe('Cache Factory', function () {
         expect($this->factory->isAdapterAvailable('invalid'))->toBeFalse();
     });
     
-    it('throws exception for invalid adapter type', function () {
-        expect(fn() => $this->factory->create('test', 'invalid_adapter'))
-            ->toThrow(InvalidArgumentException::class, 'Invalid cache adapter');
+    it('falls back to default adapter for invalid adapter type', function () {
+        // Invalid adapter should fall back to filesystem
+        $pool = $this->factory->create('test', 'invalid_adapter');
+        
+        expect($pool)->toBeInstanceOf(Pool::class);
     });
     
     it('creates filesystem adapter successfully', function () {

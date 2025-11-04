@@ -1,28 +1,26 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Seo\Service;
 
-use Infinri\Seo\Model\UrlRewrite;
-use Infinri\Seo\Model\Repository\UrlRewriteRepository;
 use Infinri\Core\Helper\Logger;
+use Infinri\Seo\Model\Repository\UrlRewriteRepository;
+use Infinri\Seo\Model\UrlRewrite;
 
 /**
- * Automatically generates URL rewrites for entities
+ * Automatically generates URL rewrites for entities.
  */
 class UrlRewriteGenerator
 {
     public function __construct(
-        private readonly UrlRewriteRepository $urlRewriteRepository
-    ) {}
+        private readonly UrlRewriteRepository $urlRewriteRepository,
+        private readonly \Infinri\Seo\Model\ResourceModel\UrlRewrite $urlRewriteResource
+    ) {
+    }
 
     /**
-     * Generate URL rewrite for CMS page
-     *
-     * @param int $pageId
-     * @param string $urlKey
-     * @param string $storeId
-     * @return UrlRewrite
+     * Generate URL rewrite for CMS page.
      */
     public function generateForCmsPage(int $pageId, string $urlKey, string $storeId = 'default'): UrlRewrite
     {
@@ -35,11 +33,12 @@ class UrlRewriteGenerator
                 Logger::info('Updating URL rewrite for CMS page', [
                     'page_id' => $pageId,
                     'old_url' => $existing->getRequestPath(),
-                    'new_url' => $urlKey
+                    'new_url' => $urlKey,
                 ]);
 
                 $existing->setRequestPath($urlKey);
                 $existing->setTargetPath("cms/page/view?key={$urlKey}");
+
                 return $this->urlRewriteRepository->save($existing);
             }
 
@@ -49,10 +48,10 @@ class UrlRewriteGenerator
         // Create new URL rewrite
         Logger::info('Creating URL rewrite for CMS page', [
             'page_id' => $pageId,
-            'url_key' => $urlKey
+            'url_key' => $urlKey,
         ]);
 
-        $urlRewrite = new UrlRewrite();
+        $urlRewrite = new UrlRewrite($this->urlRewriteResource);
         $urlRewrite->setRequestPath($urlKey);
         $urlRewrite->setTargetPath("cms/page/view?key={$urlKey}");
         $urlRewrite->setEntityType('cms_page');
@@ -65,21 +64,20 @@ class UrlRewriteGenerator
     }
 
     /**
-     * Delete URL rewrite for CMS page
-     *
-     * @param int $pageId
-     * @return bool
+     * Delete URL rewrite for CMS page.
      */
     public function deleteForCmsPage(int $pageId): bool
     {
         Logger::info('Deleting URL rewrite for CMS page', ['page_id' => $pageId]);
+
         return $this->urlRewriteRepository->deleteByEntity('cms_page', $pageId);
     }
 
     /**
-     * Regenerate all CMS page URL rewrites
+     * Regenerate all CMS page URL rewrites.
      *
-     * @param array $pages Array of page data
+     * @param array<int, array<string, mixed>> $pages Array of page data
+     *
      * @return int Number of URL rewrites generated
      */
     public function regenerateAllCmsPages(array $pages): int
@@ -90,20 +88,21 @@ class UrlRewriteGenerator
             if (isset($page['page_id'], $page['url_key'])) {
                 try {
                     $this->generateForCmsPage(
-                        (int)$page['page_id'],
+                        (int) $page['page_id'],
                         $page['url_key']
                     );
                     $count++;
                 } catch (\Exception $e) {
                     Logger::error('Failed to generate URL rewrite', [
                         'page_id' => $page['page_id'],
-                        'error' => $e->getMessage()
+                        'error' => $e->getMessage(),
                     ]);
                 }
             }
         }
 
         Logger::info('Regenerated CMS page URL rewrites', ['count' => $count]);
+
         return $count;
     }
 }

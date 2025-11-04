@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Seo\Controller\Robots;
@@ -9,12 +10,12 @@ use Infinri\Core\Model\ResourceModel\Connection;
 use Infinri\Seo\Service\RobotsGenerator;
 
 /**
- * Serves /robots.txt
+ * Serves /robots.txt.
  */
 class Index
 {
     /**
-     * Execute robots.txt generation
+     * Execute robots.txt generation.
      */
     public function execute(Request $request): Response
     {
@@ -31,7 +32,7 @@ class Index
         $baseUrl = $request->getScheme() . '://' . $cleanHost;
         $port = $request->getPort();
 
-        if ($port && !in_array($port, [80, 443], true)) {
+        if ($port && ! \in_array($port, [80, 443], true)) {
             $baseUrl .= ':' . $port;
         }
 

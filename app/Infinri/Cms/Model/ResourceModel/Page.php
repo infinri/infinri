@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Infinri\Cms\Model\ResourceModel;
 
-use Infinri\Core\Model\ResourceModel\Connection;
 use Infinri\Cms\Model\Page as PageModel;
+use Infinri\Core\Model\AbstractModel;
+use Infinri\Core\Model\ResourceModel\Connection;
 
 /**
  * Handles database operations for CMS pages.
@@ -13,9 +14,7 @@ use Infinri\Cms\Model\Page as PageModel;
 class Page extends AbstractContentResource
 {
     /**
-     * Constructor
-     *
-     * @param Connection $connection
+     * Constructor.
      */
     public function __construct(Connection $connection)
     {
@@ -23,9 +22,7 @@ class Page extends AbstractContentResource
     }
 
     /**
-     * Get table name (implements abstract method)
-     *
-     * @return string
+     * Get table name (implements abstract method).
      */
     protected function getTableName(): string
     {
@@ -33,9 +30,7 @@ class Page extends AbstractContentResource
     }
 
     /**
-     * Get entity ID field name (implements abstract method)
-     *
-     * @return string
+     * Get entity ID field name (implements abstract method).
      */
     protected function getEntityIdField(): string
     {
@@ -43,9 +38,7 @@ class Page extends AbstractContentResource
     }
 
     /**
-     * Get unique field name (implements abstract method)
-     *
-     * @return string
+     * Get unique field name (implements abstract method).
      */
     protected function getUniqueField(): string
     {
@@ -53,9 +46,7 @@ class Page extends AbstractContentResource
     }
 
     /**
-     * Get entity name (implements abstract method)
-     *
-     * @return string
+     * Get entity name (implements abstract method).
      */
     protected function getEntityName(): string
     {
@@ -63,10 +54,7 @@ class Page extends AbstractContentResource
     }
 
     /**
-     * Get page by URL key
-     *
-     * @param string $urlKey
-     * @return array|null
+     * Get page by URL key.
      */
     public function getByUrlKey(string $urlKey): ?array
     {
@@ -76,13 +64,12 @@ class Page extends AbstractContentResource
         $stmt->execute(['url_key' => $urlKey]);
 
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
         return $result ?: null;
     }
 
     /**
-     * Get homepage
-     *
-     * @return array|null
+     * Get homepage.
      */
     public function getHomepage(): ?array
     {
@@ -92,40 +79,37 @@ class Page extends AbstractContentResource
         $stmt->execute();
 
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
         return $result ?: null;
     }
 
     /**
-     * Check if page is homepage
-     *
-     * @param int $pageId
-     * @return bool
+     * Check if page is homepage.
      */
     public function isHomepage(int $pageId): bool
     {
-        return $pageId === PageModel::HOMEPAGE_ID;
+        return PageModel::HOMEPAGE_ID === $pageId;
     }
 
     /**
      * Before delete validation
-     * Override to add homepage protection
+     * Override to add homepage protection.
      *
-     * @param \Infinri\Core\Model\AbstractModel $object
-     * @return self
-     * @throws \RuntimeException if trying to delete homepage
+     * @return $this
+     *
+     * @throws \RuntimeException
      */
-    protected function _beforeDelete(\Infinri\Core\Model\AbstractModel $object): self
+    protected function _beforeDelete(AbstractModel $object): self
     {
         /** @var PageModel $object */
 
         // Prevent homepage deletion
         if ($object->isHomepage()) {
-            throw new \RuntimeException(
-                'Homepage (page_id=' . PageModel::HOMEPAGE_ID . ') cannot be deleted. ' .
-                'The site requires a homepage to function.'
-            );
+            throw new \RuntimeException('Homepage (page_id=' . PageModel::HOMEPAGE_ID . ') cannot be deleted. The site requires a homepage to function.');
         }
 
-        return parent::_beforeDelete($object);
+        parent::_beforeDelete($object);
+
+        return $this;
     }
 }

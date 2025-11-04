@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Infinri\Core\Console\Command;
 
+use Infinri\Core\Model\Cache\CacheConfig;
+use Infinri\Core\Model\Cache\Factory;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Infinri\Core\Model\Cache\Factory;
-use Infinri\Core\Model\Cache\CacheConfig;
 
 /**
- * Display cache configuration and performance information
+ * Display cache configuration and performance information.
  */
 class CacheInfoCommand extends Command
 {
@@ -26,7 +26,7 @@ class CacheInfoCommand extends Command
     }
 
     /**
-     * Configure command
+     * Configure command.
      */
     protected function configure(): void
     {
@@ -36,7 +36,7 @@ class CacheInfoCommand extends Command
     }
 
     /**
-     * Execute command
+     * Execute command.
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -63,18 +63,18 @@ class CacheInfoCommand extends Command
             $io->success('Cache information displayed successfully!');
 
             return Command::SUCCESS;
-
         } catch (\Exception $e) {
             $io->error('Failed to retrieve cache information: ' . $e->getMessage());
             if ($output->isVerbose()) {
                 $io->text($e->getTraceAsString());
             }
+
             return Command::FAILURE;
         }
     }
 
     /**
-     * Display adapter information
+     * Display adapter information.
      */
     private function displayAdapterInfo(SymfonyStyle $io, Factory $factory): void
     {
@@ -98,13 +98,13 @@ class CacheInfoCommand extends Command
             $io->warning([
                 'Fallback adapter is being used!',
                 "Optimal: {$optimal}, Current: {$metrics['adapter']}",
-                'Check Redis/APCu configuration for better performance.'
+                'Check Redis/APCu configuration for better performance.',
             ]);
         }
     }
 
     /**
-     * Display configuration details
+     * Display configuration details.
      */
     private function displayConfiguration(SymfonyStyle $io): void
     {
@@ -124,14 +124,15 @@ class CacheInfoCommand extends Command
             $redisConfig = CacheConfig::getRedisConfig();
             $rows[] = ['Redis Host', $redisConfig['host'] . ':' . $redisConfig['port']];
             $rows[] = ['Redis Database', (string) $redisConfig['database']];
-            $rows[] = ['Redis Auth', !empty($redisConfig['password']) ? '✅ Yes' : '❌ No'];
+            $rows[] = ['Redis Auth', ! empty($redisConfig['password']) ? '✅ Yes' : '❌ No'];
         }
 
         $io->table(['Setting', 'Value'], $rows);
     }
 
     /**
-     * Display performance metrics
+     * Display performance metrics.
+     *
      * @throws InvalidArgumentException
      */
     private function displayPerformanceMetrics(SymfonyStyle $io, Factory $factory): void
@@ -158,7 +159,7 @@ class CacheInfoCommand extends Command
     }
 
     /**
-     * Display cache type status
+     * Display cache type status.
      */
     private function displayCacheTypeStatus(SymfonyStyle $io): void
     {
@@ -170,12 +171,12 @@ class CacheInfoCommand extends Command
         foreach ($cacheTypes as $type) {
             $enabled = CacheConfig::isCacheTypeEnabled($type);
             $config = CacheConfig::getCacheTypeConfig($type);
-            
+
             $rows[] = [
                 ucfirst(str_replace('_', ' ', $type)),
                 $enabled ? '✅ Enabled' : '❌ Disabled',
                 $config['ttl'] . 's',
-                $config['adapter']
+                $config['adapter'],
             ];
         }
 
@@ -183,7 +184,8 @@ class CacheInfoCommand extends Command
     }
 
     /**
-     * Perform simple cache performance test
+     * Perform simple cache performance test.
+     *
      * @throws InvalidArgumentException
      */
     private function performCacheTest(Factory $factory): array
@@ -215,17 +217,18 @@ class CacheInfoCommand extends Command
     }
 
     /**
-     * Format bytes to human readable format
+     * Format bytes to human readable format.
      */
     private function formatBytes(int $bytes): string
     {
         $units = ['B', 'KB', 'MB', 'GB'];
         $bytes = max($bytes, 0);
         $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
-        $pow = min($pow, count($units) - 1);
+        $pow = min($pow, \count($units) - 1);
+        $powInt = (int) $pow;
 
-        $bytes /= (1 << (10 * $pow));
+        $bytes /= (1 << (10 * $powInt));
 
-        return round($bytes, 2) . ' ' . $units[$pow];
+        return round($bytes, 2) . ' ' . $units[$powInt];
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Model;
@@ -6,7 +7,7 @@ namespace Infinri\Core\Model;
 use Infinri\Core\Model\ResourceModel\AbstractResource;
 
 /**
- * Base class for all models (Active Record pattern)
+ * Base class for all models (Active Record pattern).
  */
 abstract class AbstractModel
 {
@@ -26,7 +27,7 @@ abstract class AbstractModel
     protected bool $isDeleted = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array<string, mixed> $data
      */
@@ -37,16 +38,12 @@ abstract class AbstractModel
     }
 
     /**
-     * Get resource model
-     *
-     * @return AbstractResource
+     * Get resource model.
      */
     abstract protected function getResource(): AbstractResource;
 
     /**
-     * Get ID field name
-     *
-     * @return string
+     * Get ID field name.
      */
     protected function getIdFieldName(): string
     {
@@ -54,9 +51,7 @@ abstract class AbstractModel
     }
 
     /**
-     * Get ID
-     *
-     * @return int|string|null
+     * Get ID.
      */
     public function getId(): int|string|null
     {
@@ -64,9 +59,8 @@ abstract class AbstractModel
     }
 
     /**
-     * Set ID
+     * Set ID.
      *
-     * @param int|string $id
      * @return $this
      */
     public function setId(int|string $id): self
@@ -75,16 +69,15 @@ abstract class AbstractModel
     }
 
     /**
-     * Load model by ID
+     * Load model by ID.
      *
-     * @param int|string $id
      * @return $this
      */
     public function load(int|string $id): self
     {
         $data = $this->getResource()->load($id);
 
-        if ($data !== false) {
+        if (false !== $data) {
             $this->setData($data);
             $this->origData = $this->data;
         }
@@ -93,7 +86,7 @@ abstract class AbstractModel
     }
 
     /**
-     * Save model
+     * Save model.
      *
      * @return $this
      */
@@ -105,7 +98,7 @@ abstract class AbstractModel
 
         $id = $this->getResource()->save($this->data);
 
-        if (!$this->getId()) {
+        if (! $this->getId()) {
             $this->setId($id);
         }
 
@@ -115,7 +108,7 @@ abstract class AbstractModel
     }
 
     /**
-     * Delete model
+     * Delete model.
      *
      * @return $this
      */
@@ -130,15 +123,15 @@ abstract class AbstractModel
     }
 
     /**
-     * Set data
+     * Set data.
      *
      * @param string|array<string, mixed> $key
-     * @param mixed $value
+     *
      * @return $this
      */
     public function setData(string|array $key, mixed $value = null): self
     {
-        if (is_array($key)) {
+        if (\is_array($key)) {
             $this->data = $key;
         } else {
             $this->data[$key] = $value;
@@ -148,14 +141,11 @@ abstract class AbstractModel
     }
 
     /**
-     * Get data
-     *
-     * @param string|null $key
-     * @return mixed
+     * Get data.
      */
     public function getData(?string $key = null): mixed
     {
-        if ($key === null) {
+        if (null === $key) {
             return $this->data;
         }
 
@@ -163,26 +153,23 @@ abstract class AbstractModel
     }
 
     /**
-     * Unset data
+     * Unset data.
      *
-     * @param string $key
      * @return $this
      */
     public function unsetData(string $key): self
     {
         unset($this->data[$key]);
+
         return $this;
     }
 
     /**
-     * Check if data has changed
-     *
-     * @param string|null $key
-     * @return bool
+     * Check if data has changed.
      */
     public function hasDataChanged(?string $key = null): bool
     {
-        if ($key === null) {
+        if (null === $key) {
             return $this->data !== $this->origData;
         }
 
@@ -190,9 +177,7 @@ abstract class AbstractModel
     }
 
     /**
-     * Check if model exists in database
-     *
-     * @return bool
+     * Check if model exists in database.
      */
     public function isObjectNew(): bool
     {
@@ -200,9 +185,7 @@ abstract class AbstractModel
     }
 
     /**
-     * Check if model is deleted
-     *
-     * @return bool
+     * Check if model is deleted.
      */
     public function isDeleted(): bool
     {
@@ -210,7 +193,7 @@ abstract class AbstractModel
     }
 
     /**
-     * Convert to array
+     * Convert to array.
      *
      * @return array<string, mixed>
      */
@@ -220,10 +203,7 @@ abstract class AbstractModel
     }
 
     /**
-     * Magic getter
-     *
-     * @param string $key
-     * @return mixed
+     * Magic getter.
      */
     public function __get(string $key): mixed
     {
@@ -231,11 +211,7 @@ abstract class AbstractModel
     }
 
     /**
-     * Magic setter
-     *
-     * @param string $key
-     * @param mixed $value
-     * @return void
+     * Magic setter.
      */
     public function __set(string $key, mixed $value): void
     {
@@ -243,10 +219,7 @@ abstract class AbstractModel
     }
 
     /**
-     * Magic isset
-     *
-     * @param string $key
-     * @return bool
+     * Magic isset.
      */
     public function __isset(string $key): bool
     {

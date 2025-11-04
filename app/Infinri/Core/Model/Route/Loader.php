@@ -5,23 +5,21 @@ declare(strict_types=1);
 namespace Infinri\Core\Model\Route;
 
 use Infinri\Core\App\RouterInterface;
-use Infinri\Core\Model\Module\ModuleManager;
 use Infinri\Core\Helper\Logger;
+use Infinri\Core\Model\Module\ModuleManager;
 
 /**
- * Automatically discovers and loads routes from routes.xml files in enabled modules
+ * Automatically discovers and loads routes from routes.xml files in enabled modules.
  */
 class Loader
 {
     public function __construct(
         private readonly ModuleManager $moduleManager
-    ) {}
+    ) {
+    }
 
     /**
-     * Load routes from all enabled modules' routes.xml files
-     *
-     * @param RouterInterface $router
-     * @return void
+     * Load routes from all enabled modules' routes.xml files.
      */
     public function loadRoutes(RouterInterface $router): void
     {
@@ -31,12 +29,12 @@ class Loader
         $enabledCount = 0;
 
         Logger::info('RouteLoader: Starting route discovery', [
-            'total_modules' => count($allModules)
+            'total_modules' => \count($allModules),
         ]);
 
         foreach ($allModules as $moduleName => $moduleData) {
             // Skip disabled modules
-            if (!$this->moduleManager->isEnabled($moduleName)) {
+            if (! $this->moduleManager->isEnabled($moduleName)) {
                 Logger::debug("RouteLoader: Skipping disabled module {$moduleName}");
                 continue;
             }
@@ -47,17 +45,14 @@ class Loader
 
         Logger::info('RouteLoader: Route discovery complete', [
             'enabled_modules' => $enabledCount,
-            'total_routes' => count($router->getRoutes())
+            'total_routes' => \count($router->getRoutes()),
         ]);
     }
 
     /**
-     * Load routes from a single module's routes.xml
+     * Load routes from a single module's routes.xml.
      *
-     * @param RouterInterface $router
-     * @param string $moduleName
      * @param array<string, mixed> $moduleData
-     * @return void
      */
     private function loadModuleRoutes(RouterInterface $router, string $moduleName, array $moduleData): void
     {
@@ -70,7 +65,7 @@ class Loader
         $foundRoutes = false;
 
         foreach ($routePaths as $area => $routesXmlPath) {
-            if (!file_exists($routesXmlPath)) {
+            if (! file_exists($routesXmlPath)) {
                 Logger::debug("RouteLoader: No {$area} routes.xml for {$moduleName}");
                 continue;
             }
@@ -78,32 +73,27 @@ class Loader
             try {
                 $xml = simplexml_load_file($routesXmlPath);
 
-                if ($xml === false) {
+                if (false === $xml) {
                     Logger::warning("RouteLoader: Failed to parse {$area} routes.xml for {$moduleName}");
                     continue;
                 }
 
                 $this->parseRoutesXml($router, $moduleName, $xml, $moduleData);
                 $foundRoutes = true;
-
             } catch (\Exception $e) {
                 Logger::exception($e, "RouteLoader: Error loading {$area} routes from {$moduleName}");
             }
         }
 
-        if (!$foundRoutes) {
+        if (! $foundRoutes) {
             Logger::debug("RouteLoader: No routes.xml files found for {$moduleName}");
         }
     }
 
     /**
-     * Parse routes.xml and register routes
+     * Parse routes.xml and register routes.
      *
-     * @param RouterInterface $router
-     * @param string $moduleName
-     * @param \SimpleXMLElement $xml
      * @param array<string, mixed> $moduleData
-     * @return void
      */
     private function parseRoutesXml(RouterInterface $router, string $moduleName, \SimpleXMLElement $xml, array $moduleData): void
     {
@@ -112,7 +102,7 @@ class Loader
         if (isset($xml->router)) {
             $routers = [];
             foreach ($xml->router as $routerNode) {
-                $routerId = (string)($routerNode['id'] ?? 'frontend');
+                $routerId = (string) ($routerNode['id'] ?? 'frontend');
                 $routers[$routerId] = $routerNode;
             }
 
@@ -130,7 +120,7 @@ class Loader
 
             // Process any other router types not in the priority list
             foreach ($routers as $routerId => $routerNode) {
-                if (!in_array($routerId, $order, true)) {
+                if (! \in_array($routerId, $order, true)) {
                     Logger::debug("RouteLoader: Processing {$routerId} routes for {$moduleName}");
 
                     foreach ($routerNode->route as $routeNode) {
@@ -142,21 +132,18 @@ class Loader
     }
 
     /**
-     * Register a single route from XML configuration
+     * Register a single route from XML configuration.
      *
-     * @param RouterInterface $router
-     * @param string $moduleName
-     * @param \SimpleXMLElement $routeNode
      * @param string $routerId Router type (frontend, admin, etc.)
-     * @return void
      */
     private function registerRoute(RouterInterface $router, string $moduleName, \SimpleXMLElement $routeNode, string $routerId = 'frontend'): void
     {
-        $routeId = (string)($routeNode['id'] ?? '');
-        $frontName = (string)($routeNode['frontName'] ?? '');
+        $routeId = (string) ($routeNode['id'] ?? '');
+        $frontName = (string) ($routeNode['frontName'] ?? '');
 
         if (empty($routeId) || empty($frontName)) {
             Logger::warning("RouteLoader: Invalid route configuration in {$moduleName}");
+
             return;
         }
 
@@ -165,12 +152,12 @@ class Loader
 
         // For admin routes, add Adminhtml to namespace
         // Exception: Don't add Adminhtml for the Admin module itself
-        $namespace = ($routerId === 'admin' && $moduleName !== 'Infinri_Admin')
+        $namespace = ('admin' === $routerId && 'Infinri_Admin' !== $moduleName)
             ? $baseNamespace . '\\Adminhtml'
             : $baseNamespace;
 
         // Special handling for CMS module - catch-all routing for frontend only
-        if ($frontName === 'cms' && $routerId === 'frontend') {
+        if ('cms' === $frontName && 'frontend' === $routerId) {
             $router->addRoute(
                 'cms_index_index',
                 '/',
@@ -197,21 +184,21 @@ class Loader
                 ['GET']
             );
 
-            Logger::info("RouteLoader: Registered CMS catch-all routes", [
+            Logger::info('RouteLoader: Registered CMS catch-all routes', [
                 'module' => $moduleName,
-                'routes' => ['/', '/cms/page/view', '/*']
+                'routes' => ['/', '/cms/page/view', '/*'],
             ]);
         } else {
             // Standard module route: /{routerId}/{frontName}/{controller}/{action}
             // Admin routes: /admin/{frontName}/...
             // Frontend routes: /{frontName}/...
-            $prefix = ($routerId === 'admin') ? '/admin' : '';
+            $prefix = ('admin' === $routerId) ? '/admin' : '';
 
             // Special handling for Admin module itself - don't double up the "admin" prefix
-            if ($moduleName === 'Infinri_Admin' && $frontName === 'admin') {
+            if ('Infinri_Admin' === $moduleName && 'admin' === $frontName) {
                 $router->addRoute(
                     "{$routeId}_index_index",
-                    "/admin",
+                    '/admin',
                     $namespace . '\\Dashboard\\Index',
                     'execute',
                     ['GET', 'POST']
@@ -221,7 +208,7 @@ class Loader
                 // Router's specificity system ensures more specific routes match first
                 $router->addRoute(
                     "{$routeId}_nested_controller_action",
-                    "/admin/:controller/:subcontroller/:action",
+                    '/admin/:controller/:subcontroller/:action',
                     $namespace . '\\:controller\\:subcontroller\\:action',
                     'execute',
                     ['GET', 'POST']
@@ -230,15 +217,15 @@ class Loader
                 // Support 2-level paths: /admin/dashboard/index
                 $router->addRoute(
                     "{$routeId}_controller_action",
-                    "/admin/:controller/:action",
+                    '/admin/:controller/:action',
                     $namespace . '\\:controller\\:action',
                     'execute',
                     ['GET', 'POST']
                 );
 
-                Logger::info("RouteLoader: Registered Admin module routes", [
+                Logger::info('RouteLoader: Registered Admin module routes', [
                     'module' => $moduleName,
-                    'patterns' => ['/admin/:controller/:subcontroller/:action', '/admin/:controller/:action']
+                    'patterns' => ['/admin/:controller/:subcontroller/:action', '/admin/:controller/:action'],
                 ]);
             } else {
                 $router->addRoute(
@@ -257,11 +244,11 @@ class Loader
                     ['GET', 'POST']
                 );
 
-                Logger::info("RouteLoader: Registered standard routes", [
+                Logger::info('RouteLoader: Registered standard routes', [
                     'module' => $moduleName,
                     'routerId' => $routerId,
                     'frontName' => $frontName,
-                    'pattern' => "{$prefix}/{$frontName}/*"
+                    'pattern' => "{$prefix}/{$frontName}/*",
                 ]);
             }
         }

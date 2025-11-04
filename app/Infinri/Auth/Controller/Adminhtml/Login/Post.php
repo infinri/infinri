@@ -1,50 +1,52 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Auth\Controller\Adminhtml\Login;
 
+use Infinri\Admin\Model\AdminUser;
+use Infinri\Admin\Model\ResourceModel\AdminUser as AdminUserResource;
+use Infinri\Admin\Service\RememberTokenService;
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
-use Infinri\Admin\Model\ResourceModel\AdminUser as AdminUserResource;
-use Infinri\Admin\Model\AdminUser;
-use Infinri\Admin\Service\RememberTokenService;
-use Infinri\Core\Security\CsrfGuard;
 use Infinri\Core\Helper\Logger;
+use Infinri\Core\Security\CsrfGuard;
 use Infinri\Core\Service\RateLimiter;
 use Random\RandomException;
 
 /**
  * Route: /admin/auth/login/post
- * Processes login form submission with CSRF protection and Remember Me
+ * Processes login form submission with CSRF protection and Remember Me.
  */
 class Post
 {
     public function __construct(
-        private readonly AdminUserResource    $adminUserResource,
-        private readonly CsrfGuard            $csrfGuard,
+        private readonly AdminUserResource $adminUserResource,
+        private readonly CsrfGuard $csrfGuard,
         private readonly RememberTokenService $rememberTokenService,
-        private readonly RateLimiter          $rateLimiter
-    ) {}
+        private readonly RateLimiter $rateLimiter
+    ) {
+    }
 
     /**
      * @throws RandomException
      */
     public function execute(Request $request): Response
     {
-        if (session_status() === PHP_SESSION_NONE) {
+        if (\PHP_SESSION_NONE === session_status()) {
             session_start();
         }
 
         // Default: 5 login attempts per 5 minutes per IP
-        if (!$this->rateLimiter->attemptFromRequest($request, 'login')) {
+        if (! $this->rateLimiter->attemptFromRequest($request, 'login')) {
             $retryAfter = $this->rateLimiter->retryAfter('login', $request->getClientIp() ?? 'unknown');
 
             Logger::warning('Login rate limit exceeded', [
                 'ip' => $request->getClientIp(),
-                'retry_after' => $retryAfter
+                'retry_after' => $retryAfter,
             ]);
 
-            $_SESSION['login_error'] = sprintf(
+            $_SESSION['login_error'] = \sprintf(
                 'Too many login attempts. Please try again in %d seconds.',
                 $retryAfter
             );
@@ -56,11 +58,12 @@ class Post
         $csrfToken = $request->getPost('_csrf_token', '');
         $csrfTokenId = $request->getPost('_csrf_token_id', 'admin_login');
 
-        if (!$this->csrfGuard->validateToken($csrfTokenId, $csrfToken)) {
+        if (! $this->csrfGuard->validateToken($csrfTokenId, $csrfToken)) {
             Logger::warning('Login failed: Invalid CSRF token', [
                 'ip' => $request->getClientIp(),
-                'token_id' => $csrfTokenId
+                'token_id' => $csrfTokenId,
             ]);
+
             return $this->createRedirect('/admin/auth/login/index?error=csrf');
         }
 
@@ -74,17 +77,19 @@ class Post
             Logger::warning('Login failed: Empty credentials');
             $_SESSION['login_error'] = 'Please enter both username and password.';
             $_SESSION['login_username'] = $username;
+
             return $this->createRedirect('/admin/auth/login/index');
         }
 
         // Load user
         $userData = $this->adminUserResource->loadByUsername($username);
 
-        if (!$userData) {
+        if (! $userData) {
             Logger::warning('Login failed: User not found', ['username' => $username]);
             usleep(random_int(100000, 500000)); // Timing attack prevention
             $_SESSION['login_error'] = 'Invalid username or password.';
             $_SESSION['login_username'] = $username;
+
             return $this->createRedirect('/admin/auth/login/index');
         }
 
@@ -93,36 +98,38 @@ class Post
         $user->setData($userData);
 
         // Check active status
-        if (!$user->isActive()) {
+        if (! $user->isActive()) {
             Logger::warning('Login failed: User inactive', ['username' => $username]);
             $_SESSION['login_error'] = 'This account has been disabled. Please contact an administrator.';
             $_SESSION['login_username'] = $username;
+
             return $this->createRedirect('/admin/auth/login/index');
         }
 
         // Verify password
-        if (!password_verify($password, $user->getPassword())) {
+        if (! password_verify($password, $user->getPassword())) {
             Logger::warning('Login failed: Invalid password', ['username' => $username]);
             usleep(random_int(100000, 500000)); // Timing attack prevention
             $_SESSION['login_error'] = 'Invalid username or password.';
             $_SESSION['login_username'] = $username;
+
             return $this->createRedirect('/admin/auth/login/index');
         }
 
         // Handle Remember Me BEFORE session operations (must be before headers are sent)
         $rememberMe = $request->getPost('remember_me', '0');
-        if ($rememberMe === '1') {
+        if ('1' === $rememberMe) {
             $userId = $user->getUserId();
             $clientIp = $request->getClientIp();
             $userAgent = $request->getUserAgent();
-            
-            if ($userId === null) {
+
+            if (null === $userId) {
                 throw new \RuntimeException('User ID cannot be null for remember token');
             }
-            if ($clientIp === null) {
+            if (null === $clientIp) {
                 $clientIp = '0.0.0.0'; // Fallback IP
             }
-            
+
             $token = $this->rememberTokenService->generateToken(
                 $userId,
                 $clientIp,
@@ -146,14 +153,14 @@ class Post
 
         // Update last login
         $userId = $user->getUserId();
-        if ($userId !== null) {
+        if (null !== $userId) {
             $this->adminUserResource->updateLastLogin($userId);
         }
 
         Logger::info('Admin login successful', [
             'user_id' => $user->getUserId(),
             'username' => $username,
-            'remember_me' => $rememberMe === '1'
+            'remember_me' => '1' === $rememberMe,
         ]);
 
         // Redirect to dashboard
@@ -165,12 +172,14 @@ class Post
         $response = new Response();
         $response->setStatusCode(302);
         $response->setHeader('Location', $url);
+
         return $response;
     }
 
     private function getFingerprint(Request $request): string
     {
-        return hash('sha256',
+        return hash(
+            'sha256',
             $request->getClientIp() .
             $request->getUserAgent()
         );

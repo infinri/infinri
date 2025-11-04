@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Bootstrap Application
  * Initialize all components: modules, config, DI container, router
@@ -84,7 +85,6 @@ function initApplication(): FrontController
     return new FrontController(
         $router,
         $dispatcher,
-        $request,
         new SecurityHeadersMiddleware(),
         $objectManager->get(AuthenticationMiddleware::class)
     );

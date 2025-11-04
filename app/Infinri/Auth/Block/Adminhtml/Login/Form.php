@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Auth\Block\Adminhtml\Login;
@@ -6,12 +7,12 @@ namespace Infinri\Auth\Block\Adminhtml\Login;
 use Infinri\Core\Block\Template;
 
 /**
- * Admin Login Form Block
+ * Admin Login Form Block.
  */
 class Form extends Template
 {
     /**
-     * Get form action URL
+     * Get form action URL.
      */
     public function getFormAction(): string
     {
@@ -19,15 +20,17 @@ class Form extends Template
     }
 
     /**
-     * Get error message from session flash
+     * Get error message from session flash.
      */
     public function getErrorMessage(): string
     {
         if (isset($_SESSION['login_error'])) {
             $error = $_SESSION['login_error'];
             unset($_SESSION['login_error']);
+
             return $error;
         }
+
         return '';
     }
 
@@ -40,15 +43,17 @@ class Form extends Template
     }
 
     /**
-     * Get username from previous attempt
+     * Get username from previous attempt.
      */
     public function getUsername(): string
     {
         if (isset($_SESSION['login_username'])) {
             $username = $_SESSION['login_username'];
             unset($_SESSION['login_username']);
+
             return $username;
         }
+
         return '';
     }
 }

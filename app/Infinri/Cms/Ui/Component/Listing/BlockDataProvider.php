@@ -7,7 +7,7 @@ namespace Infinri\Cms\Ui\Component\Listing;
 use Infinri\Cms\Model\Repository\BlockRepository;
 
 /**
- * CMS Block Listing Data Provider
+ * CMS Block Listing Data Provider.
  */
 class BlockDataProvider extends AbstractDataProvider
 {

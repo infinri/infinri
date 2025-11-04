@@ -1,50 +1,39 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Cms\Block\Widget;
 
-use Infinri\Core\Block\Template;
 use Infinri\Cms\Model\Widget;
+use Infinri\Core\Block\Template;
 
 /**
- * Base class for all widget renderer blocks
+ * Base class for all widget renderer blocks.
  */
 abstract class AbstractWidget extends Template
 {
-    /**
-     * @var Widget|null
-     */
     protected ?Widget $widget = null;
 
     /**
-     * @param Widget $widget
      * @return $this
      */
     public function setWidget(Widget $widget): self
     {
         $this->widget = $widget;
+
         return $this;
     }
 
-    /**
-     * @return Widget|null
-     */
     public function getWidget(): ?Widget
     {
         return $this->widget;
     }
 
-    /**
-     * @return array
-     */
     public function getWidgetData(): array
     {
         return $this->widget->getWidgetData();
     }
 
-    /**
-     * @return int|null
-     */
     public function getWidgetId(): ?int
     {
         return $this->widget->getWidgetId();
@@ -52,9 +41,7 @@ abstract class AbstractWidget extends Template
 
     /**
      * Render widget HTML
-     * Child classes should override this method to provide widget-specific rendering
-     *
-     * @return string
+     * Child classes should override this method to provide widget-specific rendering.
      */
     public function toHtml(): string
     {

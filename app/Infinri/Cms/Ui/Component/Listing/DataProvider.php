@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Cms\Ui\Component\Listing;
@@ -6,7 +7,7 @@ namespace Infinri\Cms\Ui\Component\Listing;
 use Infinri\Cms\Model\Repository\PageRepository;
 
 /**
- * CMS Page Listing Data Provider
+ * CMS Page Listing Data Provider.
  */
 class DataProvider extends AbstractDataProvider
 {

@@ -1,15 +1,20 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Seo\Ui\Component\Listing\Column;
 
 /**
- * Redirect Actions Column
+ * Redirect Actions Column.
  */
 class RedirectActions
 {
     /**
-     * Prepare data source for actions column
+     * Prepare data source for actions column.
+     *
+     * @param array<string, mixed> $dataSource
+     *
+     * @return array<string, mixed>
      */
     public function prepareDataSource(array $dataSource): array
     {
@@ -19,16 +24,16 @@ class RedirectActions
                     $item['actions'] = [
                         'edit' => [
                             'href' => '/admin/seo/redirect/edit?id=' . $item['redirect_id'],
-                            'label' => 'Edit'
+                            'label' => 'Edit',
                         ],
                         'delete' => [
                             'href' => '/admin/seo/redirect/delete?id=' . $item['redirect_id'],
                             'label' => 'Delete',
                             'confirm' => [
                                 'title' => 'Delete Redirect',
-                                'message' => 'Are you sure you want to delete this redirect?'
-                            ]
-                        ]
+                                'message' => 'Are you sure you want to delete this redirect?',
+                            ],
+                        ],
                     ];
                 }
             }

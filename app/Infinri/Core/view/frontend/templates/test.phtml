@@ -1,0 +1,12 @@
+<?php
+/**
+ * Test template for unit tests
+ * @var $block \Infinri\Core\Block\Template
+ */
+$title = $block->getData('title') ?? 'Default Title';
+$content = $block->getData('content') ?? 'Default content';
+?>
+<div class="test-template">
+    <h1><?= $block->escapeHtml($title) ?></h1>
+    <div class="content"><?= $block->escapeHtml($content) ?></div>
+</div>

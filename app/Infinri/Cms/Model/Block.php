@@ -12,22 +12,19 @@ use Infinri\Cms\Model\ResourceModel\Block as BlockResource;
 class Block extends AbstractContentEntity
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param BlockResource $resource
      * @param array<string, mixed> $data
      */
     public function __construct(
         BlockResource $resource,
-        array         $data = []
+        array $data = []
     ) {
         parent::__construct($resource, $data);
     }
 
     /**
-     * Get identifier field name (implements abstract method)
-     *
-     * @return string
+     * Get identifier field name (implements abstract method).
      */
     protected function getIdentifierField(): string
     {
@@ -35,9 +32,7 @@ class Block extends AbstractContentEntity
     }
 
     /**
-     * Get entity type (implements abstract method)
-     *
-     * @return string
+     * Get entity type (implements abstract method).
      */
     protected function getEntityType(): string
     {
@@ -45,9 +40,7 @@ class Block extends AbstractContentEntity
     }
 
     /**
-     * Get block ID
-     *
-     * @return int|null
+     * Get block ID.
      */
     public function getBlockId(): ?int
     {
@@ -55,10 +48,7 @@ class Block extends AbstractContentEntity
     }
 
     /**
-     * Set block ID
-     *
-     * @param int $blockId
-     * @return self
+     * Set block ID.
      */
     public function setBlockId(int $blockId): self
     {
@@ -66,9 +56,7 @@ class Block extends AbstractContentEntity
     }
 
     /**
-     * Get identifier (unique key for referencing blocks in layouts)
-     *
-     * @return string|null
+     * Get identifier (unique key for referencing blocks in layouts).
      */
     public function getIdentifier(): ?string
     {
@@ -76,10 +64,7 @@ class Block extends AbstractContentEntity
     }
 
     /**
-     * Set identifier
-     *
-     * @param string $identifier
-     * @return self
+     * Set identifier.
      */
     public function setIdentifier(string $identifier): self
     {

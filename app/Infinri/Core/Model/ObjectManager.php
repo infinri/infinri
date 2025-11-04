@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Model;
@@ -21,9 +22,7 @@ class ObjectManager
     private ContainerInterface $container;
 
     /**
-     * Private constructor for singleton
-     *
-     * @param ContainerInterface $container
+     * Private constructor for singleton.
      */
     private function __construct(ContainerInterface $container)
     {
@@ -31,14 +30,13 @@ class ObjectManager
     }
 
     /**
-     * Get singleton instance
+     * Get singleton instance.
      *
-     * @return self
      * @throws \RuntimeException If not configured yet
      */
     public static function getInstance(): self
     {
-        if (self::$instance === null) {
+        if (null === self::$instance) {
             throw new \RuntimeException('ObjectManager not configured. Call setInstance() first.');
         }
 
@@ -46,21 +44,17 @@ class ObjectManager
     }
 
     /**
-     * Set the singleton instance
-     *
-     * @param ContainerInterface $container
-     * @return self
+     * Set the singleton instance.
      */
     public static function setInstance(ContainerInterface $container): self
     {
         self::$instance = new self($container);
+
         return self::$instance;
     }
 
     /**
-     * Reset singleton instance (for testing)
-     *
-     * @return void
+     * Reset singleton instance (for testing).
      */
     public static function reset(): void
     {
@@ -68,11 +62,14 @@ class ObjectManager
     }
 
     /**
-     * Get object from container (singleton)
+     * Get object from container (singleton).
      *
-     * @template T
+     * @template T of object
+     *
      * @param class-string<T> $className
+     *
      * @return T
+     *
      * @throws \Psr\Container\NotFoundExceptionInterface|\Psr\Container\ContainerExceptionInterface If class not found
      */
     public function get(string $className): object
@@ -81,12 +78,15 @@ class ObjectManager
     }
 
     /**
-     * Create new instance (non-singleton)
+     * Create new instance (non-singleton).
      *
-     * @template T
-     * @param class-string<T> $className
+     * @template T of object
+     *
+     * @param class-string<T>      $className
      * @param array<string, mixed> $arguments Constructor arguments
+     *
      * @return T
+     *
      * @throws \Psr\Container\NotFoundExceptionInterface|\Psr\Container\ContainerExceptionInterface If class not found
      */
     public function create(string $className, array $arguments = []): object
@@ -106,10 +106,7 @@ class ObjectManager
     }
 
     /**
-     * Check if container has a definition for the class
-     *
-     * @param string $className
-     * @return bool
+     * Check if container has a definition for the class.
      */
     public function has(string $className): bool
     {
@@ -117,9 +114,7 @@ class ObjectManager
     }
 
     /**
-     * Get the underlying container
-     *
-     * @return ContainerInterface
+     * Get the underlying container.
      */
     public function getContainer(): ContainerInterface
     {

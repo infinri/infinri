@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\App;
 
 /**
- * Registers routes and matches URLs to controllers/actions
+ * Registers routes and matches URLs to controllers/actions.
  */
 class Router implements RouterInterface
 {
@@ -14,13 +15,14 @@ class Router implements RouterInterface
     private array $routes = [];
 
     /**
-     * Register a route
+     * Register a route.
      *
-     * @param string $name Route name
-     * @param string $path URL pattern (e.g., '/product/view/:id')
-     * @param string $controller Controller class
-     * @param string $action Action method
-     * @param array<string> $methods Allowed HTTP methods
+     * @param string        $name       Route name
+     * @param string        $path       URL pattern (e.g., '/product/view/:id')
+     * @param string        $controller Controller class
+     * @param string        $action     Action method
+     * @param array<string> $methods    Allowed HTTP methods
+     *
      * @return $this
      */
     public function addRoute(
@@ -28,9 +30,8 @@ class Router implements RouterInterface
         string $path,
         string $controller,
         string $action = 'execute',
-        array  $methods = ['GET', 'POST']
-    ): self
-    {
+        array $methods = ['GET', 'POST']
+    ): self {
         $this->routes[$name] = [
             'path' => $path,
             'controller' => $controller,
@@ -45,10 +46,7 @@ class Router implements RouterInterface
 
     /**
      * Calculate route specificity score (higher = more specific)
-     * More specific routes should be matched first
-     *
-     * @param string $path
-     * @return int
+     * More specific routes should be matched first.
      */
     private function calculateSpecificity(string $path): int
     {
@@ -58,12 +56,12 @@ class Router implements RouterInterface
         $segments = explode('/', trim($path, '/'));
 
         foreach ($segments as $segment) {
-            if ($segment === '' || $segment === '*') {
+            if ('' === $segment || '*' === $segment) {
                 // Wildcard - least specific
                 $score -= 100;
             } elseif (str_starts_with($segment, ':')) {
                 // Parameter segment (e.g., :id) - somewhat specific
-                $score += 1;
+                $score++;
             } else {
                 // Static segment (e.g., "admin", "auth") - most specific
                 $score += 100;
@@ -71,17 +69,17 @@ class Router implements RouterInterface
         }
 
         // Prefer routes with more segments (more specific paths)
-        $score += count($segments);
+        $score += \count($segments);
 
         return $score;
     }
 
-
     /**
-     * Match URL to route
+     * Match URL to route.
      *
-     * @param string $path Request path
+     * @param string $path   Request path
      * @param string $method HTTP method
+     *
      * @return array|null ['controller' => ..., 'action' => ..., 'params' => [...]] or null
      */
     public function match(string $path, string $method = 'GET'): ?array
@@ -94,7 +92,7 @@ class Router implements RouterInterface
 
         foreach ($sortedRoutes as $name => $route) {
             // Check if method is allowed
-            if (!in_array($method, $route['methods'], true)) {
+            if (! \in_array($method, $route['methods'], true)) {
                 continue;
             }
 
@@ -103,7 +101,7 @@ class Router implements RouterInterface
                 // Extract named parameters
                 $params = [];
                 foreach ($matches as $key => $value) {
-                    if (is_string($key)) {
+                    if (\is_string($key)) {
                         $params[$key] = $value;
                     }
                 }
@@ -121,10 +119,7 @@ class Router implements RouterInterface
     }
 
     /**
-     * Convert route path to regex pattern
-     *
-     * @param string $path
-     * @return string
+     * Convert route path to regex pattern.
      */
     private function convertToRegex(string $path): string
     {
@@ -132,7 +127,8 @@ class Router implements RouterInterface
         $pattern = str_replace('/', '\/', $path);
 
         // Convert :param to named capture group
-        $pattern = preg_replace('/:([a-zA-Z_][a-zA-Z0-9_]*)/', '(?P<$1>[^\/]+)', $pattern);
+        $replaced = preg_replace('/:([a-zA-Z_][a-zA-Z0-9_]*)/', '(?P<$1>[^\/]+)', $pattern);
+        $pattern = null !== $replaced ? $replaced : $pattern;
 
         // Convert * to wildcard
         $pattern = str_replace('*', '.*', $pattern);
@@ -141,7 +137,7 @@ class Router implements RouterInterface
     }
 
     /**
-     * Get all registered routes
+     * Get all registered routes.
      *
      * @return array<string, array<string, mixed>>
      */
@@ -151,15 +147,14 @@ class Router implements RouterInterface
     }
 
     /**
-     * Generate URL for route
+     * Generate URL for route.
      *
-     * @param string $name Route name
+     * @param string               $name   Route name
      * @param array<string, mixed> $params Parameters
-     * @return string|null
      */
     public function generate(string $name, array $params = []): ?string
     {
-        if (!isset($this->routes[$name])) {
+        if (! isset($this->routes[$name])) {
             return null;
         }
 
@@ -167,7 +162,7 @@ class Router implements RouterInterface
 
         // Replace :param with actual values
         foreach ($params as $key => $value) {
-            $path = str_replace(':' . $key, (string)$value, $path);
+            $path = str_replace(':' . $key, (string) $value, $path);
         }
 
         return $path;

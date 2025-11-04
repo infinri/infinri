@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Infinri\Cms\Controller\Adminhtml;
 
+use Infinri\Cms\Model\Repository\AbstractContentRepository;
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
 use Infinri\Core\Security\CsrfGuard;
-use Infinri\Cms\Model\Repository\AbstractContentRepository;
 
 /**
- * Base controller for saving CMS content entities (Page, Block, etc.)
- * @package Infinri\Cms\Controller\Adminhtml
+ * Base controller for saving CMS content entities (Page, Block, etc.).
  */
 abstract class AbstractSaveController
 {
@@ -19,72 +18,54 @@ abstract class AbstractSaveController
 
     public function __construct(
         private readonly CsrfGuard $csrfGuard
-    ) {}
+    ) {
+    }
 
     /**
-     * Each child controller provides its specific repository
-     *
-     * @return AbstractContentRepository
+     * Each child controller provides its specific repository.
      */
     abstract protected function getRepository(): AbstractContentRepository;
 
-    /**
-     * @return string
-     */
     abstract protected function getIdParam(): string;
 
     /**
-     * Each controller defines which fields to extract
-     *
-     * @param Request $request
-     * @return array
+     * Each controller defines which fields to extract.
      */
     abstract protected function extractEntityData(Request $request): array;
 
-    /**
-     * @return string
-     */
     abstract protected function getIndexRoute(): string;
 
-    /**
-     * @return string
-     */
     abstract protected function getEditRoute(): string;
 
-    /**
-     * @return string
-     */
     abstract protected function getEntityName(): string;
 
     /**
-     * Override to add custom validation before save
+     * Override to add custom validation before save.
      *
      * @param array<string, mixed> $data
-     * @return void
+     *
      * @throws \InvalidArgumentException
      */
     abstract protected function validateRequiredFields(array $data): void;
 
     /**
      * Execute save action
-     * Common logic for all save controllers
-     *
-     * @param Request $request
-     * @return Response
+     * Common logic for all save controllers.
      */
     public function execute(Request $request): Response
     {
         $response = new Response();
 
         try {
-            if (!$this->isValidCsrf($request)) {
+            if (! $this->isValidCsrf($request)) {
                 $response->setForbidden();
                 $response->setBody('403 Forbidden - Invalid or missing CSRF token');
+
                 return $response;
             }
 
             // Get entity ID (0 for new entities)
-            $entityId = (int)$request->getParam($this->getIdParam(), 0);
+            $entityId = (int) $request->getParam($this->getIdParam(), 0);
 
             // Extract data from request
             $data = $this->extractEntityData($request);
@@ -95,10 +76,8 @@ abstract class AbstractSaveController
             // Load existing entity or create new one
             if ($entityId) {
                 $entity = $this->getRepository()->getById($entityId);
-                if (!$entity) {
-                    throw new \RuntimeException(
-                        ucfirst($this->getEntityName()) . " with ID {$entityId} not found"
-                    );
+                if (! $entity) {
+                    throw new \RuntimeException(ucfirst($this->getEntityName()) . " with ID {$entityId} not found");
                 }
             } else {
                 $entity = $this->getRepository()->create();
@@ -108,6 +87,7 @@ abstract class AbstractSaveController
             foreach ($data as $key => $value) {
                 $setter = 'set' . str_replace('_', '', ucwords($key, '_'));
                 if (method_exists($entity, $setter)) {
+                    /* @phpstan-ignore-next-line Dynamic method call needed for flexibility */
                     $entity->$setter($value);
                 }
             }
@@ -123,7 +103,6 @@ abstract class AbstractSaveController
                 // Save button
                 $response->setRedirect($this->getIndexRoute());
             }
-
         } catch (\Throwable $e) {
             $response->setServerError();
             $response->setBody('500 Internal Server Error - ' . $e->getMessage());
@@ -140,6 +119,7 @@ abstract class AbstractSaveController
     private function isValidCsrf(Request $request): bool
     {
         $token = $request->getParam(self::CSRF_FIELD);
-        return $this->csrfGuard->validateToken($this->getCsrfTokenId(), is_string($token) ? $token : null);
+
+        return $this->csrfGuard->validateToken($this->getCsrfTokenId(), \is_string($token) ? $token : null);
     }
 }

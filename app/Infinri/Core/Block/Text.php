@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Block;
@@ -14,35 +15,30 @@ class Text extends AbstractBlock
     private string $text = '';
 
     /**
-     * Set text content
+     * Set text content.
      *
-     * @param string $text
      * @return $this
      */
     public function setText(string $text): self
     {
         $this->text = $text;
+
         return $this;
     }
 
     /**
-     * Get text content
-     *
-     * @return string
+     * Get text content.
      */
     public function getText(): string
     {
         return $this->text;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function toHtml(): string
     {
         // Check data array first (set from XML arguments)
         $dataText = $this->getData('text');
-        if ($dataText !== null) {
+        if (null !== $dataText) {
             return $dataText;
         }
 

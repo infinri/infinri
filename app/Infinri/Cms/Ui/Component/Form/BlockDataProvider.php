@@ -7,7 +7,7 @@ namespace Infinri\Cms\Ui\Component\Form;
 use Infinri\Cms\Model\Repository\BlockRepository;
 
 /**
- * CMS Block Form Data Provider
+ * CMS Block Form Data Provider.
  */
 class BlockDataProvider extends AbstractDataProvider
 {

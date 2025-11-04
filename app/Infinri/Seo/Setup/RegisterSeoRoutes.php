@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Seo\Setup;
@@ -6,14 +7,12 @@ namespace Infinri\Seo\Setup;
 use Infinri\Core\App\RouterInterface;
 
 /**
- * Registers sitemap.xml and robots.txt routes directly
+ * Registers sitemap.xml and robots.txt routes directly.
  */
 class RegisterSeoRoutes
 {
     /**
-     * Register SEO routes
-     *
-     * @param RouterInterface $router
+     * Register SEO routes.
      */
     public static function register(RouterInterface $router): void
     {

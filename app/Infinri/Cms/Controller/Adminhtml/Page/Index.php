@@ -1,13 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Cms\Controller\Adminhtml\Page;
 
-use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
+use Infinri\Core\Controller\AbstractAdminController;
 
 /**
- * Displays CMS pages using UI Component grid
+ * Displays CMS pages using UI Component grid.
  */
 class Index extends AbstractAdminController
 {

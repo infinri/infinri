@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Model\Layout;
 
-use Infinri\Core\Model\Module\ModuleManager;
-use Infinri\Core\Model\Cache\Pool;
 use Infinri\Core\App\Request;
+use Infinri\Core\Model\Cache\Pool;
+use Infinri\Core\Model\Module\ModuleManager;
 use Psr\Cache\InvalidArgumentException;
 use SimpleXMLElement;
 
@@ -16,7 +17,7 @@ use SimpleXMLElement;
 class Loader
 {
     /**
-     * Cache TTL in seconds (1 hour)
+     * Cache TTL in seconds (1 hour).
      */
     private const CACHE_TTL = 3600;
 
@@ -24,15 +25,18 @@ class Loader
 
     public function __construct(
         private readonly ModuleManager $moduleManager,
-        private readonly ?Pool         $cachePool = null,
-        private readonly ?Request      $request = null
-    ) {}
+        private readonly ?Pool $cachePool = null,
+        private readonly ?Request $request = null
+    ) {
+    }
 
     /**
-     * Load layout files for a specific handle
+     * Load layout files for a specific handle.
      *
      * @param string $handle Layout handle (e.g., 'default', 'cms_index_index')
-     * @return array<string, SimpleXMLElement> Array of module name => XML content
+     *
+     * @return array<string, \SimpleXMLElement> Array of module name => XML content
+     *
      * @throws InvalidArgumentException
      */
     public function load(string $handle): array
@@ -45,7 +49,7 @@ class Loader
             $cacheKey = $this->getCacheKey($handle);
             $cached = $this->cachePool->get($cacheKey);
 
-            if ($cached !== null && is_array($cached)) {
+            if (null !== $cached && \is_array($cached)) {
                 // Reconstruct SimpleXMLElement objects from cached XML strings
                 return $this->unserializeLayouts($cached);
             }
@@ -55,7 +59,7 @@ class Loader
         $layouts = $this->loadFromFiles($handle);
 
         // Store in cache
-        if ($this->isCacheEnabled() && !empty($layouts)) {
+        if ($this->isCacheEnabled() && ! empty($layouts)) {
             $this->cachePool->set(
                 $this->getCacheKey($handle),
                 $this->serializeLayouts($layouts),
@@ -67,10 +71,9 @@ class Loader
     }
 
     /**
-     * Load layouts from files
+     * Load layouts from files.
      *
-     * @param string $handle
-     * @return array<string, SimpleXMLElement>
+     * @return array<string, \SimpleXMLElement>
      */
     private function loadFromFiles(string $handle): array
     {
@@ -82,14 +85,14 @@ class Loader
         foreach ($modules as $moduleName) {
             $moduleData = $this->moduleManager->getModuleList()->getOne($moduleName);
 
-            if (!$moduleData || !isset($moduleData['path'])) {
+            if (! $moduleData || ! isset($moduleData['path'])) {
                 continue;
             }
 
             // Try to load layout file for this handle
             $xml = $this->loadLayoutFile($moduleData['path'], $handle);
 
-            if ($xml !== null) {
+            if (null !== $xml) {
                 $layouts[$moduleName] = $xml;
             }
         }
@@ -98,71 +101,71 @@ class Loader
     }
 
     /**
-     * Serialize layouts for caching
+     * Serialize layouts for caching.
      *
-     * @param array<string, SimpleXMLElement> $layouts
+     * @param array<string, \SimpleXMLElement> $layouts
+     *
      * @return array<string, string>
      */
     private function serializeLayouts(array $layouts): array
     {
         $serialized = [];
         foreach ($layouts as $moduleName => $xml) {
-            $serialized[$moduleName] = $xml->asXML();
+            $xmlString = $xml->asXML();
+            if (false !== $xmlString) {
+                $serialized[$moduleName] = $xmlString;
+            }
         }
+
         return $serialized;
     }
 
     /**
-     * Unserialize layouts from cache
+     * Unserialize layouts from cache.
      *
      * @param array<string, string> $serialized
-     * @return array<string, SimpleXMLElement>
+     *
+     * @return array<string, \SimpleXMLElement>
      */
     private function unserializeLayouts(array $serialized): array
     {
         $layouts = [];
         foreach ($serialized as $moduleName => $xmlString) {
-            if ($xmlString !== false) {
-                $xml = simplexml_load_string($xmlString);
-                if ($xml !== false) {
-                    $layouts[$moduleName] = $xml;
-                }
+            $xml = simplexml_load_string($xmlString);
+            if (false !== $xml) {
+                $layouts[$moduleName] = $xml;
             }
         }
+
         return $layouts;
     }
 
     /**
-     * Check if caching is enabled
-     *
-     * @return bool
+     * Check if caching is enabled.
      */
     private function isCacheEnabled(): bool
     {
-        return $this->cachePool !== null
-            && filter_var($_ENV['CACHE_LAYOUT_ENABLED'] ?? 'true', FILTER_VALIDATE_BOOLEAN);
+        return null !== $this->cachePool
+            && filter_var($_ENV['CACHE_LAYOUT_ENABLED'] ?? 'true', \FILTER_VALIDATE_BOOLEAN);
     }
 
     /**
-     * Get cache key for handle
-     *
-     * @param string $handle
-     * @return string
+     * Get cache key for handle.
      */
     private function getCacheKey(string $handle): string
     {
         $modules = $this->moduleManager->getModulesInOrder();
+
         return 'layout_' . $handle . '_' . md5(implode('|', $modules));
     }
 
     /**
-     * Load layout file from module
+     * Load layout file from module.
      *
      * @param string $modulePath Module base path
-     * @param string $handle Layout handle
-     * @return SimpleXMLElement|null
+     * @param string $handle     Layout handle
      */
-    private function loadLayoutFile(string $modulePath, string $handle): ?SimpleXMLElement
+    private function loadLayoutFile(string $modulePath, string $handle): ?\SimpleXMLElement
     {
         // Get directories fresh for THIS call (don't rely on cached area)
         $area = $this->request ?
@@ -174,11 +177,11 @@ class Loader
             $modulePath . '/view/base/layout',           // Base layouts
         ];
 
-        if ($handle === 'default') {
+        if ('default' === $handle) {
             \Infinri\Core\Helper\Logger::info('Loader: Searching for default.xml', [
                 'directories' => $layoutDirs,
                 'area' => $area,
-                'path' => $this->request ? $this->request->getPath() : 'no-request'
+                'path' => $this->request ? $this->request->getPath() : 'no-request',
             ]);
         }
 
@@ -188,8 +191,9 @@ class Loader
                 \Infinri\Core\Helper\Logger::debug('Loader: Loading layout file', [
                     'handle' => $handle,
                     'file' => $filePath,
-                    'area' => $area
+                    'area' => $area,
                 ]);
+
                 return $this->loadXml($filePath);
             }
         }
@@ -198,9 +202,9 @@ class Loader
     }
 
     /**
-     * Set area explicitly (for testing)
+     * Set area explicitly (for testing).
+     *
      * @param string $area 'frontend' or 'adminhtml'
-     * @return void
      */
     public function setArea(string $area): void
     {
@@ -208,11 +212,11 @@ class Loader
     }
 
     /**
-     * Detect current area (admin or frontend)
+     * Detect current area (admin or frontend).
      */
     private function detectArea(): string
     {
-        if ($this->currentArea !== null) {
+        if (null !== $this->currentArea) {
             return $this->currentArea;
         }
 
@@ -223,7 +227,7 @@ class Loader
 
             \Infinri\Core\Helper\Logger::info('Loader: Detected area', [
                 'path' => $path,
-                'area' => $this->currentArea
+                'area' => $this->currentArea,
             ]);
         } else {
             // Fallback to adminhtml if no request (for backward compatibility with tests)
@@ -234,9 +238,10 @@ class Loader
     }
 
     /**
-     * Get layout directory paths for a module
+     * Get layout directory paths for a module.
      *
      * @param string $modulePath Module base path
+     *
      * @return array<string> Layout directory paths
      */
     private function getLayoutDirectories(string $modulePath): array
@@ -244,7 +249,7 @@ class Loader
         $area = $this->detectArea();
 
         // If we can detect a specific area, prioritize it
-        if ($this->request !== null) {
+        if (null !== $this->request) {
             // Request available - use detected area first
             return [
                 $modulePath . '/view/' . $area . '/layout',  // Area-specific (detected)
@@ -265,31 +270,30 @@ class Loader
     }
 
     /**
-     * Load and validate XML file
-     *
-     * @param string $filePath
-     * @return SimpleXMLElement|null
+     * Load and validate XML file.
      */
-    private function loadXml(string $filePath): ?SimpleXMLElement
+    private function loadXml(string $filePath): ?\SimpleXMLElement
     {
         $useInternalErrors = libxml_use_internal_errors(true);
 
         try {
             $xml = simplexml_load_file($filePath);
 
-            if ($xml === false) {
+            if (false === $xml) {
                 libxml_clear_errors();
+
                 return null;
             }
 
             // Debug: Check if admin_1column.xml has the sidebar
-            if (strpos($filePath, 'admin_1column.xml') !== false) {
+            if (str_contains($filePath, 'admin_1column.xml')) {
                 $mainContentRefs = $xml->xpath('//referenceContainer[@name="main.content"]');
-                if ($mainContentRefs) {
+                if (\is_array($mainContentRefs) && ! empty($mainContentRefs)) {
                     $childCount = $mainContentRefs[0]->count();
+                    $sidebarNodes = $xml->xpath('//container[@name="admin.sidebar"]');
                     \Infinri\Core\Helper\Logger::info('Loader: Loaded admin_1column.xml', [
                         'main.content_children' => $childCount,
-                        'has_sidebar' => count($xml->xpath('//container[@name="admin.sidebar"]')) > 0
+                        'has_sidebar' => \is_array($sidebarNodes) && \count($sidebarNodes) > 0,
                     ]);
                 }
             }
@@ -301,7 +305,7 @@ class Loader
     }
 
     /**
-     * Get all available handles from all modules
+     * Get all available handles from all modules.
      *
      * @return array<string> List of unique handles
      */
@@ -314,7 +318,7 @@ class Loader
         foreach ($modules as $moduleName) {
             $moduleData = $this->moduleManager->getModuleList()->getOne($moduleName);
 
-            if (!$moduleData || !isset($moduleData['path'])) {
+            if (! $moduleData || ! isset($moduleData['path'])) {
                 continue;
             }
 
@@ -322,19 +326,19 @@ class Loader
 
             foreach ($layoutDirs as $dir) {
                 // Skip if directory doesn't exist (faster than is_dir check in loop)
-                if (!is_dir($dir)) {
+                if (! is_dir($dir)) {
                     continue;
                 }
 
                 // Use scandir instead of glob for better performance
                 $files = @scandir($dir);
-                if ($files === false) {
+                if (false === $files) {
                     continue;
                 }
 
                 foreach ($files as $file) {
                     // Only process .xml files
-                    if (substr($file, -4) === '.xml') {
+                    if ('.xml' === substr($file, -4)) {
                         $handle = substr($file, 0, -4);
                         $handles[$handle] = true;
                     }

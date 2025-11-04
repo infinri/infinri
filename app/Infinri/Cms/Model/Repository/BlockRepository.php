@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Infinri\Cms\Model\Repository;
 
 use Infinri\Cms\Api\BlockRepositoryInterface;
+use Infinri\Cms\Model\AbstractContentEntity;
 use Infinri\Cms\Model\Block;
 use Infinri\Cms\Model\ResourceModel\Block as BlockResource;
 
@@ -14,9 +15,7 @@ use Infinri\Cms\Model\ResourceModel\Block as BlockResource;
 class BlockRepository extends AbstractContentRepository implements BlockRepositoryInterface
 {
     /**
-     * Constructor
-     *
-     * @param BlockResource $resource
+     * Constructor.
      */
     public function __construct(BlockResource $resource)
     {
@@ -24,20 +23,20 @@ class BlockRepository extends AbstractContentRepository implements BlockReposito
     }
 
     /**
-     * Create model instance (implements abstract method)
+     * Create model instance (implements abstract method).
      *
      * @param array<string, mixed> $data
-     * @return Block
      */
     protected function createModel(array $data = []): Block
     {
-        return new Block($this->resource, $data);
+        /** @var BlockResource $resource */
+        $resource = $this->resource;
+
+        return new Block($resource, $data);
     }
 
     /**
-     * Get entity ID field name (implements abstract method)
-     *
-     * @return string
+     * Get entity ID field name (implements abstract method).
      */
     protected function getEntityIdField(): string
     {
@@ -46,10 +45,9 @@ class BlockRepository extends AbstractContentRepository implements BlockReposito
 
     /**
      * Create a new block instance
-     * Public factory method for creating empty blocks
+     * Public factory method for creating empty blocks.
      *
      * @param array<string, mixed> $data
-     * @return Block
      */
     public function create(array $data = []): Block
     {
@@ -57,47 +55,48 @@ class BlockRepository extends AbstractContentRepository implements BlockReposito
     }
 
     /**
-     * Get block by ID (override with specific return type)
-     *
-     * @param int $blockId
-     * @return Block|null
+     * Get block by ID (override with specific return type).
      */
     public function getById(int $blockId): ?Block
     {
-        /** @var Block|null */
-        return parent::getById($blockId);
+        $result = parent::getById($blockId);
+        \assert($result instanceof Block || null === $result);
+
+        return $result;
     }
 
     /**
-     * Get all blocks (override with specific return type)
+     * Get all blocks (override with specific return type).
      *
-     * @param bool $activeOnly
-     * @return Block[]
+     * @return array<Block>
      */
     public function getAll(bool $activeOnly = false): array
     {
-        /** @var Block[] */
-        return parent::getAll($activeOnly);
+        $result = parent::getAll($activeOnly);
+
+        /* @var array<Block> $result */
+        return $result;
     }
 
     /**
-     * Save block (override with specific return type)
+     * Save block (override with specific return type).
      *
-     * @param Block $block
-     * @return Block
      * @throws \RuntimeException
+     * @throws \InvalidArgumentException If not a Block instance
      */
-    public function save($block): Block
+    public function save(AbstractContentEntity $block): Block
     {
-        /** @var Block */
-        return parent::save($block);
+        if (!$block instanceof Block) {
+            throw new \InvalidArgumentException('Expected Block instance');
+        }
+        $saved = parent::save($block);
+        \assert($saved instanceof Block);
+
+        return $saved;
     }
 
     /**
-     * Get block by identifier
-     *
-     * @param string $identifier
-     * @return Block|null
+     * Get block by identifier.
      */
     public function getByIdentifier(string $identifier): ?Block
     {

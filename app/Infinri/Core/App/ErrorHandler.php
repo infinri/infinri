@@ -1,42 +1,38 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\App;
 
-use Infinri\Core\App\Response;
-use Infinri\Core\Helper\Logger;
 use Infinri\Cms\Model\Repository\PageRepository;
+use Infinri\Core\Helper\Logger;
 use Infinri\Core\Model\View\LayoutFactory;
-use Throwable;
 
 /**
  * Catches unhandled exceptions and displays user-friendly error pages
- * Returns proper HTTP status codes for SEO
+ * Returns proper HTTP status codes for SEO.
  */
 class ErrorHandler
 {
     private PageRepository $pageRepository;
+
     private LayoutFactory $layoutFactory;
 
     public function __construct(
         PageRepository $pageRepository,
-        LayoutFactory  $layoutFactory
+        LayoutFactory $layoutFactory
     ) {
         $this->pageRepository = $pageRepository;
         $this->layoutFactory = $layoutFactory;
     }
 
     /**
-     * Handle 500 Internal Server Error
-     *
-     * @param Throwable $exception
-     * @param Response $response
-     * @return Response
+     * Handle 500 Internal Server Error.
      */
-    public function handle500(Throwable $exception, Response $response): Response
+    public function handle500(\Throwable $exception, Response $response): Response
     {
         Logger::error('500 Internal Server Error', [
-            'exception' => get_class($exception),
+            'exception' => $exception::class,
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),
@@ -59,10 +55,10 @@ class ErrorHandler
                 // Fallback: CMS 500 page doesn't exist
                 $response->setBody($this->getFallback500Html($exception));
             }
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             // If even error handling fails, show basic error
             Logger::error('Error handler itself failed', [
-                'exception' => get_class($e),
+                'exception' => $e::class,
                 'message' => $e->getMessage(),
             ]);
 
@@ -73,11 +69,9 @@ class ErrorHandler
     }
 
     /**
-     * Handle 404 Not Found Error
+     * Handle 404 Not Found Error.
      *
-     * @param Response $response
      * @param string $path Requested path that wasn't found
-     * @return Response
      */
     public function handle404(Response $response, string $path = ''): Response
     {
@@ -99,9 +93,9 @@ class ErrorHandler
                 // Fallback: CMS 404 page doesn't exist
                 $response->setBody($this->getFallback404Html($path));
             }
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             Logger::error('404 handler failed', [
-                'exception' => get_class($e),
+                'exception' => $e::class,
                 'message' => $e->getMessage(),
             ]);
 
@@ -112,12 +106,9 @@ class ErrorHandler
     }
 
     /**
-     * Get fallback 500 HTML when CMS page isn't available
-     *
-     * @param Throwable $exception
-     * @return string
+     * Get fallback 500 HTML when CMS page isn't available.
      */
-    private function getFallback500Html(Throwable $exception): string
+    private function getFallback500Html(\Throwable $exception): string
     {
         $showDetails = $_ENV['APP_DEBUG'] ?? false;
 
@@ -144,7 +135,7 @@ class ErrorHandler
             $html .= '
     <div class="details">
         <h2>Error Details (Debug Mode)</h2>
-        <p><strong>Exception:</strong> ' . htmlspecialchars(get_class($exception)) . '</p>
+        <p><strong>Exception:</strong> ' . htmlspecialchars($exception::class) . '</p>
         <p><strong>Message:</strong> ' . htmlspecialchars($exception->getMessage()) . '</p>
         <p><strong>File:</strong> <code>' . htmlspecialchars($exception->getFile()) . '</code> (Line ' . $exception->getLine() . ')</p>
     </div>';
@@ -159,10 +150,7 @@ class ErrorHandler
     }
 
     /**
-     * Get fallback 404 HTML when CMS page isn't available
-     *
-     * @param string $path
-     * @return string
+     * Get fallback 404 HTML when CMS page isn't available.
      */
     private function getFallback404Html(string $path): string
     {

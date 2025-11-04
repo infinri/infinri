@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Block;
@@ -8,9 +9,6 @@ namespace Infinri\Core\Block;
  */
 class Container extends AbstractBlock
 {
-    /**
-     * @inheritDoc
-     */
     public function toHtml(): string
     {
         $htmlTag = $this->getData('htmlTag');
@@ -29,22 +27,22 @@ class Container extends AbstractBlock
         $attributes = [];
 
         if ($htmlId) {
-            $attributes[] = sprintf('id="%s"', htmlspecialchars($htmlId, ENT_QUOTES, 'UTF-8'));
+            $attributes[] = \sprintf('id="%s"', htmlspecialchars($htmlId, \ENT_QUOTES, 'UTF-8'));
         }
 
         if ($htmlClass) {
-            $attributes[] = sprintf('class="%s"', htmlspecialchars($htmlClass, ENT_QUOTES, 'UTF-8'));
+            $attributes[] = \sprintf('class="%s"', htmlspecialchars($htmlClass, \ENT_QUOTES, 'UTF-8'));
         }
 
         $attributeString = $attributes ? ' ' . implode(' ', $attributes) : '';
 
         // Self-closing tags
-        if (in_array($htmlTag, ['br', 'hr', 'img', 'input', 'meta', 'link'], true)) {
-            return sprintf('<%s%s />', $htmlTag, $attributeString);
+        if (\in_array($htmlTag, ['br', 'hr', 'img', 'input', 'meta', 'link'], true)) {
+            return \sprintf('<%s%s />', $htmlTag, $attributeString);
         }
 
         // Build complete HTML with wrapper tag
-        return sprintf(
+        return \sprintf(
             '<%s%s>%s</%s>',
             $htmlTag,
             $attributeString,
@@ -52,5 +50,4 @@ class Container extends AbstractBlock
             $htmlTag
         );
     }
-
 }

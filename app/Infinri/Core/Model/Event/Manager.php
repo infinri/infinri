@@ -4,33 +4,29 @@ declare(strict_types=1);
 
 namespace Infinri\Core\Model\Event;
 
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Infinri\Core\Api\ObserverInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Wrapper around Symfony EventDispatcher for managing application events
- * Provides observer pattern for extending functionality without modifying core code
+ * Provides observer pattern for extending functionality without modifying core code.
  */
 class Manager
 {
     /**
-     * Symfony Event Dispatcher
-     *
-     * @var EventDispatcher
+     * Symfony Event Dispatcher.
      */
     private EventDispatcher $dispatcher;
 
     /**
-     * Registered observers
+     * Registered observers.
      *
      * @var array<string, array>
      */
     private array $observers = [];
 
     /**
-     * Constructor
-     *
-     * @param EventDispatcher|null $dispatcher
+     * Constructor.
      */
     public function __construct(?EventDispatcher $dispatcher = null)
     {
@@ -38,11 +34,10 @@ class Manager
     }
 
     /**
-     * Dispatch an event
+     * Dispatch an event.
      *
-     * @param string $eventName Event name
-     * @param array<string, mixed> $data Event data
-     * @return void
+     * @param string               $eventName Event name
+     * @param array<string, mixed> $data      Event data
      */
     public function dispatch(string $eventName, array $data = []): void
     {
@@ -50,7 +45,7 @@ class Manager
         if (isset($this->observers[$eventName])) {
             foreach ($this->observers[$eventName] as $observerData) {
                 $observer = $observerData['instance'];
-                if (!$observerData['disabled']) {
+                if (! $observerData['disabled']) {
                     $observer->execute($data);
                 }
             }
@@ -58,24 +53,22 @@ class Manager
     }
 
     /**
-     * Register an observer for an event
+     * Register an observer for an event.
      *
-     * @param string $eventName Event name
-     * @param string $observerName Observer name (for identification)
-     * @param ObserverInterface $observer Observer instance
-     * @param int $priority Priority (higher = earlier execution)
-     * @param bool $disabled Disable the observer
-     * @return void
+     * @param string            $eventName    Event name
+     * @param string            $observerName Observer name (for identification)
+     * @param ObserverInterface $observer     Observer instance
+     * @param int               $priority     Priority (higher = earlier execution)
+     * @param bool              $disabled     Disable the observer
      */
     public function addObserver(
-        string            $eventName,
-        string            $observerName,
+        string $eventName,
+        string $observerName,
         ObserverInterface $observer,
-        int               $priority = 0,
-        bool              $disabled = false
-    ): void
-    {
-        if (!isset($this->observers[$eventName])) {
+        int $priority = 0,
+        bool $disabled = false
+    ): void {
+        if (! isset($this->observers[$eventName])) {
             $this->observers[$eventName] = [];
         }
 
@@ -92,11 +85,10 @@ class Manager
     }
 
     /**
-     * Remove an observer
+     * Remove an observer.
      *
-     * @param string $eventName Event name
+     * @param string $eventName    Event name
      * @param string $observerName Observer name
-     * @return void
      */
     public function removeObserver(string $eventName, string $observerName): void
     {
@@ -106,9 +98,10 @@ class Manager
     }
 
     /**
-     * Get all observers for an event
+     * Get all observers for an event.
      *
      * @param string $eventName Event name
+     *
      * @return array Array of observers
      */
     public function getObservers(string $eventName): array
@@ -117,20 +110,19 @@ class Manager
     }
 
     /**
-     * Check if event has observers
+     * Check if event has observers.
      *
      * @param string $eventName Event name
+     *
      * @return bool True if event has observers
      */
     public function hasObservers(string $eventName): bool
     {
-        return isset($this->observers[$eventName]) && count($this->observers[$eventName]) > 0;
+        return isset($this->observers[$eventName]) && \count($this->observers[$eventName]) > 0;
     }
 
     /**
-     * Clear all observers
-     *
-     * @return void
+     * Clear all observers.
      */
     public function clearObservers(): void
     {
@@ -138,11 +130,10 @@ class Manager
     }
 
     /**
-     * Enable an observer
+     * Enable an observer.
      *
-     * @param string $eventName Event name
+     * @param string $eventName    Event name
      * @param string $observerName Observer name
-     * @return void
      */
     public function enableObserver(string $eventName, string $observerName): void
     {
@@ -152,11 +143,10 @@ class Manager
     }
 
     /**
-     * Disable an observer
+     * Disable an observer.
      *
-     * @param string $eventName Event name
+     * @param string $eventName    Event name
      * @param string $observerName Observer name
-     * @return void
      */
     public function disableObserver(string $eventName, string $observerName): void
     {
@@ -166,9 +156,7 @@ class Manager
     }
 
     /**
-     * Get Symfony EventDispatcher instance
-     *
-     * @return EventDispatcher
+     * Get Symfony EventDispatcher instance.
      */
     public function getDispatcher(): EventDispatcher
     {

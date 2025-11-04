@@ -1,5 +1,6 @@
 #!/usr/bin/env php
 <?php
+
 /**
  * Console Application Entry Point
  */
@@ -42,8 +43,11 @@ $objectManager = getObjectManager();
 $application = new Application('Infinri Framework', '1.0.0');
 
 // Get dependencies for setup commands
+/** @var ModuleManager $moduleManager */
 $moduleManager = $objectManager->get(ModuleManager::class);
+/** @var SchemaSetup $schemaSetup */
 $schemaSetup = $objectManager->get(SchemaSetup::class);
+/** @var \PDO $connection */
 $connection = $objectManager->get(\PDO::class);
 
 // Load commands from command loader

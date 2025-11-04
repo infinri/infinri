@@ -4,30 +4,31 @@ declare(strict_types=1);
 
 namespace Infinri\Cms\Controller\Index;
 
-use Infinri\Core\Controller\AbstractController;
+use Infinri\Cms\Model\Repository\PageRepository;
+use Infinri\Core\App\ErrorHandler;
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
-use Infinri\Core\App\ErrorHandler;
-use Infinri\Core\Model\View\LayoutFactory;
-use Infinri\Cms\Model\Repository\PageRepository;
+use Infinri\Core\Controller\AbstractController;
 use Infinri\Core\Helper\Logger;
-use Throwable;
+use Infinri\Core\Model\View\LayoutFactory;
 
 /**
- * CMS Homepage Controller
+ * CMS Homepage Controller.
  */
 class Index extends AbstractController
 {
     private LayoutFactory $layoutFactory;
+
     private PageRepository $pageRepository;
+
     private ErrorHandler $errorHandler;
 
     public function __construct(
-        Request        $request,
-        Response       $response,
-        LayoutFactory  $layoutFactory,
+        Request $request,
+        Response $response,
+        LayoutFactory $layoutFactory,
         PageRepository $pageRepository,
-        ErrorHandler   $errorHandler
+        ErrorHandler $errorHandler
     ) {
         parent::__construct($request, $response);
         $this->layoutFactory = $layoutFactory;
@@ -43,8 +44,9 @@ class Index extends AbstractController
             // Load homepage from database (url_key = 'home')
             $page = $this->pageRepository->getByUrlKey('home');
 
-            if (!$page || !$page->getData('is_active')) {
+            if (! $page || ! $page->getData('is_active')) {
                 Logger::warning('CMS: Homepage not found or inactive');
+
                 // Homepage missing - show 500 since this is a configuration error
                 throw new \RuntimeException('Homepage not configured. Please run setup:upgrade to install default pages.');
             }
@@ -57,8 +59,7 @@ class Index extends AbstractController
             $this->response->setBody($html);
 
             return $this->response;
-
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             return $this->errorHandler->handle500($e, $this->response);
         }
     }

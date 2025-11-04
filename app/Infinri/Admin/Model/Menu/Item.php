@@ -5,28 +5,34 @@ declare(strict_types=1);
 namespace Infinri\Admin\Model\Menu;
 
 /**
- * Represents a single menu item in the admin navigation
+ * Represents a single menu item in the admin navigation.
  */
 class Item
 {
     private string $id;
+
     private string $title;
+
     private ?string $action;
+
     private ?string $module;
+
     private ?string $resource;
+
     private int $sortOrder;
+
     private ?string $parent;
 
     /** @var Item[] */
     private array $children = [];
 
     public function __construct(
-        string  $id,
-        string  $title,
+        string $id,
+        string $title,
         ?string $action = null,
         ?string $module = null,
         ?string $resource = null,
-        int     $sortOrder = 0,
+        int $sortOrder = 0,
         ?string $parent = null
     ) {
         $this->id = $id;
@@ -85,7 +91,7 @@ class Item
 
     public function hasChildren(): bool
     {
-        return !empty($this->children);
+        return ! empty($this->children);
     }
 
     /**
@@ -94,13 +100,15 @@ class Item
     public function getChildren(): array
     {
         // Sort children by sort order
-        usort($this->children, fn($a, $b) => $a->getSortOrder() <=> $b->getSortOrder());
+        usort($this->children, fn ($a, $b) => $a->getSortOrder() <=> $b->getSortOrder());
+
         return $this->children;
     }
 
-    public function addChild(Item $child): self
+    public function addChild(self $child): self
     {
         $this->children[] = $child;
+
         return $this;
     }
 
@@ -135,7 +143,7 @@ class Item
             'sortOrder' => $this->sortOrder,
             'parent' => $this->parent,
             'hasChildren' => $this->hasChildren(),
-            'children' => array_map(fn($child) => $child->toArray(), $this->getChildren())
+            'children' => array_map(fn ($child) => $child->toArray(), $this->getChildren()),
         ];
     }
 }

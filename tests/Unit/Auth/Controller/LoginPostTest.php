@@ -6,12 +6,12 @@ use Infinri\Auth\Controller\Adminhtml\Login\Post;
 use Infinri\Core\App\Request;
 use Infinri\Admin\Model\ResourceModel\AdminUser as AdminUserResource;
 use Infinri\Admin\Service\RememberTokenService;
-use Infinri\Core\Security\CsrfTokenManager;
+use Infinri\Core\Security\CsrfGuard;
 use Infinri\Core\Service\RateLimiter;
 
 beforeEach(function () {
     $this->adminUserResource = $this->createMock(AdminUserResource::class);
-    $this->csrfManager = $this->createMock(CsrfTokenManager::class);
+    $this->csrfGuard = $this->createMock(CsrfGuard::class);
     $this->rememberTokenService = $this->createMock(RememberTokenService::class);
     $this->rateLimiter = $this->createMock(RateLimiter::class);
     
@@ -20,7 +20,7 @@ beforeEach(function () {
     
     $this->controller = new Post(
         $this->adminUserResource,
-        $this->csrfManager,
+        $this->csrfGuard,
         $this->rememberTokenService,
         $this->rateLimiter
     );
@@ -59,7 +59,7 @@ describe('Login Session Security', function () {
         
         $this->request->method('getClientIp')->willReturn('127.0.0.1');
         
-        $this->csrfManager->method('validateToken')
+        $this->csrfGuard->method('validateToken')
             ->with('admin_login', 'invalid_token')
             ->willReturn(false);
         
@@ -98,7 +98,7 @@ describe('Login Session Security', function () {
                 ['password', '', '']  // Empty password
             ]);
         
-        $this->csrfManager->method('validateToken')->willReturn(true);
+        $this->csrfGuard->method('validateToken')->willReturn(true);
         
         $response = $this->controller->execute($this->request);
         

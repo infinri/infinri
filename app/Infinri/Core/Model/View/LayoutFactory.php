@@ -4,45 +4,48 @@ declare(strict_types=1);
 
 namespace Infinri\Core\Model\View;
 
-use Infinri\Core\Model\Layout\Loader;
-use Infinri\Core\Model\Layout\Merger;
-use Infinri\Core\Model\Layout\Processor;
-use Infinri\Core\Model\Layout\Builder;
-use Infinri\Core\Model\Layout\Renderer;
 use Infinri\Core\Block\AbstractBlock;
 use Infinri\Core\Block\Container;
 use Infinri\Core\Helper\Logger;
+use Infinri\Core\Model\Layout\Builder;
+use Infinri\Core\Model\Layout\Loader;
+use Infinri\Core\Model\Layout\Merger;
+use Infinri\Core\Model\Layout\Processor;
+use Infinri\Core\Model\Layout\Renderer;
 use Psr\Cache\InvalidArgumentException;
 
 /**
  * Creates and configures Layout rendering pipeline
- * Controller helper for rendering pages with layout XML
+ * Controller helper for rendering pages with layout XML.
  */
 class LayoutFactory
 {
     public function __construct(
-        private readonly Loader    $loader,
-        private readonly Merger    $merger,
+        private readonly Loader $loader,
+        private readonly Merger $merger,
         private readonly Processor $processor,
-        private readonly Builder   $builder,
-        private readonly Renderer  $renderer
-    ) {}
+        private readonly Builder $builder,
+        private readonly Renderer $renderer
+    ) {
+    }
 
     /**
-     * Render layout for given handle(s) with optional data
+     * Render layout for given handle(s) with optional data.
      *
      * @param string|array<string> $handles Layout handle(s)
-     * @param array<string, mixed> $data Data to pass to blocks
+     * @param array<string, mixed> $data    Data to pass to blocks
+     *
      * @return string Rendered HTML
+     *
      * @throws InvalidArgumentException
      */
     public function render(string|array $handles, array $data = []): string
     {
-        $handles = is_array($handles) ? $handles : [$handles];
+        $handles = \is_array($handles) ? $handles : [$handles];
 
         Logger::info('LayoutFactory: Rendering layout', [
             'handles' => $handles,
-            'data_keys' => array_keys($data)
+            'data_keys' => array_keys($data),
         ]);
 
         try {
@@ -51,24 +54,30 @@ class LayoutFactory
 
             if (empty($layoutXmlFiles)) {
                 Logger::warning('LayoutFactory: No layout XML found', ['handles' => $handles]);
+
                 return '';
             }
 
             Logger::debug('LayoutFactory: Loaded XML files', [
-                'count' => count($layoutXmlFiles),
-                'handles' => $handles
+                'count' => \count($layoutXmlFiles),
+                'handles' => $handles,
             ]);
 
             // Merge all layout files
             $mergedXml = $this->merger->merge($layoutXmlFiles);
 
             $fullXml = $mergedXml->asXML();
+            if (false === $fullXml) {
+                Logger::error('LayoutFactory: Failed to convert merged XML to string');
+
+                return '';
+            }
             Logger::debug('LayoutFactory: Merged XML', [
-                'xml_preview' => substr($fullXml, 0, 500)
+                'xml_preview' => substr($fullXml, 0, 500),
             ]);
 
             // Check if sidebar is in merged XML
-            if (strpos($fullXml, 'admin.sidebar') !== false) {
+            if (str_contains($fullXml, 'admin.sidebar')) {
                 Logger::info('LayoutFactory: SIDEBAR FOUND in merged XML');
             } else {
                 Logger::warning('LayoutFactory: SIDEBAR NOT FOUND in merged XML');
@@ -79,29 +88,37 @@ class LayoutFactory
 
             // Check if our CMS content block is in the processed XML
             $cmsContentBlocks = $processedXml->xpath('//block[@name="cms.page.content"]');
+            $cmsContentCount = \is_array($cmsContentBlocks) ? \count($cmsContentBlocks) : 0;
             Logger::debug('LayoutFactory: CMS content block check', [
-                'found' => !empty($cmsContentBlocks),
-                'count' => count($cmsContentBlocks)
+                'found' => $cmsContentCount > 0,
+                'count' => $cmsContentCount,
             ]);
 
+            $processedXmlString = $processedXml->asXML();
+            if (false === $processedXmlString) {
+                Logger::error('LayoutFactory: Failed to convert processed XML to string');
+
+                return '';
+            }
             Logger::debug('LayoutFactory: Processed XML', [
-                'xml_preview' => substr($processedXml->asXML(), 0, 500),
-                'full_xml_length' => strlen($processedXml->asXML())
+                'xml_preview' => substr($processedXmlString, 0, 500),
+                'full_xml_length' => \strlen($processedXmlString),
             ]);
 
             // Build block tree with data
             $rootBlock = $this->builder->build($processedXml, $data);
 
-            if (!$rootBlock) {
+            if (! $rootBlock) {
                 Logger::warning('LayoutFactory: No root block created', [
-                    'processed_xml' => $processedXml->asXML()
+                    'processed_xml' => $processedXml->asXML(),
                 ]);
+
                 return '';
             }
 
             Logger::debug('LayoutFactory: Root block created', [
                 'block_name' => $rootBlock->getName(),
-                'block_class' => get_class($rootBlock)
+                'block_class' => $rootBlock::class,
             ]);
 
             // Set data on specific blocks (need to traverse the tree)
@@ -121,19 +138,21 @@ class LayoutFactory
             Logger::info('LayoutFactory: Layout rendered successfully');
 
             return $html;
-
         } catch (\Exception $e) {
             Logger::exception($e, 'LayoutFactory: Error rendering layout');
+
             return '';
         }
     }
 
     /**
-     * Load handles recursively, following <update handle="..."/> directives
+     * Load handles recursively, following <update handle="..."/> directives.
      *
      * @param array<string> $handles Initial handles to load
-     * @param array<string> $loaded Already loaded handles (to prevent infinite loops)
-     * @return array<SimpleXMLElement> Array of SimpleXMLElement objects
+     * @param array<string> $loaded  Already loaded handles (to prevent infinite loops)
+     *
+     * @return array<string, \SimpleXMLElement> Array of SimpleXMLElement objects keyed by handle_module
+     *
      * @throws InvalidArgumentException
      */
     private function loadHandlesRecursively(array $handles, array &$loaded = []): array
@@ -142,7 +161,7 @@ class LayoutFactory
 
         foreach ($handles as $handle) {
             // Skip if already loaded
-            if (in_array($handle, $loaded, true)) {
+            if (\in_array($handle, $loaded, true)) {
                 continue;
             }
 
@@ -159,7 +178,7 @@ class LayoutFactory
 
             Logger::debug('LayoutFactory: Loaded modules for handle', [
                 'handle' => $handle,
-                'modules' => array_keys($layoutsByModule)
+                'modules' => array_keys($layoutsByModule),
             ]);
 
             // Extract XML elements and check for <update> directives (preserve module names)
@@ -170,19 +189,22 @@ class LayoutFactory
                 $layoutXmlFiles[$handle . '_' . $moduleName] = $xml;
 
                 // Find all <update handle="..."/> directives
-                foreach ($xml->xpath('//update[@handle]') as $updateNode) {
-                    $referencedHandle = (string)$updateNode['handle'];
-                    if ($referencedHandle && !in_array($referencedHandle, $loaded, true)) {
-                        $referencedHandles[] = $referencedHandle;
+                $updateNodes = $xml->xpath('//update[@handle]');
+                if (\is_array($updateNodes)) {
+                    foreach ($updateNodes as $updateNode) {
+                        $referencedHandle = (string) $updateNode['handle'];
+                        if ($referencedHandle && ! \in_array($referencedHandle, $loaded, true)) {
+                            $referencedHandles[] = $referencedHandle;
+                        }
                     }
                 }
             }
 
             // Recursively load referenced handles (they should be loaded FIRST for proper inheritance)
-            if (!empty($referencedHandles)) {
+            if (! empty($referencedHandles)) {
                 Logger::debug('LayoutFactory: Found referenced handles', [
                     'current_handle' => $handle,
-                    'referenced_handles' => $referencedHandles
+                    'referenced_handles' => $referencedHandles,
                 ]);
                 $referencedXml = $this->loadHandlesRecursively($referencedHandles, $loaded);
                 // Prepend referenced XML so base layouts come first
@@ -194,11 +216,9 @@ class LayoutFactory
     }
 
     /**
-     * Set data on blocks in the tree
+     * Set data on blocks in the tree.
      *
-     * @param AbstractBlock $block
      * @param array<string, mixed> $data
-     * @return void
      */
     private function setBlockData(AbstractBlock $block, array $data): void
     {
@@ -217,11 +237,7 @@ class LayoutFactory
     }
 
     /**
-     * Find a block by name in the tree
-     *
-     * @param AbstractBlock $block
-     * @param string $name
-     * @return AbstractBlock|null
+     * Find a block by name in the tree.
      */
     private function findBlockByName(AbstractBlock $block, string $name): ?AbstractBlock
     {
@@ -229,7 +245,8 @@ class LayoutFactory
             return $block;
         }
 
-        if (method_exists($block, 'getChildren')) {
+        // Check if block is a Container with children
+        if ($block instanceof Container) {
             foreach ($block->getChildren() as $child) {
                 $foundBlock = $this->findBlockByName($child, $name);
                 if ($foundBlock) {
@@ -242,7 +259,7 @@ class LayoutFactory
     }
 
     /**
-     * Create layout pipeline for manual block building
+     * Create layout pipeline for manual block building.
      *
      * @return array{loader: Loader, merger: Merger, processor: Processor, builder: Builder, renderer: Renderer}
      */

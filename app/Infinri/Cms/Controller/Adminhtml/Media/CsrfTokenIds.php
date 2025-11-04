@@ -10,5 +10,7 @@ final class CsrfTokenIds
     public const CREATE_FOLDER = 'admin_media_create_folder';
     public const DELETE = 'admin_media_delete';
 
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 }

@@ -7,29 +7,25 @@ namespace Infinri\Core\Model\Url;
 use Infinri\Core\App\Router;
 
 /**
- * Generates URLs from route names with parameters and query strings
+ * Generates URLs from route names with parameters and query strings.
  */
 class Builder
 {
     /**
-     * Base URL
-     *
-     * @var string
+     * Base URL.
      */
     private string $baseUrl;
 
     /**
-     * Use secure (https) URLs
-     *
-     * @var bool
+     * Use secure (https) URLs.
      */
     private bool $secure;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string|null $baseUrl Base URL (null = auto-detect)
-     * @param bool $secure Use HTTPS
+     * @param bool        $secure  Use HTTPS
      */
     public function __construct(?string $baseUrl = null, bool $secure = false)
     {
@@ -38,11 +34,12 @@ class Builder
     }
 
     /**
-     * Build URL from route name
+     * Build URL from route name.
      *
-     * @param string $routeName Route name or path
-     * @param array<string, mixed> $params Route parameters
-     * @param array<string, mixed> $query Query string parameters
+     * @param string               $routeName Route name or path
+     * @param array<string, mixed> $params    Route parameters
+     * @param array<string, mixed> $query     Query string parameters
+     *
      * @return string Generated URL
      */
     public function build(string $routeName, array $params = [], array $query = []): string
@@ -64,13 +61,13 @@ class Builder
 
         // Replace route parameters
         foreach ($params as $key => $value) {
-            $path = str_replace(':' . $key, (string)$value, $path);
+            $path = str_replace(':' . $key, (string) $value, $path);
         }
 
         $url .= $path;
 
         // Add query string
-        if (!empty($query)) {
+        if (! empty($query)) {
             $url .= '?' . http_build_query($query);
         }
 
@@ -78,11 +75,12 @@ class Builder
     }
 
     /**
-     * Build URL with route name lookup (if router available)
+     * Build URL with route name lookup (if router available).
      *
-     * @param string $routeName Route name
-     * @param array<string, mixed> $params Route parameters
-     * @param array<string, mixed> $query Query string parameters
+     * @param string               $routeName Route name
+     * @param array<string, mixed> $params    Route parameters
+     * @param array<string, mixed> $query     Query string parameters
+     *
      * @return string Generated URL
      */
     public function route(string $routeName, array $params = [], array $query = []): string
@@ -93,11 +91,12 @@ class Builder
     }
 
     /**
-     * Build absolute URL
+     * Build absolute URL.
      *
-     * @param string $path Path or route name
+     * @param string               $path   Path or route name
      * @param array<string, mixed> $params Route parameters
-     * @param array<string, mixed> $query Query string parameters
+     * @param array<string, mixed> $query  Query string parameters
+     *
      * @return string Absolute URL
      */
     public function absolute(string $path, array $params = [], array $query = []): string
@@ -109,20 +108,23 @@ class Builder
             if ($this->secure && str_starts_with($url, 'http://')) {
                 return str_replace('http://', 'https://', $url);
             }
+
             return $url;
         }
 
         // Prepend scheme and host
         $scheme = $this->secure ? 'https' : 'http';
+
         return $scheme . '://' . $this->getHost() . $url;
     }
 
     /**
-     * Build secure (HTTPS) URL
+     * Build secure (HTTPS) URL.
      *
-     * @param string $path Path or route name
+     * @param string               $path   Path or route name
      * @param array<string, mixed> $params Route parameters
-     * @param array<string, mixed> $query Query string parameters
+     * @param array<string, mixed> $query  Query string parameters
+     *
      * @return string Secure URL
      */
     public function secure(string $path, array $params = [], array $query = []): string
@@ -138,7 +140,7 @@ class Builder
     }
 
     /**
-     * Get current URL
+     * Get current URL.
      *
      * @return string Current URL
      */
@@ -152,9 +154,10 @@ class Builder
     }
 
     /**
-     * Get previous URL (from referer)
+     * Get previous URL (from referer).
      *
      * @param string|null $default Default URL if no referer
+     *
      * @return string Previous URL
      */
     public function previous(?string $default = null): string
@@ -167,9 +170,10 @@ class Builder
     }
 
     /**
-     * Check if URL is absolute
+     * Check if URL is absolute.
      *
      * @param string $url URL to check
+     *
      * @return bool True if absolute
      */
     private function isAbsoluteUrl(string $url): bool
@@ -178,7 +182,7 @@ class Builder
     }
 
     /**
-     * Detect base URL from request
+     * Detect base URL from request.
      *
      * @return string Base URL
      */
@@ -192,7 +196,7 @@ class Builder
     }
 
     /**
-     * Get host from request
+     * Get host from request.
      *
      * @return string Host
      */
@@ -202,10 +206,9 @@ class Builder
     }
 
     /**
-     * Set base URL
+     * Set base URL.
      *
      * @param string $baseUrl Base URL
-     * @return void
      */
     public function setBaseUrl(string $baseUrl): void
     {
@@ -213,7 +216,7 @@ class Builder
     }
 
     /**
-     * Get base URL
+     * Get base URL.
      *
      * @return string Base URL
      */
@@ -223,10 +226,9 @@ class Builder
     }
 
     /**
-     * Set secure flag
+     * Set secure flag.
      *
      * @param bool $secure Use HTTPS
-     * @return void
      */
     public function setSecure(bool $secure): void
     {
@@ -234,7 +236,7 @@ class Builder
     }
 
     /**
-     * Check if using secure URLs
+     * Check if using secure URLs.
      *
      * @return bool True if secure
      */

@@ -12,27 +12,24 @@ use Infinri\Cms\Model\ResourceModel\Page as PageResource;
 class Page extends AbstractContentEntity
 {
     /**
-     * Homepage ID - cannot be deleted
+     * Homepage ID - cannot be deleted.
      */
     public const HOMEPAGE_ID = 1;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param PageResource $resource
      * @param array<string, mixed> $data
      */
     public function __construct(
         PageResource $resource,
-        array        $data = []
+        array $data = []
     ) {
         parent::__construct($resource, $data);
     }
 
     /**
-     * Get identifier field name (implements abstract method)
-     *
-     * @return string
+     * Get identifier field name (implements abstract method).
      */
     protected function getIdentifierField(): string
     {
@@ -40,9 +37,7 @@ class Page extends AbstractContentEntity
     }
 
     /**
-     * Get entity type (implements abstract method)
-     *
-     * @return string
+     * Get entity type (implements abstract method).
      */
     protected function getEntityType(): string
     {
@@ -50,9 +45,7 @@ class Page extends AbstractContentEntity
     }
 
     /**
-     * Get page ID
-     *
-     * @return int|null
+     * Get page ID.
      */
     public function getPageId(): ?int
     {
@@ -60,9 +53,8 @@ class Page extends AbstractContentEntity
     }
 
     /**
-     * Set page ID
+     * Set page ID.
      *
-     * @param int $id
      * @return $this
      */
     public function setPageId(int $id): self
@@ -71,9 +63,7 @@ class Page extends AbstractContentEntity
     }
 
     /**
-     * Get URL key
-     *
-     * @return string|null
+     * Get URL key.
      */
     public function getUrlKey(): ?string
     {
@@ -81,9 +71,8 @@ class Page extends AbstractContentEntity
     }
 
     /**
-     * Set URL key
+     * Set URL key.
      *
-     * @param string $urlKey
      * @return $this
      */
     public function setUrlKey(string $urlKey): self
@@ -92,9 +81,7 @@ class Page extends AbstractContentEntity
     }
 
     /**
-     * Get meta title
-     *
-     * @return string|null
+     * Get meta title.
      */
     public function getMetaTitle(): ?string
     {
@@ -102,9 +89,8 @@ class Page extends AbstractContentEntity
     }
 
     /**
-     * Set meta title
+     * Set meta title.
      *
-     * @param string $metaTitle
      * @return $this
      */
     public function setMetaTitle(string $metaTitle): self
@@ -113,9 +99,7 @@ class Page extends AbstractContentEntity
     }
 
     /**
-     * Get meta description
-     *
-     * @return string|null
+     * Get meta description.
      */
     public function getMetaDescription(): ?string
     {
@@ -123,9 +107,8 @@ class Page extends AbstractContentEntity
     }
 
     /**
-     * Set meta description
+     * Set meta description.
      *
-     * @param string $metaDescription
      * @return $this
      */
     public function setMetaDescription(string $metaDescription): self
@@ -134,9 +117,7 @@ class Page extends AbstractContentEntity
     }
 
     /**
-     * Get meta keywords
-     *
-     * @return string|null
+     * Get meta keywords.
      */
     public function getMetaKeywords(): ?string
     {
@@ -144,9 +125,8 @@ class Page extends AbstractContentEntity
     }
 
     /**
-     * Set meta keywords
+     * Set meta keywords.
      *
-     * @param string $metaKeywords
      * @return $this
      */
     public function setMetaKeywords(string $metaKeywords): self
@@ -155,21 +135,19 @@ class Page extends AbstractContentEntity
     }
 
     /**
-     * Check if page is homepage
-     *
-     * @return bool
+     * Check if page is homepage.
      */
     public function isHomepage(): bool
     {
         $value = $this->getData('is_homepage');
+
         // PostgreSQL returns booleans as strings ('t'/'f' or '1'/'0')
-        return $value === true || $value === 1 || $value === '1' || $value === 't';
+        return true === $value || 1 === $value || '1' === $value || 't' === $value;
     }
 
     /**
-     * Set homepage flag
+     * Set homepage flag.
      *
-     * @param bool $isHomepage
      * @return $this
      */
     public function setIsHomepage(bool $isHomepage): self

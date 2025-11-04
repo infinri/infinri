@@ -1,10 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Model;
 
-use Exception;
-use InvalidArgumentException;
 use Infinri\Core\Api\ComponentRegistrarInterface;
 
 /**
@@ -20,12 +19,12 @@ class ComponentRegistrar implements ComponentRegistrarInterface
 
     /**
      * @var array<string, array<string, string>> Registered components storage
-     * Format: [type => [name => path]]
+     *                                           Format: [type => [name => path]]
      */
     private array $paths;
 
     /**
-     * Private constructor for singleton pattern
+     * Private constructor for singleton pattern.
      */
     private function __construct()
     {
@@ -38,13 +37,11 @@ class ComponentRegistrar implements ComponentRegistrarInterface
     }
 
     /**
-     * Get singleton instance
-     *
-     * @return self
+     * Get singleton instance.
      */
     public static function getInstance(): self
     {
-        if (self::$instance === null) {
+        if (null === self::$instance) {
             self::$instance = new self();
         }
 
@@ -52,12 +49,11 @@ class ComponentRegistrar implements ComponentRegistrarInterface
     }
 
     /**
-     * Static helper for registration (matches Magento pattern)
+     * Static helper for registration (matches Magento pattern).
      *
      * @param string $type Component type
      * @param string $name Component name
      * @param string $path Absolute path to component directory
-     * @return void
      */
     public static function register(string $type, string $name, string $path): void
     {
@@ -65,65 +61,49 @@ class ComponentRegistrar implements ComponentRegistrarInterface
     }
 
     /**
-     * Register a component
+     * Register a component.
      *
      * @param string $type Component type
      * @param string $name Component name
      * @param string $path Absolute path to component directory
-     * @return void
-     * @throws InvalidArgumentException If type is invalid
+     *
+     * @throws \InvalidArgumentException If type is invalid
      */
     public function registerComponent(string $type, string $name, string $path): void
     {
-        if (!isset($this->paths[$type])) {
-            throw new InvalidArgumentException(
-                sprintf('Invalid component type: %s. Must be one of: %s',
-                    $type,
-                    implode(', ', [self::MODULE, self::THEME, self::LIBRARY, self::LANGUAGE])
-                )
-            );
+        if (! isset($this->paths[$type])) {
+            throw new \InvalidArgumentException(\sprintf('Invalid component type: %s. Must be one of: %s', $type, implode(', ', [self::MODULE, self::THEME, self::LIBRARY, self::LANGUAGE])));
         }
 
         // Normalize path (remove trailing slashes)
         $path = rtrim($path, '/\\');
 
         // Validate path exists
-        if (!is_dir($path)) {
-            throw new InvalidArgumentException(
-                sprintf('Component path does not exist: %s', $path)
-            );
+        if (! is_dir($path)) {
+            throw new \InvalidArgumentException(\sprintf('Component path does not exist: %s', $path));
         }
 
         // Register component
         $this->paths[$type][$name] = $path;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getPaths(string $type): array
     {
         return $this->paths[$type] ?? [];
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getPath(string $type, string $name): ?string
     {
         return $this->paths[$type][$name] ?? null;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function isRegistered(string $type, string $name): bool
     {
         return isset($this->paths[$type][$name]);
     }
 
     /**
-     * Get all registered components (all types)
+     * Get all registered components (all types).
      *
      * @return array<string, array<string, string>>
      */
@@ -133,18 +113,19 @@ class ComponentRegistrar implements ComponentRegistrarInterface
     }
 
     /**
-     * Prevent cloning of singleton
+     * Prevent cloning of singleton.
      */
-    private function __clone() {}
+    private function __clone()
+    {
+    }
 
     /**
-     * Prevent unserialization of singleton
+     * Prevent unserialization of singleton.
      *
-     * @return void
-     * @throws Exception Always throws to prevent unserialization
+     * @throws \Exception Always throws to prevent unserialization
      */
     public function __wakeup(): void
     {
-        throw new Exception('Cannot unserialize singleton');
+        throw new \Exception('Cannot unserialize singleton');
     }
 }

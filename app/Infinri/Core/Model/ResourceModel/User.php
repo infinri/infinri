@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Model\ResourceModel;
 
 /**
- * Handles database operations for User model
+ * Handles database operations for User model.
  */
 class User extends AbstractResource
 {
@@ -19,9 +20,8 @@ class User extends AbstractResource
     protected string $idFieldName = 'id';
 
     /**
-     * Find user by email
+     * Find user by email.
      *
-     * @param string $email
      * @return array<string, mixed>|false
      */
     public function findByEmail(string $email): array|false
@@ -30,22 +30,18 @@ class User extends AbstractResource
     }
 
     /**
-     * Check if email exists
-     *
-     * @param string $email
-     * @param int|null $excludeId
-     * @return bool
+     * Check if email exists.
      */
     public function emailExists(string $email, ?int $excludeId = null): bool
     {
         $sql = 'SELECT COUNT(*) FROM ' . $this->mainTable . ' WHERE email = ?';
         $params = [$email];
 
-        if ($excludeId !== null) {
+        if (null !== $excludeId) {
             $sql .= ' AND id != ?';
             $params[] = $excludeId;
         }
 
-        return (int)$this->connection->fetchOne($sql, $params) > 0;
+        return (int) $this->connection->fetchOne($sql, $params) > 0;
     }
 }

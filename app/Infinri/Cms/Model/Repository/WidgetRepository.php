@@ -1,36 +1,27 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Cms\Model\Repository;
 
 use Infinri\Cms\Api\WidgetRepositoryInterface;
-use Infinri\Cms\Model\Widget;
 use Infinri\Cms\Model\ResourceModel\Widget as WidgetResource;
-use PDO;
+use Infinri\Cms\Model\Widget;
 
 /**
- * CRUD operations for CMS widgets
+ * CRUD operations for CMS widgets.
  */
 class WidgetRepository implements WidgetRepositoryInterface
 {
-    /**
-     * @var PDO
-     */
-    private PDO $connection;
+    private \PDO $connection;
 
-    /**
-     * @var WidgetResource
-     */
     private WidgetResource $widgetResource;
 
     /**
-     * Constructor
-     *
-     * @param PDO $connection
-     * @param WidgetResource $widgetResource
+     * Constructor.
      */
     public function __construct(
-        PDO            $connection,
+        \PDO $connection,
         WidgetResource $widgetResource
     ) {
         $this->connection = $connection;
@@ -38,9 +29,7 @@ class WidgetRepository implements WidgetRepositoryInterface
     }
 
     /**
-     * Create new empty widget instance
-     *
-     * @return Widget
+     * Create new empty widget instance.
      */
     public function create(): Widget
     {
@@ -48,10 +37,8 @@ class WidgetRepository implements WidgetRepositoryInterface
     }
 
     /**
-     * Get widget by ID
+     * Get widget by ID.
      *
-     * @param int $widgetId
-     * @return Widget
      * @throws \RuntimeException if widget not found
      */
     public function getById(int $widgetId): Widget
@@ -60,21 +47,20 @@ class WidgetRepository implements WidgetRepositoryInterface
             'SELECT * FROM cms_page_widget WHERE widget_id = :widget_id'
         );
         $stmt->execute(['widget_id' => $widgetId]);
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        $data = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        if (!$data) {
-            throw new \RuntimeException(
-                sprintf('Widget with ID %d not found', $widgetId)
-            );
+        if (! $data) {
+            throw new \RuntimeException(\sprintf('Widget with ID %d not found', $widgetId));
         }
 
         return new Widget($this->widgetResource, $data);
     }
 
     /**
-     * Get all widgets
+     * Get all widgets.
      *
      * @param bool $activeOnly Include only active widgets
+     *
      * @return Widget[]
      */
     public function getAll(bool $activeOnly = false): array
@@ -90,7 +76,7 @@ class WidgetRepository implements WidgetRepositoryInterface
         $stmt = $this->connection->query($sql);
 
         $widgets = [];
-        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        while ($data = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             $widgets[] = new Widget($this->widgetResource, $data);
         }
 
@@ -98,10 +84,10 @@ class WidgetRepository implements WidgetRepositoryInterface
     }
 
     /**
-     * Get all widgets for a page (sorted by sort_order)
+     * Get all widgets for a page (sorted by sort_order).
      *
-     * @param int $pageId
      * @param bool $activeOnly Include only active widgets
+     *
      * @return Widget[]
      */
     public function getByPageId(int $pageId, bool $activeOnly = true): array
@@ -118,7 +104,7 @@ class WidgetRepository implements WidgetRepositoryInterface
         $stmt->execute(['page_id' => $pageId]);
 
         $widgets = [];
-        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        while ($data = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             $widgets[] = new Widget($this->widgetResource, $data);
         }
 
@@ -126,10 +112,8 @@ class WidgetRepository implements WidgetRepositoryInterface
     }
 
     /**
-     * Save widget
+     * Save widget.
      *
-     * @param Widget $widget
-     * @return Widget
      * @throws \InvalidArgumentException if validation fails
      */
     public function save(Widget $widget): Widget
@@ -138,7 +122,6 @@ class WidgetRepository implements WidgetRepositoryInterface
         $widget->validate();
 
         $widgetId = $widget->getWidgetId();
-
         if ($widgetId) {
             // Update existing widget
             $this->update($widget);
@@ -151,16 +134,12 @@ class WidgetRepository implements WidgetRepositoryInterface
     }
 
     /**
-     * Insert new widget
-     *
-     * @param Widget $widget
-     * @return void
+     * Insert new widget.
      */
     private function insert(Widget $widget): void
     {
         $stmt = $this->connection->prepare(
-            'INSERT INTO cms_page_widget 
-            (page_id, widget_type, widget_data, sort_order, is_active, created_at, updated_at)
+            'INSERT INTO cms_page_widget (page_id, widget_type, widget_data, sort_order, is_active, created_at, updated_at)
             VALUES 
             (:page_id, :widget_type, :widget_data, :sort_order, :is_active, NOW(), NOW())'
         );
@@ -173,14 +152,11 @@ class WidgetRepository implements WidgetRepositoryInterface
             'is_active' => $widget->getIsActive() ? 1 : 0,
         ]);
 
-        $widget->setWidgetId((int)$this->connection->lastInsertId());
+        $widget->setWidgetId((int) $this->connection->lastInsertId());
     }
 
     /**
-     * Update existing widget
-     *
-     * @param Widget $widget
-     * @return void
+     * Update existing widget.
      */
     private function update(Widget $widget): void
     {
@@ -206,10 +182,8 @@ class WidgetRepository implements WidgetRepositoryInterface
     }
 
     /**
-     * Delete widget
+     * Delete widget.
      *
-     * @param int $widgetId
-     * @return bool
      * @throws \RuntimeException if widget not found
      */
     public function delete(int $widgetId): bool
@@ -225,11 +199,10 @@ class WidgetRepository implements WidgetRepositoryInterface
     }
 
     /**
-     * Reorder widgets for a page
+     * Reorder widgets for a page.
      *
-     * @param int $pageId
      * @param array<int> $widgetIds Array of widget IDs in desired order
-     * @return bool
+     *
      * @throws \RuntimeException if reorder fails
      */
     public function reorder(int $pageId, array $widgetIds): bool
@@ -254,14 +227,12 @@ class WidgetRepository implements WidgetRepositoryInterface
             }
 
             $this->connection->commit();
+
             return true;
         } catch (\Exception $e) {
             $this->connection->rollBack();
-            throw new \RuntimeException(
-                sprintf('Failed to reorder widgets: %s', $e->getMessage()),
-                0,
-                $e
-            );
+
+            throw new \RuntimeException(\sprintf('Failed to reorder widgets: %s', $e->getMessage()), 0, $e);
         }
     }
 }

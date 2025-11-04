@@ -24,11 +24,7 @@ describe('Admin User Grid Components', function () {
     });
     
     test('DataProvider formats user data correctly', function () {
-        $dataProvider = $this->objectManager->create(DataProvider::class, [
-            'name' => 'admin_user_listing_data_source',
-            'primaryFieldName' => 'user_id',
-            'requestFieldName' => 'id'
-        ]);
+        $dataProvider = $this->objectManager->get(DataProvider::class);
         
         $data = $dataProvider->getData();
         

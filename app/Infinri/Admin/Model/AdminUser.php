@@ -1,15 +1,16 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Admin\Model;
 
-use Infinri\Core\Model\AbstractModel;
 use Infinri\Admin\Model\ResourceModel\AdminUser as AdminUserResource;
-use Symfony\Component\Security\Core\User\UserInterface;
+use Infinri\Core\Model\AbstractModel;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * Represents an admin user account with Symfony Security integration
+ * Represents an admin user account with Symfony Security integration.
  */
 class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -20,17 +21,14 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
         parent::__construct($data);
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function getResource(): AdminUserResource
     {
         return $this->resource;
     }
 
     /**
-     * Get user identifier (username)
-     * 
+     * Get user identifier (username).
+     *
      * @return non-empty-string
      */
     public function getUserIdentifier(): string
@@ -39,32 +37,33 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
         if (empty($username)) {
             throw new \RuntimeException('User must have a non-empty username');
         }
+
         return $username;
     }
 
     /**
-     * Get user roles
+     * Get user roles.
      */
     public function getRoles(): array
     {
         $roles = $this->getData('roles');
-        
-        if (is_string($roles)) {
+
+        if (\is_string($roles)) {
             $roles = json_decode($roles, true);
         }
-        
-        if (!is_array($roles)) {
+
+        if (! \is_array($roles)) {
             $roles = [];
         }
-        
+
         // Guarantee every user has at least ROLE_USER
         $roles[] = 'ROLE_USER';
-        
+
         return array_unique($roles);
     }
 
     /**
-     * Get password hash
+     * Get password hash.
      */
     public function getPassword(): string
     {
@@ -72,7 +71,7 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
     }
 
     /**
-     * Erase credentials (nothing to do for us)
+     * Erase credentials (nothing to do for us).
      */
     public function eraseCredentials(): void
     {
@@ -80,7 +79,7 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
     }
 
     /**
-     * Get user ID
+     * Get user ID.
      */
     public function getUserId(): ?int
     {
@@ -88,7 +87,7 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
     }
 
     /**
-     * Set user ID
+     * Set user ID.
      */
     public function setUserId(int $id): self
     {
@@ -96,7 +95,7 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
     }
 
     /**
-     * Get username
+     * Get username.
      */
     public function getUsername(): ?string
     {
@@ -104,7 +103,7 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
     }
 
     /**
-     * Set username
+     * Set username.
      */
     public function setUsername(string $username): self
     {
@@ -112,7 +111,7 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
     }
 
     /**
-     * Get email
+     * Get email.
      */
     public function getEmail(): ?string
     {
@@ -120,7 +119,7 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
     }
 
     /**
-     * Set email
+     * Set email.
      */
     public function setEmail(string $email): self
     {
@@ -128,7 +127,7 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
     }
 
     /**
-     * Get first name
+     * Get first name.
      */
     public function getFirstname(): ?string
     {
@@ -136,7 +135,7 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
     }
 
     /**
-     * Set first name
+     * Set first name.
      */
     public function setFirstname(string $firstname): self
     {
@@ -144,7 +143,7 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
     }
 
     /**
-     * Get last name
+     * Get last name.
      */
     public function getLastname(): ?string
     {
@@ -152,7 +151,7 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
     }
 
     /**
-     * Set last name
+     * Set last name.
      */
     public function setLastname(string $lastname): self
     {
@@ -160,20 +159,20 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
     }
 
     /**
-     * Get full name
+     * Get full name.
      */
     public function getFullName(): string
     {
         $parts = array_filter([
             $this->getFirstname(),
-            $this->getLastname()
-        ], fn($value) => !empty($value));
-        
-        return !empty($parts) ? implode(' ', $parts) : ($this->getUsername() ?? 'Unknown User');
+            $this->getLastname(),
+        ], fn ($value) => ! empty($value));
+
+        return ! empty($parts) ? implode(' ', $parts) : ($this->getUsername() ?? 'Unknown User');
     }
 
     /**
-     * Set password hash
+     * Set password hash.
      */
     public function setPassword(string $password): self
     {
@@ -181,8 +180,8 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
     }
 
     /**
-     * Set roles
-     * 
+     * Set roles.
+     *
      * @param array<string> $roles
      */
     public function setRoles(array $roles): self
@@ -191,7 +190,7 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
     }
 
     /**
-     * Check if user is active
+     * Check if user is active.
      */
     public function isActive(): bool
     {
@@ -199,7 +198,7 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
     }
 
     /**
-     * Set active status
+     * Set active status.
      */
     public function setIsActive(bool $isActive): self
     {
@@ -207,7 +206,7 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
     }
 
     /**
-     * Get creation timestamp
+     * Get creation timestamp.
      */
     public function getCreatedAt(): ?string
     {
@@ -215,7 +214,7 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
     }
 
     /**
-     * Get last update timestamp
+     * Get last update timestamp.
      */
     public function getUpdatedAt(): ?string
     {
@@ -223,7 +222,7 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
     }
 
     /**
-     * Get last login timestamp
+     * Get last login timestamp.
      */
     public function getLastLoginAt(): ?string
     {
@@ -231,7 +230,7 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
     }
 
     /**
-     * Update last login timestamp
+     * Update last login timestamp.
      */
     public function updateLastLogin(): self
     {
@@ -239,15 +238,15 @@ class AdminUser extends AbstractModel implements UserInterface, PasswordAuthenti
     }
 
     /**
-     * Check if user has role
+     * Check if user has role.
      */
     public function hasRole(string $role): bool
     {
-        return in_array($role, $this->getRoles(), true);
+        return \in_array($role, $this->getRoles(), true);
     }
 
     /**
-     * Check if user is admin
+     * Check if user is admin.
      */
     public function isAdmin(): bool
     {

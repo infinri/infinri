@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Admin\Block\Adminhtml\Dashboard;
@@ -6,13 +7,13 @@ namespace Infinri\Admin\Block\Adminhtml\Dashboard;
 use Infinri\Core\Block\Template;
 
 /**
- * Admin Dashboard Block
+ * Admin Dashboard Block.
  */
 class Dashboard extends Template
 {
     /**
-     * Get logged in user data
-     * 
+     * Get logged in user data.
+     *
      * @return array<string, mixed>
      */
     public function getUser(): array
@@ -21,7 +22,7 @@ class Dashboard extends Template
     }
 
     /**
-     * Get logout URL
+     * Get logout URL.
      */
     public function getLogoutUrl(): string
     {

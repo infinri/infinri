@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace Infinri\Menu\Ui\Component\Listing\Column;
 
 /**
- * Generates action links for menu grid rows
+ * Generates action links for menu grid rows.
  */
 class MenuActions
 {
     /**
-     * Prepare data source
+     * Prepare data source.
      *
      * @param array<string, mixed> $dataSource
+     *
      * @return array<string, mixed>
      */
     public function prepareDataSource(array $dataSource): array
@@ -23,16 +24,16 @@ class MenuActions
                     $item['actions'] = [
                         'edit' => [
                             'href' => '/admin/menu/menu/edit?id=' . $item['menu_id'],
-                            'label' => 'Edit'
+                            'label' => 'Edit',
                         ],
                         'delete' => [
                             'href' => '/admin/menu/menu/delete?id=' . $item['menu_id'],
                             'label' => 'Delete',
                             'confirm' => [
                                 'title' => 'Delete Menu',
-                                'message' => 'Are you sure you want to delete this menu? All associated CMS pages will be removed from the menu.'
-                            ]
-                        ]
+                                'message' => 'Are you sure you want to delete this menu? All associated CMS pages will be removed from the menu.',
+                            ],
+                        ],
                     ];
                 }
             }

@@ -7,57 +7,43 @@ namespace Infinri\Menu\Api;
 use Infinri\Menu\Model\Menu;
 
 /**
- * Provides CRUD operations for Menu entities
+ * Provides CRUD operations for Menu entities.
  */
 interface MenuRepositoryInterface
 {
     /**
-     * Get menu by ID
-     *
-     * @param int $id
-     * @return Menu|null
+     * Get menu by ID.
      */
     public function getById(int $id): ?Menu;
 
     /**
-     * Get menu by identifier
-     *
-     * @param string $identifier
-     * @return Menu|null
+     * Get menu by identifier.
      */
     public function getByIdentifier(string $identifier): ?Menu;
 
     /**
-     * Get all menus
+     * Get all menus.
      *
-     * @param bool $activeOnly
      * @return Menu[]
      */
     public function getAll(bool $activeOnly = false): array;
 
     /**
-     * Save menu
+     * Save menu.
      *
-     * @param Menu $menu
-     * @return Menu
      * @throws \RuntimeException
      */
     public function save(Menu $menu): Menu;
 
     /**
-     * Delete menu
+     * Delete menu.
      *
-     * @param int $menuId
-     * @return bool
      * @throws \RuntimeException
      */
     public function delete(int $menuId): bool;
 
     /**
-     * Check if menu exists
-     *
-     * @param int $menuId
-     * @return bool
+     * Check if menu exists.
      */
     public function exists(int $menuId): bool;
 }

@@ -7,7 +7,7 @@ use Infinri\Core\Model\Url\Builder;
 describe('URL Builder', function () {
     
     beforeEach(function () {
-        $this->builder = new Builder(null, 'http://localhost');
+        $this->builder = new Builder('http://localhost', false);
     });
     
     it('can build simple URL', function () {

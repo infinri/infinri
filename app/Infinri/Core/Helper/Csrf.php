@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Helper;
@@ -6,18 +7,20 @@ namespace Infinri\Core\Helper;
 use Infinri\Core\Security\CsrfTokenManager;
 
 /**
- * Template helper for generating CSRF form fields
+ * Template helper for generating CSRF form fields.
  */
 class Csrf
 {
     public function __construct(
         private readonly CsrfTokenManager $csrfManager
-    ) {}
+    ) {
+    }
 
     /**
-     * Generate CSRF hidden input fields for forms
+     * Generate CSRF hidden input fields for forms.
      *
      * @param string $tokenId Token identifier (unique per form type)
+     *
      * @return string HTML hidden inputs
      */
     public function getFormFields(string $tokenId = 'default'): string
@@ -25,7 +28,7 @@ class Csrf
         $token = $this->csrfManager->generateToken($tokenId);
         $escaper = new Escaper();
 
-        return sprintf(
+        return \sprintf(
             '<input type="hidden" name="_csrf_token" value="%s">' . "\n" .
             '<input type="hidden" name="_csrf_token_id" value="%s">',
             $escaper->escapeHtmlAttr($token),
@@ -34,10 +37,7 @@ class Csrf
     }
 
     /**
-     * Get CSRF token value
-     *
-     * @param string $tokenId
-     * @return string
+     * Get CSRF token value.
      */
     public function getToken(string $tokenId = 'default'): string
     {
@@ -45,11 +45,7 @@ class Csrf
     }
 
     /**
-     * Validate CSRF token from request
-     *
-     * @param string $tokenId
-     * @param string $token
-     * @return bool
+     * Validate CSRF token from request.
      */
     public function validateToken(string $tokenId, string $token): bool
     {

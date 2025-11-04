@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Cms\Ui\Component\Listing\Column;
 
 /**
  * Page Actions Column
- * Provides Edit and Delete actions for each row
+ * Provides Edit and Delete actions for each row.
  */
 class PageActions
 {
@@ -20,7 +21,7 @@ class PageActions
     public function __construct(array $data = [])
     {
         $this->data = $data;
-        if (!isset($this->data['name'])) {
+        if (! isset($this->data['name'])) {
             $this->data['name'] = 'actions';
         }
     }
@@ -36,9 +37,10 @@ class PageActions
     }
 
     /**
-     * Prepare Data Source
+     * Prepare Data Source.
      *
      * @param array<string, mixed> $dataSource
+     *
      * @return array<string, mixed>
      */
     public function prepareDataSource(array $dataSource): array
@@ -50,16 +52,16 @@ class PageActions
                     $item[$name] = [
                         'edit' => [
                             'href' => $this->buildUrl('cms/page/edit', ['id' => $item['page_id']]),
-                            'label' => 'Edit'
+                            'label' => 'Edit',
                         ],
                         'delete' => [
                             'href' => $this->buildUrl('cms/page/delete', ['id' => $item['page_id']]),
                             'label' => 'Delete',
                             'confirm' => [
                                 'title' => 'Delete Page',
-                                'message' => 'Are you sure you want to delete this page?'
-                            ]
-                        ]
+                                'message' => 'Are you sure you want to delete this page?',
+                            ],
+                        ],
                     ];
                 }
             }

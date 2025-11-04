@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Seo\Model\ResourceModel;
@@ -6,12 +7,12 @@ namespace Infinri\Seo\Model\ResourceModel;
 use Infinri\Core\Model\ResourceModel\AbstractResource;
 
 /**
- * Redirect Resource Model
+ * Redirect Resource Model.
  */
 class Redirect extends AbstractResource
 {
     /**
-     * Initialize resource
+     * Initialize resource.
      */
     protected function _construct(): void
     {
@@ -19,7 +20,7 @@ class Redirect extends AbstractResource
     }
 
     /**
-     * Find redirect by from path
+     * Find redirect by from path.
      */
     public function findByFromPath(string $fromPath): ?array
     {
@@ -39,7 +40,7 @@ class Redirect extends AbstractResource
     }
 
     /**
-     * Get all active redirects
+     * Get all active redirects.
      */
     public function getAllActive(): array
     {
@@ -54,7 +55,7 @@ class Redirect extends AbstractResource
     }
 
     /**
-     * Delete redirects by from path
+     * Delete redirects by from path.
      */
     public function deleteByFromPath(string $fromPath): bool
     {

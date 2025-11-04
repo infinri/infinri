@@ -112,7 +112,6 @@ return $config
         'return_type_declaration' => true,
         'semicolon_after_instruction' => true,
         'short_scalar_cast' => true,
-        'single_blank_line_before_namespace' => true,
         'single_class_element_per_statement' => true,
         'single_line_comment_style' => ['comment_types' => ['hash']],
         'single_quote' => true,

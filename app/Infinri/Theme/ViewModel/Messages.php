@@ -7,19 +7,14 @@ namespace Infinri\Theme\ViewModel;
 use Infinri\Core\Model\Message\MessageManager;
 
 /**
- * Provides presentation logic for displaying flash messages
+ * Provides presentation logic for displaying flash messages.
  */
 class Messages
 {
-    /**
-     * @var MessageManager
-     */
     private MessageManager $messageManager;
 
     /**
-     * Constructor
-     *
-     * @param MessageManager $messageManager
+     * Constructor.
      */
     public function __construct(MessageManager $messageManager)
     {
@@ -27,9 +22,7 @@ class Messages
     }
 
     /**
-     * Get all messages
-     *
-     * @return array
+     * Get all messages.
      */
     public function getMessages(): array
     {
@@ -37,9 +30,7 @@ class Messages
     }
 
     /**
-     * Get messages grouped by type
-     *
-     * @return array
+     * Get messages grouped by type.
      */
     public function getGroupedMessages(): array
     {
@@ -63,9 +54,7 @@ class Messages
     }
 
     /**
-     * Check if there are any messages
-     *
-     * @return bool
+     * Check if there are any messages.
      */
     public function hasMessages(): bool
     {
@@ -73,9 +62,7 @@ class Messages
     }
 
     /**
-     * Get success messages
-     *
-     * @return array
+     * Get success messages.
      */
     public function getSuccessMessages(): array
     {
@@ -83,9 +70,7 @@ class Messages
     }
 
     /**
-     * Get error messages
-     *
-     * @return array
+     * Get error messages.
      */
     public function getErrorMessages(): array
     {
@@ -93,9 +78,7 @@ class Messages
     }
 
     /**
-     * Get warning messages
-     *
-     * @return array
+     * Get warning messages.
      */
     public function getWarningMessages(): array
     {
@@ -103,9 +86,7 @@ class Messages
     }
 
     /**
-     * Get info messages
-     *
-     * @return array
+     * Get info messages.
      */
     public function getInfoMessages(): array
     {
@@ -113,9 +94,7 @@ class Messages
     }
 
     /**
-     * Get message count
-     *
-     * @return int
+     * Get message count.
      */
     public function getCount(): int
     {
@@ -123,10 +102,7 @@ class Messages
     }
 
     /**
-     * Get icon class for message type
-     *
-     * @param string $type
-     * @return string
+     * Get icon class for message type.
      */
     public function getIconClass(string $type): string
     {
@@ -141,13 +117,10 @@ class Messages
     }
 
     /**
-     * Get ARIA role for message type
-     *
-     * @param string $type
-     * @return string
+     * Get ARIA role for message type.
      */
     public function getAriaRole(string $type): string
     {
-        return $type === MessageManager::TYPE_ERROR ? 'alert' : 'status';
+        return MessageManager::TYPE_ERROR === $type ? 'alert' : 'status';
     }
 }

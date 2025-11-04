@@ -39,16 +39,9 @@
         </arguments>
     </virtualType>
 
-    <!-- Inject Cache Pools into Loaders -->
-    <type name="Infinri\Core\Model\Config\Loader">
-        <arguments>
-            <argument name="cachePool" xsi:type="object">Infinri\Core\Model\Cache\ConfigCachePool</argument>
-        </arguments>
-    </type>
-
+    <!-- Cache pools are optional - loaders will work without them -->
     <type name="Infinri\Core\Model\Layout\Loader">
         <arguments>
-            <argument name="cachePool" xsi:type="object">Infinri\Core\Model\Cache\LayoutCachePool</argument>
             <argument name="request" xsi:type="object">Infinri\Core\App\Request</argument>
         </arguments>
     </type>
@@ -99,21 +92,13 @@
         </arguments>
     </type>
 
-    <!-- Auth: Login Controllers - Use autowiring (no manual definitions needed) -->
-
-    <!-- Auth: Login Form Block -->
-    <type name="Infinri\Auth\Block\Adminhtml\Login\Form">
-        <arguments>
-            <argument name="csrfManager" xsi:type="object">Infinri\Core\Security\CsrfTokenManager</argument>
-        </arguments>
-    </type>
-
     <!-- Admin: Dashboard Controller -->
-    <type name="Infinri\Admin\Controller\Adminhtml\Index\Index">
+    <type name="Infinri\Admin\Controller\Dashboard\Index">
         <arguments>
             <argument name="request" xsi:type="object">Infinri\Core\App\Request</argument>
             <argument name="response" xsi:type="object">Infinri\Core\App\Response</argument>
             <argument name="layoutFactory" xsi:type="object">Infinri\Core\Model\View\LayoutFactory</argument>
+            <argument name="csrfGuard" xsi:type="object">Infinri\Core\Security\CsrfGuard</argument>
         </arguments>
     </type>
 
@@ -121,8 +106,7 @@
     <type name="Infinri\Core\App\FrontController">
         <arguments>
             <argument name="router" xsi:type="object">Infinri\Core\App\Router</argument>
-            <argument name="objectManager" xsi:type="object">Infinri\Core\Model\ObjectManager</argument>
-            <argument name="request" xsi:type="object">Infinri\Core\App\Request</argument>
+            <argument name="dispatcher" xsi:type="object">Infinri\Core\App\Dispatcher</argument>
             <argument name="securityHeaders" xsi:type="object">Infinri\Core\App\Middleware\SecurityHeadersMiddleware</argument>
             <argument name="authMiddleware" xsi:type="object">Infinri\Core\App\Middleware\AuthenticationMiddleware</argument>
         </arguments>
@@ -143,5 +127,3 @@
         </arguments>
     </type>
 </config>
-
-

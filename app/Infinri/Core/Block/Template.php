@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Block;
 
-use Infinri\Core\Model\View\TemplateResolver;
 use Infinri\Core\Helper\Logger;
 use Infinri\Core\Model\ObjectManager;
+use Infinri\Core\Model\View\TemplateResolver;
 
 /**
  * A block that renders content from a PHTML template file.
@@ -38,21 +39,21 @@ class Template extends AbstractBlock
     private static array $templatePathCache = [];
 
     /**
-     * Set template file
+     * Set template file.
      *
      * @param string $template Template path (e.g., 'Infinri_Core::header/logo.phtml')
+     *
      * @return $this
      */
     public function setTemplate(string $template): self
     {
         $this->template = $template;
+
         return $this;
     }
 
     /**
-     * Get template file
-     *
-     * @return string|null
+     * Get template file.
      */
     public function getTemplate(): ?string
     {
@@ -60,21 +61,19 @@ class Template extends AbstractBlock
     }
 
     /**
-     * Set template resolver
+     * Set template resolver.
      *
-     * @param TemplateResolver $resolver
      * @return $this
      */
     public function setTemplateResolver(TemplateResolver $resolver): self
     {
         $this->templateResolver = $resolver;
+
         return $this;
     }
 
     /**
-     * Get template resolver
-     *
-     * @return TemplateResolver|null
+     * Get template resolver.
      */
     public function getTemplateResolver(): ?TemplateResolver
     {
@@ -82,10 +81,7 @@ class Template extends AbstractBlock
     }
 
     /**
-     * Set layout
-     *
-     * @param object $layout
-     * @return void
+     * Set layout.
      */
     public function setLayout(object $layout): void
     {
@@ -93,9 +89,7 @@ class Template extends AbstractBlock
     }
 
     /**
-     * Get layout
-     *
-     * @return object|null
+     * Get layout.
      */
     public function getLayout(): ?object
     {
@@ -113,30 +107,31 @@ class Template extends AbstractBlock
      */
     public function getViewModel(): mixed
     {
-        if ($this->resolvedViewModel !== null) {
+        if (null !== $this->resolvedViewModel) {
             return $this->resolvedViewModel;
         }
 
         $viewModel = $this->getData('view_model');
 
-        if (!$viewModel) {
+        if (! $viewModel) {
             return null;
         }
 
-        if (is_object($viewModel)) {
+        if (\is_object($viewModel)) {
             $this->resolvedViewModel = $viewModel;
+
             return $this->resolvedViewModel;
         }
 
-        if (is_string($viewModel)) {
+        if (\is_string($viewModel)) {
             try {
                 $objectManager = ObjectManager::getInstance();
-                $resolved = $objectManager->get($viewModel);
+                /** @var object $resolved */
+                $resolved = $objectManager->get($viewModel); // @phpstan-ignore-line
 
-                if (is_object($resolved)) {
-                    $this->resolvedViewModel = $resolved;
-                    return $this->resolvedViewModel;
-                }
+                $this->resolvedViewModel = $resolved;
+
+                return $this->resolvedViewModel;
             } catch (\Throwable $e) {
                 Logger::warning('Template block: Failed to instantiate view model', [
                     'block_name' => $this->getName(),
@@ -150,30 +145,26 @@ class Template extends AbstractBlock
     }
 
     /**
-     * Clear template path cache (useful for testing)
-     *
-     * @return void
+     * Clear template path cache (useful for testing).
      */
     public static function clearPathCache(): void
     {
         self::$templatePathCache = [];
     }
 
-    /**
-     * @inheritDoc
-     */
     public function toHtml(): string
     {
-        if (!$this->template) {
+        if (! $this->template) {
             Logger::debug('Template block: No template set', [
-                'block_name' => $this->getName()
+                'block_name' => $this->getName(),
             ]);
+
             return '';
         }
 
         Logger::debug('Template block: Rendering', [
             'block_name' => $this->getName(),
-            'template' => $this->template
+            'template' => $this->template,
         ]);
 
         // Resolve template file path (with caching)
@@ -183,15 +174,16 @@ class Template extends AbstractBlock
             'block_name' => $this->getName(),
             'template' => $this->template,
             'resolved_path' => $templateFile,
-            'cached' => isset(self::$templatePathCache[$this->template])
+            'cached' => isset(self::$templatePathCache[$this->template]),
         ]);
 
-        if (!$templateFile) {
+        if (! $templateFile) {
             Logger::warning('Template block: Template file not found', [
                 'block_name' => $this->getName(),
                 'template' => $this->template,
-                'resolved_path' => $templateFile
+                'resolved_path' => $templateFile,
             ]);
+
             return '';
         }
 
@@ -200,16 +192,14 @@ class Template extends AbstractBlock
 
         Logger::debug('Template block: Rendered', [
             'block_name' => $this->getName(),
-            'html_length' => strlen($html)
+            'html_length' => \strlen($html),
         ]);
 
         return $html;
     }
 
     /**
-     * Resolve template file path
-     *
-     * @return string|null
+     * Resolve template file path.
      */
     private function resolveTemplateFile(): ?string
     {
@@ -220,6 +210,10 @@ class Template extends AbstractBlock
 
         $resolvedPath = null;
 
+        if (null === $this->template) {
+            return null;
+        }
+
         if ($this->templateResolver) {
             $resolvedPath = $this->templateResolver->resolve($this->template);
         } elseif (str_contains($this->template, '::')) {
@@ -227,7 +221,7 @@ class Template extends AbstractBlock
             [$moduleName, $filePath] = explode('::', $this->template, 2);
 
             // Try common paths
-            $basePath = dirname(__DIR__, 4) . '/app/' . str_replace('_', '/', $moduleName);
+            $basePath = \dirname(__DIR__, 4) . '/app/' . str_replace('_', '/', $moduleName);
 
             $possiblePaths = [
                 $basePath . '/view/adminhtml/templates/' . $filePath,  // Admin area
@@ -252,15 +246,12 @@ class Template extends AbstractBlock
     }
 
     /**
-     * Render template file
-     *
-     * @param string $templateFile
-     * @return string
+     * Render template file.
      */
     private function renderTemplate(string $templateFile): string
     {
         // Create scoped renderer to avoid variable extraction
-        $renderer = new class($this, $templateFile) {
+        $renderer = new class ($this, $templateFile) {
             public function __construct(private Template $block, private string $templateFile)
             {
             }
@@ -277,7 +268,7 @@ class Template extends AbstractBlock
                 } catch (\Throwable $e) {
                     ob_end_clean();
 
-                    return sprintf(
+                    return \sprintf(
                         '<!-- Template Error: %s in %s -->',
                         htmlspecialchars($e->getMessage()),
                         htmlspecialchars($this->templateFile)
@@ -290,14 +281,16 @@ class Template extends AbstractBlock
     }
 
     /**
-     * Get CSRF token for forms
+     * Get CSRF token for forms.
      *
      * @param string $tokenId Token identifier
+     *
      * @return string CSRF token
      */
     public function getCsrfToken(string $tokenId): string
     {
         $csrfGuard = ObjectManager::getInstance()->get(\Infinri\Core\Security\CsrfGuard::class);
+
         return $csrfGuard->generateToken($tokenId);
     }
 }

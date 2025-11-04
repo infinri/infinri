@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\App;
 
 /**
- * Wrapper for HTTP response (headers, body, status code)
+ * Wrapper for HTTP response (headers, body, status code).
  */
 class Response
 {
@@ -29,33 +30,31 @@ class Response
     private bool $headersSent = false;
 
     /**
-     * Set response body
+     * Set response body.
      *
-     * @param string $body
      * @return $this
      */
     public function setBody(string $body): self
     {
         $this->body = $body;
+
         return $this;
     }
 
     /**
-     * Append to response body
+     * Append to response body.
      *
-     * @param string $content
      * @return $this
      */
     public function appendBody(string $content): self
     {
         $this->body .= $content;
+
         return $this;
     }
 
     /**
-     * Get response body
-     *
-     * @return string
+     * Get response body.
      */
     public function getBody(): string
     {
@@ -63,21 +62,19 @@ class Response
     }
 
     /**
-     * Set HTTP status code
+     * Set HTTP status code.
      *
-     * @param int $code
      * @return $this
      */
     public function setStatusCode(int $code): self
     {
         $this->statusCode = $code;
+
         return $this;
     }
 
     /**
-     * Get HTTP status code
-     *
-     * @return int
+     * Get HTTP status code.
      */
     public function getStatusCode(): int
     {
@@ -85,23 +82,19 @@ class Response
     }
 
     /**
-     * Set HTTP header
+     * Set HTTP header.
      *
-     * @param string $name
-     * @param string $value
      * @return $this
      */
     public function setHeader(string $name, string $value): self
     {
         $this->headers[$name] = $value;
+
         return $this;
     }
 
     /**
-     * Get HTTP header
-     *
-     * @param string $name
-     * @return string|null
+     * Get HTTP header.
      */
     public function getHeader(string $name): ?string
     {
@@ -109,7 +102,7 @@ class Response
     }
 
     /**
-     * Get all headers
+     * Get all headers.
      *
      * @return array<string, string>
      */
@@ -119,9 +112,8 @@ class Response
     }
 
     /**
-     * Set content type header
+     * Set content type header.
      *
-     * @param string $contentType
      * @return $this
      */
     public function setContentType(string $contentType): self
@@ -130,9 +122,10 @@ class Response
     }
 
     /**
-     * Set security headers
+     * Set security headers.
      *
      * @param bool $strict If true, sets stricter CSP and security policies
+     *
      * @return $this
      */
     public function setSecurityHeaders(bool $strict = false): self
@@ -165,33 +158,30 @@ class Response
     }
 
     /**
-     * Send redirect response
+     * Send redirect response.
      *
-     * @param string $url
-     * @param int $code
      * @return $this
+     *
      * @throws \InvalidArgumentException If URL is not safe for redirect
      */
     public function setRedirect(string $url, int $code = 302): self
     {
         // Validate URL to prevent open redirect attacks
-        if (!$this->isValidRedirectUrl($url)) {
-            throw new \InvalidArgumentException(
-                sprintf('Invalid redirect URL: %s. Only relative URLs or same-host URLs are allowed.', $url)
-            );
+        if (! $this->isValidRedirectUrl($url)) {
+            throw new \InvalidArgumentException(\sprintf('Invalid redirect URL: %s. Only relative URLs or same-host URLs are allowed.', $url));
         }
 
         $this->setStatusCode($code);
         $this->setHeader('Location', $url);
+
         return $this;
     }
 
     /**
-     * Convenience method for redirect (alias of setRedirect)
+     * Convenience method for redirect (alias of setRedirect).
      *
-     * @param string $url
-     * @param int $code
      * @return $this
+     *
      * @throws \InvalidArgumentException If URL is not safe for redirect
      */
     public function redirect(string $url, int $code = 302): self
@@ -200,21 +190,22 @@ class Response
     }
 
     /**
-     * Set JSON response
+     * Set JSON response.
      *
-     * @param mixed $data
      * @return $this
+     *
      * @throws \JsonException
      */
     public function setJson(mixed $data): self
     {
         $this->setContentType('application/json');
-        $this->setBody(json_encode($data, JSON_THROW_ON_ERROR));
+        $this->setBody(json_encode($data, \JSON_THROW_ON_ERROR));
+
         return $this;
     }
 
     /**
-     * Send headers
+     * Send headers.
      *
      * @return $this
      */
@@ -233,19 +224,19 @@ class Response
         }
 
         $this->headersSent = true;
+
         return $this;
     }
 
     /**
-     * Send response (headers + body)
+     * Send response (headers + body).
      *
      * @param bool $withSecurityHeaders If true, automatically adds security headers
-     * @return void
      */
     public function send(bool $withSecurityHeaders = true): void
     {
         // Automatically add security headers unless disabled
-        if ($withSecurityHeaders && !isset($this->headers['X-Frame-Options'])) {
+        if ($withSecurityHeaders && ! isset($this->headers['X-Frame-Options'])) {
             $this->setSecurityHeaders();
         }
 
@@ -254,9 +245,7 @@ class Response
     }
 
     /**
-     * Check if headers have been sent
-     *
-     * @return bool
+     * Check if headers have been sent.
      */
     public function isHeadersSent(): bool
     {
@@ -264,7 +253,7 @@ class Response
     }
 
     /**
-     * Set 404 Not Found response
+     * Set 404 Not Found response.
      *
      * @return $this
      */
@@ -274,7 +263,7 @@ class Response
     }
 
     /**
-     * Set 500 Internal Server Error response
+     * Set 500 Internal Server Error response.
      *
      * @return $this
      */
@@ -284,7 +273,7 @@ class Response
     }
 
     /**
-     * Set 403 Forbidden response
+     * Set 403 Forbidden response.
      *
      * @return $this
      */
@@ -294,10 +283,7 @@ class Response
     }
 
     /**
-     * Validate redirect URL to prevent open redirect attacks
-     *
-     * @param string $url
-     * @return bool
+     * Validate redirect URL to prevent open redirect attacks.
      */
     private function isValidRedirectUrl(string $url): bool
     {
@@ -310,12 +296,12 @@ class Response
         $parsed = parse_url($url);
 
         // If parsing fails, reject
-        if ($parsed === false) {
+        if (false === $parsed) {
             return false;
         }
 
         // If no host, it's a relative URL (e.g., "path/to/page")
-        if (!isset($parsed['host'])) {
+        if (! isset($parsed['host'])) {
             return true;
         }
 
@@ -326,7 +312,7 @@ class Response
         $currentHost = explode(':', $currentHost)[0];
 
         // Allow same-host redirects
-        if (strcasecmp($parsed['host'], $currentHost) === 0) {
+        if (0 === strcasecmp($parsed['host'], $currentHost)) {
             return true;
         }
 

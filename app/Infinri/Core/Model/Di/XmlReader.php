@@ -1,9 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Model\Di;
-
-use SimpleXMLElement;
 
 /**
  * Reads and parses di.xml files to extract dependency injection configuration.
@@ -12,22 +11,23 @@ use SimpleXMLElement;
 class XmlReader
 {
     /**
-     * Read di.xml file from a module
+     * Read di.xml file from a module.
      *
      * @param string $modulePath Absolute path to module directory
+     *
      * @return array<string, mixed>|null DI configuration array or null if not found
      */
     public function read(string $modulePath): ?array
     {
         $diPath = $modulePath . '/etc/di.xml';
 
-        if (!file_exists($diPath)) {
+        if (! file_exists($diPath)) {
             return null;
         }
 
         $xml = $this->loadXml($diPath);
-        
-        if ($xml === null) {
+
+        if (null === $xml) {
             return null;
         }
 
@@ -35,20 +35,18 @@ class XmlReader
     }
 
     /**
-     * Load and validate XML file
-     *
-     * @param string $filePath
-     * @return SimpleXMLElement|null
+     * Load and validate XML file.
      */
-    private function loadXml(string $filePath): ?SimpleXMLElement
+    private function loadXml(string $filePath): ?\SimpleXMLElement
     {
         $useInternalErrors = libxml_use_internal_errors(true);
-        
+
         try {
             $xml = simplexml_load_file($filePath);
-            
-            if ($xml === false) {
+
+            if (false === $xml) {
                 libxml_clear_errors();
+
                 return null;
             }
 
@@ -59,12 +57,11 @@ class XmlReader
     }
 
     /**
-     * Parse di.xml configuration
+     * Parse di.xml configuration.
      *
-     * @param SimpleXMLElement $xml
      * @return array<string, mixed>
      */
-    private function parseConfig(SimpleXMLElement $xml): array
+    private function parseConfig(\SimpleXMLElement $xml): array
     {
         $config = [
             'preferences' => [],
@@ -77,7 +74,7 @@ class XmlReader
             foreach ($xml->preference as $preference) {
                 $for = (string) $preference['for'];
                 $type = (string) $preference['type'];
-                
+
                 if ($for && $type) {
                     $config['preferences'][$for] = $type;
                 }
@@ -88,8 +85,8 @@ class XmlReader
         if (isset($xml->type)) {
             foreach ($xml->type as $type) {
                 $typeName = (string) $type['name'];
-                
-                if (!$typeName) {
+
+                if (! $typeName) {
                     continue;
                 }
 
@@ -114,8 +111,8 @@ class XmlReader
             foreach ($xml->virtualType as $virtualType) {
                 $name = (string) $virtualType['name'];
                 $type = (string) $virtualType['type'];
-                
-                if (!$name || !$type) {
+
+                if (! $name || ! $type) {
                     continue;
                 }
 
@@ -136,23 +133,22 @@ class XmlReader
     }
 
     /**
-     * Parse constructor arguments
+     * Parse constructor arguments.
      *
-     * @param SimpleXMLElement $argumentsNode
      * @return array<string, array<string, mixed>>
      */
-    private function parseArguments(SimpleXMLElement $argumentsNode): array
+    private function parseArguments(\SimpleXMLElement $argumentsNode): array
     {
         $arguments = [];
 
         foreach ($argumentsNode->argument as $argument) {
             $name = (string) $argument['name'];
-            
+
             // Access namespaced attribute correctly
             $attrs = $argument->attributes('xsi', true);
             $type = isset($attrs['type']) ? (string) $attrs['type'] : 'string';
-            
-            if (!$name) {
+
+            if (! $name) {
                 continue;
             }
 
@@ -160,7 +156,7 @@ class XmlReader
                 'object' => (string) $argument,
                 'string' => (string) $argument,
                 'number' => (float) $argument,
-                'boolean' => in_array(strtolower((string) $argument), ['true', '1', 'yes'], true),
+                'boolean' => \in_array(strtolower((string) $argument), ['true', '1', 'yes'], true),
                 'array' => $this->parseArrayArgument($argument),
                 'null' => null,
                 default => (string) $argument,
@@ -176,33 +172,32 @@ class XmlReader
     }
 
     /**
-     * Parse array argument
+     * Parse array argument.
      *
-     * @param SimpleXMLElement $arrayNode
      * @return array<mixed>
      */
-    private function parseArrayArgument(SimpleXMLElement $arrayNode): array
+    private function parseArrayArgument(\SimpleXMLElement $arrayNode): array
     {
         $result = [];
 
         foreach ($arrayNode->item as $item) {
             $key = (string) ($item['key'] ?? '');
-            
+
             // Access namespaced attribute correctly
             $attrs = $item->attributes('xsi', true);
             $type = isset($attrs['type']) ? (string) $attrs['type'] : 'string';
-            
+
             $value = match ($type) {
                 'object' => (string) $item,
                 'string' => (string) $item,
                 'number' => (float) $item,
-                'boolean' => in_array(strtolower((string) $item), ['true', '1', 'yes'], true),
+                'boolean' => \in_array(strtolower((string) $item), ['true', '1', 'yes'], true),
                 'array' => $this->parseArrayArgument($item),
                 'null' => null,
                 default => (string) $item,
             };
 
-            if ($key !== '') {
+            if ('' !== $key) {
                 $result[$key] = $value;
             } else {
                 $result[] = $value;
@@ -213,12 +208,11 @@ class XmlReader
     }
 
     /**
-     * Parse plugins
+     * Parse plugins.
      *
-     * @param SimpleXMLElement $pluginsNode
      * @return array<string, array<string, mixed>>
      */
-    private function parsePlugins(SimpleXMLElement $pluginsNode): array
+    private function parsePlugins(\SimpleXMLElement $pluginsNode): array
     {
         $plugins = [];
 
@@ -226,7 +220,7 @@ class XmlReader
             $name = (string) $plugin['name'];
             $type = (string) $plugin['type'];
             $sortOrder = (int) ($plugin['sortOrder'] ?? 10);
-            $disabled = strtolower((string) ($plugin['disabled'] ?? 'false')) === 'true';
+            $disabled = 'true' === strtolower((string) ($plugin['disabled'] ?? 'false'));
 
             if ($name && $type) {
                 $plugins[$name] = [
@@ -241,15 +235,12 @@ class XmlReader
     }
 
     /**
-     * Validate di.xml structure
-     *
-     * @param string $modulePath
-     * @return bool
+     * Validate di.xml structure.
      */
     public function validate(string $modulePath): bool
     {
         $config = $this->read($modulePath);
-        
-        return $config !== null;
+
+        return null !== $config;
     }
 }

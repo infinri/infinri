@@ -1,27 +1,29 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Seo\Model\Repository;
 
-use Infinri\Seo\Model\UrlRewrite;
 use Infinri\Seo\Model\ResourceModel\UrlRewrite as UrlRewriteResource;
+use Infinri\Seo\Model\UrlRewrite;
 
 /**
- * URL Rewrite Repository
+ * URL Rewrite Repository.
  */
 class UrlRewriteRepository
 {
     public function __construct(
         private readonly UrlRewriteResource $resource
-    ) {}
+    ) {
+    }
 
     /**
-     * Get URL rewrite by ID
+     * Get URL rewrite by ID.
      */
     public function getById(int $id): ?UrlRewrite
     {
         $data = $this->resource->load($id);
-        if (!$data) {
+        if (! $data) {
             return null;
         }
 
@@ -29,12 +31,12 @@ class UrlRewriteRepository
     }
 
     /**
-     * Get URL rewrite by request path
+     * Get URL rewrite by request path.
      */
     public function getByRequestPath(string $requestPath, string $storeId = 'default'): ?UrlRewrite
     {
         $data = $this->resource->findByRequestPath($requestPath, $storeId);
-        if (!$data) {
+        if (! $data) {
             return null;
         }
 
@@ -42,12 +44,12 @@ class UrlRewriteRepository
     }
 
     /**
-     * Get URL rewrite by entity
+     * Get URL rewrite by entity.
      */
     public function getByEntity(string $entityType, int $entityId, string $storeId = 'default'): ?UrlRewrite
     {
         $data = $this->resource->findByEntity($entityType, $entityId, $storeId);
-        if (!$data) {
+        if (! $data) {
             return null;
         }
 
@@ -55,7 +57,7 @@ class UrlRewriteRepository
     }
 
     /**
-     * Get all URL rewrites
+     * Get all URL rewrites.
      */
     public function getAll(): array
     {
@@ -70,7 +72,7 @@ class UrlRewriteRepository
     }
 
     /**
-     * Get all URL rewrites by entity type
+     * Get all URL rewrites by entity type.
      */
     public function getAllByEntityType(string $entityType): array
     {
@@ -85,7 +87,7 @@ class UrlRewriteRepository
     }
 
     /**
-     * Save URL rewrite
+     * Save URL rewrite.
      */
     public function save(UrlRewrite $urlRewrite): UrlRewrite
     {
@@ -104,11 +106,11 @@ class UrlRewriteRepository
     }
 
     /**
-     * Delete URL rewrite
+     * Delete URL rewrite.
      */
     public function delete(UrlRewrite $urlRewrite): bool
     {
-        if (!$urlRewrite->getUrlRewriteId()) {
+        if (! $urlRewrite->getUrlRewriteId()) {
             return false;
         }
 
@@ -116,7 +118,7 @@ class UrlRewriteRepository
     }
 
     /**
-     * Delete by entity
+     * Delete by entity.
      */
     public function deleteByEntity(string $entityType, int $entityId): bool
     {

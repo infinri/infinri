@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Model\Layout;
@@ -11,9 +12,8 @@ use Infinri\Core\Block\AbstractBlock;
 class Renderer
 {
     /**
-     * Render block tree to HTML
+     * Render block tree to HTML.
      *
-     * @param AbstractBlock $rootBlock
      * @return string HTML output
      */
     public function render(AbstractBlock $rootBlock): string
@@ -22,17 +22,15 @@ class Renderer
     }
 
     /**
-     * Render specific block by name
+     * Render specific block by name.
      *
-     * @param Builder $builder
-     * @param string $blockName
      * @return string HTML output
      */
     public function renderBlock(Builder $builder, string $blockName): string
     {
         $block = $builder->getBlock($blockName);
 
-        if ($block === null) {
+        if (null === $block) {
             return '';
         }
 

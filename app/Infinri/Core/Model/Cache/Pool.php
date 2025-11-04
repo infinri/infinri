@@ -7,33 +7,28 @@ namespace Infinri\Core\Model\Cache;
 use Infinri\Core\Api\CacheInterface;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
-use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Contracts\Cache\CacheInterface as SymfonyCacheInterface;
 
 /**
- * Wrapper around Symfony Cache for simplified cache operations
+ * Wrapper around Symfony Cache for simplified cache operations.
  */
 class Pool implements CacheInterface
 {
     /**
-     * Symfony Cache instance
-     *
-     * @var SymfonyCacheInterface
+     * Symfony Cache instance.
      */
     private SymfonyCacheInterface $cache;
 
     /**
-     * Default TTL in seconds
-     *
-     * @var int
+     * Default TTL in seconds.
      */
     private int $defaultTtl;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param SymfonyCacheInterface|null $cache Symfony cache instance
-     * @param int $defaultTtl Default TTL in seconds (0 = forever)
+     * @param SymfonyCacheInterface|null $cache      Symfony cache instance
+     * @param int                        $defaultTtl Default TTL in seconds (0 = forever)
      */
     public function __construct(?SymfonyCacheInterface $cache = null, int $defaultTtl = 3600)
     {
@@ -42,18 +37,20 @@ class Pool implements CacheInterface
     }
 
     /**
-     * Get item from cache
+     * Get item from cache.
      *
-     * @param string $key Cache key
-     * @param mixed $default Default value if not found
+     * @param string $key     Cache key
+     * @param mixed  $default Default value if not found
+     *
      * @return mixed Cached value or default
+     *
      * @throws InvalidArgumentException
      */
     public function get(string $key, mixed $default = null): mixed
     {
         $item = $this->cache->getItem($key);
 
-        if (!$item->isHit()) {
+        if (! $item->isHit()) {
             return $default;
         }
 
@@ -61,12 +58,14 @@ class Pool implements CacheInterface
     }
 
     /**
-     * Store item in cache
+     * Store item in cache.
      *
-     * @param string $key Cache key
-     * @param mixed $value Value to cache
-     * @param int|null $ttl Time to live in seconds (null = use default)
+     * @param string   $key   Cache key
+     * @param mixed    $value Value to cache
+     * @param int|null $ttl   Time to live in seconds (null = use default)
+     *
      * @return bool True on success
+     *
      * @throws InvalidArgumentException
      */
     public function set(string $key, mixed $value, ?int $ttl = null): bool
@@ -74,7 +73,7 @@ class Pool implements CacheInterface
         $item = $this->cache->getItem($key);
         $item->set($value);
 
-        if ($ttl !== null) {
+        if (null !== $ttl) {
             $item->expiresAfter($ttl);
         } elseif ($this->defaultTtl > 0) {
             $item->expiresAfter($this->defaultTtl);
@@ -84,10 +83,12 @@ class Pool implements CacheInterface
     }
 
     /**
-     * Check if key exists in cache
+     * Check if key exists in cache.
      *
      * @param string $key Cache key
+     *
      * @return bool True if exists
+     *
      * @throws InvalidArgumentException
      */
     public function has(string $key): bool
@@ -96,10 +97,12 @@ class Pool implements CacheInterface
     }
 
     /**
-     * Delete item from cache
+     * Delete item from cache.
      *
      * @param string $key Cache key
+     *
      * @return bool True on success
+     *
      * @throws InvalidArgumentException
      */
     public function delete(string $key): bool
@@ -108,7 +111,7 @@ class Pool implements CacheInterface
     }
 
     /**
-     * Clear all cache
+     * Clear all cache.
      *
      * @return bool True on success
      */
@@ -118,10 +121,11 @@ class Pool implements CacheInterface
     }
 
     /**
-     * Get multiple items from cache
+     * Get multiple items from cache.
      *
-     * @param array<string> $keys Array of cache keys
-     * @param mixed $default Default value for missing items
+     * @param array<string> $keys    Array of cache keys
+     * @param mixed         $default Default value for missing items
+     *
      * @return array<string, mixed> Array of values indexed by keys
      */
     public function getMultiple(array $keys, mixed $default = null): array
@@ -137,11 +141,13 @@ class Pool implements CacheInterface
     }
 
     /**
-     * Store multiple items in cache
+     * Store multiple items in cache.
      *
      * @param array<string, mixed> $values Array of key-value pairs
-     * @param int|null $ttl Time to live in seconds
+     * @param int|null             $ttl    Time to live in seconds
+     *
      * @return bool True on success
+     *
      * @throws InvalidArgumentException
      */
     public function setMultiple(array $values, ?int $ttl = null): bool
@@ -149,7 +155,7 @@ class Pool implements CacheInterface
         $success = true;
 
         foreach ($values as $key => $value) {
-            if (!$this->set($key, $value, $ttl)) {
+            if (! $this->set($key, $value, $ttl)) {
                 $success = false;
             }
         }
@@ -158,10 +164,12 @@ class Pool implements CacheInterface
     }
 
     /**
-     * Delete multiple items from cache
+     * Delete multiple items from cache.
      *
      * @param array<string> $keys Array of cache keys
+     *
      * @return bool True on success
+     *
      * @throws InvalidArgumentException
      */
     public function deleteMultiple(array $keys): bool
@@ -170,9 +178,7 @@ class Pool implements CacheInterface
     }
 
     /**
-     * Get underlying Symfony cache instance
-     *
-     * @return SymfonyCacheInterface
+     * Get underlying Symfony cache instance.
      */
     public function getCache(): SymfonyCacheInterface
     {
@@ -180,10 +186,9 @@ class Pool implements CacheInterface
     }
 
     /**
-     * Set default TTL
+     * Set default TTL.
      *
      * @param int $ttl TTL in seconds
-     * @return void
      */
     public function setDefaultTtl(int $ttl): void
     {
@@ -191,7 +196,7 @@ class Pool implements CacheInterface
     }
 
     /**
-     * Get default TTL
+     * Get default TTL.
      *
      * @return int TTL in seconds
      */

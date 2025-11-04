@@ -7,47 +7,34 @@ namespace Infinri\Cms\Api;
 use Infinri\Cms\Model\Block;
 
 /**
- * Provides CRUD operations for CMS blocks (reusable content widgets)
+ * Provides CRUD operations for CMS blocks (reusable content widgets).
  */
 interface BlockRepositoryInterface
 {
     /**
-     * Get block by ID
-     *
-     * @param int $blockId
-     * @return Block|null
+     * Get block by ID.
      */
     public function getById(int $blockId): ?Block;
 
     /**
-     * Get block by identifier
-     *
-     * @param string $identifier
-     * @return Block|null
+     * Get block by identifier.
      */
     public function getByIdentifier(string $identifier): ?Block;
 
     /**
-     * Get all blocks
+     * Get all blocks.
      *
-     * @param bool $activeOnly
      * @return Block[]
      */
     public function getAll(bool $activeOnly = false): array;
 
     /**
-     * Save block
-     *
-     * @param Block $block
-     * @return Block
+     * Save block.
      */
     public function save(Block $block): Block;
 
     /**
-     * Delete block
-     *
-     * @param int $blockId
-     * @return bool
+     * Delete block.
      */
     public function delete(int $blockId): bool;
 }

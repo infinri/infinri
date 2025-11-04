@@ -17,7 +17,8 @@ class CsrfGuard
 
     public function __construct(
         private readonly Session $session
-    ) {}
+    ) {
+    }
 
     public function generateToken(string $tokenId): string
     {
@@ -38,7 +39,7 @@ class CsrfGuard
 
     public function validateToken(string $tokenId, ?string $tokenValue): bool
     {
-        if ($tokenValue === null || $tokenValue === '') {
+        if (null === $tokenValue || '' === $tokenValue) {
             return false;
         }
 
@@ -47,7 +48,7 @@ class CsrfGuard
         $tokens = $this->session->get(self::SESSION_KEY, []);
         $stored = $tokens[$tokenId] ?? null;
 
-        if (!$stored) {
+        if (! $stored) {
             return false;
         }
 
@@ -56,6 +57,7 @@ class CsrfGuard
         if ($isExpired) {
             unset($tokens[$tokenId]);
             $this->session->set(self::SESSION_KEY, $tokens);
+
             return false;
         }
 
@@ -74,10 +76,10 @@ class CsrfGuard
     {
         $token = $this->generateToken($tokenId);
 
-        return sprintf(
+        return \sprintf(
             '<input type="hidden" name="%s" value="%s" />',
-            htmlspecialchars($fieldName, ENT_QUOTES, 'UTF-8'),
-            htmlspecialchars($token, ENT_QUOTES, 'UTF-8')
+            htmlspecialchars($fieldName, \ENT_QUOTES, 'UTF-8'),
+            htmlspecialchars($token, \ENT_QUOTES, 'UTF-8')
         );
     }
 

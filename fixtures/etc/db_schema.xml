@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+        <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <table name="test_table">
+                <column name="id" type="int" identity="true" nullable="false"/>
+                <column name="name" type="varchar" length="255" nullable="false"/>
+            </table>
+        </schema>

@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Model\Config\Source;
 
 /**
- * Timezone Source Model
+ * Timezone Source Model.
  */
 class Timezone
 {

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Infinri\Menu\Controller\Adminhtml\Menu;
 
-use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
+use Infinri\Core\Controller\AbstractAdminController;
 
 /**
- * Displays the menu listing grid
+ * Displays the menu listing grid.
  */
 class Index extends AbstractAdminController
 {

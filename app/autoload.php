@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -10,7 +11,7 @@ declare(strict_types=1);
 // Load Composer autoloader
 $composerAutoloader = __DIR__ . '/../vendor/autoload.php';
 
-if (!file_exists($composerAutoloader)) {
+if (! file_exists($composerAutoloader)) {
     throw new RuntimeException(
         'Composer autoloader not found. Please run: composer install'
     );

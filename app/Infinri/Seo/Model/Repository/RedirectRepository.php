@@ -1,24 +1,26 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Seo\Model\Repository;
 
+use Infinri\Core\Model\ObjectManager;
 use Infinri\Seo\Model\Redirect;
 use Infinri\Seo\Model\ResourceModel\Redirect as RedirectResource;
-use Infinri\Core\Model\ObjectManager;
 
 /**
- * Redirect Repository
+ * Redirect Repository.
  */
 class RedirectRepository
 {
     public function __construct(
         private RedirectResource $resource,
-        private ObjectManager    $objectManager
-    ) {}
+        private ObjectManager $objectManager
+    ) {
+    }
 
     /**
-     * Get redirect by ID
+     * Get redirect by ID.
      */
     public function getById(int $id): ?Redirect
     {
@@ -26,7 +28,7 @@ class RedirectRepository
         $redirect = $this->objectManager->create(Redirect::class);
         $this->resource->load($id);
 
-        if (!$redirect->getRedirectId()) {
+        if (! $redirect->getRedirectId()) {
             return null;
         }
 
@@ -34,7 +36,7 @@ class RedirectRepository
     }
 
     /**
-     * Get all redirects
+     * Get all redirects.
      */
     public function getAll(): array
     {
@@ -54,7 +56,7 @@ class RedirectRepository
     }
 
     /**
-     * Get all active redirects
+     * Get all active redirects.
      */
     public function getAllActive(): array
     {
@@ -71,43 +73,52 @@ class RedirectRepository
     }
 
     /**
-     * Find redirect by from path
+     * Find redirect by from path.
      */
     public function findByFromPath(string $fromPath): ?Redirect
     {
         $data = $this->resource->findByFromPath($fromPath);
 
-        if (!$data) {
+        if (! $data) {
             return null;
         }
 
-        return $this->objectManager->create(Redirect::class, ['data' => $data]);
-    }
+        /** @var Redirect $redirect */
+        $redirect = $this->objectManager->create(Redirect::class, ['data' => $data]);
 
-    /**
-     * Save redirect
-     */
-    public function save(Redirect $redirect): Redirect
-    {
-        $this->resource->save($redirect);
         return $redirect;
     }
 
     /**
-     * Delete redirect
+     * Save redirect.
      */
-    public function delete(Redirect $redirect): bool
+    public function save(Redirect $redirect): Redirect
     {
-        return $this->resource->delete($redirect->getRedirectId()) > 0;
+        $this->resource->save($redirect->getData());
+
+        return $redirect;
     }
 
     /**
-     * Delete by ID
+     * Delete redirect.
+     */
+    public function delete(Redirect $redirect): bool
+    {
+        $id = $redirect->getRedirectId();
+        if (null === $id) {
+            return false;
+        }
+
+        return $this->resource->delete($id) > 0;
+    }
+
+    /**
+     * Delete by ID.
      */
     public function deleteById(int $id): bool
     {
         $redirect = $this->getById($id);
-        if (!$redirect) {
+        if (! $redirect) {
             return false;
         }
 

@@ -10,27 +10,29 @@ use Infinri\Menu\ViewModel\Navigation as MenuNavigation;
 use Psr\Cache\InvalidArgumentException;
 
 /**
- * Provides data for the site footer template
+ * Provides data for the site footer template.
  */
 class Footer
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param ScopeConfig $config Configuration reader
-     * @param UrlBuilder $urlBuilder URL generator
+     * @param ScopeConfig    $config         Configuration reader
+     * @param UrlBuilder     $urlBuilder     URL generator
      * @param MenuNavigation $menuNavigation Menu navigation ViewModel
      */
     public function __construct(
-        private ScopeConfig    $config,
-        private UrlBuilder     $urlBuilder,
+        private ScopeConfig $config,
+        private UrlBuilder $urlBuilder,
         private MenuNavigation $menuNavigation
-    ) {}
+    ) {
+    }
 
     /**
-     * Get copyright text
+     * Get copyright text.
      *
      * @return string Copyright notice
+     *
      * @throws InvalidArgumentException
      */
     public function getCopyright(): string
@@ -42,7 +44,7 @@ class Footer
     }
 
     /**
-     * Get footer links from Menu module
+     * Get footer links from Menu module.
      *
      * @return array Footer link items from database
      */
@@ -53,9 +55,10 @@ class Footer
     }
 
     /**
-     * Get social media links from configuration
+     * Get social media links from configuration.
      *
      * @return array Social media platforms
+     *
      * @throws InvalidArgumentException
      */
     public function getSocialLinks(): array
@@ -68,20 +71,19 @@ class Footer
         }
 
         try {
-            $socialLinks = json_decode($socialLinksJson, true, 512, JSON_THROW_ON_ERROR);
+            $socialLinks = json_decode($socialLinksJson, true, 512, \JSON_THROW_ON_ERROR);
 
             // Validate structure
-            if (!is_array($socialLinks)) {
+            if (! \is_array($socialLinks)) {
                 return [];
             }
 
             // Filter out invalid entries
             return array_filter($socialLinks, function ($link) {
-                return is_array($link)
-                    && !empty($link['url'])
-                    && !empty($link['label']);
+                return \is_array($link)
+                    && ! empty($link['url'])
+                    && ! empty($link['label']);
             });
-
         } catch (\JsonException $e) {
             // Invalid JSON - return empty array
             return [];
@@ -89,18 +91,19 @@ class Footer
     }
 
     /**
-     * Get newsletter subscription enabled status
+     * Get newsletter subscription enabled status.
      *
      * @return bool True if newsletter enabled
+     *
      * @throws InvalidArgumentException
      */
     public function isNewsletterEnabled(): bool
     {
-        return (bool)$this->config->getValue('theme_footer/newsletter/enabled');
+        return (bool) $this->config->getValue('theme_footer/newsletter/enabled');
     }
 
     /**
-     * Get newsletter form action URL
+     * Get newsletter form action URL.
      *
      * @return string Newsletter subscription URL
      */

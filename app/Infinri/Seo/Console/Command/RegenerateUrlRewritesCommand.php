@@ -1,17 +1,18 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Seo\Console\Command;
 
+use Infinri\Cms\Model\Repository\PageRepository;
+use Infinri\Core\Model\ObjectManager;
+use Infinri\Seo\Service\UrlRewriteGenerator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Infinri\Cms\Model\Repository\PageRepository;
-use Infinri\Seo\Service\UrlRewriteGenerator;
-use Infinri\Core\Model\ObjectManager;
 
 /**
- * Usage: php bin/console seo:urlrewrite:regenerate
+ * Usage: php bin/console seo:urlrewrite:regenerate.
  */
 class RegenerateUrlRewritesCommand extends Command
 {
@@ -23,7 +24,7 @@ class RegenerateUrlRewritesCommand extends Command
     }
 
     /**
-     * Execute the command
+     * Execute the command.
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -35,23 +36,31 @@ class RegenerateUrlRewritesCommand extends Command
         $urlRewriteGenerator = $objectManager->get(UrlRewriteGenerator::class);
 
         $pages = $pageRepository->getAll();
-        $output->writeln(sprintf('Found %d pages', count($pages)));
+        $output->writeln(\sprintf('Found %d pages', \count($pages)));
 
         $count = 0;
         foreach ($pages as $page) {
             try {
-                $urlRewriteGenerator->generateForCmsPage(
-                    $page->getPageId(),
-                    $page->getUrlKey()
-                );
+                $pageId = $page->getPageId();
+                $urlKey = $page->getUrlKey();
+
+                if (null === $pageId || null === $urlKey) {
+                    $output->writeln(\sprintf(
+                        '  <error>✗</error> Skipped: %s (missing ID or URL key)',
+                        $page->getTitle() ?? 'Unknown'
+                    ));
+                    continue;
+                }
+
+                $urlRewriteGenerator->generateForCmsPage($pageId, $urlKey);
                 $count++;
-                $output->writeln(sprintf(
+                $output->writeln(\sprintf(
                     '  <comment>✓</comment> Generated: %s → /%s',
                     $page->getTitle(),
                     $page->getUrlKey()
                 ));
             } catch (\Exception $e) {
-                $output->writeln(sprintf(
+                $output->writeln(\sprintf(
                     '  <error>✗</error> Failed: %s (%s)',
                     $page->getTitle(),
                     $e->getMessage()
@@ -60,7 +69,7 @@ class RegenerateUrlRewritesCommand extends Command
         }
 
         $output->writeln('');
-        $output->writeln(sprintf(
+        $output->writeln(\sprintf(
             '<info>Successfully generated %d URL rewrites</info>',
             $count
         ));

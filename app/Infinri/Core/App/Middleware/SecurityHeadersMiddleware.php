@@ -19,7 +19,7 @@ use Infinri\Core\App\Response;
 class SecurityHeadersMiddleware
 {
     /**
-     * Apply security headers to the response
+     * Apply security headers to the response.
      */
     public function handle(Request $request, Response $response): Response
     {
@@ -52,7 +52,7 @@ class SecurityHeadersMiddleware
 
     /**
      * Build Content Security Policy directives
-     * CSP helps prevent XSS, clickjacking, and other code injection attacks
+     * CSP helps prevent XSS, clickjacking, and other code injection attacks.
      */
     private function getContentSecurityPolicy(): string
     {
@@ -94,33 +94,33 @@ class SecurityHeadersMiddleware
             "frame-ancestors 'self'",
 
             // Report CSP violations to this endpoint (for monitoring)
-            "report-uri /csp-report",
+            'report-uri /csp-report',
         ];
 
         return implode('; ', $directives);
     }
 
     /**
-     * Check if the request is over HTTPS
+     * Check if the request is over HTTPS.
      */
     private function isHttps(Request $request): bool
     {
         // Check standard HTTPS indicators
-        if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+        if (! empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS']) {
             return true;
         }
 
         // Check for load balancer/proxy headers
-        if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+        if (! empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO']) {
             return true;
         }
 
-        if (!empty($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] === 'on') {
+        if (! empty($_SERVER['HTTP_X_FORWARDED_SSL']) && 'on' === $_SERVER['HTTP_X_FORWARDED_SSL']) {
             return true;
         }
 
         // Check server port
-        if (!empty($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443) {
+        if (! empty($_SERVER['SERVER_PORT']) && 443 === (int) $_SERVER['SERVER_PORT']) {
             return true;
         }
 

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Infinri\Cms\Controller\Adminhtml\Block;
 
-use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
+use Infinri\Core\Controller\AbstractAdminController;
 
 /**
- * Displays CMS blocks using UI Component grid
+ * Displays CMS blocks using UI Component grid.
  */
 class Index extends AbstractAdminController
 {

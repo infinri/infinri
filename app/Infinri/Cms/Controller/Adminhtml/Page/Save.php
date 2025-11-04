@@ -1,24 +1,20 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Cms\Controller\Adminhtml\Page;
 
-use Infinri\Core\App\Request;
 use Infinri\Cms\Controller\Adminhtml\AbstractSaveController;
 use Infinri\Cms\Model\Repository\PageRepository;
-use Infinri\Core\Security\CsrfGuard;
+use Infinri\Core\App\Request;
 use Infinri\Core\Helper\ContentSanitizer;
+use Infinri\Core\Security\CsrfGuard;
 
 /**
  * Handles POST request to save page data.
  */
 class Save extends AbstractSaveController
 {
-    /**
-     * @param PageRepository $pageRepository
-     * @param ContentSanitizer $contentSanitizer
-     * @param CsrfGuard $csrfGuard
-     */
     public function __construct(
         private readonly PageRepository $pageRepository,
         private readonly ContentSanitizer $contentSanitizer,
@@ -28,62 +24,45 @@ class Save extends AbstractSaveController
     }
 
     /**
-     * Get repository instance (implements abstract method)
-     *
-     * @return PageRepository
+     * Get repository instance (implements abstract method).
      */
     protected function getRepository(): PageRepository
     {
         return $this->pageRepository;
     }
 
-    /**
-     * @return string
-     */
     protected function getIdParam(): string
     {
         return 'page_id';
     }
 
     /**
-     * Get index route (implements abstract method)
-     *
-     * @return string
+     * Get index route (implements abstract method).
      */
     protected function getIndexRoute(): string
     {
         return '/admin/cms/page/index';
     }
 
-    /**
-     * @return string
-     */
     protected function getEditRoute(): string
     {
         return '/admin/cms/page/edit';
     }
 
-    /**
-     * @return string
-     */
     protected function getEntityName(): string
     {
         return 'page';
     }
 
-    /**
-     * @param Request $request
-     * @return array
-     */
     protected function extractEntityData(Request $request): array
     {
         $content = $request->getParam('content', '');
 
         // Using 'rich' profile to allow formatting while blocking dangerous elements
-        if (!empty($content)) {
+        if (! empty($content)) {
             $content = $this->contentSanitizer->sanitize($content, 'rich');
         }
-        
+
         return [
             'title' => $request->getParam('title', ''),
             'url_key' => $request->getParam('url_key', ''),
@@ -97,7 +76,7 @@ class Save extends AbstractSaveController
 
     /**
      * @param array<string, mixed> $data
-     * @return void
+     *
      * @throws \InvalidArgumentException
      */
     protected function validateRequiredFields(array $data): void

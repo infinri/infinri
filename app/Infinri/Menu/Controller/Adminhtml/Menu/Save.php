@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace Infinri\Menu\Controller\Adminhtml\Menu;
 
-use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
-use Infinri\Menu\Model\Repository\MenuRepository;
-use Infinri\Menu\Model\Repository\MenuItemRepository;
+use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\Model\Message\MessageManager;
+use Infinri\Menu\Model\Repository\MenuItemRepository;
+use Infinri\Menu\Model\Repository\MenuRepository;
 
 /**
- * Saves menu data and processes CMS page selections
+ * Saves menu data and processes CMS page selections.
  */
 class Save extends AbstractAdminController
 {
     public function __construct(
-        \Infinri\Core\App\Request              $request,
-        \Infinri\Core\App\Response             $response,
+        \Infinri\Core\App\Request $request,
+        Response $response,
         \Infinri\Core\Model\View\LayoutFactory $layoutFactory,
-        \Infinri\Core\Security\CsrfGuard       $csrfGuard,
-        private readonly MenuRepository        $menuRepository,
-        private readonly MenuItemRepository    $menuItemRepository,
-        private readonly MessageManager        $messageManager
+        \Infinri\Core\Security\CsrfGuard $csrfGuard,
+        private readonly MenuRepository $menuRepository,
+        private readonly MenuItemRepository $menuItemRepository,
+        private readonly MessageManager $messageManager
     ) {
         parent::__construct($request, $response, $layoutFactory, $csrfGuard);
     }
@@ -34,7 +34,7 @@ class Save extends AbstractAdminController
 
             if ($menuId) {
                 $menu = $this->menuRepository->getById($menuId);
-                if (!$menu) {
+                if (! $menu) {
                     throw new \RuntimeException('Menu not found');
                 }
             } else {
@@ -48,7 +48,10 @@ class Save extends AbstractAdminController
             $this->menuRepository->save($menu);
 
             $cmsPages = $this->request->getParam('cms_pages', []);
-            $this->processCmsPages($menu->getMenuId(), $cmsPages);
+            $menuId = $menu->getMenuId();
+            if (null !== $menuId) {
+                $this->processCmsPages($menuId, $cmsPages);
+            }
 
             $this->messageManager->addSuccess('Menu saved successfully');
 
@@ -57,7 +60,6 @@ class Save extends AbstractAdminController
             }
 
             return $this->redirect('/admin/menu/menu/index');
-
         } catch (\Exception $e) {
             $this->messageManager->addError('Error saving menu: ' . $e->getMessage());
 
@@ -69,11 +71,9 @@ class Save extends AbstractAdminController
     }
 
     /**
-     * Process CMS page selections and create/update/delete menu items
+     * Process CMS page selections and create/update/delete menu items.
      *
-     * @param int $menuId
-     * @param array $cmsPages
-     * @return void
+     * @param array<string, mixed> $cmsPages
      */
     private function processCmsPages(int $menuId, array $cmsPages): void
     {
@@ -82,15 +82,15 @@ class Save extends AbstractAdminController
         $existingItemsByPage = [];
 
         foreach ($existingItems as $item) {
-            if ($item->getLinkType() === 'cms_page' && $item->getResourceId()) {
+            if ('cms_page' === $item->getLinkType() && $item->getResourceId()) {
                 $existingItemsByPage[$item->getResourceId()] = $item;
             }
         }
 
         // Process each page selection
         foreach ($cmsPages as $pageId => $pageData) {
-            $isSelected = !empty($pageData['selected']);
-            $sortOrder = (int)($pageData['sort_order'] ?? 10);
+            $isSelected = ! empty($pageData['selected']);
+            $sortOrder = (int) ($pageData['sort_order'] ?? 10);
 
             if ($isSelected) {
                 // Create or update menu item
@@ -107,7 +107,7 @@ class Save extends AbstractAdminController
                     $item = $this->menuItemRepository->create();
                     $item->setMenuId($menuId);
                     $item->setLinkType('cms_page');
-                    $item->setResourceId($pageId);
+                    $item->setResourceId((int) $pageId);
                     $item->setTitle($pageData['title'] ?? 'Page ' . $pageId); // Will be updated from page
                     $item->setSortOrder($sortOrder);
                     $item->setIsActive(true);
@@ -117,14 +117,20 @@ class Save extends AbstractAdminController
                 }
             } elseif (isset($existingItemsByPage[$pageId])) {
                 // Page was unchecked, delete the menu item
-                $this->menuItemRepository->delete($existingItemsByPage[$pageId]->getItemId());
+                $itemId = $existingItemsByPage[$pageId]->getItemId();
+                if (null !== $itemId) {
+                    $this->menuItemRepository->delete($itemId);
+                }
                 unset($existingItemsByPage[$pageId]);
             }
         }
 
         // Delete any remaining items that are no longer selected
         foreach ($existingItemsByPage as $item) {
-            $this->menuItemRepository->delete($item->getItemId());
+            $itemId = $item->getItemId();
+            if (null !== $itemId) {
+                $this->menuItemRepository->delete($itemId);
+            }
         }
     }
 }

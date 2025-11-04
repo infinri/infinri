@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Admin\Ui\Component\Listing;
@@ -7,12 +8,12 @@ use Infinri\Admin\Model\Repository\AdminUserRepository;
 use Infinri\Core\Model\ObjectManager;
 
 /**
- * Admin User Listing Data Provider
+ * Admin User Listing Data Provider.
  */
 class DataProvider
 {
     /**
-     * Get data for grid
+     * Get data for grid.
      *
      * @return array<string, mixed> ['items' => [], 'totalRecords' => int]
      */
@@ -34,7 +35,7 @@ class DataProvider
                 'firstname' => $user->getData('firstname'),
                 'lastname' => $user->getData('lastname'),
                 'roles' => implode(', ', $user->getRoles()),
-                'is_active' => (bool)$user->getData('is_active'),
+                'is_active' => (bool) $user->getData('is_active'),
                 'last_login_at' => $user->getData('last_login_at'),
                 'created_at' => $user->getData('created_at'),
             ];
@@ -42,7 +43,7 @@ class DataProvider
 
         return [
             'items' => $items,
-            'totalRecords' => count($items),
+            'totalRecords' => \count($items),
         ];
     }
 }

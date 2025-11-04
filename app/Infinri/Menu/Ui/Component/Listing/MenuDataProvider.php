@@ -7,23 +7,20 @@ namespace Infinri\Menu\Ui\Component\Listing;
 use Infinri\Menu\Model\Repository\MenuRepository;
 
 /**
- * Provides data for the menu grid
+ * Provides data for the menu grid.
  */
 class MenuDataProvider
 {
     /**
-     * Constructor
-     *
-     * @param MenuRepository $menuRepository
+     * Constructor.
      */
     public function __construct(
         private readonly MenuRepository $menuRepository
-    ) {}
+    ) {
+    }
 
     /**
-     * Get data for grid
-     *
-     * @return array
+     * Get data for grid.
      */
     public function getData(): array
     {
@@ -43,7 +40,7 @@ class MenuDataProvider
 
         return [
             'items' => $items,
-            'totalRecords' => count($items)
+            'totalRecords' => \count($items),
         ];
     }
 }

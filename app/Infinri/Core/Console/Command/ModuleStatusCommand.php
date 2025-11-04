@@ -4,31 +4,28 @@ declare(strict_types=1);
 
 namespace Infinri\Core\Console\Command;
 
+use Infinri\Core\Model\ComponentRegistrar;
+use Infinri\Core\Model\Module\ModuleList;
+use Infinri\Core\Model\Module\ModuleManager;
+use Infinri\Core\Model\Module\ModuleReader;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Infinri\Core\Model\Module\ModuleManager;
-use Infinri\Core\Model\Module\ModuleList;
-use Infinri\Core\Model\ComponentRegistrar;
-use Infinri\Core\Model\Module\ModuleReader;
 
 /**
- * Shows detailed status of a specific module
+ * Shows detailed status of a specific module.
  */
 class ModuleStatusCommand extends Command
 {
-
     /**
-     * Module Manager
-     *
-     * @var ModuleManager|null
+     * Module Manager.
      */
     private ?ModuleManager $moduleManager = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ModuleManager|null $moduleManager Module Manager
      */
@@ -39,9 +36,7 @@ class ModuleStatusCommand extends Command
     }
 
     /**
-     * Configure command
-     *
-     * @return void
+     * Configure command.
      */
     protected function configure(): void
     {
@@ -56,17 +51,18 @@ class ModuleStatusCommand extends Command
     }
 
     /**
-     * Execute command
+     * Execute command.
      *
-     * @param InputInterface $input Input
+     * @param InputInterface  $input  Input
      * @param OutputInterface $output Output
+     *
      * @return int Exit code
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        if ($this->moduleManager === null) {
+        if (null === $this->moduleManager) {
             $registrar = ComponentRegistrar::getInstance();
             $moduleReader = new ModuleReader();
             $moduleList = new ModuleList($registrar, $moduleReader);
@@ -76,8 +72,9 @@ class ModuleStatusCommand extends Command
         $moduleName = $input->getArgument('module');
         $module = $this->moduleManager->getModuleList()->getOne($moduleName);
 
-        if ($module === null) {
+        if (null === $module) {
             $io->error("Module '{$moduleName}' not found.");
+
             return Command::FAILURE;
         }
 
@@ -90,7 +87,7 @@ class ModuleStatusCommand extends Command
             ['Path' => $module['path'] ?? 'N/A'],
         );
 
-        if (isset($module['sequence']) && !empty($module['sequence'])) {
+        if (isset($module['sequence']) && ! empty($module['sequence'])) {
             $io->section('Dependencies');
             $io->listing($module['sequence']);
         } else {

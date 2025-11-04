@@ -8,23 +8,23 @@ use Infinri\Cms\Model\Repository\PageRepository;
 use Infinri\Core\Helper\Logger;
 
 /**
- * Resolves URLs for menu items based on link type
+ * Resolves URLs for menu items based on link type.
  */
 class MenuItemResolver
 {
     /**
-     * Constructor
-     *
-     * @param PageRepository $pageRepository
+     * Constructor.
      */
     public function __construct(
         private readonly PageRepository $pageRepository
-    ) {}
+    ) {
+    }
 
     /**
-     * Resolve URL for menu item based on link type
+     * Resolve URL for menu item based on link type.
      *
-     * @param array $item Menu item data
+     * @param array<string, mixed> $item Menu item data
+     *
      * @return string Resolved URL
      */
     public function resolve(array $item): string
@@ -32,8 +32,8 @@ class MenuItemResolver
         $linkType = $item['link_type'] ?? '';
 
         // Cast resource_id to int if it exists
-        $resourceId = isset($item['resource_id']) && $item['resource_id'] !== null
-            ? (int)$item['resource_id']
+        $resourceId = isset($item['resource_id'])
+            ? (int) $item['resource_id']
             : null;
 
         return match ($linkType) {
@@ -45,28 +45,25 @@ class MenuItemResolver
     }
 
     /**
-     * Resolve CMS page URL
-     *
-     * @param int|null $pageId
-     * @return string
+     * Resolve CMS page URL.
      */
     private function resolveCmsPageUrl(?int $pageId): string
     {
-        if (!$pageId) {
+        if (! $pageId) {
             return '/';
         }
 
         try {
             $page = $this->pageRepository->getById($pageId);
 
-            if (!$page) {
+            if (! $page) {
                 return '/';
             }
 
             $urlKey = $page->getUrlKey();
 
             // Special handling for homepage
-            if ($urlKey === 'home' || $page->isHomepage()) {
+            if ('home' === $urlKey || $page->isHomepage()) {
                 return '/';
             }
 
@@ -76,8 +73,9 @@ class MenuItemResolver
             // Log error and return fallback
             Logger::warning('MenuItemResolver: Failed to resolve page URL', [
                 'page_id' => $pageId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             return '/';
         }
     }

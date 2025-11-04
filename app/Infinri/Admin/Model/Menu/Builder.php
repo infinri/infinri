@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Infinri\Admin\Model\Menu;
 
-use SimpleXMLElement;
-
 /**
  * Builds admin navigation menu from XML configuration files
- * Discovers menu.xml from all enabled modules
+ * Discovers menu.xml from all enabled modules.
  */
 class Builder
 {
@@ -19,11 +17,11 @@ class Builder
 
     public function __construct()
     {
-        $this->appDir = dirname(__DIR__, 4);
+        $this->appDir = \dirname(__DIR__, 4);
     }
 
     /**
-     * Build complete menu tree from all modules
+     * Build complete menu tree from all modules.
      *
      * @return Item[]
      */
@@ -43,7 +41,7 @@ class Builder
     }
 
     /**
-     * Discover menu.xml files from all enabled modules
+     * Discover menu.xml files from all enabled modules.
      *
      * @return string[]
      */
@@ -52,14 +50,14 @@ class Builder
         $files = [];
         $modulesDir = $this->appDir . '/app/Infinri';
 
-        if (!is_dir($modulesDir)) {
+        if (! is_dir($modulesDir)) {
             return $files;
         }
 
         $modules = scandir($modulesDir);
 
         foreach ($modules as $module) {
-            if ($module === '.' || $module === '..') {
+            if ('.' === $module || '..' === $module) {
                 continue;
             }
 
@@ -74,13 +72,13 @@ class Builder
     }
 
     /**
-     * Load menu items from XML file
+     * Load menu items from XML file.
      */
     private function loadMenuFile(string $file): void
     {
         $xml = simplexml_load_file($file);
 
-        if (!$xml || !isset($xml->menu)) {
+        if (! $xml || ! isset($xml->menu)) {
             return;
         }
 
@@ -90,17 +88,17 @@ class Builder
     }
 
     /**
-     * Create menu item from XML node
+     * Create menu item from XML node.
      */
-    private function addItemFromXml(SimpleXMLElement $node): void
+    private function addItemFromXml(\SimpleXMLElement $node): void
     {
-        $id = (string)$node['id'];
-        $title = (string)$node['title'];
-        $action = isset($node['action']) ? (string)$node['action'] : null;
-        $module = isset($node['module']) ? (string)$node['module'] : null;
-        $resource = isset($node['resource']) ? (string)$node['resource'] : null;
-        $sortOrder = isset($node['sortOrder']) ? (int)$node['sortOrder'] : 0;
-        $parent = isset($node['parent']) ? (string)$node['parent'] : null;
+        $id = (string) $node['id'];
+        $title = (string) $node['title'];
+        $action = isset($node['action']) ? (string) $node['action'] : null;
+        $module = isset($node['module']) ? (string) $node['module'] : null;
+        $resource = isset($node['resource']) ? (string) $node['resource'] : null;
+        $sortOrder = isset($node['sortOrder']) ? (int) $node['sortOrder'] : 0;
+        $parent = isset($node['parent']) ? (string) $node['parent'] : null;
 
         $item = new Item(
             $id,
@@ -116,7 +114,7 @@ class Builder
     }
 
     /**
-     * Build hierarchical tree from flat items list
+     * Build hierarchical tree from flat items list.
      *
      * @return Item[]
      */
@@ -126,7 +124,7 @@ class Builder
 
         // First, separate root items from children
         foreach ($this->items as $item) {
-            if (!$item->getParent()) {
+            if (! $item->getParent()) {
                 $tree[$item->getId()] = $item;
             }
         }
@@ -141,13 +139,13 @@ class Builder
         }
 
         // Sort root items by sort order
-        usort($tree, fn($a, $b) => $a->getSortOrder() <=> $b->getSortOrder());
+        usort($tree, fn ($a, $b) => $a->getSortOrder() <=> $b->getSortOrder());
 
         return $tree;
     }
 
     /**
-     * Get menu item by ID
+     * Get menu item by ID.
      */
     public function getItem(string $id): ?Item
     {
@@ -155,7 +153,7 @@ class Builder
     }
 
     /**
-     * Get all menu items (flat)
+     * Get all menu items (flat).
      *
      * @return Item[]
      */

@@ -4,14 +4,25 @@ declare(strict_types=1);
 
 use Infinri\Auth\Controller\Adminhtml\Login\Logout;
 use Infinri\Core\App\Request;
+use Infinri\Core\App\Response;
 use Infinri\Admin\Service\RememberTokenService;
-use Infinri\Core\Security\CsrfTokenManager;
+use Infinri\Core\Security\CsrfGuard;
+use Infinri\Core\Model\View\LayoutFactory;
 
 beforeEach(function () {
-    $this->rememberTokenService = $this->createMock(RememberTokenService::class);
-    $this->csrfManager = $this->createMock(CsrfTokenManager::class);
-    $this->controller = new Logout($this->rememberTokenService, $this->csrfManager);
     $this->request = $this->createMock(Request::class);
+    $this->response = new Response(); // Use real Response object
+    $this->layoutFactory = $this->createMock(LayoutFactory::class);
+    $this->csrfGuard = $this->createMock(CsrfGuard::class);
+    $this->rememberTokenService = $this->createMock(RememberTokenService::class);
+    
+    $this->controller = new Logout(
+        $this->request,
+        $this->response,
+        $this->layoutFactory,
+        $this->csrfGuard,
+        $this->rememberTokenService
+    );
     
     // Start session for tests
     if (session_status() === PHP_SESSION_NONE) {
@@ -29,7 +40,7 @@ describe('Logout CSRF Protection', function () {
     it('rejects GET requests', function () {
         $this->request->method('isPost')->willReturn(false);
         
-        $response = $this->controller->execute($this->request);
+        $response = $this->controller->execute();
         
         // Should redirect to dashboard (not logout)
         expect($response->getStatusCode())->toBe(302)
@@ -44,11 +55,11 @@ describe('Logout CSRF Protection', function () {
                 ['_csrf_token_id', 'admin_logout', 'admin_logout']
             ]);
         
-        $this->csrfManager->method('validateToken')
+        $this->csrfGuard->method('validateToken')
             ->with('admin_logout', 'invalid_token')
             ->willReturn(false);
         
-        $response = $this->controller->execute($this->request);
+        $response = $this->controller->execute();
         
         // Should redirect to dashboard (not logout)
         expect($response->getStatusCode())->toBe(302)
@@ -66,13 +77,13 @@ describe('Logout CSRF Protection', function () {
                 ['_csrf_token_id', 'admin_logout', 'admin_logout']
             ]);
         
-        $this->csrfManager->method('validateToken')
+        $this->csrfGuard->method('validateToken')
             ->with('admin_logout', 'valid_token')
             ->willReturn(true);
         
         $this->rememberTokenService->method('getRememberCookie')->willReturn(null);
         
-        $response = $this->controller->execute($this->request);
+        $response = $this->controller->execute();
         
         // Should redirect to login page (successful logout)
         expect($response->getStatusCode())->toBe(302)
@@ -89,7 +100,7 @@ describe('Logout CSRF Protection', function () {
                 ['_csrf_token_id', 'admin_logout', 'admin_logout']
             ]);
         
-        $this->csrfManager->method('validateToken')->willReturn(true);
+        $this->csrfGuard->method('validateToken')->willReturn(true);
         
         $this->rememberTokenService->method('getRememberCookie')
             ->willReturn('test_token_12345');
@@ -117,7 +128,7 @@ describe('Logout CSRF Protection', function () {
                 ['_csrf_token_id', 'admin_logout', 'admin_logout']
             ]);
         
-        $this->csrfManager->method('validateToken')->willReturn(true);
+        $this->csrfGuard->method('validateToken')->willReturn(true);
         $this->rememberTokenService->method('getRememberCookie')->willReturn(null);
         
         $this->controller->execute($this->request);
@@ -139,7 +150,7 @@ describe('Logout Session Security', function () {
                 ['_csrf_token_id', 'admin_logout', 'admin_logout']
             ]);
         
-        $this->csrfManager->method('validateToken')->willReturn(true);
+        $this->csrfGuard->method('validateToken')->willReturn(true);
         $this->rememberTokenService->method('getRememberCookie')->willReturn(null);
         
         $oldSessionId = session_id();
@@ -157,8 +168,8 @@ describe('Logout Source Code Security', function () {
         $sourceFile = __DIR__ . '/../../../../app/Infinri/Auth/Controller/Adminhtml/Login/Logout.php';
         $source = file_get_contents($sourceFile);
         
-        // Verify POST check exists
-        expect(str_contains($source, '$request->isPost()'))->toBeTrue()
+        // Verify POST check exists via requirePost() method
+        expect(str_contains($source, 'requirePost'))->toBeTrue()
             ->and(str_contains($source, 'Not a POST request'))->toBeTrue();
     });
     
@@ -166,9 +177,9 @@ describe('Logout Source Code Security', function () {
         $sourceFile = __DIR__ . '/../../../../app/Infinri/Auth/Controller/Adminhtml/Login/Logout.php';
         $source = file_get_contents($sourceFile);
         
-        // Verify CSRF validation exists
-        expect(str_contains($source, 'validateToken'))->toBeTrue()
+        // Verify CSRF validation exists via validateCsrf() method
+        expect(str_contains($source, 'validateCsrf'))->toBeTrue()
             ->and(str_contains($source, 'Invalid CSRF token'))->toBeTrue()
-            ->and(str_contains($source, 'CsrfTokenManager'))->toBeTrue();
+            ->and(str_contains($source, 'CsrfGuard'))->toBeTrue();
     });
 });

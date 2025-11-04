@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Admin\Model\ResourceModel;
@@ -6,21 +7,23 @@ namespace Infinri\Admin\Model\ResourceModel;
 use Infinri\Core\Model\ResourceModel\AbstractResource;
 
 /**
- * Remember Token Resource Model
+ * Remember Token Resource Model.
  */
 class RememberToken extends AbstractResource
 {
     protected string $mainTable = 'admin_user_remember_tokens';
+
     protected string $primaryKey = 'token_id';
+
     protected string $idFieldName = 'token_id';
 
     /**
-     * Create a new remember token
+     * Create a new remember token.
      */
     public function createToken(int $userId, string $tokenHash, string $ipAddress, string $userAgent, int $expiresInDays = 30): int
     {
         $timestamp = strtotime("+{$expiresInDays} days");
-        if ($timestamp === false) {
+        if (false === $timestamp) {
             throw new \RuntimeException('Failed to calculate expiration date');
         }
         $expiresAt = date('Y-m-d H:i:s', $timestamp);
@@ -39,7 +42,7 @@ class RememberToken extends AbstractResource
     }
 
     /**
-     * Find token by hash
+     * Find token by hash.
      */
     public function findByTokenHash(string $tokenHash): array|false
     {
@@ -47,7 +50,7 @@ class RememberToken extends AbstractResource
     }
 
     /**
-     * Update last used timestamp
+     * Update last used timestamp.
      */
     public function updateLastUsed(int $tokenId): int
     {
@@ -60,7 +63,7 @@ class RememberToken extends AbstractResource
     }
 
     /**
-     * Delete token by hash
+     * Delete token by hash.
      */
     public function deleteByTokenHash(string $tokenHash): int
     {
@@ -72,7 +75,7 @@ class RememberToken extends AbstractResource
     }
 
     /**
-     * Delete all tokens for user
+     * Delete all tokens for user.
      */
     public function deleteByUserId(int $userId): int
     {
@@ -84,7 +87,7 @@ class RememberToken extends AbstractResource
     }
 
     /**
-     * Delete expired tokens
+     * Delete expired tokens.
      */
     public function deleteExpired(): int
     {

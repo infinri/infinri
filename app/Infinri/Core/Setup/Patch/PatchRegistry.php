@@ -1,17 +1,18 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Setup\Patch;
 
 /**
- * Discovers and manages data patches from all modules
+ * Discovers and manages data patches from all modules.
  */
 class PatchRegistry
 {
     private array $patches = [];
 
     /**
-     * Discover patches from all modules
+     * Discover patches from all modules.
      */
     public function discoverPatches(): void
     {
@@ -21,7 +22,7 @@ class PatchRegistry
         foreach ($modules as $module) {
             $patchDir = $appDir . $module . '/Setup/Patch/Data';
 
-            if (!is_dir($patchDir)) {
+            if (! is_dir($patchDir)) {
                 continue;
             }
 
@@ -30,19 +31,19 @@ class PatchRegistry
     }
 
     /**
-     * Find all modules in app/Infinri
+     * Find all modules in app/Infinri.
      */
     private function findModules(string $appDir): array
     {
         $modules = [];
         $infinriDir = $appDir . 'Infinri';
 
-        if (!is_dir($infinriDir)) {
+        if (! is_dir($infinriDir)) {
             return $modules;
         }
 
         foreach (scandir($infinriDir) as $item) {
-            if ($item === '.' || $item === '..') {
+            if ('.' === $item || '..' === $item) {
                 continue;
             }
 
@@ -56,12 +57,12 @@ class PatchRegistry
     }
 
     /**
-     * Scan directory for patch files
+     * Scan directory for patch files.
      */
     private function scanDirectory(string $dir, string $module): void
     {
         foreach (scandir($dir) as $file) {
-            if ($file === '.' || $file === '..' || !str_ends_with($file, '.php')) {
+            if ('.' === $file || '..' === $file || ! str_ends_with($file, '.php')) {
                 continue;
             }
 
@@ -76,7 +77,7 @@ class PatchRegistry
     }
 
     /**
-     * Get all discovered patches
+     * Get all discovered patches.
      */
     public function getPatches(): array
     {
@@ -84,7 +85,11 @@ class PatchRegistry
     }
 
     /**
-     * Sort patches by dependencies
+     * Sort patches by dependencies.
+     *
+     * @param array<int, class-string<DataPatchInterface>> $patches
+     *
+     * @return array<int, class-string<DataPatchInterface>>
      */
     public function sortByDependencies(array $patches): array
     {
@@ -99,7 +104,12 @@ class PatchRegistry
     }
 
     /**
-     * Visit patch and its dependencies (topological sort)
+     * Visit patch and its dependencies (topological sort).
+     *
+     * @param class-string<DataPatchInterface>             $patch
+     * @param array<int, class-string<DataPatchInterface>> $allPatches
+     * @param array<int, class-string<DataPatchInterface>> $sorted
+     * @param array<string, bool>                          $visited
      */
     private function visitPatch(string $patch, array $allPatches, array &$sorted, array &$visited): void
     {
@@ -112,7 +122,7 @@ class PatchRegistry
         // Visit dependencies first
         $dependencies = $patch::getDependencies();
         foreach ($dependencies as $dependency) {
-            if (in_array($dependency, $allPatches, true)) {
+            if (\in_array($dependency, $allPatches, true)) {
                 $this->visitPatch($dependency, $allPatches, $sorted, $visited);
             }
         }

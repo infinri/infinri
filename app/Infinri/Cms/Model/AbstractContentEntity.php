@@ -9,16 +9,13 @@ use Infinri\Core\Model\ResourceModel\AbstractResource;
 
 /**
  * Base class for all CMS content entities (Page, Block, Widget, etc.)
- * Provides common functionality and enforces consistent interface
- * 
- * @package Infinri\Cms\Model
+ * Provides common functionality and enforces consistent interface.
  */
 abstract class AbstractContentEntity extends AbstractModel
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param AbstractResource $resource
      * @param array<string, mixed> $data
      */
     public function __construct(
@@ -29,35 +26,27 @@ abstract class AbstractContentEntity extends AbstractModel
     }
 
     /**
-     * Get resource model
-     *
-     * @return AbstractResource
+     * Get resource model.
      */
     protected function getResource(): AbstractResource
     {
         return $this->resource;
     }
-    
+
     /**
      * Get identifier field name (e.g., 'url_key', 'identifier')
-     * Used for validation and uniqueness checks
-     *
-     * @return string
+     * Used for validation and uniqueness checks.
      */
     abstract protected function getIdentifierField(): string;
 
     /**
      * Get entity type name (e.g., 'page', 'block')
-     * Used for error messages and logging
-     *
-     * @return string
+     * Used for error messages and logging.
      */
     abstract protected function getEntityType(): string;
 
     /**
-     * Get title
-     *
-     * @return string|null
+     * Get title.
      */
     public function getTitle(): ?string
     {
@@ -65,10 +54,7 @@ abstract class AbstractContentEntity extends AbstractModel
     }
 
     /**
-     * Set title
-     *
-     * @param string $title
-     * @return self
+     * Set title.
      */
     public function setTitle(string $title): self
     {
@@ -76,9 +62,7 @@ abstract class AbstractContentEntity extends AbstractModel
     }
 
     /**
-     * Get content
-     *
-     * @return string|null
+     * Get content.
      */
     public function getContent(): ?string
     {
@@ -86,10 +70,7 @@ abstract class AbstractContentEntity extends AbstractModel
     }
 
     /**
-     * Set content
-     *
-     * @param string $content
-     * @return self
+     * Set content.
      */
     public function setContent(string $content): self
     {
@@ -97,9 +78,7 @@ abstract class AbstractContentEntity extends AbstractModel
     }
 
     /**
-     * Check if entity is active
-     *
-     * @return bool
+     * Check if entity is active.
      */
     public function isActive(): bool
     {
@@ -107,10 +86,7 @@ abstract class AbstractContentEntity extends AbstractModel
     }
 
     /**
-     * Set active status
-     *
-     * @param bool $isActive
-     * @return self
+     * Set active status.
      */
     public function setIsActive(bool $isActive): self
     {
@@ -118,9 +94,7 @@ abstract class AbstractContentEntity extends AbstractModel
     }
 
     /**
-     * Get created at timestamp
-     *
-     * @return string|null
+     * Get created at timestamp.
      */
     public function getCreatedAt(): ?string
     {
@@ -128,9 +102,7 @@ abstract class AbstractContentEntity extends AbstractModel
     }
 
     /**
-     * Get updated at timestamp
-     *
-     * @return string|null
+     * Get updated at timestamp.
      */
     public function getUpdatedAt(): ?string
     {
@@ -139,9 +111,8 @@ abstract class AbstractContentEntity extends AbstractModel
 
     /**
      * Validate entity data
-     * Combines common validation with entity-specific validation
+     * Combines common validation with entity-specific validation.
      *
-     * @return void
      * @throws \InvalidArgumentException
      */
     public function validate(): void
@@ -149,15 +120,13 @@ abstract class AbstractContentEntity extends AbstractModel
         $errors = $this->validateCommonFields();
         $errors = array_merge($errors, $this->validateEntitySpecificFields());
 
-        if (!empty($errors)) {
-            throw new \InvalidArgumentException(
-                ucfirst($this->getEntityType()) . ' validation failed: ' . implode(', ', $errors)
-            );
+        if (! empty($errors)) {
+            throw new \InvalidArgumentException(ucfirst($this->getEntityType()) . ' validation failed: ' . implode(', ', $errors));
         }
     }
 
     /**
-     * Validate common fields (title, identifier field)
+     * Validate common fields (title, identifier field).
      *
      * @return array List of validation errors
      */
@@ -173,10 +142,10 @@ abstract class AbstractContentEntity extends AbstractModel
         // Validate identifier field
         $identifierField = $this->getIdentifierField();
         $identifierValue = $this->getData($identifierField);
-        
+
         if (empty($identifierValue)) {
             $errors[] = ucfirst($this->getEntityType()) . ' ' . $identifierField . ' is required';
-        } elseif (!preg_match('/^[a-z0-9_-]+$/', $identifierValue)) {
+        } elseif (! preg_match('/^[a-z0-9_-]+$/', $identifierValue)) {
             $errors[] = ucfirst($identifierField) . ' can only contain lowercase letters, numbers, hyphens, and underscores';
         }
 
@@ -185,7 +154,7 @@ abstract class AbstractContentEntity extends AbstractModel
 
     /**
      * Validate entity-specific fields
-     * Override this method to add custom validation
+     * Override this method to add custom validation.
      *
      * @return array List of validation errors
      */

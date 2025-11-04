@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Seo\Service;
@@ -6,18 +7,20 @@ namespace Infinri\Seo\Service;
 use Infinri\Core\Model\ResourceModel\Connection;
 
 /**
- * Generates robots.txt content from database or defaults
+ * Generates robots.txt content from database or defaults.
  */
 class RobotsGenerator
 {
     public function __construct(
         private readonly Connection $connection
-    ) {}
+    ) {
+    }
 
     /**
-     * Generate robots.txt content
+     * Generate robots.txt content.
      *
      * @param string $baseUrl Base URL for sitemap reference
+     *
      * @return string robots.txt content
      */
     public function generate(string $baseUrl): string
@@ -34,7 +37,7 @@ class RobotsGenerator
     }
 
     /**
-     * Get custom robots.txt from database
+     * Get custom robots.txt from database.
      *
      * @return string|null Custom robots.txt content or null
      */
@@ -42,15 +45,16 @@ class RobotsGenerator
     {
         try {
             $pdo = $this->connection->getConnection();
-            $stmt = $pdo->query("
+            $stmt = $pdo->query('
                 SELECT content 
                 FROM seo_robots 
                 WHERE is_active = true 
                 ORDER BY robots_id DESC 
                 LIMIT 1
-            ");
+            ');
 
             $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
             return $result ? $result['content'] : null;
         } catch (\Exception $e) {
             return null;
@@ -58,9 +62,10 @@ class RobotsGenerator
     }
 
     /**
-     * Get default robots.txt content
+     * Get default robots.txt content.
      *
      * @param string $baseUrl Base URL
+     *
      * @return string Default robots.txt
      */
     private function getDefaultRobots(string $baseUrl): string

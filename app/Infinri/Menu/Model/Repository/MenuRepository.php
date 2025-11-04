@@ -9,61 +9,50 @@ use Infinri\Menu\Model\Menu;
 use Infinri\Menu\Model\ResourceModel\Menu as MenuResource;
 
 /**
- * Provides CRUD operations for Menu entities
+ * Provides CRUD operations for Menu entities.
  */
 class MenuRepository implements MenuRepositoryInterface
 {
     /**
-     * Constructor
-     *
-     * @param MenuResource $resource
+     * Constructor.
      */
     public function __construct(
         private readonly MenuResource $resource
-    ) {}
+    ) {
+    }
 
     /**
-     * Create a new menu instance
+     * Create a new menu instance.
      *
      * @param array<string, mixed> $data
-     * @return Menu
      */
     public function create(array $data = []): Menu
     {
         return new Menu($this->resource, $data);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getById(int $id): ?Menu
     {
         $data = $this->resource->load($id);
 
-        if (!$data) {
+        if (! $data) {
             return null;
         }
 
         return $this->create($data);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getByIdentifier(string $identifier): ?Menu
     {
         $data = $this->resource->getByIdentifier($identifier);
 
-        if (!$data) {
+        if (! $data) {
             return null;
         }
 
         return $this->create($data);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getAll(bool $activeOnly = false): array
     {
         $menuData = $this->resource->getAll($activeOnly);
@@ -76,9 +65,6 @@ class MenuRepository implements MenuRepositoryInterface
         return $menus;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function save(Menu $menu): Menu
     {
         // Validate before saving
@@ -90,30 +76,24 @@ class MenuRepository implements MenuRepositoryInterface
         $id = $this->resource->save($data);
 
         // Set menu ID if it's a new menu
-        if (!$menu->getMenuId()) {
+        if (! $menu->getMenuId()) {
             $menu->setMenuId($id);
         }
 
         return $menu;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function delete(int $menuId): bool
     {
-        if (!$this->exists($menuId)) {
+        if (! $this->exists($menuId)) {
             throw new \RuntimeException("Menu with ID {$menuId} does not exist");
         }
 
         return $this->resource->delete($menuId) > 0;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function exists(int $menuId): bool
     {
-        return $this->resource->load($menuId) !== false;
+        return false !== $this->resource->load($menuId);
     }
 }

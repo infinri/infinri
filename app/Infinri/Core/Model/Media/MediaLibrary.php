@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Infinri\Core\Model\Media;
 
 /**
- * Handles media file operations (scanning, validation, metadata)
+ * Handles media file operations (scanning, validation, metadata).
  */
 class MediaLibrary
 {
@@ -15,36 +15,38 @@ class MediaLibrary
         private readonly string $mediaPath,
         private readonly string $baseUrl = '/media'
     ) {
-        if (!is_dir($this->mediaPath)) {
+        if (! is_dir($this->mediaPath)) {
             mkdir($this->mediaPath, 0755, true);
         }
     }
 
     /**
-     * Get folders in a directory
+     * Get folders in a directory.
      *
      * @param string $relativePath Relative path from media root
+     *
      * @return array Array of folder info
      */
     public function getFolders(string $relativePath = ''): array
     {
         $fullPath = $this->getFullPath($relativePath);
 
-        if (!is_dir($fullPath)) {
+        if (! is_dir($fullPath)) {
             return [];
         }
 
         $folders = [];
         foreach (scandir($fullPath) ?: [] as $item) {
-            if ($item === '.' || $item === '..') {
+            if ('.' === $item || '..' === $item) {
                 continue;
             }
 
             $itemPath = $fullPath . '/' . $item;
             if (is_dir($itemPath)) {
+                $globResult = glob($itemPath . '/*');
                 $folders[] = [
                     'name' => $item,
-                    'count' => count(glob($itemPath . '/*')),
+                    'count' => \is_array($globResult) ? \count($globResult) : 0,
                 ];
             }
         }
@@ -53,28 +55,29 @@ class MediaLibrary
     }
 
     /**
-     * Get images in a directory
+     * Get images in a directory.
      *
      * @param string $relativePath Relative path from media root
+     *
      * @return FileInfo[] Array of FileInfo objects
      */
     public function getImages(string $relativePath = ''): array
     {
         $fullPath = $this->getFullPath($relativePath);
 
-        if (!is_dir($fullPath)) {
+        if (! is_dir($fullPath)) {
             return [];
         }
 
         $images = [];
 
         foreach (scandir($fullPath) ?: [] as $item) {
-            if ($item === '.' || $item === '..') {
+            if ('.' === $item || '..' === $item) {
                 continue;
             }
 
             $itemPath = $fullPath . '/' . $item;
-            if (!is_file($itemPath)) {
+            if (! is_file($itemPath)) {
                 continue;
             }
 
@@ -86,28 +89,27 @@ class MediaLibrary
         }
 
         // Sort by modified time (newest first)
-        usort($images, static fn(FileInfo $a, FileInfo $b) => $b->modifiedTime <=> $a->modifiedTime);
+        usort($images, static fn (FileInfo $a, FileInfo $b) => $b->modifiedTime <=> $a->modifiedTime);
 
         return $images;
     }
 
     /**
-     * Get file information
+     * Get file information.
      *
-     * @param string $fullPath Full filesystem path
+     * @param string $fullPath     Full filesystem path
      * @param string $relativePath Relative path from media root
-     * @return FileInfo|null
      */
     public function getFileInfo(string $fullPath, string $relativePath = ''): ?FileInfo
     {
-        if (!is_file($fullPath)) {
+        if (! is_file($fullPath)) {
             return null;
         }
 
-        $extension = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
+        $extension = strtolower(pathinfo($fullPath, \PATHINFO_EXTENSION));
 
         // Validate extension
-        if (!in_array($extension, self::ALLOWED_EXTENSIONS, true)) {
+        if (! \in_array($extension, self::ALLOWED_EXTENSIONS, true)) {
             return null;
         }
 
@@ -126,30 +128,31 @@ class MediaLibrary
     }
 
     /**
-     * Check if file is a valid image
+     * Check if file is a valid image.
      *
      * @param string $fullPath Full filesystem path
-     * @return bool
      */
     public function isValidImage(string $fullPath): bool
     {
-        if (!is_file($fullPath)) {
+        if (! is_file($fullPath)) {
             return false;
         }
 
-        $extension = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
-        return in_array($extension, self::ALLOWED_EXTENSIONS, true);
+        $extension = strtolower(pathinfo($fullPath, \PATHINFO_EXTENSION));
+
+        return \in_array($extension, self::ALLOWED_EXTENSIONS, true);
     }
 
     /**
-     * Get full filesystem path from relative path
+     * Get full filesystem path from relative path.
      *
      * @param string $relativePath Relative path from media root
+     *
      * @return string Full filesystem path
      */
     private function getFullPath(string $relativePath): string
     {
-        if ($relativePath === '') {
+        if ('' === $relativePath) {
             return $this->mediaPath;
         }
 
@@ -160,16 +163,17 @@ class MediaLibrary
     }
 
     /**
-     * Count total media files recursively
+     * Count total media files recursively.
      *
      * @param string $relativePath Relative path from media root (empty for all)
+     *
      * @return int Total count of media files
      */
     public function countFiles(string $relativePath = ''): int
     {
         $fullPath = $this->getFullPath($relativePath);
 
-        if (!is_dir($fullPath)) {
+        if (! is_dir($fullPath)) {
             return 0;
         }
 
@@ -177,9 +181,10 @@ class MediaLibrary
     }
 
     /**
-     * Recursively count files in directory
+     * Recursively count files in directory.
      *
      * @param string $path Directory path
+     *
      * @return int File count
      */
     private function countFilesRecursive(string $path): int
@@ -187,7 +192,7 @@ class MediaLibrary
         $count = 0;
 
         foreach (scandir($path) ?: [] as $item) {
-            if ($item === '.' || $item === '..') {
+            if ('.' === $item || '..' === $item) {
                 continue;
             }
 
@@ -197,8 +202,8 @@ class MediaLibrary
                 $count += $this->countFilesRecursive($itemPath);
             } elseif (is_file($itemPath)) {
                 // Check if it's a valid media file
-                $extension = strtolower(pathinfo($itemPath, PATHINFO_EXTENSION));
-                if (in_array($extension, self::ALLOWED_EXTENSIONS, true)) {
+                $extension = strtolower(pathinfo($itemPath, \PATHINFO_EXTENSION));
+                if (\in_array($extension, self::ALLOWED_EXTENSIONS, true)) {
                     $count++;
                 }
             }
@@ -208,9 +213,7 @@ class MediaLibrary
     }
 
     /**
-     * Get base media path
-     *
-     * @return string
+     * Get base media path.
      */
     public function getMediaPath(): string
     {
@@ -218,9 +221,7 @@ class MediaLibrary
     }
 
     /**
-     * Get base URL
-     *
-     * @return string
+     * Get base URL.
      */
     public function getBaseUrl(): string
     {

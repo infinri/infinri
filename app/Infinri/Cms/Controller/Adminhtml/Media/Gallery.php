@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Infinri\Cms\Controller\Adminhtml\Media;
 
-use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
-use Infinri\Core\Helper\PathHelper;
+use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\Helper\JsonResponse;
 use Infinri\Core\Helper\Logger;
+use Infinri\Core\Helper\PathHelper;
 
 /**
- * List Images from Media Gallery
+ * List Images from Media Gallery.
  */
 class Gallery extends AbstractAdminController
 {
@@ -19,30 +19,31 @@ class Gallery extends AbstractAdminController
     {
         try {
             $images = $this->scanForImages(PathHelper::getMediaPath());
-            return JsonResponse::success(['images' => $images]);
 
+            return JsonResponse::success(['images' => $images]);
         } catch (\Throwable $e) {
             Logger::error('Gallery exception', ['error' => $e->getMessage()]);
+
             return JsonResponse::error($e->getMessage());
         }
     }
 
     /**
-     * Recursively scan for images in media directory
+     * Recursively scan for images in media directory.
      */
     private function scanForImages(string $path, string $relativePath = ''): array
     {
         $images = [];
         $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
-        if (!is_dir($path)) {
+        if (! is_dir($path)) {
             return $images;
         }
 
         $items = scandir($path);
 
         foreach ($items as $item) {
-            if ($item === '.' || $item === '..' || $item === '.gitkeep') {
+            if ('.' === $item || '..' === $item || '.gitkeep' === $item) {
                 continue;
             }
 
@@ -53,15 +54,15 @@ class Gallery extends AbstractAdminController
                 // Recursively scan subdirectories
                 $images = array_merge($images, $this->scanForImages($fullPath, $itemRelativePath));
             } elseif (is_file($fullPath)) {
-                $extension = strtolower(pathinfo($item, PATHINFO_EXTENSION));
+                $extension = strtolower(pathinfo($item, \PATHINFO_EXTENSION));
 
-                if (in_array($extension, $allowedExtensions, true)) {
+                if (\in_array($extension, $allowedExtensions, true)) {
                     $images[] = [
                         'url' => '/media/' . $itemRelativePath,
                         'name' => $item,
                         'path' => $itemRelativePath,
                         'size' => filesize($fullPath),
-                        'modified' => filemtime($fullPath)
+                        'modified' => filemtime($fullPath),
                     ];
                 }
             }

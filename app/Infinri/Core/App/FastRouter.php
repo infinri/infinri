@@ -1,14 +1,16 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\App;
 
-use FastRoute\RouteCollector;
 use FastRoute\Dispatcher;
+use FastRoute\RouteCollector;
+
 use function FastRoute\simpleDispatcher;
 
 /**
- * FastRoute-based Router
+ * FastRoute-based Router.
  */
 class FastRouter implements RouterInterface
 {
@@ -28,13 +30,14 @@ class FastRouter implements RouterInterface
     private bool $dirty = true;
 
     /**
-     * Register a route
+     * Register a route.
      *
-     * @param string $name Route name
-     * @param string $path URL pattern (e.g., '/product/view/:id')
-     * @param string $controller Controller class
-     * @param string $action Action method
-     * @param array<string> $methods Allowed HTTP methods
+     * @param string        $name       Route name
+     * @param string        $path       URL pattern (e.g., '/product/view/:id')
+     * @param string        $controller Controller class
+     * @param string        $action     Action method
+     * @param array<string> $methods    Allowed HTTP methods
+     *
      * @return $this
      */
     public function addRoute(
@@ -42,9 +45,8 @@ class FastRouter implements RouterInterface
         string $path,
         string $controller,
         string $action = 'execute',
-        array  $methods = ['GET', 'POST']
-    ): self
-    {
+        array $methods = ['GET', 'POST']
+    ): self {
         $this->routes[$name] = [
             'path' => $path,
             'controller' => $controller,
@@ -60,10 +62,7 @@ class FastRouter implements RouterInterface
 
     /**
      * Calculate route specificity score (higher = more specific)
-     * More specific routes should be matched first
-     *
-     * @param string $path
-     * @return int
+     * More specific routes should be matched first.
      */
     private function calculateSpecificity(string $path): int
     {
@@ -73,12 +72,12 @@ class FastRouter implements RouterInterface
         $segments = explode('/', trim($path, '/'));
 
         foreach ($segments as $segment) {
-            if ($segment === '' || $segment === '*') {
+            if ('' === $segment || '*' === $segment) {
                 // Wildcard - least specific
                 $score -= 100;
             } elseif (str_starts_with($segment, ':')) {
                 // Parameter segment (e.g., :id) - somewhat specific
-                $score += 1;
+                $score++;
             } else {
                 // Static segment (e.g., "admin", "auth") - most specific
                 $score += 100;
@@ -86,22 +85,23 @@ class FastRouter implements RouterInterface
         }
 
         // Prefer routes with more segments (more specific paths)
-        $score += count($segments);
+        $score += \count($segments);
 
         return $score;
     }
 
     /**
-     * Match URL to route
+     * Match URL to route.
      *
-     * @param string $path Request path
+     * @param string $path   Request path
      * @param string $method HTTP method
+     *
      * @return array|null ['controller' => ..., 'action' => ..., 'params' => [...]] or null
      */
     public function match(string $path, string $method = 'GET'): ?array
     {
         // Build dispatcher if needed
-        if ($this->dirty || $this->dispatcher === null) {
+        if ($this->dirty || null === $this->dispatcher) {
             $this->buildDispatcher();
         }
 
@@ -130,9 +130,7 @@ class FastRouter implements RouterInterface
     }
 
     /**
-     * Build FastRoute dispatcher from registered routes
-     *
-     * @return void
+     * Build FastRoute dispatcher from registered routes.
      */
     private function buildDispatcher(): void
     {
@@ -162,26 +160,24 @@ class FastRouter implements RouterInterface
     }
 
     /**
-     * Convert custom route pattern to FastRoute pattern
+     * Convert custom route pattern to FastRoute pattern.
      *
      * Custom: /product/view/:id
      * FastRoute: /product/view/{id}
-     *
-     * @param string $path
-     * @return string
      */
     private function convertToFastRoutePattern(string $path): string
     {
         // Convert :param to {param}
         $result = preg_replace('/:([a-zA-Z_][a-zA-Z0-9_]*)/', '{$1}', $path);
-        if ($result === null) {
+        if (null === $result) {
             throw new \RuntimeException('Failed to convert route pattern');
         }
+
         return $result;
     }
 
     /**
-     * Get all registered routes
+     * Get all registered routes.
      *
      * @return array<string, array<string, mixed>>
      */
@@ -191,15 +187,14 @@ class FastRouter implements RouterInterface
     }
 
     /**
-     * Generate URL for route
+     * Generate URL for route.
      *
-     * @param string $name Route name
+     * @param string               $name   Route name
      * @param array<string, mixed> $params Parameters
-     * @return string|null
      */
     public function generate(string $name, array $params = []): ?string
     {
-        if (!isset($this->routes[$name])) {
+        if (! isset($this->routes[$name])) {
             return null;
         }
 
@@ -207,7 +202,7 @@ class FastRouter implements RouterInterface
 
         // Replace :param with actual values
         foreach ($params as $key => $value) {
-            $path = str_replace(':' . $key, (string)$value, $path);
+            $path = str_replace(':' . $key, (string) $value, $path);
         }
 
         return $path;

@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\App;
 
 /**
- * Wrapper for HTTP request data (GET, POST, SERVER, etc.)
+ * Wrapper for HTTP request data (GET, POST, SERVER, etc.).
  */
 class Request
 {
@@ -52,9 +53,7 @@ class Request
     }
 
     /**
-     * Create from globals
-     *
-     * @return self
+     * Create from globals.
      */
     public static function createFromGlobals(): self
     {
@@ -62,9 +61,7 @@ class Request
     }
 
     /**
-     * Get request method
-     *
-     * @return string
+     * Get request method.
      */
     public function getMethod(): string
     {
@@ -72,29 +69,23 @@ class Request
     }
 
     /**
-     * Check if request method is POST
-     *
-     * @return bool
+     * Check if request method is POST.
      */
     public function isPost(): bool
     {
-        return $this->getMethod() === 'POST';
+        return 'POST' === $this->getMethod();
     }
 
     /**
-     * Check if request method is GET
-     *
-     * @return bool
+     * Check if request method is GET.
      */
     public function isGet(): bool
     {
-        return $this->getMethod() === 'GET';
+        return 'GET' === $this->getMethod();
     }
 
     /**
-     * Get request URI path
-     *
-     * @return string
+     * Get request URI path.
      */
     public function getPathInfo(): string
     {
@@ -109,9 +100,7 @@ class Request
     }
 
     /**
-     * Get request URI
-     *
-     * @return string
+     * Get request URI.
      */
     public function getUri(): string
     {
@@ -119,9 +108,7 @@ class Request
     }
 
     /**
-     * Get request path (alias for getUri)
-     *
-     * @return string
+     * Get request path (alias for getUri).
      */
     public function getPath(): string
     {
@@ -129,11 +116,7 @@ class Request
     }
 
     /**
-     * Get query parameter
-     *
-     * @param string $key
-     * @param mixed $default
-     * @return mixed
+     * Get query parameter.
      */
     public function getQuery(string $key, mixed $default = null): mixed
     {
@@ -141,11 +124,7 @@ class Request
     }
 
     /**
-     * Get POST parameter
-     *
-     * @param string $key
-     * @param mixed $default
-     * @return mixed
+     * Get POST parameter.
      */
     public function getPost(string $key, mixed $default = null): mixed
     {
@@ -153,11 +132,17 @@ class Request
     }
 
     /**
-     * Get parameter (checks GET, then POST, then route params)
+     * Get all POST parameters.
      *
-     * @param string $key
-     * @param mixed $default
-     * @return mixed
+     * @return array<string, mixed>
+     */
+    public function getAllPost(): array
+    {
+        return $this->post;
+    }
+
+    /**
+     * Get parameter (checks GET, then POST, then route params).
      */
     public function getParam(string $key, mixed $default = null): mixed
     {
@@ -165,132 +150,144 @@ class Request
     }
 
     /**
-     * Get parameter as string with automatic trimming
+     * Get parameter as string with automatic trimming.
      *
-     * @param string $key Parameter name
+     * @param string $key     Parameter name
      * @param string $default Default value if not found
+     *
      * @return string Trimmed string value
      */
     public function getString(string $key, string $default = ''): string
     {
         $value = $this->getParam($key, $default);
-        return is_string($value) ? trim($value) : (string)$default;
+
+        return \is_string($value) ? trim($value) : $default;
     }
 
     /**
-     * Get parameter as integer with validation
+     * Get parameter as integer with validation.
      *
-     * @param string $key Parameter name
-     * @param int $default Default value if not found or invalid
+     * @param string $key     Parameter name
+     * @param int    $default Default value if not found or invalid
+     *
      * @return int Validated integer
      */
     public function getInt(string $key, int $default = 0): int
     {
         $value = $this->getParam($key, $default);
-        $filtered = filter_var($value, FILTER_VALIDATE_INT);
-        return $filtered !== false ? $filtered : $default;
+        $filtered = filter_var($value, \FILTER_VALIDATE_INT);
+
+        return false !== $filtered ? $filtered : $default;
     }
 
     /**
-     * Get parameter as boolean
+     * Get parameter as boolean.
      *
      * Recognizes: true/false, 1/0, "true"/"false", "yes"/"no", "on"/"off"
      *
-     * @param string $key Parameter name
-     * @param bool $default Default value if not found
+     * @param string $key     Parameter name
+     * @param bool   $default Default value if not found
+     *
      * @return bool Validated boolean
      */
     public function getBool(string $key, bool $default = false): bool
     {
         $value = $this->getParam($key, $default);
 
-        if (is_bool($value)) {
+        if (\is_bool($value)) {
             return $value;
         }
 
-        return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? $default;
+        return filter_var($value, \FILTER_VALIDATE_BOOLEAN, \FILTER_NULL_ON_FAILURE) ?? $default;
     }
 
     /**
-     * Get parameter as array
+     * Get parameter as array.
      *
-     * @param string $key Parameter name
+     * @param string               $key     Parameter name
      * @param array<string, mixed> $default Default value if not found
+     *
      * @return array<string, mixed> Validated array
      */
     public function getArray(string $key, array $default = []): array
     {
         $value = $this->getParam($key, $default);
-        return is_array($value) ? $value : $default;
+
+        return \is_array($value) ? $value : $default;
     }
 
     /**
-     * Get parameter as validated email address
+     * Get parameter as validated email address.
      *
-     * @param string $key Parameter name
+     * @param string      $key     Parameter name
      * @param string|null $default Default value if not found or invalid
+     *
      * @return string|null Validated email or default
      */
     public function getEmail(string $key, ?string $default = null): ?string
     {
         $value = $this->getParam($key, $default);
 
-        if ($value === null || $value === '') {
+        if (null === $value || '' === $value) {
             return $default;
         }
 
-        $filtered = filter_var($value, FILTER_VALIDATE_EMAIL);
-        return $filtered !== false ? $filtered : $default;
+        $filtered = filter_var($value, \FILTER_VALIDATE_EMAIL);
+
+        return false !== $filtered ? $filtered : $default;
     }
 
     /**
-     * Get parameter as validated URL
+     * Get parameter as validated URL.
      *
-     * @param string $key Parameter name
+     * @param string      $key     Parameter name
      * @param string|null $default Default value if not found or invalid
+     *
      * @return string|null Validated URL or default
      */
     public function getUrl(string $key, ?string $default = null): ?string
     {
         $value = $this->getParam($key, $default);
 
-        if ($value === null || $value === '') {
+        if (null === $value || '' === $value) {
             return $default;
         }
 
-        $filtered = filter_var($value, FILTER_VALIDATE_URL);
-        return $filtered !== false ? $filtered : $default;
+        $filtered = filter_var($value, \FILTER_VALIDATE_URL);
+
+        return false !== $filtered ? $filtered : $default;
     }
 
     /**
-     * Get parameter as float/decimal
+     * Get parameter as float/decimal.
      *
-     * @param string $key Parameter name
-     * @param float $default Default value if not found or invalid
+     * @param string $key     Parameter name
+     * @param float  $default Default value if not found or invalid
+     *
      * @return float Validated float
      */
     public function getFloat(string $key, float $default = 0.0): float
     {
         $value = $this->getParam($key, $default);
-        $filtered = filter_var($value, FILTER_VALIDATE_FLOAT);
-        return $filtered !== false ? $filtered : $default;
+        $filtered = filter_var($value, \FILTER_VALIDATE_FLOAT);
+
+        return false !== $filtered ? $filtered : $default;
     }
 
     /**
-     * Set route parameter
+     * Set route parameter.
      *
-     * @param string $key
-     * @param mixed $value
      * @return $this
      */
     public function setParam(string $key, mixed $value): self
     {
         $this->params[$key] = $value;
+
         return $this;
     }
 
     /**
-     * Get all route parameters
+     * Get all route parameters.
      *
      * @return array<string, mixed>
      */
@@ -300,11 +297,7 @@ class Request
     }
 
     /**
-     * Get server parameter
-     *
-     * @param string $key
-     * @param mixed $default
-     * @return mixed
+     * Get server parameter.
      */
     public function getServer(string $key, mixed $default = null): mixed
     {
@@ -312,11 +305,7 @@ class Request
     }
 
     /**
-     * Get cookie
-     *
-     * @param string $key
-     * @param mixed $default
-     * @return mixed
+     * Get cookie.
      */
     public function getCookie(string $key, mixed $default = null): mixed
     {
@@ -324,26 +313,22 @@ class Request
     }
 
     /**
-     * Check if request is AJAX
-     *
-     * @return bool
+     * Check if request is AJAX.
      */
     public function isAjax(): bool
     {
-        return strtolower($this->server['HTTP_X_REQUESTED_WITH'] ?? '') === 'xmlhttprequest';
+        return 'xmlhttprequest' === strtolower($this->server['HTTP_X_REQUESTED_WITH'] ?? '');
     }
 
     /**
-     * Get client IP address
-     *
-     * @return string|null
+     * Get client IP address.
      */
     public function getClientIp(): ?string
     {
         // Get direct connection IP (always available)
         $remoteAddr = $this->server['REMOTE_ADDR'] ?? null;
 
-        if (!$remoteAddr) {
+        if (! $remoteAddr) {
             return null;
         }
 
@@ -376,9 +361,7 @@ class Request
     }
 
     /**
-     * Get trusted proxy IPs from environment configuration
-     *
-     * @return array
+     * Get trusted proxy IPs from environment configuration.
      */
     private function getTrustedProxies(): array
     {
@@ -393,11 +376,9 @@ class Request
     }
 
     /**
-     * Check if request is from a trusted proxy
+     * Check if request is from a trusted proxy.
      *
-     * @param string $remoteAddr
      * @param array<string> $trustedProxies
-     * @return bool
      */
     private function isFromTrustedProxy(string $remoteAddr, array $trustedProxies): bool
     {
@@ -419,11 +400,7 @@ class Request
     }
 
     /**
-     * Check if IP is in CIDR range
-     *
-     * @param string $ip
-     * @param string $cidr
-     * @return bool
+     * Check if IP is in CIDR range.
      */
     private function ipInRange(string $ip, string $cidr): bool
     {
@@ -431,27 +408,22 @@ class Request
 
         $ipLong = ip2long($ip);
         $subnetLong = ip2long($subnet);
-        $maskLong = -1 << (32 - (int)$mask);
+        $maskLong = -1 << (32 - (int) $mask);
 
         return ($ipLong & $maskLong) === ($subnetLong & $maskLong);
     }
 
     /**
-     * Validate IP address format
-     *
-     * @param string $ip
-     * @return bool
+     * Validate IP address format.
      */
     private function isValidIp(string $ip): bool
     {
-        return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false
-            || filter_var($ip, FILTER_VALIDATE_IP) !== false;
+        return false !== filter_var($ip, \FILTER_VALIDATE_IP, \FILTER_FLAG_NO_PRIV_RANGE | \FILTER_FLAG_NO_RES_RANGE)
+            || false !== filter_var($ip, \FILTER_VALIDATE_IP);
     }
 
     /**
-     * Get HTTP host
-     *
-     * @return string
+     * Get HTTP host.
      */
     public function getHttpHost(): string
     {
@@ -459,20 +431,16 @@ class Request
     }
 
     /**
-     * Check if request is secure (HTTPS)
-     *
-     * @return bool
+     * Check if request is secure (HTTPS).
      */
     public function isSecure(): bool
     {
-        return (!empty($this->server['HTTPS']) && $this->server['HTTPS'] !== 'off')
-            || ($this->server['SERVER_PORT'] ?? 80) == 443;
+        return (! empty($this->server['HTTPS']) && 'off' !== $this->server['HTTPS'])
+            || ($this->server['SERVER_PORT'] ?? 80) === 443;
     }
 
     /**
-     * Get user agent string
-     *
-     * @return string
+     * Get user agent string.
      */
     public function getUserAgent(): string
     {
@@ -480,9 +448,7 @@ class Request
     }
 
     /**
-     * Get request scheme (http or https)
-     *
-     * @return string
+     * Get request scheme (http or https).
      */
     public function getScheme(): string
     {
@@ -490,9 +456,7 @@ class Request
     }
 
     /**
-     * Get host name
-     *
-     * @return string
+     * Get host name.
      */
     public function getHost(): string
     {
@@ -500,12 +464,10 @@ class Request
     }
 
     /**
-     * Get server port
-     *
-     * @return int
+     * Get server port.
      */
     public function getPort(): int
     {
-        return (int)($this->server['SERVER_PORT'] ?? 80);
+        return (int) ($this->server['SERVER_PORT'] ?? 80);
     }
 }

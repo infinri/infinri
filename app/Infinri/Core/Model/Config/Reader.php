@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Model\Config;
@@ -11,43 +12,42 @@ use SimpleXMLElement;
 class Reader
 {
     /**
-     * Read config.xml file from a module
+     * Read configuration from XML file.
      *
-     * @param string $modulePath Absolute path to module directory
-     * @return array<string, mixed>|null Configuration array or null if not found
+     * @param string $filePath Path to XML file
+     *
+     * @return array<string, mixed>|null Configuration array or null if file doesn't exist
      */
-    public function read(string $modulePath): ?array
+    public function read(string $filePath): ?array
     {
-        $configPath = $modulePath . '/etc/config.xml';
-
-        if (!file_exists($configPath)) {
+        if (! file_exists($filePath) || ! is_file($filePath)) {
             return null;
         }
 
-        $xml = $this->loadXml($configPath);
-        
-        if ($xml === null) {
+        $xml = $this->loadXml($filePath);
+
+        if (null === $xml) {
             return null;
         }
 
-        return $this->xmlToArray($xml);
+        $result = $this->xmlToArray($xml);
+
+        return \is_array($result) ? $result : null;
     }
 
     /**
-     * Load and validate XML file
-     *
-     * @param string $filePath
-     * @return SimpleXMLElement|null
+     * Load and validate XML file.
      */
-    private function loadXml(string $filePath): ?SimpleXMLElement
+    private function loadXml(string $filePath): ?\SimpleXMLElement
     {
         $useInternalErrors = libxml_use_internal_errors(true);
-        
+
         try {
             $xml = simplexml_load_file($filePath);
-            
-            if ($xml === false) {
+
+            if (false === $xml) {
                 libxml_clear_errors();
+
                 return null;
             }
 
@@ -58,12 +58,11 @@ class Reader
     }
 
     /**
-     * Convert SimpleXMLElement to array recursively
+     * Convert SimpleXMLElement to array recursively.
      *
-     * @param SimpleXMLElement $xml
      * @return array<string, mixed>|string
      */
-    private function xmlToArray(SimpleXMLElement $xml): array|string
+    private function xmlToArray(\SimpleXMLElement $xml): array|string
     {
         $array = [];
 
@@ -73,9 +72,10 @@ class Reader
         }
 
         // Convert child elements
-        foreach ($xml->children() as $key => $child) {
-            $key = (string) $key;
-            
+        foreach ($xml->children() as $childKey => $child) {
+            /** @var string $childKey */
+            $key = $childKey;
+
             // Check if this element has children or only text
             if ($child->count() > 0) {
                 // Has children - recurse
@@ -84,7 +84,7 @@ class Reader
                 // No children - get text value
                 $value = trim((string) $child);
             }
-            
+
             // Handle multiple elements with same name
             $array[$key] = $this->addArrayValue($array, $key, $value);
         }
@@ -98,40 +98,39 @@ class Reader
     }
 
     /**
-     * Add value to array, handling multiple elements with same key
+     * Add value to array, handling multiple elements with same key.
      *
      * @param array<string, mixed> $array Current array
-     * @param string $key Key to add/append to
-     * @param mixed $value Value to add
+     * @param string               $key   Key to add/append to
+     * @param mixed                $value Value to add
+     *
      * @return mixed Updated value for the key
      */
     private function addArrayValue(array $array, string $key, mixed $value): mixed
     {
         if (isset($array[$key])) {
             // Key already exists - convert to multi-value array
-            if (!is_array($array[$key]) || !isset($array[$key][0])) {
+            if (! \is_array($array[$key]) || ! isset($array[$key][0])) {
                 // Not yet a multi-value array, convert it
                 return [$array[$key], $value];
             }
             // Already a multi-value array, append
             $array[$key][] = $value;
+
             return $array[$key];
         }
-        
+
         // Key doesn't exist yet, just set the value
         return $value;
     }
 
     /**
-     * Validate config.xml structure
-     *
-     * @param string $modulePath
-     * @return bool
+     * Validate config.xml structure.
      */
     public function validate(string $modulePath): bool
     {
         $config = $this->read($modulePath);
-        
-        return $config !== null;
+
+        return null !== $config;
     }
 }

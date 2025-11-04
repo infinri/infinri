@@ -4,28 +4,25 @@ declare(strict_types=1);
 
 namespace Infinri\Core\Console\Command;
 
+use Infinri\Core\Model\Cache\TypeList;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Console\Helper\Table;
-use Infinri\Core\Model\Cache\TypeList;
 
 /**
- * Shows status of all cache types
+ * Shows status of all cache types.
  */
 class CacheStatusCommand extends Command
 {
-
     /**
-     * Cache TypeList
-     *
-     * @var TypeList|null
+     * Cache TypeList.
      */
     private ?TypeList $typeList = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param TypeList|null $typeList Cache TypeList
      */
@@ -36,9 +33,7 @@ class CacheStatusCommand extends Command
     }
 
     /**
-     * Configure command
-     *
-     * @return void
+     * Configure command.
      */
     protected function configure(): void
     {
@@ -48,10 +43,11 @@ class CacheStatusCommand extends Command
     }
 
     /**
-     * Execute command
+     * Execute command.
      *
-     * @param InputInterface $input Input
+     * @param InputInterface  $input  Input
      * @param OutputInterface $output Output
+     *
      * @return int Exit code
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -79,8 +75,8 @@ class CacheStatusCommand extends Command
 
         $table->render();
 
-        $enabledCount = count($typeList->getEnabledTypes());
-        $totalCount = count($types);
+        $enabledCount = \count($typeList->getEnabledTypes());
+        $totalCount = \count($types);
 
         $io->newLine();
         $io->text("Enabled: {$enabledCount}/{$totalCount} cache types");

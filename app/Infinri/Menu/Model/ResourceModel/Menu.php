@@ -6,17 +6,14 @@ namespace Infinri\Menu\Model\ResourceModel;
 
 use Infinri\Core\Model\ResourceModel\AbstractResource;
 use Infinri\Core\Model\ResourceModel\Connection;
-use PDO;
 
 /**
- * Handles database operations for Menu entity
+ * Handles database operations for Menu entity.
  */
 class Menu extends AbstractResource
 {
     /**
-     * Constructor
-     *
-     * @param Connection $connection
+     * Constructor.
      */
     public function __construct(Connection $connection)
     {
@@ -28,10 +25,7 @@ class Menu extends AbstractResource
     }
 
     /**
-     * Get menu by identifier
-     *
-     * @param string $identifier
-     * @return array|null
+     * Get menu by identifier.
      */
     public function getByIdentifier(string $identifier): ?array
     {
@@ -40,28 +34,26 @@ class Menu extends AbstractResource
         );
 
         $stmt->execute(['identifier' => $identifier]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         return $result ?: null;
     }
 
     /**
-     * Get all menus
-     *
-     * @param bool $activeOnly
-     * @return array
+     * Get all menus.
      */
     public function getAll(bool $activeOnly = false): array
     {
         $sql = "SELECT * FROM {$this->mainTable}";
 
         if ($activeOnly) {
-            $sql .= " WHERE is_active = true";
+            $sql .= ' WHERE is_active = true';
         }
 
-        $sql .= " ORDER BY title ASC";
+        $sql .= ' ORDER BY title ASC';
 
         $stmt = $this->connection->getConnection()->query($sql);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 }

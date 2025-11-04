@@ -1,47 +1,44 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Cms\Setup\Patch\Data;
 
 use Infinri\Core\Setup\Patch\DataPatchInterface;
-use PDO;
 
 /**
- * Creates essential CMS pages: home, 404, 500, maintenance
+ * Creates essential CMS pages: home, 404, 500, maintenance.
  */
 class InstallDefaultCmsPages implements DataPatchInterface
 {
-    private PDO $connection;
-    
-    public function __construct(PDO $connection)
+    private \PDO $connection;
+
+    public function __construct(\PDO $connection)
     {
         $this->connection = $connection;
     }
-    
-    /**
-     * @inheritDoc
-     */
+
     public function apply(): void
     {
         $pages = $this->getDefaultPages();
-        
+
         foreach ($pages as $page) {
             // Check if page already exists
             $stmt = $this->connection->prepare(
-                "SELECT page_id FROM cms_page WHERE url_key = ?"
+                'SELECT page_id FROM cms_page WHERE url_key = ?'
             );
             $stmt->execute([$page['url_key']]);
-            
+
             if ($stmt->fetchColumn()) {
                 continue; // Skip if exists
             }
-            
+
             // Insert page
             $stmt = $this->connection->prepare(
-                "INSERT INTO cms_page (title, url_key, content, meta_title, meta_description, is_active, created_at, updated_at) 
-                 VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+                'INSERT INTO cms_page (title, url_key, content, meta_title, meta_description, is_active, created_at, updated_at) 
+                 VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)'
             );
-            
+
             $stmt->execute([
                 $page['title'],
                 $page['url_key'],
@@ -52,9 +49,9 @@ class InstallDefaultCmsPages implements DataPatchInterface
             ]);
         }
     }
-    
+
     /**
-     * Get default pages data
+     * Get default pages data.
      */
     private function getDefaultPages(): array
     {
@@ -93,9 +90,9 @@ class InstallDefaultCmsPages implements DataPatchInterface
             ],
         ];
     }
-    
+
     /**
-     * Get home page content
+     * Get home page content.
      */
     private function getHomeContent(): string
     {
@@ -119,9 +116,9 @@ class InstallDefaultCmsPages implements DataPatchInterface
 <p>Visit the admin panel to manage your content and customize your site.</p>
 HTML;
     }
-    
+
     /**
-     * Get 404 page content
+     * Get 404 page content.
      */
     private function get404Content(): string
     {
@@ -140,9 +137,9 @@ HTML;
 </ul>
 HTML;
     }
-    
+
     /**
-     * Get 500 page content
+     * Get 500 page content.
      */
     private function get500Content(): string
     {
@@ -161,9 +158,9 @@ HTML;
 </ul>
 HTML;
     }
-    
+
     /**
-     * Get maintenance page content
+     * Get maintenance page content.
      */
     private function getMaintenanceContent(): string
     {
@@ -180,18 +177,12 @@ HTML;
 <p>Please check back soon.</p>
 HTML;
     }
-    
-    /**
-     * @inheritDoc
-     */
+
     public static function getDependencies(): array
     {
         return [];
     }
-    
-    /**
-     * @inheritDoc
-     */
+
     public function getAliases(): array
     {
         return [];

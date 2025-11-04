@@ -9,42 +9,33 @@ use Infinri\Core\Model\ResourceModel\AbstractResource;
 
 /**
  * Base repository for all CMS content entities
- * Provides common CRUD operations with consistent interface
- *
- * @package Infinri\Cms\Model\Repository
+ * Provides common CRUD operations with consistent interface.
  */
 abstract class AbstractContentRepository
 {
     /**
-     * Constructor
-     *
-     * @param AbstractResource $resource
+     * Constructor.
      */
     public function __construct(
         protected readonly AbstractResource $resource
-    ) {}
+    ) {
+    }
 
     /**
      * Create model instance with data
-     * Each repository must implement its specific model creation
+     * Each repository must implement its specific model creation.
      *
      * @param array<string, mixed> $data
-     * @return AbstractContentEntity
      */
     abstract protected function createModel(array $data = []): AbstractContentEntity;
 
     /**
-     * Get entity ID field name (e.g., 'page_id', 'block_id')
-     *
-     * @return string
+     * Get entity ID field name (e.g., 'page_id', 'block_id').
      */
     abstract protected function getEntityIdField(): string;
 
     /**
-     * Get entity by ID
-     *
-     * @param int $id
-     * @return AbstractContentEntity|null
+     * Get entity by ID.
      */
     public function getById(int $id): ?AbstractContentEntity
     {
@@ -58,9 +49,10 @@ abstract class AbstractContentRepository
     }
 
     /**
-     * Get all entities
+     * Get all entities.
      *
      * @param bool $activeOnly Filter to only active entities
+     *
      * @return AbstractContentEntity[]
      */
     public function getAll(bool $activeOnly = false): array
@@ -77,10 +69,8 @@ abstract class AbstractContentRepository
 
     /**
      * Save entity
-     * Validates, persists to database, and returns reloaded entity
+     * Validates, persists to database, and returns reloaded entity.
      *
-     * @param AbstractContentEntity $entity
-     * @return AbstractContentEntity
      * @throws \RuntimeException
      */
     public function save(AbstractContentEntity $entity): AbstractContentEntity
@@ -94,26 +84,23 @@ abstract class AbstractContentRepository
         // Reload from database to get all updated fields
         $reloaded = $this->getById($entityId);
 
-        if (!$reloaded) {
-            throw new \RuntimeException(
-                'Failed to reload ' . get_class($entity) . ' after save'
-            );
+        if (! $reloaded) {
+            throw new \RuntimeException('Failed to reload ' . $entity::class . ' after save');
         }
 
         return $reloaded;
     }
 
     /**
-     * Delete entity by ID
+     * Delete entity by ID.
      *
-     * @param int $id
      * @return bool True if deleted, false if not found
      */
     public function delete(int $id): bool
     {
         $entity = $this->getById($id);
 
-        if (!$entity) {
+        if (! $entity) {
             return false;
         }
 
@@ -121,28 +108,25 @@ abstract class AbstractContentRepository
     }
 
     /**
-     * Check if entity with ID exists
-     *
-     * @param int $id
-     * @return bool
+     * Check if entity with ID exists.
      */
     public function exists(int $id): bool
     {
-        return $this->getById($id) !== null;
+        return null !== $this->getById($id);
     }
 
     /**
      * Get total count of entities
-     * Uses efficient database count query instead of loading all records
+     * Uses efficient database count query instead of loading all records.
      *
      * @param bool $activeOnly Count only active entities
-     * @return int
      */
     public function count(bool $activeOnly = false): int
     {
         // Cast to AbstractContentResource to use the correct count method
         /** @var \Infinri\Cms\Model\ResourceModel\AbstractContentResource $resource */
         $resource = $this->resource;
+
         return $resource->count($activeOnly);
     }
 }

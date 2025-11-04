@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Infinri\Admin\Block;
 
-use Infinri\Core\Block\Template;
-use Infinri\Cms\Model\Repository\PageRepository;
 use Infinri\Cms\Model\Repository\BlockRepository;
+use Infinri\Cms\Model\Repository\PageRepository;
+use Infinri\Core\Api\CacheInterface;
+use Infinri\Core\Block\Template;
+use Infinri\Core\Helper\Logger;
 use Infinri\Core\Model\Media\MediaLibrary;
 use Infinri\Core\Service\SystemHealthChecker;
-use Infinri\Core\Api\CacheInterface;
-use Infinri\Core\Helper\Logger;
 
 /**
- * Provides data for dashboard statistics and quick actions
+ * Provides data for dashboard statistics and quick actions.
  */
 class Dashboard extends Template
 {
@@ -35,17 +35,17 @@ class Dashboard extends Template
     }
 
     /**
-     * Get dashboard statistics with real data from repositories
-     * 
+     * Get dashboard statistics with real data from repositories.
+     *
      * @return array<int, array<string, mixed>>
      */
     public function getStatistics(): array
     {
         // Cache statistics for 5 minutes to improve performance
         $cacheKey = 'dashboard_statistics';
-        
+
         $statistics = $this->cache->get($cacheKey);
-        if ($statistics !== null) {
+        if (null !== $statistics) {
             return $statistics;
         }
 
@@ -59,31 +59,31 @@ class Dashboard extends Template
             [
                 'title' => 'Pages',
                 'value' => (string) $pageCount,
-                'label' => $pageCount === 1 ? 'CMS Page' : 'CMS Pages',
+                'label' => 1 === $pageCount ? 'CMS Page' : 'CMS Pages',
                 'color' => '#3b82f6',
-                'url' => '/admin/cms/page/index'
+                'url' => '/admin/cms/page/index',
             ],
             [
                 'title' => 'Blocks',
                 'value' => (string) $blockCount,
-                'label' => $blockCount === 1 ? 'Content Block' : 'Content Blocks',
+                'label' => 1 === $blockCount ? 'Content Block' : 'Content Blocks',
                 'color' => '#8b5cf6',
-                'url' => '/admin/cms/block/index'
+                'url' => '/admin/cms/block/index',
             ],
             [
                 'title' => 'Media',
                 'value' => (string) $mediaCount,
-                'label' => $mediaCount === 1 ? 'Media File' : 'Media Files',
+                'label' => 1 === $mediaCount ? 'Media File' : 'Media Files',
                 'color' => '#ec4899',
-                'url' => '/admin/infinri_media/media/index'
+                'url' => '/admin/infinri_media/media/index',
             ],
             [
                 'title' => 'Status',
                 'value' => $systemHealth['value'],
                 'label' => $systemHealth['label'],
                 'color' => $this->getHealthColor($systemHealth['status']),
-                'url' => null // No URL for system status
-            ]
+                'url' => null, // No URL for system status
+            ],
         ];
 
         // Cache for 5 minutes (300 seconds)
@@ -93,7 +93,7 @@ class Dashboard extends Template
     }
 
     /**
-     * Get media file count with error handling
+     * Get media file count with error handling.
      */
     private function getMediaCount(): int
     {
@@ -103,14 +103,15 @@ class Dashboard extends Template
             // Log error and return 0 if media directory is not accessible
             Logger::warning('Dashboard: Unable to count media files', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
+
             return 0;
         }
     }
 
     /**
-     * Get color based on system health status
+     * Get color based on system health status.
      */
     private function getHealthColor(string $status): string
     {
@@ -123,8 +124,8 @@ class Dashboard extends Template
     }
 
     /**
-     * Get quick action links
-     * 
+     * Get quick action links.
+     *
      * @return array<int, array<string, string>>
      */
     public function getQuickActions(): array

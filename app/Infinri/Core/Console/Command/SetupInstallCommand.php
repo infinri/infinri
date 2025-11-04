@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace Infinri\Core\Console\Command;
 
+use Infinri\Admin\Model\Repository\AdminUserRepository;
+use Infinri\Admin\Model\ResourceModel\AdminUser as AdminUserResource;
+use Infinri\Core\Model\Module\ModuleManager;
+use Infinri\Core\Model\Setup\SchemaSetup;
+use PDO;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
-use Infinri\Admin\Model\Repository\AdminUserRepository;
-use Infinri\Admin\Model\ResourceModel\AdminUser as AdminUserResource;
-use Infinri\Core\Model\Setup\SchemaSetup;
-use Infinri\Core\Model\Module\ModuleManager;
-use PDO;
+use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Interactive setup command that creates database schema and admin user
- * Replaces hardcoded admin credentials with secure interactive setup
+ * Replaces hardcoded admin credentials with secure interactive setup.
  */
 class SetupInstallCommand extends Command
 {
@@ -28,13 +28,13 @@ class SetupInstallCommand extends Command
     public function __construct(
         private readonly ?ModuleManager $moduleManager = null,
         private readonly ?SchemaSetup $schemaSetup = null,
-        private readonly ?PDO $connection = null
+        private readonly ?\PDO $connection = null
     ) {
         parent::__construct();
     }
 
     /**
-     * Configure command
+     * Configure command.
      */
     protected function configure(): void
     {
@@ -80,7 +80,7 @@ class SetupInstallCommand extends Command
     }
 
     /**
-     * Execute command
+     * Execute command.
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -92,20 +92,20 @@ class SetupInstallCommand extends Command
 
         try {
             // Validate dependencies
-            if (!$this->validateDependencies($io)) {
+            if (! $this->validateDependencies($io)) {
                 return Command::FAILURE;
             }
 
             // Step 1: Database Schema Setup
             $io->section('📊 Setting Up Database Schema');
-            if (!$this->setupDatabase($io)) {
+            if (! $this->setupDatabase($io)) {
                 return Command::FAILURE;
             }
 
             // Step 2: Admin User Creation (unless skipped)
-            if (!$input->getOption('skip-admin')) {
+            if (! $input->getOption('skip-admin')) {
                 $io->section('👤 Creating Admin User');
-                if (!$this->createAdminUser($input, $io)) {
+                if (! $this->createAdminUser($input, $io)) {
                     return Command::FAILURE;
                 }
             } else {
@@ -114,13 +114,13 @@ class SetupInstallCommand extends Command
 
             // Success
             $io->success('🎉 Infinri Framework installed successfully!');
-            
-            if (!$input->getOption('skip-admin')) {
+
+            if (! $input->getOption('skip-admin')) {
                 $io->note([
                     '🔐 Security Reminder:',
                     '• Change your admin password after first login',
                     '• Enable two-factor authentication if available',
-                    '• Review user permissions regularly'
+                    '• Review user permissions regularly',
                 ]);
             }
 
@@ -129,29 +129,30 @@ class SetupInstallCommand extends Command
                 'Start your web server: php -S localhost:8000 -t pub/',
                 'Visit your site: http://localhost:8000/',
                 'Access admin panel: http://localhost:8000/admin/',
-                'Check the documentation for more configuration options'
+                'Check the documentation for more configuration options',
             ]);
 
             return Command::SUCCESS;
-
         } catch (\Exception $e) {
             $io->error('Installation failed: ' . $e->getMessage());
             if ($output->isVerbose()) {
                 $io->text($e->getTraceAsString());
             }
+
             return Command::FAILURE;
         }
     }
 
     /**
-     * Validate that all dependencies are available
+     * Validate that all dependencies are available.
      */
     private function validateDependencies(SymfonyStyle $io): bool
     {
         $io->text('Checking dependencies...');
 
-        if ($this->schemaSetup === null || $this->moduleManager === null || $this->connection === null) {
+        if (null === $this->schemaSetup || null === $this->moduleManager || null === $this->connection) {
             $io->error('Required dependencies not available. Run from application context.');
+
             return false;
         }
 
@@ -161,6 +162,7 @@ class SetupInstallCommand extends Command
             $io->text('✅ Database connection: OK');
         } catch (\Exception $e) {
             $io->error('❌ Database connection failed: ' . $e->getMessage());
+
             return false;
         }
 
@@ -168,15 +170,17 @@ class SetupInstallCommand extends Command
         $enabledModules = $this->moduleManager->getEnabledModuleNames();
         if (empty($enabledModules)) {
             $io->error('❌ No enabled modules found.');
+
             return false;
         }
 
-        $io->text(sprintf('✅ Found %d enabled modules', count($enabledModules)));
+        $io->text(\sprintf('✅ Found %d enabled modules', \count($enabledModules)));
+
         return true;
     }
 
     /**
-     * Set up database schema
+     * Set up database schema.
      */
     private function setupDatabase(SymfonyStyle $io): bool
     {
@@ -189,14 +193,16 @@ class SetupInstallCommand extends Command
         foreach ($enabledModules as $moduleName) {
             $moduleData = $this->moduleManager->getModuleList()->getOne($moduleName);
 
-            if (!$moduleData) {
+            if (! $moduleData) {
                 continue;
             }
 
             $schemaFile = $moduleData['path'] . '/etc/db_schema.xml';
 
-            if (!file_exists($schemaFile)) {
-                $io->text("  - Skipping {$moduleName} (no db_schema.xml)", OutputInterface::VERBOSITY_VERBOSE);
+            if (! file_exists($schemaFile)) {
+                if ($io->isVerbose()) {
+                    $io->text("  - Skipping {$moduleName} (no db_schema.xml)");
+                }
                 continue;
             }
 
@@ -204,35 +210,48 @@ class SetupInstallCommand extends Command
 
             try {
                 $result = $this->schemaSetup->processModuleSchema($moduleName, $schemaFile);
-                $tablesCreated += $result['created'] ?? 0;
-                $tablesUpdated += $result['updated'] ?? 0;
-                $io->text("    ✅ Created: {$result['created']}, Updated: {$result['updated']}");
+                $created = $result['created'] ?? 0;
+                $updated = $result['updated'] ?? 0;
+                $tablesCreated += $created;
+                $tablesUpdated += $updated;
+                $io->text("    ✅ Created: {$created}, Updated: {$updated}");
             } catch (\Exception $e) {
                 $io->error("    ❌ Error processing {$moduleName}: " . $e->getMessage());
+
                 throw $e;
             }
         }
 
-        $io->success(sprintf('Database schema setup complete: %d tables created, %d tables updated', $tablesCreated, $tablesUpdated));
+        $io->success(\sprintf('Database schema setup complete: %d tables created, %d tables updated', $tablesCreated, $tablesUpdated));
+
         return true;
     }
 
     /**
-     * Create admin user interactively
+     * Create admin user interactively.
      */
     private function createAdminUser(InputInterface $input, SymfonyStyle $io): bool
     {
         $io->text('Setting up your admin account...');
 
         // Create repository
-        $adminUserResource = new AdminUserResource($this->connection);
+        if (null === $this->connection) {
+            $io->error('Database connection not available');
+
+            return false;
+        }
+
+        // Wrap PDO in Connection object
+        $connectionWrapper = new \Infinri\Core\Model\ResourceModel\Connection(['pdo' => $this->connection]);
+        $adminUserResource = new AdminUserResource($connectionWrapper);
         $adminUserRepository = new AdminUserRepository($adminUserResource);
 
         // Collect admin user data
         $adminData = $this->collectAdminData($input, $io, $adminUserRepository);
 
-        if (!$adminData) {
+        if (! $adminData) {
             $io->warning('Admin user creation cancelled.');
+
             return true; // Not a failure, user chose to skip
         }
 
@@ -243,30 +262,30 @@ class SetupInstallCommand extends Command
                      ->setEmail($adminData['email'])
                      ->setFirstname($adminData['firstname'])
                      ->setLastname($adminData['lastname'])
-                     ->setPassword(password_hash($adminData['password'], PASSWORD_BCRYPT, ['cost' => 13]))
+                     ->setPassword(password_hash($adminData['password'], \PASSWORD_BCRYPT, ['cost' => 13]))
                      ->setRoles(['ROLE_ADMIN', 'ROLE_USER'])
                      ->setIsActive(true);
 
             $adminUserRepository->save($adminUser);
 
-            $io->success(sprintf('✅ Admin user "%s" created successfully!', $adminData['username']));
+            $io->success(\sprintf('✅ Admin user "%s" created successfully!', $adminData['username']));
             $io->text([
                 'Admin Details:',
                 "  Username: {$adminData['username']}",
                 "  Email: {$adminData['email']}",
-                "  Name: {$adminData['firstname']} {$adminData['lastname']}"
+                "  Name: {$adminData['firstname']} {$adminData['lastname']}",
             ]);
 
             return true;
-
         } catch (\Exception $e) {
             $io->error('Failed to create admin user: ' . $e->getMessage());
+
             throw $e;
         }
     }
 
     /**
-     * Collect admin user data from input options or interactive prompts
+     * Collect admin user data from input options or interactive prompts.
      */
     private function collectAdminData(InputInterface $input, SymfonyStyle $io, AdminUserRepository $repository): ?array
     {
@@ -274,18 +293,19 @@ class SetupInstallCommand extends Command
 
         // Username
         $username = $input->getOption('admin-username');
-        if (!$username) {
+        if (! $username) {
             $question = new Question('Admin username: ');
             $question->setValidator(function ($value) use ($repository) {
                 if (empty($value)) {
                     throw new \InvalidArgumentException('Username cannot be empty.');
                 }
-                if (strlen($value) < 3) {
+                if (\strlen($value) < 3) {
                     throw new \InvalidArgumentException('Username must be at least 3 characters.');
                 }
                 if ($repository->usernameExists($value)) {
                     throw new \InvalidArgumentException('Username already exists.');
                 }
+
                 return $value;
             });
             $username = $helper->ask($input, $io, $question);
@@ -293,18 +313,19 @@ class SetupInstallCommand extends Command
 
         // Email
         $email = $input->getOption('admin-email');
-        if (!$email) {
+        if (! $email) {
             $question = new Question('Admin email: ');
             $question->setValidator(function ($value) use ($repository) {
                 if (empty($value)) {
                     throw new \InvalidArgumentException('Email cannot be empty.');
                 }
-                if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                if (! filter_var($value, \FILTER_VALIDATE_EMAIL)) {
                     throw new \InvalidArgumentException('Invalid email format.');
                 }
                 if ($repository->emailExists($value)) {
                     throw new \InvalidArgumentException('Email already exists.');
                 }
+
                 return $value;
             });
             $email = $helper->ask($input, $io, $question);
@@ -312,20 +333,21 @@ class SetupInstallCommand extends Command
 
         // Password
         $password = $input->getOption('admin-password');
-        if (!$password) {
+        if (! $password) {
             $question = new Question('Admin password (min 12 characters): ');
             $question->setHidden(true);
             $question->setValidator(function ($value) {
                 if (empty($value)) {
                     throw new \InvalidArgumentException('Password cannot be empty.');
                 }
-                if (strlen($value) < 12) {
+                if (\strlen($value) < 12) {
                     throw new \InvalidArgumentException('Password must be at least 12 characters.');
                 }
                 // Check password strength
-                if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/', $value)) {
+                if (! preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/', $value)) {
                     throw new \InvalidArgumentException('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.');
                 }
+
                 return $value;
             });
             $password = $helper->ask($input, $io, $question);
@@ -337,18 +359,20 @@ class SetupInstallCommand extends Command
 
             if ($password !== $confirmPassword) {
                 $io->error('Passwords do not match. Please try again.');
+
                 return $this->collectAdminData($input, $io, $repository);
             }
         }
 
         // First name
         $firstname = $input->getOption('admin-firstname');
-        if (!$firstname) {
+        if (! $firstname) {
             $question = new Question('Admin first name: ');
             $question->setValidator(function ($value) {
                 if (empty($value)) {
                     throw new \InvalidArgumentException('First name cannot be empty.');
                 }
+
                 return $value;
             });
             $firstname = $helper->ask($input, $io, $question);
@@ -356,12 +380,13 @@ class SetupInstallCommand extends Command
 
         // Last name
         $lastname = $input->getOption('admin-lastname');
-        if (!$lastname) {
+        if (! $lastname) {
             $question = new Question('Admin last name: ');
             $question->setValidator(function ($value) {
                 if (empty($value)) {
                     throw new \InvalidArgumentException('Last name cannot be empty.');
                 }
+
                 return $value;
             });
             $lastname = $helper->ask($input, $io, $question);
@@ -375,12 +400,12 @@ class SetupInstallCommand extends Command
                 ['Email', $email],
                 ['First Name', $firstname],
                 ['Last Name', $lastname],
-                ['Password', str_repeat('*', strlen($password))]
+                ['Password', str_repeat('*', \strlen($password))],
             ]
         );
 
         $confirmQuestion = new ConfirmationQuestion('Create admin user with these details? (y/N) ', false);
-        if (!$helper->ask($input, $io, $confirmQuestion)) {
+        if (! $helper->ask($input, $io, $confirmQuestion)) {
             return null;
         }
 
@@ -389,7 +414,7 @@ class SetupInstallCommand extends Command
             'email' => $email,
             'password' => $password,
             'firstname' => $firstname,
-            'lastname' => $lastname
+            'lastname' => $lastname,
         ];
     }
 }

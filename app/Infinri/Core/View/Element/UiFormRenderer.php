@@ -1,40 +1,41 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\View\Element;
 
+use Infinri\Core\Helper\Logger;
 use Infinri\Core\Model\ObjectManager;
 use Infinri\Core\Security\CsrfGuard;
-use Infinri\Core\Helper\Logger;
-use SimpleXMLElement;
 
 /**
- * UI Form Renderer
+ * UI Form Renderer.
  */
 class UiFormRenderer
 {
     public function __construct(
         private readonly CsrfGuard $csrfGuard
-    ) {}
+    ) {
+    }
 
     /**
-     * Escape HTML attributes
+     * Escape HTML attributes.
      */
     public function escapeHtmlAttr(string $value): string
     {
-        return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        return htmlspecialchars($value, \ENT_QUOTES | \ENT_SUBSTITUTE, 'UTF-8');
     }
 
     /**
-     * Escape HTML
+     * Escape HTML.
      */
     public function escapeHtml(string $value): string
     {
-        return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        return htmlspecialchars($value, \ENT_QUOTES | \ENT_SUBSTITUTE, 'UTF-8');
     }
 
     /**
-     * Escape URL
+     * Escape URL.
      */
     public function escapeUrl(string $value): string
     {
@@ -42,13 +43,15 @@ class UiFormRenderer
     }
 
     /**
-     * Render a UI form by name
+     * Render a UI form by name.
+     *
+     * @param array<string, mixed> $params
      */
     public function render(string $formName, array $params = []): string
     {
         // Load XML configuration
         $xml = $this->findFormXml($formName);
-        if (!$xml) {
+        if (! $xml) {
             return '<p>Form configuration not found: ' . htmlspecialchars($formName) . '</p>';
         }
 
@@ -64,37 +67,44 @@ class UiFormRenderer
 
     /**
      * Instantiate and execute the configured data provider for the form.
+     *
+     * @param array<string, mixed> $params
+     *
+     * @return array<string, mixed>
      */
-    private function getDataFromProvider(SimpleXMLElement $xml, array $params): array
+    private function getDataFromProvider(\SimpleXMLElement $xml, array $params): array
     {
         try {
             // Look for dataProvider in argument tag (like menu_form.xml uses)
             $dataProviderArg = $xml->xpath('//dataSource/argument[@name="dataProvider"]')[0] ?? null;
-            if (!$dataProviderArg) {
+            if (! $dataProviderArg) {
                 // Fallback: look for dataProvider as a child element
                 $dataProviderNode = $xml->xpath('//dataSource/dataProvider')[0] ?? null;
-                if (!$dataProviderNode) {
+                if (! $dataProviderNode) {
                     Logger::warning('No dataProvider found in form XML');
+
                     return [];
                 }
-                $providerClass = (string)$dataProviderNode['class'];
+                $providerClass = (string) $dataProviderNode['class'];
             } else {
                 // DataProvider is specified as an argument
-                $providerClass = (string)$dataProviderArg;
+                $providerClass = (string) $dataProviderArg;
             }
 
-            if ($providerClass === '') {
+            if ('' === $providerClass) {
                 Logger::warning('DataProvider class is empty');
+
                 return [];
             }
 
             $objectManager = ObjectManager::getInstance();
 
             // Don't pass constructor args - let ObjectManager handle DI
+            /** @var class-string $providerClass */
             $providerInstance = $objectManager->create($providerClass);
 
             $requestId = $params['id'] ?? null;
-            $requestId = $requestId !== null ? (int)$requestId : null;
+            $requestId = null !== $requestId ? (int) $requestId : null;
 
             if (method_exists($providerInstance, 'getData')) {
                 return $providerInstance->getData($requestId);
@@ -104,8 +114,9 @@ class UiFormRenderer
         } catch (\Throwable $e) {
             Logger::error('Form DataProvider error', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
+
             return [];
         }
     }
@@ -113,11 +124,11 @@ class UiFormRenderer
     /**
      * Locate and load the form XML definition for the given form name.
      */
-    private function findFormXml(string $formName): ?SimpleXMLElement
+    private function findFormXml(string $formName): ?\SimpleXMLElement
     {
         // Navigate up to the app directory
         $appPath = realpath(__DIR__ . '/../../../../');
-        if ($appPath === false) {
+        if (false === $appPath) {
             throw new \RuntimeException('Failed to get path for: ' . __DIR__ . '/../../../../');
         }
 
@@ -131,15 +142,19 @@ class UiFormRenderer
 
         // Fallback: scan all Infinri modules for the form XML
         $matches = glob($appPath . '/Infinri/*' . $relativePath);
-        if (!empty($matches)) {
+        if (! empty($matches)) {
             $path = $matches[0];
+
             return simplexml_load_file($path) ?: null;
         }
 
         return null;
     }
 
-    private function buildForm(SimpleXMLElement $xml, array $data, string $formName): string
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function buildForm(\SimpleXMLElement $xml, array $data, string $formName): string
     {
         // Detect entity type from form name
         if (str_contains($formName, 'menu_item')) {
@@ -173,12 +188,12 @@ class UiFormRenderer
         $isNew = empty($primaryId);
 
         // Build page title based on entity type
-        if ($entityType === 'user') {
-            $pageTitle = $isNew ? "New User" : "Edit User: " . ($data['username'] ?? '#' . $primaryId);
+        if ('user' === $entityType) {
+            $pageTitle = $isNew ? 'New User' : 'Edit User: ' . ($data['username'] ?? '#' . $primaryId);
         } else {
             $pageTitle = $isNew ? "New $entityLabel" : "Edit $entityLabel: " . ($data['title'] ?? '#' . $primaryId);
         }
-        
+
         // Get buttons
         $buttons = $this->getButtons($xml, $primaryId, $basePath);
 
@@ -201,33 +216,42 @@ class UiFormRenderer
     }
 
     /**
-     * Get buttons from XML
+     * Get buttons from XML.
+     *
+     * @return array<int, array<string, mixed>>
      */
-    private function getButtons(SimpleXMLElement $xml, ?int $entityId, string $basePath): array
+    private function getButtons(\SimpleXMLElement $xml, ?int $entityId, string $basePath): array
     {
         $buttons = [];
         $buttonNodes = $xml->xpath('//settings/buttons/button');
 
+        if (empty($buttonNodes)) {
+            return [];
+        }
+
         foreach ($buttonNodes as $node) {
-            $name = (string)$node['name'];
+            $name = (string) $node['name'];
 
             // Skip delete button for new pages
-            if ($name === 'delete' && !$entityId) {
+            if ('delete' === $name && ! $entityId) {
                 continue;
             }
 
-            $url = (string)($node->xpath('url')[0]['path'] ?? '#');
+            $url = (string) ($node->xpath('url')[0]['path'] ?? '#');
             // Replace Magento placeholders
             $normalizedBasePath = rtrim($basePath, '/') . '/';
             $url = str_replace('*/*/', $normalizedBasePath, $url);
-            if ($entityId && $name !== 'back') {
+            if ($entityId && 'back' !== $name) {
                 $url .= '?id=' . $entityId;
             }
 
+            $labelNodes = $node->xpath('label');
+            $classNodes = $node->xpath('class');
+
             $buttons[] = [
                 'name' => $name,
-                'label' => (string)($node->xpath('label')[0] ?? ucfirst($name)),
-                'class' => (string)($node->xpath('class')[0] ?? (string)$node['class'] ?? 'button'),
+                'label' => ! empty($labelNodes) ? (string) $labelNodes[0] : ucfirst($name),
+                'class' => ! empty($classNodes) ? (string) $classNodes[0] : ((string) $node['class'] ?: 'button'),
                 'url' => $url,
             ];
         }
@@ -236,22 +260,31 @@ class UiFormRenderer
     }
 
     /**
-     * Get fieldsets from XML
+     * Get fieldsets from XML.
+     *
+     * @return array<int, array<string, mixed>>
      */
-    private function getFieldsets(SimpleXMLElement $xml): array
+    private function getFieldsets(\SimpleXMLElement $xml): array
     {
         $fieldsets = [];
         $fieldsetNodes = $xml->xpath('//fieldset');
 
+        if (empty($fieldsetNodes)) {
+            return [];
+        }
+
         foreach ($fieldsetNodes as $node) {
-            $name = (string)$node['name'];
-            $label = (string)($node->xpath('settings/label')[0] ?? ucfirst($name));
-            $collapsible = (string)($node->xpath('settings/collapsible')[0] ?? 'false') === 'true';
-            $opened = (string)($node->xpath('settings/opened')[0] ?? 'true') === 'true';
+            $name = (string) $node['name'];
+            $label = (string) ($node->xpath('settings/label')[0] ?? ucfirst($name));
+            $collapsible = 'true' === (string) ($node->xpath('settings/collapsible')[0] ?? 'false');
+            $opened = 'true' === (string) ($node->xpath('settings/opened')[0] ?? 'true');
 
             $fields = [];
-            foreach ($node->xpath('field') as $field) {
-                $fields[] = $this->parseField($field);
+            $fieldNodes = $node->xpath('field');
+            if (! empty($fieldNodes)) {
+                foreach ($fieldNodes as $field) {
+                    $fields[] = $this->parseField($field);
+                }
             }
 
             $fieldsets[] = [
@@ -267,47 +300,52 @@ class UiFormRenderer
     }
 
     /**
-     * Parse field from XML
+     * Parse field from XML.
+     *
+     * @return array<string, mixed>
      */
-    private function parseField(SimpleXMLElement $field): array
+    private function parseField(\SimpleXMLElement $field): array
     {
-        $name = (string)$field['name'];
-        $formElement = (string)$field['formElement'];
+        $name = (string) $field['name'];
+        $formElement = (string) $field['formElement'];
 
         // Check for custom template
         $template = null;
         $templateNode = $field->xpath('formElements/' . $formElement . '/settings/template')[0] ?? null;
         if ($templateNode) {
-            $template = (string)$templateNode;
+            $template = (string) $templateNode;
         }
 
         return [
             'name' => $name,
             'type' => $formElement,
-            'label' => (string)($field->xpath('settings/label')[0] ?? ucfirst($name)),
-            'required' => !empty($field->xpath('settings/validation/rule[@name="required-entry"]')),
-            'notice' => (string)($field->xpath('settings/notice')[0] ?? ''),
-            'dataScope' => (string)($field->xpath('settings/dataScope')[0] ?? $name),
-            'visible' => (string)($field->xpath('settings/visible')[0] ?? 'true') !== 'false',
-            'rows' => (int)($field->xpath('formElements/textarea/settings/rows')[0] ?? 5),
+            'label' => (string) ($field->xpath('settings/label')[0] ?? ucfirst($name)),
+            'required' => ! empty($field->xpath('settings/validation/rule[@name="required-entry"]')),
+            'notice' => (string) ($field->xpath('settings/notice')[0] ?? ''),
+            'dataScope' => (string) ($field->xpath('settings/dataScope')[0] ?? $name),
+            'visible' => 'false' !== (string) ($field->xpath('settings/visible')[0] ?? 'true'),
+            'rows' => (int) ($field->xpath('formElements/textarea/settings/rows')[0] ?? 5),
             'template' => $template,
         ];
     }
 
     /**
-     * Render form HTML using Theme template
+     * Render form HTML using Theme template.
+     *
+     * @param array<int, array<string, mixed>> $buttons
+     * @param array<int, array<string, mixed>> $fieldsets
+     * @param array<string, mixed>             $data
      */
     private function renderFormHtml(
         string $pageTitle,
-        array  $buttons,
-        array  $fieldsets,
-        array  $data,
-        bool   $isNew,
+        array $buttons,
+        array $fieldsets,
+        array $data,
+        bool $isNew,
         string $entityType,
         string $basePath,
         string $primaryField
-    ): string
-    {
+    ): string {
         $csrfField = $this->csrfGuard->getHiddenField($this->buildTokenId($entityType));
         $csrfFieldName = '_csrf_token';
 
@@ -315,13 +353,15 @@ class UiFormRenderer
         // Go up 3 levels to /app/Infinri/, then to Theme
         $templatePath = __DIR__ . '/../../../Theme/view/adminhtml/templates/form.phtml';
 
-        if (!file_exists($templatePath)) {
+        if (! file_exists($templatePath)) {
             throw new \RuntimeException("Form template not found at: {$templatePath}");
         }
 
         ob_start();
         include $templatePath;
-        return ob_get_clean();
+        $result = ob_get_clean();
+
+        return false !== $result ? $result : '';
     }
 
     private function buildTokenId(string $entityType): string

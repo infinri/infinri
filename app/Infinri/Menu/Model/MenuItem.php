@@ -8,7 +8,7 @@ use Infinri\Core\Model\AbstractModel;
 use Infinri\Menu\Model\ResourceModel\MenuItem as MenuItemResource;
 
 /**
- * Represents an individual menu item within a menu
+ * Represents an individual menu item within a menu.
  */
 class MenuItem extends AbstractModel
 {
@@ -19,22 +19,19 @@ class MenuItem extends AbstractModel
     public const LINK_TYPE_EXTERNAL = 'external';
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param MenuItemResource $resource
      * @param array<string, mixed> $data
      */
     public function __construct(
         protected readonly MenuItemResource $resource,
-        array                               $data = []
+        array $data = []
     ) {
         parent::__construct($data);
     }
 
     /**
-     * Get resource model
-     *
-     * @return MenuItemResource
+     * Get resource model.
      */
     protected function getResource(): MenuItemResource
     {
@@ -42,20 +39,18 @@ class MenuItem extends AbstractModel
     }
 
     /**
-     * Get item ID
-     *
-     * @return int|null
+     * Get item ID.
      */
     public function getItemId(): ?int
     {
         $value = $this->getData('item_id');
-        return $value !== null ? (int)$value : null;
+
+        return null !== $value ? (int) $value : null;
     }
 
     /**
-     * Set item ID
+     * Set item ID.
      *
-     * @param int $id
      * @return $this
      */
     public function setItemId(int $id): self
@@ -64,20 +59,18 @@ class MenuItem extends AbstractModel
     }
 
     /**
-     * Get menu ID
-     *
-     * @return int|null
+     * Get menu ID.
      */
     public function getMenuId(): ?int
     {
         $value = $this->getData('menu_id');
-        return $value !== null ? (int)$value : null;
+
+        return null !== $value ? (int) $value : null;
     }
 
     /**
-     * Set menu ID
+     * Set menu ID.
      *
-     * @param int $menuId
      * @return $this
      */
     public function setMenuId(int $menuId): self
@@ -86,20 +79,18 @@ class MenuItem extends AbstractModel
     }
 
     /**
-     * Get parent item ID
-     *
-     * @return int|null
+     * Get parent item ID.
      */
     public function getParentItemId(): ?int
     {
         $value = $this->getData('parent_item_id');
-        return $value !== null ? (int)$value : null;
+
+        return null !== $value ? (int) $value : null;
     }
 
     /**
-     * Set parent item ID
+     * Set parent item ID.
      *
-     * @param int|null $parentItemId
      * @return $this
      */
     public function setParentItemId(?int $parentItemId): self
@@ -108,9 +99,7 @@ class MenuItem extends AbstractModel
     }
 
     /**
-     * Get title
-     *
-     * @return string|null
+     * Get title.
      */
     public function getTitle(): ?string
     {
@@ -118,9 +107,8 @@ class MenuItem extends AbstractModel
     }
 
     /**
-     * Set title
+     * Set title.
      *
-     * @param string $title
      * @return $this
      */
     public function setTitle(string $title): self
@@ -129,9 +117,7 @@ class MenuItem extends AbstractModel
     }
 
     /**
-     * Get link type
-     *
-     * @return string|null
+     * Get link type.
      */
     public function getLinkType(): ?string
     {
@@ -139,9 +125,8 @@ class MenuItem extends AbstractModel
     }
 
     /**
-     * Set link type
+     * Set link type.
      *
-     * @param string $linkType
      * @return $this
      */
     public function setLinkType(string $linkType): self
@@ -150,20 +135,18 @@ class MenuItem extends AbstractModel
     }
 
     /**
-     * Get resource ID
-     *
-     * @return int|null
+     * Get resource ID.
      */
     public function getResourceId(): ?int
     {
         $value = $this->getData('resource_id');
-        return $value !== null ? (int)$value : null;
+
+        return null !== $value ? (int) $value : null;
     }
 
     /**
-     * Set resource ID
+     * Set resource ID.
      *
-     * @param int|null $resourceId
      * @return $this
      */
     public function setResourceId(?int $resourceId): self
@@ -172,9 +155,7 @@ class MenuItem extends AbstractModel
     }
 
     /**
-     * Get custom URL
-     *
-     * @return string|null
+     * Get custom URL.
      */
     public function getCustomUrl(): ?string
     {
@@ -182,9 +163,8 @@ class MenuItem extends AbstractModel
     }
 
     /**
-     * Set custom URL
+     * Set custom URL.
      *
-     * @param string|null $customUrl
      * @return $this
      */
     public function setCustomUrl(?string $customUrl): self
@@ -193,9 +173,7 @@ class MenuItem extends AbstractModel
     }
 
     /**
-     * Get CSS class
-     *
-     * @return string|null
+     * Get CSS class.
      */
     public function getCssClass(): ?string
     {
@@ -203,9 +181,8 @@ class MenuItem extends AbstractModel
     }
 
     /**
-     * Set CSS class
+     * Set CSS class.
      *
-     * @param string|null $cssClass
      * @return $this
      */
     public function setCssClass(?string $cssClass): self
@@ -214,9 +191,7 @@ class MenuItem extends AbstractModel
     }
 
     /**
-     * Get icon class
-     *
-     * @return string|null
+     * Get icon class.
      */
     public function getIconClass(): ?string
     {
@@ -224,9 +199,8 @@ class MenuItem extends AbstractModel
     }
 
     /**
-     * Set icon class
+     * Set icon class.
      *
-     * @param string|null $iconClass
      * @return $this
      */
     public function setIconClass(?string $iconClass): self
@@ -235,19 +209,16 @@ class MenuItem extends AbstractModel
     }
 
     /**
-     * Check if opens in new tab
-     *
-     * @return bool
+     * Check if opens in new tab.
      */
     public function getOpenInNewTab(): bool
     {
-        return (bool)$this->getData('open_in_new_tab');
+        return (bool) $this->getData('open_in_new_tab');
     }
 
     /**
-     * Set open in new tab
+     * Set open in new tab.
      *
-     * @param bool $openInNewTab
      * @return $this
      */
     public function setOpenInNewTab(bool $openInNewTab): self
@@ -256,19 +227,16 @@ class MenuItem extends AbstractModel
     }
 
     /**
-     * Get sort order
-     *
-     * @return int
+     * Get sort order.
      */
     public function getSortOrder(): int
     {
-        return (int)$this->getData('sort_order');
+        return (int) $this->getData('sort_order');
     }
 
     /**
-     * Set sort order
+     * Set sort order.
      *
-     * @param int $sortOrder
      * @return $this
      */
     public function setSortOrder(int $sortOrder): self
@@ -277,19 +245,16 @@ class MenuItem extends AbstractModel
     }
 
     /**
-     * Check if menu item is active
-     *
-     * @return bool
+     * Check if menu item is active.
      */
     public function isActive(): bool
     {
-        return (bool)$this->getData('is_active');
+        return (bool) $this->getData('is_active');
     }
 
     /**
-     * Set active status
+     * Set active status.
      *
-     * @param bool $isActive
      * @return $this
      */
     public function setIsActive(bool $isActive): self
@@ -298,9 +263,7 @@ class MenuItem extends AbstractModel
     }
 
     /**
-     * Get created at timestamp
-     *
-     * @return string|null
+     * Get created at timestamp.
      */
     public function getCreatedAt(): ?string
     {
@@ -308,9 +271,7 @@ class MenuItem extends AbstractModel
     }
 
     /**
-     * Get updated at timestamp
-     *
-     * @return string|null
+     * Get updated at timestamp.
      */
     public function getUpdatedAt(): ?string
     {
@@ -318,9 +279,8 @@ class MenuItem extends AbstractModel
     }
 
     /**
-     * Validate menu item data
+     * Validate menu item data.
      *
-     * @return void
      * @throws \InvalidArgumentException
      */
     public function validate(): void
@@ -341,27 +301,25 @@ class MenuItem extends AbstractModel
         $linkType = $this->getLinkType();
         if (empty($linkType)) {
             $errors[] = 'Link type is required';
-        } elseif (!in_array($linkType, [self::LINK_TYPE_CMS_PAGE, self::LINK_TYPE_CATEGORY, self::LINK_TYPE_CUSTOM_URL, self::LINK_TYPE_EXTERNAL], true)) {
+        } elseif (! \in_array($linkType, [self::LINK_TYPE_CMS_PAGE, self::LINK_TYPE_CATEGORY, self::LINK_TYPE_CUSTOM_URL, self::LINK_TYPE_EXTERNAL], true)) {
             $errors[] = 'Invalid link type';
         }
 
         // Validate based on link type
-        if ($linkType === self::LINK_TYPE_CMS_PAGE || $linkType === self::LINK_TYPE_CATEGORY) {
+        if (self::LINK_TYPE_CMS_PAGE === $linkType || self::LINK_TYPE_CATEGORY === $linkType) {
             if (empty($this->getResourceId())) {
                 $errors[] = 'Resource ID is required for ' . $linkType;
             }
         }
 
-        if ($linkType === self::LINK_TYPE_CUSTOM_URL || $linkType === self::LINK_TYPE_EXTERNAL) {
+        if (self::LINK_TYPE_CUSTOM_URL === $linkType || self::LINK_TYPE_EXTERNAL === $linkType) {
             if (empty($this->getCustomUrl())) {
                 $errors[] = 'Custom URL is required for ' . $linkType;
             }
         }
 
-        if (!empty($errors)) {
-            throw new \InvalidArgumentException(
-                'Menu item validation failed: ' . implode(', ', $errors)
-            );
+        if (! empty($errors)) {
+            throw new \InvalidArgumentException('Menu item validation failed: ' . implode(', ', $errors));
         }
     }
 }

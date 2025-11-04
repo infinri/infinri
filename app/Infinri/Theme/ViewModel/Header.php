@@ -10,27 +10,29 @@ use Infinri\Menu\ViewModel\Navigation as MenuNavigation;
 use Psr\Cache\InvalidArgumentException;
 
 /**
- * Provides data for the site header template
+ * Provides data for the site header template.
  */
 class Header
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param ScopeConfig $config Configuration reader
-     * @param UrlBuilder $urlBuilder URL generator
+     * @param ScopeConfig    $config         Configuration reader
+     * @param UrlBuilder     $urlBuilder     URL generator
      * @param MenuNavigation $menuNavigation Menu navigation ViewModel
      */
     public function __construct(
-        private ScopeConfig    $config,
-        private UrlBuilder     $urlBuilder,
+        private ScopeConfig $config,
+        private UrlBuilder $urlBuilder,
         private MenuNavigation $menuNavigation
-    ) {}
+    ) {
+    }
 
     /**
-     * Get logo path
+     * Get logo path.
      *
      * @return string Logo file path
+     *
      * @throws InvalidArgumentException
      */
     public function getLogo(): string
@@ -39,7 +41,7 @@ class Header
     }
 
     /**
-     * Get home page URL
+     * Get home page URL.
      *
      * @return string Home URL
      */
@@ -49,7 +51,7 @@ class Header
     }
 
     /**
-     * Get main navigation items
+     * Get main navigation items.
      *
      * @return array Navigation menu items from database
      */
@@ -59,7 +61,7 @@ class Header
     }
 
     /**
-     * Get search form URL
+     * Get search form URL.
      *
      * @return string Search URL
      */
@@ -69,7 +71,7 @@ class Header
     }
 
     /**
-     * Check if search is enabled
+     * Check if search is enabled.
      *
      * @return bool True if search enabled
      */
@@ -79,7 +81,7 @@ class Header
     }
 
     /**
-     * Get mobile menu label
+     * Get mobile menu label.
      *
      * @return string Menu label
      */

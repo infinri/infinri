@@ -5,29 +5,30 @@ declare(strict_types=1);
 namespace Infinri\Core\View\Element;
 
 use Infinri\Core\Model\ObjectManager;
-use SimpleXMLElement;
 
 /**
- * Handles grid-specific rendering logic for UI components
+ * Handles grid-specific rendering logic for UI components.
  */
 class GridRenderer
 {
     public function __construct(
         private readonly ObjectManager $objectManager
-    ) {}
+    ) {
+    }
 
     /**
-     * Render grid HTML
+     * Render grid HTML.
      *
-     * @param SimpleXMLElement $xml Component XML configuration
-     * @param array $data Data from DataProvider
-     * @param string $componentName Component identifier
+     * @param \SimpleXMLElement    $xml           Component XML configuration
+     * @param array<string, mixed> $data          Data from DataProvider
+     * @param string               $componentName Component identifier
+     *
      * @return string Rendered HTML
      */
-    public function render(SimpleXMLElement $xml, array $data, string $componentName): string
+    public function render(\SimpleXMLElement $xml, array $data, string $componentName): string
     {
         $items = $data['items'] ?? [];
-        $totalRecords = $data['totalRecords'] ?? count($items);
+        $totalRecords = $data['totalRecords'] ?? \count($items);
 
         // Get grid components from XML
         $columns = $this->getColumns($xml);
@@ -44,31 +45,34 @@ class GridRenderer
     }
 
     /**
-     * Get columns from XML
+     * Get columns from XML.
      *
-     * @param SimpleXMLElement $xml
-     * @return array
+     * @return array<int, array<string, string>>
      */
-    private function getColumns(SimpleXMLElement $xml): array
+    private function getColumns(\SimpleXMLElement $xml): array
     {
         $columns = [];
         $columnNodes = $xml->xpath('//columns/column');
 
+        if (empty($columnNodes)) {
+            return [];
+        }
+
         foreach ($columnNodes as $node) {
-            $name = (string)$node['name'];
-            if ($name === 'ids') {
+            $name = (string) $node['name'];
+            if ('ids' === $name) {
                 continue; // Skip selection column for now
             }
 
             $label = '';
             $labelNode = $node->xpath('settings/label');
-            if (!empty($labelNode)) {
-                $label = (string)$labelNode[0];
+            if (! empty($labelNode)) {
+                $label = (string) $labelNode[0];
             }
 
             $columns[] = [
                 'name' => $name,
-                'label' => $label ?: ucwords(str_replace('_', ' ', $name))
+                'label' => $label ?: ucwords(str_replace('_', ' ', $name)),
             ];
         }
 
@@ -76,12 +80,11 @@ class GridRenderer
     }
 
     /**
-     * Get buttons from XML
+     * Get buttons from XML.
      *
-     * @param SimpleXMLElement $xml
-     * @return array
+     * @return array<int, array<string, string>>
      */
-    private function getButtons(SimpleXMLElement $xml): array
+    private function getButtons(\SimpleXMLElement $xml): array
     {
         $buttons = [];
 
@@ -91,22 +94,24 @@ class GridRenderer
             $buttonNodes = $xml->xpath('//button');
         }
 
+        if (empty($buttonNodes)) {
+            return [];
+        }
 
         foreach ($buttonNodes as $node) {
-            $name = (string)$node['name'];
+            $name = (string) $node['name'];
 
             $urlNode = $node->xpath('url');
             $classNode = $node->xpath('class');
             $labelNode = $node->xpath('label');
 
-            $url = !empty($urlNode) ? (string)$urlNode[0]['path'] : '#';
-
+            $url = ! empty($urlNode) ? (string) $urlNode[0]['path'] : '#';
 
             $buttons[] = [
                 'name' => $name,
                 'url' => $url,
-                'class' => !empty($classNode) ? (string)$classNode[0] : 'button',
-                'label' => !empty($labelNode) ? (string)$labelNode[0] : ucfirst($name)
+                'class' => ! empty($classNode) ? (string) $classNode[0] : 'button',
+                'label' => ! empty($labelNode) ? (string) $labelNode[0] : ucfirst($name),
             ];
         }
 
@@ -114,12 +119,9 @@ class GridRenderer
     }
 
     /**
-     * Get and instantiate actions column from XML
-     *
-     * @param SimpleXMLElement $xml
-     * @return object|null
+     * Get and instantiate actions column from XML.
      */
-    private function getActionsColumn(SimpleXMLElement $xml): ?object
+    private function getActionsColumn(\SimpleXMLElement $xml): ?object
     {
         $actionsNodes = $xml->xpath('//columns/actionsColumn');
         if (empty($actionsNodes)) {
@@ -127,9 +129,9 @@ class GridRenderer
         }
 
         $actionsNode = $actionsNodes[0];
-        $className = (string)($actionsNode['class'] ?? '');
+        $className = (string) ($actionsNode['class'] ?? '');
 
-        if (!$className || !class_exists($className)) {
+        if (! $className || ! class_exists($className)) {
             return null;
         }
 
@@ -141,12 +143,11 @@ class GridRenderer
     }
 
     /**
-     * Prepare actions data using ActionsColumn
+     * Prepare actions data using ActionsColumn.
      *
-     * @param object $actionsColumn
-     * @param array $items
-     * @param int $totalRecords
-     * @return array
+     * @param array<int, array<string, mixed>> $items
+     *
+     * @return array<int, array<string, mixed>>
      */
     private function prepareActionsData(object $actionsColumn, array $items, int $totalRecords): array
     {
@@ -155,28 +156,23 @@ class GridRenderer
         $data = $actionsColumn->prepareDataSource($data);
         $items = $data['data']['items'] ?? [];
 
-
         return $items;
     }
 
     /**
-     * Build complete grid HTML
+     * Build complete grid HTML.
      *
-     * @param string $componentName
-     * @param array $columns
-     * @param array $buttons
-     * @param array $items
-     * @param int $totalRecords
-     * @return string
+     * @param array<int, array<string, string>> $columns
+     * @param array<int, array<string, string>> $buttons
+     * @param array<int, array<string, mixed>>  $items
      */
     private function buildGridHtml(
         string $componentName,
-        array  $columns,
-        array  $buttons,
-        array  $items,
-        int    $totalRecords
-    ): string
-    {
+        array $columns,
+        array $buttons,
+        array $items,
+        int $totalRecords
+    ): string {
         $html = '<div class="admin-grid-container">';
 
         // Toolbar with buttons
@@ -203,10 +199,9 @@ class GridRenderer
     }
 
     /**
-     * Render toolbar with buttons
+     * Render toolbar with buttons.
      *
-     * @param array $buttons
-     * @return string
+     * @param array<int, array<string, string>> $buttons
      */
     private function renderToolbar(array $buttons): string
     {
@@ -216,11 +211,11 @@ class GridRenderer
 
         $html = '<div class="admin-grid-toolbar">';
         foreach ($buttons as $button) {
-            $label = (string)$button['label'];
-            $class = (string)($button['class'] ?? 'button primary');
-            $url = (string)$button['url'];
+            $label = $button['label'];
+            $class = $button['class'] ?? 'button primary';
+            $url = $button['url'];
 
-            $html .= sprintf(
+            $html .= \sprintf(
                 '<a href="%s" class="%s">%s</a>',
                 htmlspecialchars($url),
                 htmlspecialchars($class),
@@ -233,10 +228,9 @@ class GridRenderer
     }
 
     /**
-     * Render table header
+     * Render table header.
      *
-     * @param array $columns
-     * @return string
+     * @param array<int, array<string, string>> $columns
      */
     private function renderHeader(array $columns): string
     {
@@ -251,18 +245,17 @@ class GridRenderer
     }
 
     /**
-     * Render table body
+     * Render table body.
      *
-     * @param array $columns
-     * @param array $items
-     * @return string
+     * @param array<int, array<string, string>> $columns
+     * @param array<int, array<string, mixed>>  $items
      */
     private function renderBody(array $columns, array $items): string
     {
         $html = '<tbody>';
 
         if (empty($items)) {
-            $html .= '<tr><td colspan="' . (count($columns) + 1) . '">No records found</td></tr>';
+            $html .= '<tr><td colspan="' . (\count($columns) + 1) . '">No records found</td></tr>';
         } else {
             foreach ($items as $item) {
                 $html .= '<tr>';
@@ -286,33 +279,28 @@ class GridRenderer
     }
 
     /**
-     * Format column value based on column type
-     *
-     * @param string $columnName
-     * @param mixed $value
-     * @return string
+     * Format column value based on column type.
      */
     private function formatColumnValue(string $columnName, mixed $value): string
     {
         // Format value based on type
-        if ($columnName === 'is_active') {
+        if ('is_active' === $columnName) {
             return $value ?
                 '<span class="status-enabled">Enabled</span>' :
                 '<span class="status-disabled">Disabled</span>';
         }
 
-        return htmlspecialchars((string)$value);
+        return htmlspecialchars((string) $value);
     }
 
     /**
-     * Render actions for a row
+     * Render actions for a row.
      *
-     * @param array $item
-     * @return string
+     * @param array<string, mixed> $item
      */
     private function renderActions(array $item): string
     {
-        if (!isset($item['actions']) || !is_array($item['actions'])) {
+        if (! isset($item['actions']) || ! \is_array($item['actions'])) {
             return 'No actions';
         }
 
@@ -330,15 +318,13 @@ class GridRenderer
     }
 
     /**
-     * Render table footer
+     * Render table footer.
      *
-     * @param array $columns
-     * @param int $totalRecords
-     * @return string
+     * @param array<int, array<string, string>> $columns
      */
     private function renderFooter(array $columns, int $totalRecords): string
     {
-        $html = '<tfoot><tr><td colspan="' . (count($columns) + 1) . '">';
+        $html = '<tfoot><tr><td colspan="' . (\count($columns) + 1) . '">';
         $html .= 'Total: ' . $totalRecords . ' records';
         $html .= '</td></tr></tfoot>';
 

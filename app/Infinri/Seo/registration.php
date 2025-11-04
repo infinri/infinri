@@ -1,7 +1,9 @@
 <?php
+
 /**
- * SEO Module Registration
+ * SEO Module Registration.
  */
+
 declare(strict_types=1);
 
 use Infinri\Core\Api\ComponentRegistrarInterface;

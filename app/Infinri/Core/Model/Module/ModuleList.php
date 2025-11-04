@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Model\Module;
@@ -17,25 +18,26 @@ class ModuleList
 
     public function __construct(
         private readonly ComponentRegistrar $componentRegistrar,
-        private readonly ModuleReader       $moduleReader
-    ) {}
+        private readonly ModuleReader $moduleReader
+    ) {
+    }
 
     /**
-     * Get all registered modules with their data
+     * Get all registered modules with their data.
      *
      * @return array<string, array<string, mixed>> Array of module_name => module_data
      */
     public function getAll(): array
     {
-        if ($this->modules === null) {
+        if (null === $this->modules) {
             $this->load();
         }
 
-        return $this->modules;
+        return $this->modules ?? [];
     }
 
     /**
-     * Get all module names
+     * Get all module names.
      *
      * @return string[]
      */
@@ -45,22 +47,19 @@ class ModuleList
     }
 
     /**
-     * Get single module data
+     * Get single module data.
      *
-     * @param string $moduleName
      * @return array<string, mixed>|null
      */
     public function getOne(string $moduleName): ?array
     {
         $modules = $this->getAll();
+
         return $modules[$moduleName] ?? null;
     }
 
     /**
-     * Check if module exists
-     *
-     * @param string $moduleName
-     * @return bool
+     * Check if module exists.
      */
     public function has(string $moduleName): bool
     {
@@ -68,9 +67,7 @@ class ModuleList
     }
 
     /**
-     * Load modules from ComponentRegistrar and parse their module.xml files
-     *
-     * @return void
+     * Load modules from ComponentRegistrar and parse their module.xml files.
      */
     private function load(): void
     {
@@ -81,7 +78,7 @@ class ModuleList
         foreach ($modulePaths as $moduleName => $modulePath) {
             $moduleData = $this->moduleReader->read($modulePath);
 
-            if ($moduleData !== null) {
+            if (null !== $moduleData) {
                 $this->modules[$moduleName] = array_merge(
                     $moduleData,
                     ['path' => $modulePath]
@@ -91,9 +88,7 @@ class ModuleList
     }
 
     /**
-     * Clear cached module data
-     *
-     * @return void
+     * Clear cached module data.
      */
     public function clearCache(): void
     {

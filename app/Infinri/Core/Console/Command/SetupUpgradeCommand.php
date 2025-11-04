@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Infinri\Core\Console\Command;
 
+use Infinri\Core\Model\Module\ModuleManager;
+use Infinri\Core\Model\Setup\SchemaSetup;
+use Infinri\Core\Setup\Patch\PatchApplier;
+use Infinri\Core\Setup\Patch\PatchRegistry;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Infinri\Core\Model\Setup\SchemaSetup;
-use Infinri\Core\Model\Module\ModuleManager;
-use Infinri\Core\Setup\Patch\PatchRegistry;
-use Infinri\Core\Setup\Patch\PatchApplier;
 
 /**
- * Like Magento's setup:upgrade - processes db_schema.xml files and applies data patches
+ * Like Magento's setup:upgrade - processes db_schema.xml files and applies data patches.
  */
 class SetupUpgradeCommand extends Command
 {
@@ -22,13 +22,13 @@ class SetupUpgradeCommand extends Command
 
     public function __construct(
         private readonly ?ModuleManager $moduleManager = null,
-        private readonly ?SchemaSetup   $schemaSetup = null
+        private readonly ?SchemaSetup $schemaSetup = null
     ) {
         parent::__construct();
     }
 
     /**
-     * Configure command
+     * Configure command.
      */
     protected function configure(): void
     {
@@ -38,7 +38,7 @@ class SetupUpgradeCommand extends Command
     }
 
     /**
-     * Execute command
+     * Execute command.
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -48,8 +48,9 @@ class SetupUpgradeCommand extends Command
 
         try {
             // Get dependencies if not injected (for standalone execution)
-            if ($this->schemaSetup === null || $this->moduleManager === null) {
+            if (null === $this->schemaSetup || null === $this->moduleManager) {
                 $io->error('SchemaSetup or ModuleManager not available. Run from application context.');
+
                 return Command::FAILURE;
             }
 
@@ -62,10 +63,11 @@ class SetupUpgradeCommand extends Command
 
             if (empty($enabledModules)) {
                 $io->warning('No enabled modules found.');
+
                 return Command::FAILURE;
             }
 
-            $io->text(sprintf('Found %d enabled modules', count($enabledModules)));
+            $io->text(\sprintf('Found %d enabled modules', \count($enabledModules)));
 
             // Process schema for each module
             $tablesCreated = 0;
@@ -74,13 +76,13 @@ class SetupUpgradeCommand extends Command
             foreach ($enabledModules as $moduleName) {
                 $moduleData = $this->moduleManager->getModuleList()->getOne($moduleName);
 
-                if (!$moduleData) {
+                if (! $moduleData) {
                     continue;
                 }
 
                 $schemaFile = $moduleData['path'] . '/etc/db_schema.xml';
 
-                if (!file_exists($schemaFile)) {
+                if (! file_exists($schemaFile)) {
                     $io->text("  - Skipping {$moduleName} (no db_schema.xml)");
                     continue;
                 }
@@ -89,7 +91,7 @@ class SetupUpgradeCommand extends Command
 
                 try {
                     // Check if file actually exists and is readable
-                    if (!is_readable($schemaFile)) {
+                    if (! is_readable($schemaFile)) {
                         $io->warning("    Schema file not readable: {$schemaFile}");
                         continue;
                     }
@@ -102,7 +104,7 @@ class SetupUpgradeCommand extends Command
 
                     // Show details if verbose
                     if ($output->isVerbose() && isset($result['details'])) {
-                        $io->text("    Details: " . $result['details']);
+                        $io->text('    Details: ' . $result['details']);
                     }
                 } catch (\Exception $e) {
                     $io->error("    ✗ Error processing {$moduleName}: " . $e->getMessage());
@@ -112,7 +114,7 @@ class SetupUpgradeCommand extends Command
                 }
             }
 
-            $io->success(sprintf('Database schema updated: %d tables created, %d tables updated', $tablesCreated, $tablesUpdated));
+            $io->success(\sprintf('Database schema updated: %d tables created, %d tables updated', $tablesCreated, $tablesUpdated));
 
             // Step 2: Apply Data Patches
             $io->section('Applying Data Patches');
@@ -121,18 +123,18 @@ class SetupUpgradeCommand extends Command
             $io->success('Setup upgrade completed successfully!');
 
             return Command::SUCCESS;
-
         } catch (\Exception $e) {
             $io->error('Setup upgrade failed: ' . $e->getMessage());
             if ($output->isVerbose()) {
                 $io->text($e->getTraceAsString());
             }
+
             return Command::FAILURE;
         }
     }
 
     /**
-     * Apply data patches
+     * Apply data patches.
      */
     private function applyDataPatches(SymfonyStyle $io): void
     {
@@ -149,10 +151,11 @@ class SetupUpgradeCommand extends Command
 
         if (empty($patches)) {
             $io->text('  <comment>No data patches found</comment>');
+
             return;
         }
 
-        $io->text(sprintf('  Found <info>%d</info> data patch(es)', count($patches)));
+        $io->text(\sprintf('  Found <info>%d</info> data patch(es)', \count($patches)));
 
         // Sort by dependencies
         $sortedPatches = $patchRegistry->sortByDependencies($patches);
@@ -162,29 +165,34 @@ class SetupUpgradeCommand extends Command
         $skippedCount = 0;
 
         foreach ($sortedPatches as $patchClass) {
-            $shortName = substr($patchClass, strrpos($patchClass, '\\') + 1);
+            $lastBackslashPos = strrpos($patchClass, '\\');
+            $shortName = false !== $lastBackslashPos
+                ? substr($patchClass, $lastBackslashPos + 1)
+                : $patchClass;
 
             if ($patchApplier->isApplied($patchClass)) {
                 $io->text("  ⏭️  <comment>Already applied:</comment> {$shortName}");
                 $skippedCount++;
             } else {
                 $io->text("  🔧 <info>Applying:</info> {$shortName}...");
+
                 try {
                     // Instantiate patch with PDO connection
                     $patch = new $patchClass($connection);
                     $patch->apply();
                     $patchApplier->markAsApplied($patchClass);
-                    $io->text("     <info>✅ Done</info>");
+                    $io->text('     <info>✅ Done</info>');
                     $appliedCount++;
                 } catch (\Exception $e) {
-                    $io->error("     ❌ Failed: " . $e->getMessage());
+                    $io->error('     ❌ Failed: ' . $e->getMessage());
+
                     throw $e;
                 }
             }
         }
 
         $io->text('');
-        $io->text(sprintf(
+        $io->text(\sprintf(
             'Data patches: <info>%d applied</info>, <comment>%d skipped</comment>',
             $appliedCount,
             $skippedCount

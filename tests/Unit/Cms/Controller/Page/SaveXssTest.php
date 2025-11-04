@@ -23,12 +23,39 @@ beforeEach(function () {
     
     // Helper to setup save capture
     $this->setupSaveCapture = function (&$savedData) {
+        $savedData = []; // Initialize array
         $mockPage = $this->createMock(\Infinri\Cms\Model\Page::class);
-        $mockPage->method('setData')
-            ->willReturnCallback(function ($data) use (&$savedData, $mockPage) {
-                $savedData = $data;
-                return $mockPage;
-            });
+        
+        // Capture data via setter methods
+        $mockPage->method('setTitle')->willReturnCallback(function ($value) use (&$savedData, $mockPage) {
+            $savedData['title'] = $value;
+            return $mockPage;
+        });
+        $mockPage->method('setUrlKey')->willReturnCallback(function ($value) use (&$savedData, $mockPage) {
+            $savedData['url_key'] = $value;
+            return $mockPage;
+        });
+        $mockPage->method('setContent')->willReturnCallback(function ($value) use (&$savedData, $mockPage) {
+            $savedData['content'] = $value;
+            return $mockPage;
+        });
+        $mockPage->method('setMetaTitle')->willReturnCallback(function ($value) use (&$savedData, $mockPage) {
+            $savedData['meta_title'] = $value;
+            return $mockPage;
+        });
+        $mockPage->method('setMetaDescription')->willReturnCallback(function ($value) use (&$savedData, $mockPage) {
+            $savedData['meta_description'] = $value;
+            return $mockPage;
+        });
+        $mockPage->method('setMetaKeywords')->willReturnCallback(function ($value) use (&$savedData, $mockPage) {
+            $savedData['meta_keywords'] = $value;
+            return $mockPage;
+        });
+        $mockPage->method('setIsActive')->willReturnCallback(function ($value) use (&$savedData, $mockPage) {
+            $savedData['is_active'] = $value;
+            return $mockPage;
+        });
+        
         $mockPage->page_id = 1;
         
         $this->pageRepository->method('create')->willReturn($mockPage);

@@ -1,9 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Model\Module;
-
-use SimpleXMLElement;
 
 /**
  * Reads and parses module.xml files to extract module metadata.
@@ -11,22 +10,23 @@ use SimpleXMLElement;
 class ModuleReader
 {
     /**
-     * Read module.xml file and extract module information
+     * Read module.xml file and extract module information.
      *
      * @param string $modulePath Absolute path to module directory
+     *
      * @return array<string, mixed>|null Module data or null if module.xml not found/invalid
      */
     public function read(string $modulePath): ?array
     {
         $moduleXmlPath = $modulePath . '/etc/module.xml';
 
-        if (!file_exists($moduleXmlPath)) {
+        if (! file_exists($moduleXmlPath)) {
             return null;
         }
 
         $xml = $this->loadXml($moduleXmlPath);
 
-        if ($xml === null) {
+        if (null === $xml) {
             return null;
         }
 
@@ -34,12 +34,9 @@ class ModuleReader
     }
 
     /**
-     * Load and validate XML file
-     *
-     * @param string $filePath
-     * @return SimpleXMLElement|null
+     * Load and validate XML file.
      */
-    private function loadXml(string $filePath): ?SimpleXMLElement
+    private function loadXml(string $filePath): ?\SimpleXMLElement
     {
         // Suppress XML errors and handle them manually
         $useInternalErrors = libxml_use_internal_errors(true);
@@ -47,10 +44,11 @@ class ModuleReader
         try {
             $xml = simplexml_load_file($filePath);
 
-            if ($xml === false) {
+            if (false === $xml) {
                 // Log XML errors if needed
                 $errors = libxml_get_errors();
                 libxml_clear_errors();
+
                 return null;
             }
 
@@ -61,12 +59,11 @@ class ModuleReader
     }
 
     /**
-     * Parse module.xml and extract module data
+     * Parse module.xml and extract module data.
      *
-     * @param SimpleXMLElement $xml
      * @return array<string, mixed>
      */
-    private function parseModuleXml(SimpleXMLElement $xml): array
+    private function parseModuleXml(\SimpleXMLElement $xml): array
     {
         $data = [
             'name' => null,
@@ -77,16 +74,16 @@ class ModuleReader
         // Get module element
         $moduleElement = $xml->module;
 
-        if (!$moduleElement) {
+        if (! $moduleElement) {
             return $data;
         }
 
         // Extract module name
-        $data['name'] = isset($moduleElement['name']) ? (string)$moduleElement['name'] : null;
+        $data['name'] = isset($moduleElement['name']) ? (string) $moduleElement['name'] : null;
 
         // Extract setup version (check if attribute exists first)
         if (isset($moduleElement['setup_version'])) {
-            $data['setup_version'] = (string)$moduleElement['setup_version'];
+            $data['setup_version'] = (string) $moduleElement['setup_version'];
         } else {
             $data['setup_version'] = '1.0.0';
         }
@@ -94,7 +91,7 @@ class ModuleReader
         // Extract module dependencies (sequence)
         if (isset($moduleElement->sequence)) {
             foreach ($moduleElement->sequence->module as $dependencyModule) {
-                $dependencyName = (string)$dependencyModule['name'];
+                $dependencyName = (string) $dependencyModule['name'];
                 if ($dependencyName) {
                     $data['sequence'][] = $dependencyName;
                 }
@@ -105,16 +102,13 @@ class ModuleReader
     }
 
     /**
-     * Validate module.xml structure
-     *
-     * @param string $modulePath
-     * @return bool
+     * Validate module.xml structure.
      */
     public function validate(string $modulePath): bool
     {
         $data = $this->read($modulePath);
 
-        if ($data === null) {
+        if (null === $data) {
             return false;
         }
 

@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Infinri\Core\App;
 
-use Infinri\Core\Model\ObjectManager;
 use Infinri\Core\Helper\Logger;
+use Infinri\Core\Model\ObjectManager;
 
 /**
- * Handles controller instantiation and action execution
+ * Handles controller instantiation and action execution.
  */
 class Dispatcher
 {
     /**
      * Allowed controller namespace prefixes
-     * Only classes within these namespaces can be instantiated
+     * Only classes within these namespaces can be instantiated.
      */
     private const ALLOWED_CONTROLLER_NAMESPACES = [
         'Infinri\\Core\\Controller\\',
@@ -29,14 +29,15 @@ class Dispatcher
 
     public function __construct(
         private readonly ObjectManager $objectManager,
-        private readonly Request       $request
-    ) {}
+        private readonly Request $request
+    ) {
+    }
 
     /**
-     * Dispatch to controller action
+     * Dispatch to controller action.
      *
      * @param Route $route Matched route
-     * @return Response
+     *
      * @throws \RuntimeException|\ReflectionException
      */
     public function dispatch(Route $route): Response
@@ -45,9 +46,9 @@ class Dispatcher
         $controllerClass = $route->getControllerClass([$this, 'sanitizeClassName']);
 
         // Validate controller namespace for security
-        if (!$this->isValidControllerNamespace($controllerClass)) {
+        if (! $this->isValidControllerNamespace($controllerClass)) {
             Logger::error('Attempted controller class injection', [
-                'controller' => $controllerClass
+                'controller' => $controllerClass,
             ]);
 
             throw new \RuntimeException("Invalid controller namespace: {$controllerClass}");
@@ -62,19 +63,19 @@ class Dispatcher
         $controller = $this->createController($controllerClass);
 
         // Verify action exists
-        if (!method_exists($controller, $route->action)) {
+        if (! method_exists($controller, $route->action)) {
             Logger::error('Action not found in controller', [
-                'controller' => get_class($controller),
+                'controller' => $controller::class,
                 'action' => $route->action,
-                'available_methods' => get_class_methods($controller)
+                'available_methods' => get_class_methods($controller),
             ]);
 
             throw new \RuntimeException("Action not found: {$route->action}");
         }
 
         Logger::debug('Executing action', [
-            'controller' => get_class($controller),
-            'action' => $route->action
+            'controller' => $controller::class,
+            'action' => $route->action,
         ]);
 
         // Execute action - check if method expects Request parameter
@@ -83,24 +84,24 @@ class Dispatcher
         $parameters = $reflection->getParameters();
 
         // If method accepts a Request parameter, pass it
-        if (count($parameters) > 0 && $parameters[0]->getType()?->getName() === Request::class) {
+        if (\count($parameters) > 0 && Request::class === $parameters[0]->getType()?->getName()) {
+            /* @phpstan-ignore-next-line Dynamic method call needed for routing */
             return $controller->$action($this->request);
         }
 
         // Otherwise call without parameters (e.g., AbstractController subclasses)
+        /* @phpstan-ignore-next-line Dynamic method call needed for routing */
         return $controller->$action();
     }
 
     /**
-     * Create controller instance
+     * Create controller instance.
      *
-     * @param string $controllerClass
-     * @return object
      * @throws \RuntimeException|\Throwable
      */
     private function createController(string $controllerClass): object
     {
-        if (!class_exists($controllerClass)) {
+        if (! class_exists($controllerClass)) {
             throw new \RuntimeException("Controller class not found: {$controllerClass}");
         }
 
@@ -122,7 +123,7 @@ class Dispatcher
                         $type = $param->getType();
                         if ($type instanceof \ReflectionNamedType) {
                             $typeName = $type->getName();
-                            if ($typeName !== Request::class && $typeName !== Response::class) {
+                            if (Request::class !== $typeName && Response::class !== $typeName) {
                                 $isLegacyController = false;
                                 break;
                             }
@@ -143,26 +144,21 @@ class Dispatcher
 
     /**
      * Sanitize class name part to prevent injection
-     * Public so it can be passed to Route::getControllerClass()
-     *
-     * @param string $value
-     * @return string
+     * Public so it can be passed to Route::getControllerClass().
      */
     public function sanitizeClassName(string $value): string
     {
         // Remove any characters that aren't alphanumeric or underscore. This prevents path traversal (../) and namespace injection (\)
         $result = preg_replace('/[^a-zA-Z0-9_]/', '', $value);
-        if ($result === null) {
+        if (null === $result) {
             throw new \RuntimeException('Failed to sanitize class name');
         }
+
         return $result;
     }
 
     /**
-     * Validate that controller class is within allowed namespaces
-     *
-     * @param string $controllerClass
-     * @return bool
+     * Validate that controller class is within allowed namespaces.
      */
     private function isValidControllerNamespace(string $controllerClass): bool
     {

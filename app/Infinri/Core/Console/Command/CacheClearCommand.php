@@ -4,28 +4,25 @@ declare(strict_types=1);
 
 namespace Infinri\Core\Console\Command;
 
+use Infinri\Core\Model\Cache\TypeList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Infinri\Core\Model\Cache\TypeList;
 
 /**
- * Clears cache for specific types or all cache
+ * Clears cache for specific types or all cache.
  */
 class CacheClearCommand extends Command
 {
-
     /**
-     * Cache TypeList
-     *
-     * @var TypeList|null
+     * Cache TypeList.
      */
     private ?TypeList $typeList = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param TypeList|null $typeList Cache TypeList
      */
@@ -36,9 +33,7 @@ class CacheClearCommand extends Command
     }
 
     /**
-     * Configure command
-     *
-     * @return void
+     * Configure command.
      */
     protected function configure(): void
     {
@@ -55,10 +50,11 @@ class CacheClearCommand extends Command
     }
 
     /**
-     * Execute command
+     * Execute command.
      *
-     * @param InputInterface $input Input
+     * @param InputInterface  $input  Input
      * @param OutputInterface $output Output
+     *
      * @return int Exit code
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -70,9 +66,10 @@ class CacheClearCommand extends Command
 
         if ($type) {
             // Clear specific cache type
-            if (!$typeList->hasType($type)) {
+            if (! $typeList->hasType($type)) {
                 $io->error("Cache type '{$type}' does not exist.");
                 $io->note('Available types: ' . implode(', ', array_keys($typeList->getTypes())));
+
                 return Command::FAILURE;
             }
 

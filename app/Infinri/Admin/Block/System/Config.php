@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Admin\Block\System;
@@ -10,16 +11,18 @@ use Infinri\Core\Model\Config\SystemReader;
 use Infinri\Core\Model\ObjectManager;
 
 /**
- * System Configuration Block
+ * System Configuration Block.
  */
 class Config extends Template
 {
     private ?SystemReader $systemReader = null;
+
     private ?ConfigModel $config = null;
+
     private ?Request $request = null;
 
     /**
-     * Get current section ID
+     * Get current section ID.
      */
     public function getCurrentSection(): string
     {
@@ -27,7 +30,7 @@ class Config extends Template
     }
 
     /**
-     * Get all sections
+     * Get all sections.
      */
     public function getSections(): array
     {
@@ -35,7 +38,7 @@ class Config extends Template
     }
 
     /**
-     * Get current section data
+     * Get current section data.
      */
     public function getSectionData(): ?array
     {
@@ -43,7 +46,7 @@ class Config extends Template
     }
 
     /**
-     * Get configuration value
+     * Get configuration value.
      */
     public function getConfigValue(string $path): mixed
     {
@@ -51,7 +54,7 @@ class Config extends Template
     }
 
     /**
-     * Get field options from source model
+     * Get field options from source model.
      */
     public function getFieldOptions(string $sourceModel): array
     {
@@ -61,6 +64,7 @@ class Config extends Template
 
         try {
             $source = new $sourceModel();
+
             return $source->toOptionArray();
         } catch (\Exception $e) {
             return [];
@@ -69,31 +73,34 @@ class Config extends Template
 
     private function getSystemReader(): SystemReader
     {
-        if ($this->systemReader === null) {
+        if (null === $this->systemReader) {
             /** @var SystemReader $systemReader */
             $systemReader = ObjectManager::getInstance()->create(SystemReader::class);
             $this->systemReader = $systemReader;
         }
+
         return $this->systemReader;
     }
 
     private function getConfigModel(): ConfigModel
     {
-        if ($this->config === null) {
+        if (null === $this->config) {
             /** @var ConfigModel $config */
             $config = ObjectManager::getInstance()->create(ConfigModel::class);
             $this->config = $config;
         }
+
         return $this->config;
     }
 
     private function getRequest(): Request
     {
-        if ($this->request === null) {
+        if (null === $this->request) {
             /** @var Request $request */
             $request = ObjectManager::getInstance()->get(Request::class);
             $this->request = $request;
         }
+
         return $this->request;
     }
 }

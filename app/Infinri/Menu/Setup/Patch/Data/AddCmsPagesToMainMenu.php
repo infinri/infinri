@@ -5,35 +5,30 @@ declare(strict_types=1);
 namespace Infinri\Menu\Setup\Patch\Data;
 
 use Infinri\Core\Setup\Patch\DataPatchInterface;
-use PDO;
 
 /**
- * Populates main-navigation menu with existing active CMS pages
+ * Populates main-navigation menu with existing active CMS pages.
  */
 class AddCmsPagesToMainMenu implements DataPatchInterface
 {
     /**
-     * Constructor
-     *
-     * @param PDO $connection
+     * Constructor.
      */
     public function __construct(
-        private readonly PDO $connection
-    ) {}
+        private readonly \PDO $connection
+    ) {
+    }
 
-    /**
-     * @inheritDoc
-     */
     public function apply(): void
     {
         // Get main-navigation menu ID
         $stmt = $this->connection->prepare(
-            "SELECT menu_id FROM menu WHERE identifier = ? LIMIT 1"
+            'SELECT menu_id FROM menu WHERE identifier = ? LIMIT 1'
         );
         $stmt->execute(['main-navigation']);
-        $menu = $stmt->fetch(PDO::FETCH_ASSOC);
+        $menu = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        if (!$menu) {
+        if (! $menu) {
             // Menu doesn't exist yet, skip
             return;
         }
@@ -48,7 +43,7 @@ class AddCmsPagesToMainMenu implements DataPatchInterface
              AND url_key NOT IN ('404', '500', 'maintenance')
              ORDER BY page_id ASC"
         );
-        $pages = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $pages = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
         if (empty($pages)) {
             return;
@@ -70,7 +65,7 @@ class AddCmsPagesToMainMenu implements DataPatchInterface
 
             // Insert menu item
             $stmt = $this->connection->prepare(
-                "INSERT INTO menu_item (
+                'INSERT INTO menu_item (
                     menu_id, 
                     parent_item_id, 
                     title, 
@@ -84,7 +79,7 @@ class AddCmsPagesToMainMenu implements DataPatchInterface
                     is_active, 
                     created_at, 
                     updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)'
             );
 
             $stmt->execute([
@@ -98,26 +93,20 @@ class AddCmsPagesToMainMenu implements DataPatchInterface
                 null,  // icon_class
                 'false', // open_in_new_tab
                 $sortOrder,
-                'true'   // is_active
+                'true',   // is_active
             ]);
 
             $sortOrder += 10;
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     public static function getDependencies(): array
     {
         return [
-            \Infinri\Menu\Setup\Patch\Data\InstallDefaultMenus::class
+            InstallDefaultMenus::class,
         ];
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getAliases(): array
     {
         return [];

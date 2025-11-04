@@ -1,22 +1,23 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Model\ResourceModel;
 
 /**
- * Base class for all resource models (database table interaction)
+ * Base class for all resource models (database table interaction).
  */
 abstract class AbstractResource
 {
     /**
      * @var string Main database table name
      */
-    protected string $mainTable;
+    protected string $mainTable = '';
 
     /**
      * @var string Primary key field name
      */
-    protected string $primaryKey;
+    protected string $primaryKey = '';
 
     /**
      * @var string Primary key field
@@ -30,12 +31,11 @@ abstract class AbstractResource
 
     public function __construct(
         protected readonly Connection $connection
-    ) {}
+    ) {
+    }
 
     /**
-     * Get main table name
-     *
-     * @return string
+     * Get main table name.
      */
     public function getMainTable(): string
     {
@@ -43,9 +43,7 @@ abstract class AbstractResource
     }
 
     /**
-     * Get primary key field name
-     *
-     * @return string
+     * Get primary key field name.
      */
     public function getIdFieldName(): string
     {
@@ -53,14 +51,11 @@ abstract class AbstractResource
     }
 
     /**
-     * Load entity data by ID
-     *
-     * @param int|string $id
-     * @return array|false
+     * Load entity data by ID.
      */
     public function load(int|string $id): array|false
     {
-        $sql = sprintf(
+        $sql = \sprintf(
             'SELECT * FROM %s WHERE %s = ? LIMIT 1',
             $this->mainTable,
             $this->primaryKey
@@ -70,9 +65,10 @@ abstract class AbstractResource
     }
 
     /**
-     * Save entity
+     * Save entity.
      *
      * @param array<string, mixed> $data
+     *
      * @return int Entity ID
      */
     public function save(array $data): int
@@ -89,18 +85,18 @@ abstract class AbstractResource
                 [$id]
             );
 
-            return (int)$id;
+            return (int) $id;
         } else {
             // Insert new
             unset($data[$this->idFieldName]);
+
             return $this->connection->insert($this->mainTable, $data);
         }
     }
 
     /**
-     * Delete entity by ID
+     * Delete entity by ID.
      *
-     * @param int|string $id
      * @return int Number of deleted rows
      */
     public function delete(int|string $id): int
@@ -113,11 +109,10 @@ abstract class AbstractResource
     }
 
     /**
-     * Find entities by criteria
+     * Find entities by criteria.
      *
      * @param array<string, mixed> $criteria
-     * @param int|null $limit
-     * @param int|null $offset
+     *
      * @return array<array<string, mixed>>
      */
     public function findBy(array $criteria, ?int $limit = null, ?int $offset = null): array
@@ -129,7 +124,7 @@ abstract class AbstractResource
             // Validate column name to prevent SQL injection
             $this->validateColumnName($field);
 
-            if ($value === null) {
+            if (null === $value) {
                 $where[] = "{$field} IS NULL";
             } else {
                 $where[] = "{$field} = ?";
@@ -137,15 +132,15 @@ abstract class AbstractResource
             }
         }
 
-        $sql = sprintf('SELECT * FROM %s', $this->mainTable);
+        $sql = \sprintf('SELECT * FROM %s', $this->mainTable);
 
-        if (!empty($where)) {
+        if (! empty($where)) {
             $sql .= ' WHERE ' . implode(' AND ', $where);
         }
 
-        if ($limit !== null) {
+        if (null !== $limit) {
             $sql .= " LIMIT {$limit}";
-            if ($offset !== null) {
+            if (null !== $offset) {
                 $sql .= " OFFSET {$offset}";
             }
         }
@@ -154,22 +149,23 @@ abstract class AbstractResource
     }
 
     /**
-     * Find one entity by criteria
+     * Find one entity by criteria.
      *
      * @param array<string, mixed> $criteria
+     *
      * @return array<string, mixed>|false
      */
     public function findOneBy(array $criteria): array|false
     {
         $results = $this->findBy($criteria, 1);
+
         return $results[0] ?? false;
     }
 
     /**
-     * Count entities by criteria
+     * Count entities by criteria.
      *
      * @param array<string, mixed> $criteria
-     * @return int
      */
     public function count(array $criteria = []): int
     {
@@ -180,7 +176,7 @@ abstract class AbstractResource
             // Validate column name to prevent SQL injection
             $this->validateColumnName($field);
 
-            if ($value === null) {
+            if (null === $value) {
                 $where[] = "{$field} IS NULL";
             } else {
                 $where[] = "{$field} = ?";
@@ -188,19 +184,17 @@ abstract class AbstractResource
             }
         }
 
-        $sql = sprintf('SELECT COUNT(*) FROM %s', $this->mainTable);
+        $sql = \sprintf('SELECT COUNT(*) FROM %s', $this->mainTable);
 
-        if (!empty($where)) {
+        if (! empty($where)) {
             $sql .= ' WHERE ' . implode(' AND ', $where);
         }
 
-        return (int)$this->connection->fetchOne($sql, $params);
+        return (int) $this->connection->fetchOne($sql, $params);
     }
 
     /**
-     * Get connection
-     *
-     * @return Connection
+     * Get connection.
      */
     public function getConnection(): Connection
     {
@@ -208,9 +202,7 @@ abstract class AbstractResource
     }
 
     /**
-     * Get primary key
-     *
-     * @return string
+     * Get primary key.
      */
     public function getPrimaryKey(): string
     {
@@ -218,22 +210,22 @@ abstract class AbstractResource
     }
 
     /**
-     * Get table columns from database schema
+     * Get table columns from database schema.
      *
      * @return array<string>
      */
     protected function getTableColumns(): array
     {
-        if ($this->tableColumns === null) {
+        if (null === $this->tableColumns) {
             $driver = $this->connection->getDriver();
 
             // Use database-specific SQL to get column names
-            if ($driver === 'mysql') {
+            if ('mysql' === $driver) {
                 $sql = "SHOW COLUMNS FROM {$this->mainTable}";
                 $columns = $this->connection->fetchAll($sql);
                 $this->tableColumns = array_column($columns, 'Field');
-            } elseif ($driver === 'pgsql') {
-                $sql = "SELECT column_name FROM information_schema.columns WHERE table_name = ?";
+            } elseif ('pgsql' === $driver) {
+                $sql = 'SELECT column_name FROM information_schema.columns WHERE table_name = ?';
                 $columns = $this->connection->fetchAll($sql, [$this->mainTable]);
                 $this->tableColumns = array_column($columns, 'column_name');
             } else {
@@ -243,7 +235,9 @@ abstract class AbstractResource
                 $this->tableColumns = [];
                 for ($i = 0; $i < $stmt->columnCount(); $i++) {
                     $col = $stmt->getColumnMeta($i);
-                    $this->tableColumns[] = $col['name'];
+                    if (false !== $col) {
+                        $this->tableColumns[] = $col['name'];
+                    }
                 }
             }
         }
@@ -252,25 +246,16 @@ abstract class AbstractResource
     }
 
     /**
-     * Validate that field name is a valid column in the table
+     * Validate that field name is a valid column in the table.
      *
-     * @param string $field
-     * @return void
      * @throws \InvalidArgumentException
      */
     protected function validateColumnName(string $field): void
     {
         $validColumns = $this->getTableColumns();
 
-        if (!in_array($field, $validColumns, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'Invalid column name "%s" for table "%s". Valid columns: %s',
-                    $field,
-                    $this->mainTable,
-                    implode(', ', $validColumns)
-                )
-            );
+        if (! \in_array($field, $validColumns, true)) {
+            throw new \InvalidArgumentException(\sprintf('Invalid column name "%s" for table "%s". Valid columns: %s', $field, $this->mainTable, implode(', ', $validColumns)));
         }
     }
 }

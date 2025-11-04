@@ -1,27 +1,25 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Model\Layout;
 
-use SimpleXMLElement;
-
 /**
- * Processes layout XML directives (block, container, referenceBlock, move, remove, etc.)
+ * Processes layout XML directives (block, container, referenceBlock, move, remove, etc.).
  */
 class Processor
 {
     /**
-     * @var array<string, SimpleXMLElement> Named elements (blocks/containers) for reference
+     * @var array<string, \SimpleXMLElement> Named elements (blocks/containers) for reference
      */
     private array $namedElements = [];
 
     /**
-     * Process layout XML and return structure ready for building
+     * Process layout XML and return structure ready for building.
      *
-     * @param SimpleXMLElement $layout
-     * @return SimpleXMLElement Processed layout
+     * @return \SimpleXMLElement Processed layout
      */
-    public function process(SimpleXMLElement $layout): SimpleXMLElement
+    public function process(\SimpleXMLElement $layout): \SimpleXMLElement
     {
         $this->namedElements = [];
 
@@ -35,15 +33,12 @@ class Processor
     }
 
     /**
-     * Collect all elements with 'name' attribute for later reference
-     *
-     * @param SimpleXMLElement $element
-     * @return void
+     * Collect all elements with 'name' attribute for later reference.
      */
-    private function collectNamedElements(SimpleXMLElement $element): void
+    private function collectNamedElements(\SimpleXMLElement $element): void
     {
         if (isset($element['name'])) {
-            $name = (string)$element['name'];
+            $name = (string) $element['name'];
             $this->namedElements[$name] = $element;
         }
 
@@ -53,12 +48,9 @@ class Processor
     }
 
     /**
-     * Process all layout directives
-     *
-     * @param SimpleXMLElement $layout
-     * @return void
+     * Process all layout directives.
      */
-    private function processDirectives(SimpleXMLElement $layout): void
+    private function processDirectives(\SimpleXMLElement $layout): void
     {
         // Process <remove> directives
         $this->processRemoveDirectives($layout);
@@ -71,28 +63,27 @@ class Processor
     }
 
     /**
-     * Process <remove> directives
-     *
-     * @param SimpleXMLElement $layout
-     * @return void
+     * Process <remove> directives.
      */
-    private function processRemoveDirectives(SimpleXMLElement $layout): void
+    private function processRemoveDirectives(\SimpleXMLElement $layout): void
     {
         // Get all remove directives
-        while ($removes = $layout->xpath('//remove[@name]')) {
-            if (empty($removes)) {
-                break;
-            }
+        $removes = $layout->xpath('//remove[@name]');
+        if (! \is_array($removes)) {
+            return;
+        }
 
+        while (! empty($removes)) {
             foreach ($removes as $remove) {
-                $name = (string)$remove['name'];
+                $name = (string) $remove['name'];
 
                 // Find and remove the named element
-                if ($namedElement = $layout->xpath("//*[@name='" . $name . "']")) {
+                $namedElement = $layout->xpath("//*[@name='" . $name . "']");
+                if (\is_array($namedElement)) {
                     foreach ($namedElement as $element) {
-                        if ($element->getName() !== 'remove') {
+                        if ('remove' !== $element->getName()) {
                             $dom = dom_import_simplexml($element);
-                            if ($dom && $dom->parentNode) {
+                            if ($dom instanceof \DOMElement && $dom->parentNode) {
                                 $dom->parentNode->removeChild($dom);
                             }
                         }
@@ -101,9 +92,15 @@ class Processor
 
                 // Remove the <remove> directive itself
                 $dom = dom_import_simplexml($remove);
-                if ($dom && $dom->parentNode) {
+                if ($dom instanceof \DOMElement && $dom->parentNode) {
                     $dom->parentNode->removeChild($dom);
                 }
+            }
+
+            // Re-fetch removes for next iteration
+            $removes = $layout->xpath('//remove[@name]');
+            if (! \is_array($removes) || empty($removes)) {
+                break;
             }
         }
 
@@ -113,20 +110,20 @@ class Processor
     }
 
     /**
-     * Process <move> directives
-     *
-     * @param SimpleXMLElement $layout
-     * @return void
+     * Process <move> directives.
      */
-    private function processMoveDirectives(SimpleXMLElement $layout): void
+    private function processMoveDirectives(\SimpleXMLElement $layout): void
     {
         $moves = $layout->xpath('//move[@element and @destination]');
+        if (! \is_array($moves)) {
+            return;
+        }
 
         foreach ($moves as $move) {
-            $elementName = (string)$move['element'];
-            $destination = (string)$move['destination'];
-            $before = isset($move['before']) ? (string)$move['before'] : null;
-            $after = isset($move['after']) ? (string)$move['after'] : null;
+            $elementName = (string) $move['element'];
+            $destination = (string) $move['destination'];
+            $before = isset($move['before']) ? (string) $move['before'] : null;
+            $after = isset($move['after']) ? (string) $move['after'] : null;
 
             if (isset($this->namedElements[$elementName]) && isset($this->namedElements[$destination])) {
                 $element = $this->namedElements[$elementName];
@@ -138,33 +135,26 @@ class Processor
 
             // Remove the <move> directive
             $dom = dom_import_simplexml($move);
-            if ($dom && $dom->parentNode) {
+            if ($dom instanceof \DOMElement && $dom->parentNode) {
                 $dom->parentNode->removeChild($dom);
             }
         }
     }
 
     /**
-     * Move an element to a new destination
-     *
-     * @param SimpleXMLElement $element
-     * @param SimpleXMLElement $destination
-     * @param string|null $before
-     * @param string|null $after
-     * @return void
+     * Move an element to a new destination.
      */
     private function moveElement(
-        SimpleXMLElement $element,
-        SimpleXMLElement $destination,
-        ?string          $before,
-        ?string          $after
-    ): void
-    {
+        \SimpleXMLElement $element,
+        \SimpleXMLElement $destination,
+        ?string $before,
+        ?string $after
+    ): void {
         // Convert to DOM for manipulation
         $sourceDom = dom_import_simplexml($element);
         $destDom = dom_import_simplexml($destination);
 
-        if (!$sourceDom || !$destDom || !$sourceDom->parentNode) {
+        if (! ($sourceDom instanceof \DOMElement) || ! ($destDom instanceof \DOMElement) || ! $sourceDom->parentNode) {
             return;
         }
 
@@ -175,20 +165,23 @@ class Processor
         $sourceDom->parentNode->removeChild($sourceDom);
 
         // Handle positioning with before/after
-        if ($before !== null) {
+        if (null !== $before) {
             // Insert before specific sibling
             $siblings = $destDom->childNodes;
             foreach ($siblings as $sibling) {
-                if ($sibling->nodeType === XML_ELEMENT_NODE &&
-                    $sibling->hasAttribute('name') &&
-                    $sibling->getAttribute('name') === $before) {
+                if (
+                    \XML_ELEMENT_NODE === $sibling->nodeType
+                    && $sibling->hasAttribute('name')
+                    && $sibling->getAttribute('name') === $before
+                ) {
                     $destDom->insertBefore($importedNode, $sibling);
+
                     return;
                 }
             }
             // If before element not found, append to end
             $destDom->appendChild($importedNode);
-        } elseif ($after !== null) {
+        } elseif (null !== $after) {
             // Insert after specific sibling
             $siblings = $destDom->childNodes;
             $found = false;
@@ -196,11 +189,14 @@ class Processor
                 if ($found) {
                     // Insert before the next sibling (which is after our target)
                     $destDom->insertBefore($importedNode, $sibling);
+
                     return;
                 }
-                if ($sibling->nodeType === XML_ELEMENT_NODE &&
-                    $sibling->hasAttribute('name') &&
-                    $sibling->getAttribute('name') === $after) {
+                if (
+                    \XML_ELEMENT_NODE === $sibling->nodeType
+                    && $sibling->hasAttribute('name')
+                    && $sibling->getAttribute('name') === $after
+                ) {
                     $found = true;
                 }
             }
@@ -213,30 +209,28 @@ class Processor
     }
 
     /**
-     * Process <referenceBlock> and <referenceContainer> directives
-     *
-     * @param SimpleXMLElement $layout
-     * @return void
+     * Process <referenceBlock> and <referenceContainer> directives.
      */
-    private function processReferenceDirectives(SimpleXMLElement $layout): void
+    private function processReferenceDirectives(\SimpleXMLElement $layout): void
     {
         // Process until no more references found
-        while ($references = $layout->xpath('//referenceBlock[@name] | //referenceContainer[@name]')) {
-            if (empty($references)) {
-                break;
-            }
+        $references = $layout->xpath('//referenceBlock[@name] | //referenceContainer[@name]');
+        if (! \is_array($references)) {
+            return;
+        }
 
+        while (! empty($references)) {
             foreach ($references as $reference) {
-                $name = (string)$reference['name'];
+                $name = (string) $reference['name'];
 
                 // Find the target element by name
                 $targets = $layout->xpath("//*[@name='" . $name . "']");
 
-                if (!empty($targets)) {
+                if (! empty($targets)) {
                     $targetProcessed = false;
                     foreach ($targets as $target) {
                         // Skip if target is a reference directive itself
-                        if ($target->getName() === 'referenceBlock' || $target->getName() === 'referenceContainer') {
+                        if ('referenceBlock' === $target->getName() || 'referenceContainer' === $target->getName()) {
                             continue;
                         }
 
@@ -249,11 +243,11 @@ class Processor
                             try {
                                 $this->appendElement($target, $child);
                             } catch (\Throwable $e) {
-                                $childName = isset($child['name']) ? (string)$child['name'] : $child->getName();
+                                $childName = isset($child['name']) ? (string) $child['name'] : $child->getName();
                                 \Infinri\Core\Helper\Logger::error('Processor: Failed to append child', [
                                     'child_name' => $childName,
                                     'parent' => $name,
-                                    'error' => $e->getMessage()
+                                    'error' => $e->getMessage(),
                                 ]);
                             }
                         }
@@ -264,9 +258,15 @@ class Processor
 
                 // Remove the reference directive
                 $dom = dom_import_simplexml($reference);
-                if ($dom && $dom->parentNode) {
+                if ($dom instanceof \DOMElement && $dom->parentNode) {
                     $dom->parentNode->removeChild($dom);
                 }
+            }
+
+            // Re-fetch references for next iteration
+            $references = $layout->xpath('//referenceBlock[@name] | //referenceContainer[@name]');
+            if (! \is_array($references) || empty($references)) {
+                break;
             }
         }
 
@@ -276,19 +276,15 @@ class Processor
     }
 
     /**
-     * Append element to target
-     *
-     * @param SimpleXMLElement $target
-     * @param SimpleXMLElement $source
-     * @return void
+     * Append element to target.
      */
-    private function appendElement(SimpleXMLElement $target, SimpleXMLElement $source): void
+    private function appendElement(\SimpleXMLElement $target, \SimpleXMLElement $source): void
     {
         // Use DOM to properly clone and import the element
         $targetDom = dom_import_simplexml($target);
         $sourceDom = dom_import_simplexml($source);
 
-        if (!$targetDom || !$sourceDom) {
+        if (! ($targetDom instanceof \DOMElement) || ! ($sourceDom instanceof \DOMElement)) {
             return;
         }
 
@@ -296,62 +292,68 @@ class Processor
         $importedNode = $targetDom->ownerDocument->importNode($sourceDom, true);
 
         // Check for 'before' or 'after' attributes on the source
-        $before = isset($source['before']) ? (string)$source['before'] : null;
-        $after = isset($source['after']) ? (string)$source['after'] : null;
+        $before = isset($source['before']) ? (string) $source['before'] : null;
+        $after = isset($source['after']) ? (string) $source['after'] : null;
 
-        $sourceName = isset($source['name']) ? (string)$source['name'] : 'unnamed';
-        $targetName = isset($target['name']) ? (string)$target['name'] : 'unnamed';
+        $sourceName = isset($source['name']) ? (string) $source['name'] : 'unnamed';
+        $targetName = isset($target['name']) ? (string) $target['name'] : 'unnamed';
 
-        if ($sourceName === 'admin.sidebar' || $targetName === 'main.content') {
+        if ('admin.sidebar' === $sourceName || 'main.content' === $targetName) {
             \Infinri\Core\Helper\Logger::info('Processor: Appending element', [
                 'source' => $sourceName,
                 'target' => $targetName,
                 'before' => $before,
-                'after' => $after
+                'after' => $after,
             ]);
         }
 
-        if ($before !== null) {
+        if (null !== $before) {
             // Insert before specific sibling
             $siblings = $targetDom->childNodes;
             $found = false;
             foreach ($siblings as $sibling) {
-                if ($sibling->nodeType === XML_ELEMENT_NODE &&
-                    $sibling->hasAttribute('name') &&
-                    $sibling->getAttribute('name') === $before) {
+                if (
+                    \XML_ELEMENT_NODE === $sibling->nodeType
+                    && $sibling->hasAttribute('name')
+                    && $sibling->getAttribute('name') === $before
+                ) {
                     $targetDom->insertBefore($importedNode, $sibling);
                     $found = true;
 
-                    if ($sourceName === 'admin.sidebar') {
+                    if ('admin.sidebar' === $sourceName) {
                         \Infinri\Core\Helper\Logger::info('Processor: Inserted sidebar BEFORE content', [
                             'before' => $before,
-                            'found' => true
+                            'found' => true,
                         ]);
                     }
+
                     return;
                 }
             }
             // If before element not found, append to end
-            if ($sourceName === 'admin.sidebar') {
+            if ('admin.sidebar' === $sourceName) {
                 \Infinri\Core\Helper\Logger::warning('Processor: Could not find before element, appending sidebar to end', [
                     'before' => $before,
                     'found' => $found,
-                    'sibling_count' => $siblings->length
+                    'sibling_count' => $siblings->length,
                 ]);
             }
             $targetDom->appendChild($importedNode);
-        } elseif ($after !== null) {
+        } elseif (null !== $after) {
             // Insert after specific sibling
             $siblings = $targetDom->childNodes;
             $found = false;
             foreach ($siblings as $sibling) {
                 if ($found) {
                     $targetDom->insertBefore($importedNode, $sibling);
+
                     return;
                 }
-                if ($sibling->nodeType === XML_ELEMENT_NODE &&
-                    $sibling->hasAttribute('name') &&
-                    $sibling->getAttribute('name') === $after) {
+                if (
+                    \XML_ELEMENT_NODE === $sibling->nodeType
+                    && $sibling->hasAttribute('name')
+                    && $sibling->getAttribute('name') === $after
+                ) {
                     $found = true;
                 }
             }
@@ -364,9 +366,9 @@ class Processor
     }
 
     /**
-     * Get all named elements
+     * Get all named elements.
      *
-     * @return array<string, SimpleXMLElement>
+     * @return array<string, \SimpleXMLElement>
      */
     public function getNamedElements(): array
     {

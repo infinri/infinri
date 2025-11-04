@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Model;
@@ -7,7 +8,7 @@ use Infinri\Core\Model\ResourceModel\AbstractResource;
 use Infinri\Core\Model\ResourceModel\User as UserResource;
 
 /**
- * Example model implementation
+ * Example model implementation.
  */
 class User extends AbstractModel
 {
@@ -18,18 +19,13 @@ class User extends AbstractModel
         parent::__construct($data);
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function getResource(): AbstractResource
     {
         return $this->resource;
     }
 
     /**
-     * Get user email
-     *
-     * @return string|null
+     * Get user email.
      */
     public function getEmail(): ?string
     {
@@ -37,9 +33,8 @@ class User extends AbstractModel
     }
 
     /**
-     * Set user email
+     * Set user email.
      *
-     * @param string $email
      * @return $this
      */
     public function setEmail(string $email): self
@@ -48,9 +43,7 @@ class User extends AbstractModel
     }
 
     /**
-     * Get user name
-     *
-     * @return string|null
+     * Get user name.
      */
     public function getName(): ?string
     {
@@ -58,9 +51,8 @@ class User extends AbstractModel
     }
 
     /**
-     * Set user name
+     * Set user name.
      *
-     * @param string $name
      * @return $this
      */
     public function setName(string $name): self
@@ -69,9 +61,7 @@ class User extends AbstractModel
     }
 
     /**
-     * Get created at timestamp
-     *
-     * @return string|null
+     * Get created at timestamp.
      */
     public function getCreatedAt(): ?string
     {

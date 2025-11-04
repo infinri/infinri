@@ -1,18 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Controller;
 
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
-use Infinri\Core\Model\Layout\Loader;
-use Infinri\Core\Model\Layout\Merger;
-use Infinri\Core\Model\Layout\Processor;
-use Infinri\Core\Model\Layout\Builder;
-use Infinri\Core\Model\Layout\Renderer;
 
 /**
- * Base class for all controllers
+ * Base class for all controllers.
  */
 abstract class AbstractController
 {
@@ -27,7 +23,7 @@ abstract class AbstractController
     protected Response $response;
 
     public function __construct(
-        Request  $request,
+        Request $request,
         Response $response
     ) {
         $this->request = $request;
@@ -35,16 +31,12 @@ abstract class AbstractController
     }
 
     /**
-     * Execute controller action
-     *
-     * @return Response
+     * Execute controller action.
      */
     abstract public function execute(): Response;
 
     /**
-     * Get request
-     *
-     * @return Request
+     * Get request.
      */
     public function getRequest(): Request
     {
@@ -52,9 +44,7 @@ abstract class AbstractController
     }
 
     /**
-     * Get response
-     *
-     * @return Response
+     * Get response.
      */
     public function getResponse(): Response
     {
@@ -62,11 +52,7 @@ abstract class AbstractController
     }
 
     /**
-     * Redirect to URL
-     *
-     * @param string $url
-     * @param int $code
-     * @return Response
+     * Redirect to URL.
      */
     protected function redirect(string $url, int $code = 302): Response
     {
@@ -74,10 +60,8 @@ abstract class AbstractController
     }
 
     /**
-     * Return JSON response
+     * Return JSON response.
      *
-     * @param mixed $data
-     * @return Response
      * @throws \JsonException
      */
     protected function json(mixed $data): Response
@@ -86,9 +70,7 @@ abstract class AbstractController
     }
 
     /**
-     * Return 404 response
-     *
-     * @return Response
+     * Return 404 response.
      */
     protected function notFound(): Response
     {
@@ -98,10 +80,7 @@ abstract class AbstractController
     }
 
     /**
-     * Set response body
-     *
-     * @param string $body
-     * @return Response
+     * Set response body.
      */
     protected function setBody(string $body): Response
     {

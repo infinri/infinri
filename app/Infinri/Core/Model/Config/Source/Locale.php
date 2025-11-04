@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Model\Config\Source;
 
 /**
- * Locale Source Model
+ * Locale Source Model.
  */
 class Locale
 {

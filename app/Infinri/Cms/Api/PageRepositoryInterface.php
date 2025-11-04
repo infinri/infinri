@@ -7,64 +7,48 @@ namespace Infinri\Cms\Api;
 use Infinri\Cms\Model\Page;
 
 /**
- * Provides CRUD operations for CMS pages with homepage protection
+ * Provides CRUD operations for CMS pages with homepage protection.
  */
 interface PageRepositoryInterface
 {
     /**
-     * Get page by ID
-     *
-     * @param int $pageId
-     * @return Page|null
+     * Get page by ID.
      */
     public function getById(int $pageId): ?Page;
 
     /**
-     * Get page by URL key
-     *
-     * @param string $urlKey
-     * @return Page|null
+     * Get page by URL key.
      */
     public function getByUrlKey(string $urlKey): ?Page;
 
     /**
-     * Get homepage
+     * Get homepage.
      *
-     * @return Page
      * @throws \RuntimeException if homepage doesn't exist
      */
     public function getHomepage(): Page;
 
     /**
-     * Get all pages
+     * Get all pages.
      *
-     * @param bool $activeOnly
      * @return Page[]
      */
     public function getAll(bool $activeOnly = false): array;
 
     /**
-     * Save page
-     *
-     * @param Page $page
-     * @return Page
+     * Save page.
      */
     public function save(Page $page): Page;
 
     /**
-     * Delete page
+     * Delete page.
      *
-     * @param int $pageId
-     * @return bool
      * @throws \RuntimeException if trying to delete homepage
      */
     public function delete(int $pageId): bool;
 
     /**
-     * Check if page is homepage
-     *
-     * @param int $pageId
-     * @return bool
+     * Check if page is homepage.
      */
     public function isHomepage(int $pageId): bool;
 }

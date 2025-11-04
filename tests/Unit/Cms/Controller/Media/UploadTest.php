@@ -146,6 +146,10 @@ describe('Upload Security', function () {
         $response2 = $this->controller->execute($this->request);
         $body2 = json_decode($response2->getBody(), true);
         
+        // Both should succeed or fail, but always assert
+        expect($body1)->toHaveKey('success')
+            ->and($body2)->toHaveKey('success');
+        
         if ($body1['success'] && $body2['success']) {
             // Filenames should be different due to uniqid()
             expect($body1['filename'])->not->toBe($body2['filename']);

@@ -7,7 +7,7 @@ namespace Infinri\Core\Service;
 use Infinri\Core\App\Request;
 
 /**
- * Prevents brute force attacks by limiting request rates
+ * Prevents brute force attacks by limiting request rates.
  *
  * Features:
  * - Per-IP rate limiting
@@ -21,12 +21,12 @@ class RateLimiter
     /**
      * Rate limit storage (in-memory for simplicity)
      * In production, use Redis or database
-     * Structure: [key => [timestamp => count]]
+     * Structure: [key => [timestamp => count]].
      */
     private static array $storage = [];
 
     /**
-     * Default rate limits per action type
+     * Default rate limits per action type.
      */
     private const DEFAULT_LIMITS = [
         'login' => [
@@ -44,21 +44,21 @@ class RateLimiter
     ];
 
     /**
-     * Check if request is allowed under rate limit
+     * Check if request is allowed under rate limit.
      *
-     * @param string $action Action being performed (e.g., 'login', 'api')
-     * @param string $identifier Unique identifier (IP address, user ID, etc.)
-     * @param int|null $maxRequests Max requests allowed (null = use default)
+     * @param string   $action        Action being performed (e.g., 'login', 'api')
+     * @param string   $identifier    Unique identifier (IP address, user ID, etc.)
+     * @param int|null $maxRequests   Max requests allowed (null = use default)
      * @param int|null $windowSeconds Time window in seconds (null = use default)
+     *
      * @return bool True if request is allowed
      */
     public function attempt(
         string $action,
         string $identifier,
-        ?int   $maxRequests = null,
-        ?int   $windowSeconds = null
-    ): bool
-    {
+        ?int $maxRequests = null,
+        ?int $windowSeconds = null
+    ): bool {
         $limits = self::DEFAULT_LIMITS[$action] ?? self::DEFAULT_LIMITS['default'];
 
         $maxRequests = $maxRequests ?? $limits['requests'];
@@ -85,21 +85,21 @@ class RateLimiter
     }
 
     /**
-     * Check rate limit without recording attempt
+     * Check rate limit without recording attempt.
      *
-     * @param string $action Action being performed
-     * @param string $identifier Unique identifier
-     * @param int|null $maxRequests Max requests allowed
+     * @param string   $action        Action being performed
+     * @param string   $identifier    Unique identifier
+     * @param int|null $maxRequests   Max requests allowed
      * @param int|null $windowSeconds Time window in seconds
+     *
      * @return bool True if under rate limit
      */
     public function check(
         string $action,
         string $identifier,
-        ?int   $maxRequests = null,
-        ?int   $windowSeconds = null
-    ): bool
-    {
+        ?int $maxRequests = null,
+        ?int $windowSeconds = null
+    ): bool {
         $limits = self::DEFAULT_LIMITS[$action] ?? self::DEFAULT_LIMITS['default'];
 
         $maxRequests = $maxRequests ?? $limits['requests'];
@@ -115,21 +115,21 @@ class RateLimiter
     }
 
     /**
-     * Get number of remaining attempts
+     * Get number of remaining attempts.
      *
-     * @param string $action Action being performed
-     * @param string $identifier Unique identifier
-     * @param int|null $maxRequests Max requests allowed
+     * @param string   $action        Action being performed
+     * @param string   $identifier    Unique identifier
+     * @param int|null $maxRequests   Max requests allowed
      * @param int|null $windowSeconds Time window in seconds
+     *
      * @return int Number of attempts remaining
      */
     public function remaining(
         string $action,
         string $identifier,
-        ?int   $maxRequests = null,
-        ?int   $windowSeconds = null
-    ): int
-    {
+        ?int $maxRequests = null,
+        ?int $windowSeconds = null
+    ): int {
         $limits = self::DEFAULT_LIMITS[$action] ?? self::DEFAULT_LIMITS['default'];
 
         $maxRequests = $maxRequests ?? $limits['requests'];
@@ -145,30 +145,35 @@ class RateLimiter
     }
 
     /**
-     * Get seconds until rate limit resets
+     * Get seconds until rate limit resets.
      *
-     * @param string $action Action being performed
-     * @param string $identifier Unique identifier
+     * @param string   $action        Action being performed
+     * @param string   $identifier    Unique identifier
      * @param int|null $windowSeconds Time window in seconds
+     *
      * @return int Seconds until reset
      */
     public function retryAfter(
         string $action,
         string $identifier,
-        ?int   $windowSeconds = null
-    ): int
-    {
+        ?int $windowSeconds = null
+    ): int {
         $limits = self::DEFAULT_LIMITS[$action] ?? self::DEFAULT_LIMITS['default'];
         $windowSeconds = $windowSeconds ?? $limits['window'];
 
         $key = $this->getKey($action, $identifier);
 
-        if (!isset(self::$storage[$key]) || empty(self::$storage[$key])) {
+        if (! isset(self::$storage[$key]) || empty(self::$storage[$key])) {
             return 0;
         }
 
         // Get oldest timestamp in current window
-        $oldestTimestamp = min(array_keys(self::$storage[$key]));
+        $timestamps = array_keys(self::$storage[$key]);
+        if (empty($timestamps)) {
+            return 0;
+        }
+
+        $oldestTimestamp = (int) min($timestamps);
         $now = time();
 
         $resetTime = $oldestTimestamp + $windowSeconds;
@@ -177,11 +182,10 @@ class RateLimiter
     }
 
     /**
-     * Clear rate limit for specific action/identifier
+     * Clear rate limit for specific action/identifier.
      *
-     * @param string $action Action being performed
+     * @param string $action     Action being performed
      * @param string $identifier Unique identifier
-     * @return void
      */
     public function clear(string $action, string $identifier): void
     {
@@ -190,52 +194,53 @@ class RateLimiter
     }
 
     /**
-     * Rate limit based on Request object (uses client IP)
+     * Rate limit based on Request object (uses client IP).
      *
-     * @param Request $request Current request
-     * @param string $action Action being performed
-     * @param int|null $maxRequests Max requests allowed
+     * @param Request  $request       Current request
+     * @param string   $action        Action being performed
+     * @param int|null $maxRequests   Max requests allowed
      * @param int|null $windowSeconds Time window in seconds
+     *
      * @return bool True if request is allowed
      */
     public function attemptFromRequest(
         Request $request,
-        string  $action,
-        ?int    $maxRequests = null,
-        ?int    $windowSeconds = null
-    ): bool
-    {
+        string $action,
+        ?int $maxRequests = null,
+        ?int $windowSeconds = null
+    ): bool {
         $identifier = $request->getClientIp() ?? 'unknown';
+
         return $this->attempt($action, $identifier, $maxRequests, $windowSeconds);
     }
 
     /**
-     * Generate storage key
+     * Generate storage key.
      *
-     * @param string $action Action name
+     * @param string $action     Action name
      * @param string $identifier Unique identifier
+     *
      * @return string Storage key
      */
     private function getKey(string $action, string $identifier): string
     {
-        return sprintf('rate_limit:%s:%s', $action, $identifier);
+        return \sprintf('rate_limit:%s:%s', $action, $identifier);
     }
 
     /**
-     * Record an attempt
+     * Record an attempt.
      *
-     * @param string $key Storage key
-     * @param int $timestamp Current timestamp
-     * @return void
+     * @param string $key       Storage key
+     * @param int    $timestamp Current timestamp
      */
     private function record(string $key, int $timestamp): void
     {
-        if (!isset(self::$storage[$key])) {
+        if (! isset(self::$storage[$key])) {
             self::$storage[$key] = [];
         }
 
         // Use timestamp as key and increment count for deduplication
-        if (!isset(self::$storage[$key][$timestamp])) {
+        if (! isset(self::$storage[$key][$timestamp])) {
             self::$storage[$key][$timestamp] = 0;
         }
 
@@ -243,15 +248,16 @@ class RateLimiter
     }
 
     /**
-     * Count requests in current window
+     * Count requests in current window.
      *
-     * @param string $key Storage key
-     * @param int $windowStart Window start timestamp
+     * @param string $key         Storage key
+     * @param int    $windowStart Window start timestamp
+     *
      * @return int Number of requests
      */
     private function countRequests(string $key, int $windowStart): int
     {
-        if (!isset(self::$storage[$key])) {
+        if (! isset(self::$storage[$key])) {
             return 0;
         }
 
@@ -267,15 +273,14 @@ class RateLimiter
     }
 
     /**
-     * Clean up old entries outside the window
+     * Clean up old entries outside the window.
      *
-     * @param string $key Storage key
-     * @param int $windowStart Window start timestamp
-     * @return void
+     * @param string $key         Storage key
+     * @param int    $windowStart Window start timestamp
      */
     private function cleanup(string $key, int $windowStart): void
     {
-        if (!isset(self::$storage[$key])) {
+        if (! isset(self::$storage[$key])) {
             return;
         }
 
@@ -292,9 +297,7 @@ class RateLimiter
     }
 
     /**
-     * Clear all rate limit data (for testing)
-     *
-     * @return void
+     * Clear all rate limit data (for testing).
      */
     public function clearAll(): void
     {

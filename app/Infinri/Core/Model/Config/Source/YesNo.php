@@ -1,16 +1,17 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Model\Config\Source;
 
 /**
  * Yes/No Source Model
- * Provides boolean options for configuration fields
+ * Provides boolean options for configuration fields.
  */
 class YesNo
 {
     /**
-     * Options array
+     * Options array.
      */
     public function toOptionArray(): array
     {

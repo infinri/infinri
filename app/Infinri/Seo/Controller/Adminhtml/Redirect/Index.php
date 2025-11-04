@@ -1,13 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Seo\Controller\Adminhtml\Redirect;
 
-use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\App\Response;
+use Infinri\Core\Controller\AbstractAdminController;
 
 /**
- * Redirect Grid Controller
+ * Redirect Grid Controller.
  */
 class Index extends AbstractAdminController
 {

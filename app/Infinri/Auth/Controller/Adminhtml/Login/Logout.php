@@ -1,48 +1,51 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Auth\Controller\Adminhtml\Login;
 
-use Infinri\Core\Controller\AbstractAdminController;
-use Infinri\Core\App\Response;
 use Infinri\Admin\Service\RememberTokenService;
+use Infinri\Core\App\Response;
+use Infinri\Core\Controller\AbstractAdminController;
 use Infinri\Core\Helper\Logger;
 
 /**
  * Admin Logout Controller
- * Route: /admin/auth/login/logout
+ * Route: /admin/auth/login/logout.
  */
 class Logout extends AbstractAdminController
 {
     public function __construct(
-        \Infinri\Core\App\Request              $request,
-        \Infinri\Core\App\Response             $response,
+        \Infinri\Core\App\Request $request,
+        Response $response,
         \Infinri\Core\Model\View\LayoutFactory $layoutFactory,
-        \Infinri\Core\Security\CsrfGuard       $csrfGuard,
-        private readonly RememberTokenService  $rememberTokenService
+        \Infinri\Core\Security\CsrfGuard $csrfGuard,
+        private readonly RememberTokenService $rememberTokenService
     ) {
         parent::__construct($request, $response, $layoutFactory, $csrfGuard);
     }
 
     public function execute(): Response
     {
-        if (session_status() === PHP_SESSION_NONE) {
+        if (\PHP_SESSION_NONE === session_status()) {
             session_start();
         }
 
         if ($postError = $this->requirePost('/admin/dashboard/index')) {
             Logger::warning('Logout failed: Not a POST request');
+
             return $postError;
         }
 
         $csrfToken = $this->request->getPost('_csrf_token', '');
         $csrfTokenId = $this->request->getPost('_csrf_token_id', 'admin_logout');
 
-        if (!$this->validateCsrf($csrfTokenId, $csrfToken)) {
+        if (! $this->validateCsrf($csrfTokenId, $csrfToken)) {
             Logger::warning('Logout failed: Invalid CSRF token', [
                 'token_id' => $csrfTokenId,
-                'has_token' => !empty($csrfToken)
+                'has_token' => ! empty($csrfToken),
             ]);
+
             return $this->redirect('/admin/dashboard/index');
         }
 
@@ -50,7 +53,7 @@ class Logout extends AbstractAdminController
 
         Logger::info('Logout: Session before destroy', [
             'username' => $username,
-            'session_data' => array_keys($_SESSION)
+            'session_data' => array_keys($_SESSION),
         ]);
 
         // Delete remember me cookie if exists
@@ -65,20 +68,20 @@ class Logout extends AbstractAdminController
         $_SESSION = [];
 
         // Delete session cookie
-        if (ini_get("session.use_cookies")) {
+        if (\ini_get('session.use_cookies')) {
             $params = session_get_cookie_params();
             $sessionName = session_name();
-            if ($sessionName === false) {
+            if (false === $sessionName) {
                 $sessionName = 'PHPSESSID'; // Default session name
             }
             setcookie(
                 $sessionName,
                 '',
                 time() - 42000,
-                $params["path"],
-                $params["domain"],
-                $params["secure"],
-                $params["httponly"]
+                $params['path'],
+                $params['domain'],
+                $params['secure'],
+                $params['httponly']
             );
         }
 

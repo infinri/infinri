@@ -6,12 +6,12 @@ namespace Infinri\Core\Model\Cache;
 
 /**
  * Manages different cache types used by the framework
- * Each cache type can be enabled/disabled and cleared independently
+ * Each cache type can be enabled/disabled and cleared independently.
  */
 class TypeList
 {
     /**
-     * Cache types
+     * Cache types.
      */
     public const TYPE_CONFIG = 'config';
     public const TYPE_LAYOUT = 'layout';
@@ -21,28 +21,26 @@ class TypeList
     public const TYPE_ASSET = 'asset';
 
     /**
-     * Cache Factory
-     *
-     * @var Factory
+     * Cache Factory.
      */
     private Factory $factory;
 
     /**
-     * Enabled cache types
+     * Enabled cache types.
      *
      * @var array<string, bool>
      */
     private array $enabled = [];
 
     /**
-     * Cache type metadata
+     * Cache type metadata.
      *
      * @var array<string, array>
      */
     private array $types = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Factory|null $factory Cache factory
      */
@@ -53,9 +51,7 @@ class TypeList
     }
 
     /**
-     * Initialize cache types with metadata
-     *
-     * @return void
+     * Initialize cache types with metadata.
      */
     private function initializeTypes(): void
     {
@@ -99,14 +95,15 @@ class TypeList
     }
 
     /**
-     * Get cache pool for a type
+     * Get cache pool for a type.
      *
      * @param string $type Cache type
+     *
      * @return Pool|null Cache pool or null if type disabled
      */
     public function getCache(string $type): ?Pool
     {
-        if (!$this->isEnabled($type)) {
+        if (! $this->isEnabled($type)) {
             return null;
         }
 
@@ -114,9 +111,10 @@ class TypeList
     }
 
     /**
-     * Check if cache type is enabled
+     * Check if cache type is enabled.
      *
      * @param string $type Cache type
+     *
      * @return bool True if enabled
      */
     public function isEnabled(string $type): bool
@@ -125,10 +123,9 @@ class TypeList
     }
 
     /**
-     * Enable a cache type
+     * Enable a cache type.
      *
      * @param string $type Cache type
-     * @return void
      */
     public function enable(string $type): void
     {
@@ -138,10 +135,9 @@ class TypeList
     }
 
     /**
-     * Disable a cache type
+     * Disable a cache type.
      *
      * @param string $type Cache type
-     * @return void
      */
     public function disable(string $type): void
     {
@@ -151,21 +147,21 @@ class TypeList
     }
 
     /**
-     * Clear cache for a specific type
+     * Clear cache for a specific type.
      *
      * @param string $type Cache type
+     *
      * @return bool True on success
      */
     public function clear(string $type): bool
     {
         $cache = $this->factory->create($type);
+
         return $cache->clear();
     }
 
     /**
-     * Clear all cache types
-     *
-     * @return void
+     * Clear all cache types.
      */
     public function clearAll(): void
     {
@@ -173,7 +169,7 @@ class TypeList
     }
 
     /**
-     * Get all cache types
+     * Get all cache types.
      *
      * @return array Array of cache types with metadata
      */
@@ -183,7 +179,7 @@ class TypeList
     }
 
     /**
-     * Get enabled cache types
+     * Get enabled cache types.
      *
      * @return array Array of enabled cache type names
      */
@@ -201,9 +197,10 @@ class TypeList
     }
 
     /**
-     * Get cache type metadata
+     * Get cache type metadata.
      *
      * @param string $type Cache type
+     *
      * @return array|null Metadata array or null if not found
      */
     public function getTypeMetadata(string $type): ?array
@@ -212,9 +209,10 @@ class TypeList
     }
 
     /**
-     * Check if cache type exists
+     * Check if cache type exists.
      *
      * @param string $type Cache type
+     *
      * @return bool True if exists
      */
     public function hasType(string $type): bool

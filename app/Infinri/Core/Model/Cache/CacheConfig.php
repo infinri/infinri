@@ -6,12 +6,12 @@ namespace Infinri\Core\Model\Cache;
 
 /**
  * Centralized cache configuration with intelligent adapter selection
- * Implements Redis-first strategy with automatic fallback
+ * Implements Redis-first strategy with automatic fallback.
  */
 class CacheConfig
 {
     /**
-     * Get optimal cache adapter based on environment and availability
+     * Get optimal cache adapter based on environment and availability.
      *
      * @return string Optimal adapter name
      */
@@ -26,7 +26,7 @@ class CacheConfig
     }
 
     /**
-     * Get environment-appropriate TTL
+     * Get environment-appropriate TTL.
      *
      * @return int TTL in seconds
      */
@@ -36,7 +36,7 @@ class CacheConfig
     }
 
     /**
-     * Get cache prefix from environment
+     * Get cache prefix from environment.
      *
      * @return string Cache prefix
      */
@@ -46,20 +46,20 @@ class CacheConfig
     }
 
     /**
-     * Check if Redis is available and configured
+     * Check if Redis is available and configured.
      *
      * @return bool True if Redis is available
      */
     public static function isRedisAvailable(): bool
     {
         // Check if Redis extension is loaded
-        if (!extension_loaded('redis')) {
+        if (! \extension_loaded('redis')) {
             return false;
         }
 
         // Check if Redis is configured in environment
         $driver = $_ENV['CACHE_DRIVER'] ?? 'file';
-        if ($driver !== 'redis') {
+        if ('redis' !== $driver) {
             return false;
         }
 
@@ -68,40 +68,41 @@ class CacheConfig
     }
 
     /**
-     * Check if APCu is available
+     * Check if APCu is available.
      *
      * @return bool True if APCu is available
      */
     public static function isApcuAvailable(): bool
     {
-        return extension_loaded('apcu') && 
-               ini_get('apc.enabled') && 
-               !self::isCliMode();
+        return \extension_loaded('apcu')
+               && \ini_get('apc.enabled')
+               && ! self::isCliMode();
     }
 
     /**
-     * Check if running in production environment
+     * Check if running in production environment.
      *
      * @return bool True if production
      */
     public static function isProduction(): bool
     {
         $env = $_ENV['APP_ENV'] ?? 'development';
-        return in_array($env, ['production', 'prod'], true);
+
+        return \in_array($env, ['production', 'prod'], true);
     }
 
     /**
-     * Check if running in CLI mode (APCu not available in CLI)
+     * Check if running in CLI mode (APCu not available in CLI).
      *
      * @return bool True if CLI mode
      */
     public static function isCliMode(): bool
     {
-        return php_sapi_name() === 'cli';
+        return \PHP_SAPI === 'cli';
     }
 
     /**
-     * Test Redis connection
+     * Test Redis connection.
      *
      * @return bool True if can connect to Redis
      */
@@ -109,7 +110,7 @@ class CacheConfig
     {
         static $canConnect = null;
 
-        if ($canConnect !== null) {
+        if (null !== $canConnect) {
             return $canConnect;
         }
 
@@ -120,18 +121,18 @@ class CacheConfig
             $timeout = 1; // 1 second timeout for connection test
 
             $connected = $redis->connect($host, $port, $timeout);
-            
+
             if ($connected) {
                 // Test authentication if password is set
                 $password = $_ENV['REDIS_PASSWORD'] ?? '';
-                if ($password !== '') {
+                if ('' !== $password) {
                     $redis->auth($password);
                 }
 
                 // Test basic operation
                 $redis->ping();
                 $redis->close();
-                
+
                 $canConnect = true;
             } else {
                 $canConnect = false;
@@ -147,7 +148,7 @@ class CacheConfig
     }
 
     /**
-     * Get Redis configuration array
+     * Get Redis configuration array.
      *
      * @return array Redis configuration
      */
@@ -164,9 +165,10 @@ class CacheConfig
     }
 
     /**
-     * Get cache configuration for specific cache type
+     * Get cache configuration for specific cache type.
      *
      * @param string $cacheType Cache type (config, layout, block_html, etc.)
+     *
      * @return array Cache configuration
      */
     public static function getCacheTypeConfig(string $cacheType): array
@@ -195,21 +197,22 @@ class CacheConfig
     }
 
     /**
-     * Check if specific cache type is enabled
+     * Check if specific cache type is enabled.
      *
      * @param string $cacheType Cache type
+     *
      * @return bool True if enabled
      */
     public static function isCacheTypeEnabled(string $cacheType): bool
     {
         $envKey = 'CACHE_' . strtoupper($cacheType) . '_ENABLED';
         $enabled = $_ENV[$envKey] ?? 'true';
-        
+
         // Respect development disable cache setting
-        if (($_ENV['DEV_DISABLE_CACHE'] ?? 'false') === 'true' && !self::isProduction()) {
+        if (($_ENV['DEV_DISABLE_CACHE'] ?? 'false') === 'true' && ! self::isProduction()) {
             return false;
         }
 
-        return filter_var($enabled, FILTER_VALIDATE_BOOLEAN);
+        return filter_var($enabled, \FILTER_VALIDATE_BOOLEAN);
     }
 }

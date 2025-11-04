@@ -19,6 +19,9 @@ class CacheConfigTest extends TestCase
         unset($_ENV['APP_ENV']);
         unset($_ENV['CACHE_PREFIX']);
         unset($_ENV['REDIS_HOST']);
+        unset($_ENV['CACHE_CONFIG_ENABLED']);
+        unset($_ENV['CACHE_LAYOUT_ENABLED']);
+        unset($_ENV['DEV_DISABLE_CACHE']);
     }
 
     public function testGetOptimalAdapterReturnsFilesystemWhenNoRedisOrApcu(): void
@@ -151,7 +154,7 @@ class CacheConfigTest extends TestCase
         $this->assertArrayHasKey('ttl', $config);
         $this->assertArrayHasKey('prefix', $config);
         
-        $this->assertStringContains('test_', $config['prefix']);
+        $this->assertStringContainsString('test_', $config['prefix']);
     }
 
     public function testGetCacheTypeConfigAppliesTtlOverrides(): void

@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Block;
 
 /**
  * Renders a proper <script> tag for JavaScript files
- * More secure and maintainable than raw HTML in layout XML
+ * More secure and maintainable than raw HTML in layout XML.
  */
 class Js extends AbstractBlock
 {
@@ -25,27 +26,25 @@ class Js extends AbstractBlock
     private bool $async = false;
 
     /**
-     * Set script src
+     * Set script src.
      *
-     * @param string $src
      * @return $this
      */
     public function setSrc(string $src): self
     {
         $this->src = $src;
+
         return $this;
     }
 
     /**
-     * Get script src
-     *
-     * @return string
+     * Get script src.
      */
     public function getSrc(): string
     {
         // Check data array first (from XML)
         $dataSrc = $this->getData('src');
-        if ($dataSrc !== null) {
+        if (null !== $dataSrc) {
             return $dataSrc;
         }
 
@@ -53,63 +52,57 @@ class Js extends AbstractBlock
     }
 
     /**
-     * Set defer attribute
+     * Set defer attribute.
      *
-     * @param bool $defer
      * @return $this
      */
     public function setDefer(bool $defer): self
     {
         $this->defer = $defer;
+
         return $this;
     }
 
     /**
-     * Get defer attribute
-     *
-     * @return bool
+     * Get defer attribute.
      */
     public function getDefer(): bool
     {
         $dataDefer = $this->getData('defer');
-        if ($dataDefer !== null) {
-            return filter_var($dataDefer, FILTER_VALIDATE_BOOLEAN);
+        if (null !== $dataDefer) {
+            return filter_var($dataDefer, \FILTER_VALIDATE_BOOLEAN);
         }
 
         return $this->defer;
     }
 
     /**
-     * Set async attribute
+     * Set async attribute.
      *
-     * @param bool $async
      * @return $this
      */
     public function setAsync(bool $async): self
     {
         $this->async = $async;
+
         return $this;
     }
 
     /**
-     * Get async attribute
-     *
-     * @return bool
+     * Get async attribute.
      */
     public function getAsync(): bool
     {
         $dataAsync = $this->getData('async');
-        if ($dataAsync !== null) {
-            return filter_var($dataAsync, FILTER_VALIDATE_BOOLEAN);
+        if (null !== $dataAsync) {
+            return filter_var($dataAsync, \FILTER_VALIDATE_BOOLEAN);
         }
 
         return $this->async;
     }
 
     /**
-     * Render script tag
-     *
-     * @return string
+     * Render script tag.
      */
     public function toHtml(): string
     {
@@ -120,7 +113,7 @@ class Js extends AbstractBlock
         }
 
         $attributes = [
-            'src' => htmlspecialchars($src, ENT_QUOTES, 'UTF-8'),
+            'src' => htmlspecialchars($src, \ENT_QUOTES, 'UTF-8'),
         ];
 
         if ($this->getDefer()) {
@@ -137,10 +130,10 @@ class Js extends AbstractBlock
                 // Boolean attribute (defer, async)
                 $attributeString[] = $key;
             } else {
-                $attributeString[] = sprintf('%s="%s"', $key, $value);
+                $attributeString[] = \sprintf('%s="%s"', $key, $value);
             }
         }
 
-        return sprintf('<script %s></script>', implode(' ', $attributeString));
+        return \sprintf('<script %s></script>', implode(' ', $attributeString));
     }
 }

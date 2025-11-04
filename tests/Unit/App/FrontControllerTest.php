@@ -69,7 +69,6 @@ describe('FrontController', function () {
         $this->frontController = new FrontController(
             $this->router,
             $this->dispatcher,
-            $this->request,
             new SecurityHeadersMiddleware(),
             new \Infinri\Core\App\Middleware\AuthenticationMiddleware($rememberTokenService, $adminUserResource)
         );

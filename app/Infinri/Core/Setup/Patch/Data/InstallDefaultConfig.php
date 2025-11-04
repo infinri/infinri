@@ -1,50 +1,47 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Setup\Patch\Data;
 
 use Infinri\Core\Setup\Patch\DataPatchInterface;
-use PDO;
 
 /**
- * Install Default Configuration
- * 
+ * Install Default Configuration.
+ *
  * Installs default system configuration values
  */
 class InstallDefaultConfig implements DataPatchInterface
 {
-    private PDO $connection;
-    
-    public function __construct(PDO $connection)
+    private \PDO $connection;
+
+    public function __construct(\PDO $connection)
     {
         $this->connection = $connection;
     }
-    
-    /**
-     * @inheritDoc
-     */
+
     public function apply(): void
     {
         $configs = $this->getDefaultConfigs();
-        
+
         foreach ($configs as $config) {
             // Check if config already exists
             $stmt = $this->connection->prepare(
-                "SELECT config_id FROM core_config_data 
-                 WHERE scope = ? AND scope_id = ? AND path = ?"
+                'SELECT config_id FROM core_config_data 
+                 WHERE scope = ? AND scope_id = ? AND path = ?'
             );
             $stmt->execute([$config['scope'], $config['scope_id'], $config['path']]);
-            
+
             if ($stmt->fetchColumn()) {
                 continue; // Skip if exists
             }
-            
+
             // Insert config
             $stmt = $this->connection->prepare(
-                "INSERT INTO core_config_data (scope, scope_id, path, value) 
-                 VALUES (?, ?, ?, ?)"
+                'INSERT INTO core_config_data (scope, scope_id, path, value) 
+                 VALUES (?, ?, ?, ?)'
             );
-            
+
             $stmt->execute([
                 $config['scope'],
                 $config['scope_id'],
@@ -53,11 +50,9 @@ class InstallDefaultConfig implements DataPatchInterface
             ]);
         }
     }
-    
+
     /**
-     * Get default configuration values
-     *
-     * @return array
+     * Get default configuration values.
      */
     private function getDefaultConfigs(): array
     {
@@ -75,7 +70,7 @@ class InstallDefaultConfig implements DataPatchInterface
                 'path' => 'general/site/tagline',
                 'value' => 'A professional Magento-style framework',
             ],
-            
+
             // Web Settings
             [
                 'scope' => 'default',
@@ -95,7 +90,7 @@ class InstallDefaultConfig implements DataPatchInterface
                 'path' => 'web/seo/use_rewrites',
                 'value' => '1',
             ],
-            
+
             // Design Settings
             [
                 'scope' => 'default',
@@ -115,7 +110,7 @@ class InstallDefaultConfig implements DataPatchInterface
                 'path' => 'design/head/default_description',
                 'value' => 'Professional portfolio website built with Infinri framework',
             ],
-            
+
             // CMS Settings
             [
                 'scope' => 'default',
@@ -129,7 +124,7 @@ class InstallDefaultConfig implements DataPatchInterface
                 'path' => 'cms/no_route/page_id',
                 'value' => '2',
             ],
-            
+
             // Developer Settings
             [
                 'scope' => 'default',
@@ -143,7 +138,7 @@ class InstallDefaultConfig implements DataPatchInterface
                 'path' => 'dev/log/enabled',
                 'value' => '1',
             ],
-            
+
             // Theme Footer Settings (matches system.xml structure)
             [
                 'scope' => 'default',
@@ -166,21 +161,21 @@ class InstallDefaultConfig implements DataPatchInterface
                         'label' => 'GitHub',
                         'url' => 'https://github.com/infinri',
                         'icon' => 'github',
-                        'platform' => 'GitHub'
+                        'platform' => 'GitHub',
                     ],
                     [
                         'label' => 'Twitter',
                         'url' => 'https://twitter.com/infinri',
                         'icon' => 'twitter',
-                        'platform' => 'Twitter'
+                        'platform' => 'Twitter',
                     ],
                     [
                         'label' => 'LinkedIn',
                         'url' => 'https://linkedin.com/company/infinri',
                         'icon' => 'linkedin',
-                        'platform' => 'LinkedIn'
+                        'platform' => 'LinkedIn',
                     ],
-                ], JSON_PRETTY_PRINT),
+                ], \JSON_PRETTY_PRINT),
             ],
             [
                 'scope' => 'default',
@@ -190,18 +185,12 @@ class InstallDefaultConfig implements DataPatchInterface
             ],
         ];
     }
-    
-    /**
-     * @inheritDoc
-     */
+
     public static function getDependencies(): array
     {
         return [];
     }
-    
-    /**
-     * @inheritDoc
-     */
+
     public function getAliases(): array
     {
         return [];

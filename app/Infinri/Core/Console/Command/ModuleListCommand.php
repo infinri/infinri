@@ -4,31 +4,28 @@ declare(strict_types=1);
 
 namespace Infinri\Core\Console\Command;
 
+use Infinri\Core\Model\ComponentRegistrar;
+use Infinri\Core\Model\Module\ModuleList;
+use Infinri\Core\Model\Module\ModuleManager;
+use Infinri\Core\Model\Module\ModuleReader;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Console\Helper\Table;
-use Infinri\Core\Model\Module\ModuleList;
-use Infinri\Core\Model\Module\ModuleManager;
-use Infinri\Core\Model\ComponentRegistrar;
-use Infinri\Core\Model\Module\ModuleReader;
 
 /**
- * Lists all registered modules
+ * Lists all registered modules.
  */
 class ModuleListCommand extends Command
 {
-
     /**
-     * Module Manager
-     *
-     * @var ModuleManager|null
+     * Module Manager.
      */
     private ?ModuleManager $moduleManager = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ModuleManager|null $moduleManager Module Manager
      */
@@ -39,9 +36,7 @@ class ModuleListCommand extends Command
     }
 
     /**
-     * Configure command
-     *
-     * @return void
+     * Configure command.
      */
     protected function configure(): void
     {
@@ -52,17 +47,18 @@ class ModuleListCommand extends Command
     }
 
     /**
-     * Execute command
+     * Execute command.
      *
-     * @param InputInterface $input Input
+     * @param InputInterface  $input  Input
      * @param OutputInterface $output Output
+     *
      * @return int Exit code
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        if ($this->moduleManager === null) {
+        if (null === $this->moduleManager) {
             $registrar = ComponentRegistrar::getInstance();
             $moduleReader = new ModuleReader();
             $moduleList = new ModuleList($registrar, $moduleReader);
@@ -77,11 +73,11 @@ class ModuleListCommand extends Command
         $modules = $this->moduleManager->getModuleList()->getAll();
 
         foreach ($modules as $moduleName => $moduleData) {
-            $status = $this->moduleManager->isEnabled($moduleName) 
-                ? '<fg=green>Enabled</>' 
+            $status = $this->moduleManager->isEnabled($moduleName)
+                ? '<fg=green>Enabled</>'
                 : '<fg=red>Disabled</>';
 
-            $dependencies = isset($moduleData['sequence']) && !empty($moduleData['sequence'])
+            $dependencies = isset($moduleData['sequence']) && ! empty($moduleData['sequence'])
                 ? implode(', ', $moduleData['sequence'])
                 : '<fg=yellow>None</>';
 
@@ -97,13 +93,13 @@ class ModuleListCommand extends Command
 
         $table->render();
 
-        $enabledCount = count($this->moduleManager->getEnabledModules());
-        $totalCount = count($modules);
+        $enabledCount = \count($this->moduleManager->getEnabledModules());
+        $totalCount = \count($modules);
 
         $io->newLine();
         $io->text("Total modules: {$totalCount}");
         $io->text("Enabled: {$enabledCount}");
-        $io->text("Disabled: " . ($totalCount - $enabledCount));
+        $io->text('Disabled: ' . ($totalCount - $enabledCount));
 
         return Command::SUCCESS;
     }

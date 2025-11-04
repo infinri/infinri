@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Cms\Controller\Adminhtml\Page;
@@ -10,7 +11,8 @@ class Delete extends AbstractDeleteController
 {
     public function __construct(
         private readonly PageRepository $pageRepository
-    ) {}
+    ) {
+    }
 
     protected function getRepository(): PageRepository
     {

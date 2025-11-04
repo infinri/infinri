@@ -8,7 +8,7 @@ use Infinri\Core\Model\Url\Builder;
 describe('URL Helper', function () {
     
     beforeEach(function () {
-        $builder = new Builder(null, 'http://localhost');
+        $builder = new Builder('http://localhost', false);
         $this->helper = new Url($builder);
     });
     

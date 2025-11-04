@@ -8,27 +8,24 @@ use Infinri\Core\Model\AbstractModel;
 use Infinri\Menu\Model\ResourceModel\Menu as MenuResource;
 
 /**
- * Represents a menu container entity (e.g., "Main Navigation", "Footer Links")
+ * Represents a menu container entity (e.g., "Main Navigation", "Footer Links").
  */
 class Menu extends AbstractModel
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param MenuResource $resource
      * @param array<string, mixed> $data
      */
     public function __construct(
         protected readonly MenuResource $resource,
-        array                           $data = []
+        array $data = []
     ) {
         parent::__construct($data);
     }
 
     /**
-     * Get resource model
-     *
-     * @return MenuResource
+     * Get resource model.
      */
     protected function getResource(): MenuResource
     {
@@ -36,20 +33,18 @@ class Menu extends AbstractModel
     }
 
     /**
-     * Get menu ID
-     *
-     * @return int|null
+     * Get menu ID.
      */
     public function getMenuId(): ?int
     {
         $value = $this->getData('menu_id');
-        return $value !== null ? (int)$value : null;
+
+        return null !== $value ? (int) $value : null;
     }
 
     /**
-     * Set menu ID
+     * Set menu ID.
      *
-     * @param int $id
      * @return $this
      */
     public function setMenuId(int $id): self
@@ -58,9 +53,7 @@ class Menu extends AbstractModel
     }
 
     /**
-     * Get identifier
-     *
-     * @return string|null
+     * Get identifier.
      */
     public function getIdentifier(): ?string
     {
@@ -68,9 +61,8 @@ class Menu extends AbstractModel
     }
 
     /**
-     * Set identifier
+     * Set identifier.
      *
-     * @param string $identifier
      * @return $this
      */
     public function setIdentifier(string $identifier): self
@@ -79,9 +71,7 @@ class Menu extends AbstractModel
     }
 
     /**
-     * Get title
-     *
-     * @return string|null
+     * Get title.
      */
     public function getTitle(): ?string
     {
@@ -89,9 +79,8 @@ class Menu extends AbstractModel
     }
 
     /**
-     * Set title
+     * Set title.
      *
-     * @param string $title
      * @return $this
      */
     public function setTitle(string $title): self
@@ -100,19 +89,16 @@ class Menu extends AbstractModel
     }
 
     /**
-     * Check if menu is active
-     *
-     * @return bool
+     * Check if menu is active.
      */
     public function isActive(): bool
     {
-        return (bool)$this->getData('is_active');
+        return (bool) $this->getData('is_active');
     }
 
     /**
-     * Set active status
+     * Set active status.
      *
-     * @param bool $isActive
      * @return $this
      */
     public function setIsActive(bool $isActive): self
@@ -121,9 +107,7 @@ class Menu extends AbstractModel
     }
 
     /**
-     * Get created at timestamp
-     *
-     * @return string|null
+     * Get created at timestamp.
      */
     public function getCreatedAt(): ?string
     {
@@ -131,9 +115,7 @@ class Menu extends AbstractModel
     }
 
     /**
-     * Get updated at timestamp
-     *
-     * @return string|null
+     * Get updated at timestamp.
      */
     public function getUpdatedAt(): ?string
     {
@@ -141,9 +123,8 @@ class Menu extends AbstractModel
     }
 
     /**
-     * Validate menu data
+     * Validate menu data.
      *
-     * @return void
      * @throws \InvalidArgumentException
      */
     public function validate(): void
@@ -159,14 +140,12 @@ class Menu extends AbstractModel
         $identifier = $this->getIdentifier();
         if (empty($identifier)) {
             $errors[] = 'Menu identifier is required';
-        } elseif (!preg_match('/^[a-z0-9_-]+$/', $identifier)) {
+        } elseif (! preg_match('/^[a-z0-9_-]+$/', $identifier)) {
             $errors[] = 'Identifier can only contain lowercase letters, numbers, hyphens, and underscores';
         }
 
-        if (!empty($errors)) {
-            throw new \InvalidArgumentException(
-                'Menu validation failed: ' . implode(', ', $errors)
-            );
+        if (! empty($errors)) {
+            throw new \InvalidArgumentException('Menu validation failed: ' . implode(', ', $errors));
         }
     }
 }

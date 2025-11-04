@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Admin\Model\ResourceModel;
@@ -6,7 +7,7 @@ namespace Infinri\Admin\Model\ResourceModel;
 use Infinri\Core\Model\ResourceModel\AbstractResource;
 
 /**
- * Database operations for admin_users table
+ * Database operations for admin_users table.
  */
 class AdminUser extends AbstractResource
 {
@@ -14,22 +15,19 @@ class AdminUser extends AbstractResource
      * @var string Main table name
      */
     protected string $mainTable = 'admin_users';
-    
+
     /**
      * @var string Primary key field
      */
     protected string $primaryKey = 'user_id';
-    
+
     /**
      * @var string ID field name
      */
     protected string $idFieldName = 'user_id';
 
     /**
-     * Load admin user by username
-     *
-     * @param string $username
-     * @return array|false
+     * Load admin user by username.
      */
     public function loadByUsername(string $username): array|false
     {
@@ -37,10 +35,7 @@ class AdminUser extends AbstractResource
     }
 
     /**
-     * Load admin user by email
-     *
-     * @param string $email
-     * @return array|false
+     * Load admin user by email.
      */
     public function loadByEmail(string $email): array|false
     {
@@ -48,9 +43,8 @@ class AdminUser extends AbstractResource
     }
 
     /**
-     * Update last login timestamp
+     * Update last login timestamp.
      *
-     * @param int $userId
      * @return int Affected rows
      */
     public function updateLastLogin(int $userId): int
@@ -64,13 +58,12 @@ class AdminUser extends AbstractResource
     }
 
     /**
-     * Get all admin users
-     *
-     * @return array
+     * Get all admin users.
      */
     public function findAll(): array
     {
         $stmt = $this->connection->query("SELECT * FROM {$this->mainTable} ORDER BY created_at DESC");
+
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 }

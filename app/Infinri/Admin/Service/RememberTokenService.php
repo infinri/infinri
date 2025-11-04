@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Admin\Service;
@@ -8,7 +9,7 @@ use Infinri\Core\Helper\Logger;
 use Random\RandomException;
 
 /**
- * Handles remember-me token generation, validation, and cleanup
+ * Handles remember-me token generation, validation, and cleanup.
  */
 class RememberTokenService
 {
@@ -18,12 +19,14 @@ class RememberTokenService
 
     public function __construct(
         private readonly RememberTokenResource $tokenResource
-    ) {}
+    ) {
+    }
 
     /**
-     * Generate and store a new remember token
+     * Generate and store a new remember token.
      *
      * @return string The plaintext token to set in cookie
+     *
      * @throws RandomException
      */
     public function generateToken(int $userId, string $ipAddress, string $userAgent): string
@@ -49,7 +52,7 @@ class RememberTokenService
     }
 
     /**
-     * Validate a remember token and return user ID if valid
+     * Validate a remember token and return user ID if valid.
      */
     public function validateToken(string $token): int|false
     {
@@ -57,8 +60,9 @@ class RememberTokenService
 
         $tokenData = $this->tokenResource->findByTokenHash($tokenHash);
 
-        if (!$tokenData) {
+        if (! $tokenData) {
             Logger::debug('Remember token not found', ['token_hash' => substr($tokenHash, 0, 8) . '...']);
+
             return false;
         }
 
@@ -67,6 +71,7 @@ class RememberTokenService
         if ($expiresAt < time()) {
             Logger::info('Remember token expired', ['token_id' => $tokenData['token_id']]);
             $this->tokenResource->deleteByTokenHash($tokenHash);
+
             return false;
         }
 
@@ -75,14 +80,14 @@ class RememberTokenService
 
         Logger::info('Remember token validated', [
             'user_id' => $tokenData['user_id'],
-            'token_id' => $tokenData['token_id']
+            'token_id' => $tokenData['token_id'],
         ]);
 
-        return (int)$tokenData['user_id'];
+        return (int) $tokenData['user_id'];
     }
 
     /**
-     * Set remember cookie in browser
+     * Set remember cookie in browser.
      */
     public function setRememberCookie(string $token): bool
     {
@@ -97,13 +102,13 @@ class RememberTokenService
                 'domain' => '',
                 'secure' => true,
                 'httponly' => true,
-                'samesite' => 'Strict'
+                'samesite' => 'Strict',
             ]
         );
     }
 
     /**
-     * Get remember token from cookie
+     * Get remember token from cookie.
      */
     public function getRememberCookie(): ?string
     {
@@ -111,7 +116,7 @@ class RememberTokenService
     }
 
     /**
-     * Delete remember cookie
+     * Delete remember cookie.
      */
     public function deleteRememberCookie(): bool
     {
@@ -125,13 +130,13 @@ class RememberTokenService
                 'path' => '/',
                 'secure' => true,
                 'httponly' => true,
-                'samesite' => 'Strict'
+                'samesite' => 'Strict',
             ]
         );
     }
 
     /**
-     * Revoke token (delete from database)
+     * Revoke token (delete from database).
      */
     public function revokeToken(string $token): void
     {
@@ -141,7 +146,7 @@ class RememberTokenService
     }
 
     /**
-     * Revoke all tokens for a user
+     * Revoke all tokens for a user.
      */
     public function revokeAllUserTokens(int $userId): void
     {
@@ -150,12 +155,13 @@ class RememberTokenService
     }
 
     /**
-     * Clean up expired tokens (run periodically)
+     * Clean up expired tokens (run periodically).
      */
     public function cleanupExpiredTokens(): int
     {
         $deleted = $this->tokenResource->deleteExpired();
         Logger::info('Expired remember tokens cleaned up', ['count' => $deleted]);
+
         return $deleted;
     }
 }

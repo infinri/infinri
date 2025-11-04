@@ -7,27 +7,29 @@ namespace Infinri\Core\Helper;
 use Random\RandomException;
 
 /**
- * General utility functions for data manipulation
+ * General utility functions for data manipulation.
  */
 class Data
 {
     /**
-     * Check if value is empty (null, empty string, empty array)
+     * Check if value is empty (null, empty string, empty array).
      *
      * @param mixed $value Value to check
+     *
      * @return bool True if empty
      */
     public function isEmpty(mixed $value): bool
     {
-        return $value === null || $value === '' || $value === [];
+        return null === $value || '' === $value || [] === $value;
     }
 
     /**
-     * Get value from array by path with dot notation
+     * Get value from array by path with dot notation.
      *
-     * @param array<string, mixed> $array Array to search
-     * @param string $path Path (e.g., 'user.address.city')
-     * @param mixed $default Default value if not found
+     * @param array<string, mixed> $array   Array to search
+     * @param string               $path    Path (e.g., 'user.address.city')
+     * @param mixed                $default Default value if not found
+     *
      * @return mixed Value or default
      */
     public function getArrayValue(array $array, string $path, mixed $default = null): mixed
@@ -35,7 +37,7 @@ class Data
         $keys = explode('.', $path);
 
         foreach ($keys as $key) {
-            if (!is_array($array) || !isset($array[$key])) {
+            if (! \is_array($array) || ! isset($array[$key])) {
                 return $default;
             }
 
@@ -46,12 +48,11 @@ class Data
     }
 
     /**
-     * Set value in array by path with dot notation
+     * Set value in array by path with dot notation.
      *
      * @param array<string, mixed> &$array Array to modify
-     * @param string $path Path (e.g., 'user.address.city')
-     * @param mixed $value Value to set
-     * @return void
+     * @param string               $path   Path (e.g., 'user.address.city')
+     * @param mixed                $value  Value to set
      */
     public function setArrayValue(array &$array, string $path, mixed $value): void
     {
@@ -59,7 +60,7 @@ class Data
         $current = &$array;
 
         foreach ($keys as $key) {
-            if (!isset($current[$key]) || !is_array($current[$key])) {
+            if (! isset($current[$key]) || ! \is_array($current[$key])) {
                 $current[$key] = [];
             }
 
@@ -70,10 +71,11 @@ class Data
     }
 
     /**
-     * Convert array to XML
+     * Convert array to XML.
      *
-     * @param array<string, mixed> $array Array to convert
-     * @param string $rootElement Root element name
+     * @param array<string, mixed> $array       Array to convert
+     * @param string               $rootElement Root element name
+     *
      * @return string XML string
      */
     public function arrayToXml(array $array, string $rootElement = 'root'): string
@@ -82,36 +84,40 @@ class Data
         $this->arrayToXmlRecursive($array, $xml);
 
         $result = $xml->asXML();
-        if ($result === false) {
+        if (false === $result) {
             throw new \RuntimeException('Failed to convert array to XML');
         }
+
         return $result;
     }
 
     /**
-     * Recursive helper for array to XML conversion
+     * Recursive helper for array to XML conversion.
      *
-     * @param array<string, mixed> $array Array data
-     * @param \SimpleXMLElement $xml XML element
-     * @return void
+     * @param array<int|string, mixed> $array Array data
+     * @param \SimpleXMLElement        $xml   XML element
      */
     private function arrayToXmlRecursive(array $array, \SimpleXMLElement $xml): void
     {
         foreach ($array as $key => $value) {
-            if (is_array($value)) {
-                $child = $xml->addChild((string)$key);
+            if (\is_int($key)) {
+                $key = 'item_' . $key;
+            }
+            if (\is_array($value)) {
+                $child = $xml->addChild($key);
                 $this->arrayToXmlRecursive($value, $child);
             } else {
-                $xml->addChild((string)$key, htmlspecialchars((string)$value));
+                $xml->addChild($key, htmlspecialchars((string) $value));
             }
         }
     }
 
     /**
-     * Flatten multi-dimensional array
+     * Flatten multi-dimensional array.
      *
-     * @param array<string, mixed> $array Array to flatten
-     * @param string $prefix Key prefix
+     * @param array<string, mixed> $array  Array to flatten
+     * @param string               $prefix Key prefix
+     *
      * @return array<string, mixed> Flattened array
      */
     public function flattenArray(array $array, string $prefix = ''): array
@@ -119,9 +125,9 @@ class Data
         $result = [];
 
         foreach ($array as $key => $value) {
-            $newKey = $prefix === '' ? $key : $prefix . '.' . $key;
+            $newKey = '' === $prefix ? $key : $prefix . '.' . $key;
 
-            if (is_array($value)) {
+            if (\is_array($value)) {
                 $result = array_merge($result, $this->flattenArray($value, $newKey));
             } else {
                 $result[$newKey] = $value;
@@ -132,10 +138,11 @@ class Data
     }
 
     /**
-     * Format bytes to human-readable size
+     * Format bytes to human-readable size.
      *
-     * @param int $bytes Bytes
+     * @param int $bytes     Bytes
      * @param int $precision Decimal precision
+     *
      * @return string Formatted size (e.g., "1.5 MB")
      */
     public function formatBytes(int $bytes, int $precision = 2): string
@@ -143,7 +150,7 @@ class Data
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];
         $i = 0;
 
-        while ($bytes >= 1024 && $i < count($units) - 1) {
+        while ($bytes >= 1024 && $i < \count($units) - 1) {
             $bytes /= 1024;
             $i++;
         }
@@ -152,11 +159,13 @@ class Data
     }
 
     /**
-     * Generate random string
+     * Generate random string.
      *
-     * @param int $length String length
+     * @param int    $length     String length
      * @param string $characters Characters to use
+     *
      * @return string Random string
+     *
      * @throws RandomException
      */
     public function randomString(int $length = 32, string $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'): string
@@ -164,10 +173,10 @@ class Data
         if ($length <= 0) {
             return '';
         }
-        
+
         $result = '';
-        $max = strlen($characters) - 1;
-        
+        $max = \strlen($characters) - 1;
+
         if ($max < 0) {
             throw new \InvalidArgumentException('Characters string cannot be empty');
         }
@@ -180,11 +189,12 @@ class Data
     }
 
     /**
-     * Truncate string with ellipsis
+     * Truncate string with ellipsis.
      *
-     * @param string $string String to truncate
-     * @param int $length Max length
+     * @param string $string   String to truncate
+     * @param int    $length   Max length
      * @param string $ellipsis Ellipsis character(s)
+     *
      * @return string Truncated string
      */
     public function truncate(string $string, int $length, string $ellipsis = '...'): string
@@ -197,10 +207,11 @@ class Data
     }
 
     /**
-     * Convert string to slug (URL-friendly)
+     * Convert string to slug (URL-friendly).
      *
-     * @param string $string String to convert
+     * @param string $string    String to convert
      * @param string $separator Separator character
+     *
      * @return string Slug
      */
     public function slug(string $string, string $separator = '-'): string
@@ -210,13 +221,13 @@ class Data
 
         // Remove special characters
         $string = preg_replace('/[^a-z0-9\s-]/', '', $string);
-        if ($string === null) {
+        if (null === $string) {
             throw new \RuntimeException('Failed to remove special characters');
         }
 
         // Replace whitespace and multiple separators
         $string = preg_replace('/[\s-]+/', $separator, $string);
-        if ($string === null) {
+        if (null === $string) {
             throw new \RuntimeException('Failed to replace whitespace');
         }
 
@@ -225,10 +236,11 @@ class Data
     }
 
     /**
-     * Check if string starts with substring
+     * Check if string starts with substring.
      *
      * @param string $haystack String to check
-     * @param string $needle Substring to find
+     * @param string $needle   Substring to find
+     *
      * @return bool True if starts with
      */
     public function startsWith(string $haystack, string $needle): bool
@@ -237,10 +249,11 @@ class Data
     }
 
     /**
-     * Check if string ends with substring
+     * Check if string ends with substring.
      *
      * @param string $haystack String to check
-     * @param string $needle Substring to find
+     * @param string $needle   Substring to find
+     *
      * @return bool True if ends with
      */
     public function endsWith(string $haystack, string $needle): bool
@@ -249,30 +262,33 @@ class Data
     }
 
     /**
-     * Convert camelCase to snake_case
+     * Convert camelCase to snake_case.
      *
      * @param string $string String to convert
+     *
      * @return string snake_case string
      */
     public function camelToSnake(string $string): string
     {
         // Handle sequences of capital letters
         $string = preg_replace('/([A-Z]+)([A-Z][a-z])/', '$1_$2', $string);
-        if ($string === null) {
+        if (null === $string) {
             throw new \RuntimeException('Failed to process capital letter sequences');
         }
         // Handle normal camelCase
         $string = preg_replace('/([a-z\d])([A-Z])/', '$1_$2', $string);
-        if ($string === null) {
+        if (null === $string) {
             throw new \RuntimeException('Failed to process camelCase');
         }
+
         return strtolower($string);
     }
 
     /**
-     * Convert snake_case to camelCase
+     * Convert snake_case to camelCase.
      *
      * @param string $string String to convert
+     *
      * @return string camelCase string
      */
     public function snakeToCamel(string $string): string
@@ -281,9 +297,10 @@ class Data
     }
 
     /**
-     * Deep clone an object
+     * Deep clone an object.
      *
      * @param object $object Object to clone
+     *
      * @return object Cloned object
      */
     public function deepClone(object $object): object

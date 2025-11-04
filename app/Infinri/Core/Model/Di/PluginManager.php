@@ -6,33 +6,31 @@ namespace Infinri\Core\Model\Di;
 
 /**
  * Manages plugins (interceptors) for Aspect-Oriented Programming (AOP)
- * Allows before/around/after method interception
+ * Allows before/around/after method interception.
  */
 class PluginManager
 {
     /**
-     * Registered plugins
+     * Registered plugins.
      *
      * @var array<string, array>
      */
     private array $plugins = [];
 
     /**
-     * Plugin instances cache
+     * Plugin instances cache.
      *
      * @var array<string, object>
      */
     private array $pluginInstances = [];
 
     /**
-     * DI Container
-     *
-     * @var \DI\Container|null
+     * DI Container.
      */
     private ?\DI\Container $container;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \DI\Container|null $container DI Container
      */
@@ -42,24 +40,22 @@ class PluginManager
     }
 
     /**
-     * Register a plugin
+     * Register a plugin.
      *
-     * @param string $className Target class name
-     * @param string $pluginName Plugin identifier
-     * @param string $pluginClass Plugin class name
-     * @param int $sortOrder Execution order (lower = earlier)
-     * @param array<string> $methods Methods to intercept (empty = all)
-     * @return void
+     * @param string        $className   Target class name
+     * @param string        $pluginName  Plugin identifier
+     * @param string        $pluginClass Plugin class name
+     * @param int           $sortOrder   Execution order (lower = earlier)
+     * @param array<string> $methods     Methods to intercept (empty = all)
      */
     public function registerPlugin(
         string $className,
         string $pluginName,
         string $pluginClass,
-        int    $sortOrder = 10,
-        array  $methods = []
-    ): void
-    {
-        if (!isset($this->plugins[$className])) {
+        int $sortOrder = 10,
+        array $methods = []
+    ): void {
+        if (! isset($this->plugins[$className])) {
             $this->plugins[$className] = [];
         }
 
@@ -76,9 +72,10 @@ class PluginManager
     }
 
     /**
-     * Get plugins for a class
+     * Get plugins for a class.
      *
      * @param string $className Class name
+     *
      * @return array Plugins
      */
     public function getPlugins(string $className): array
@@ -87,28 +84,31 @@ class PluginManager
     }
 
     /**
-     * Check if class has plugins
+     * Check if class has plugins.
      *
      * @param string $className Class name
+     *
      * @return bool True if has plugins
      */
     public function hasPlugins(string $className): bool
     {
-        return isset($this->plugins[$className]) && !empty($this->plugins[$className]);
+        return isset($this->plugins[$className]) && ! empty($this->plugins[$className]);
     }
 
     /**
-     * Execute before plugins
+     * Execute before plugins.
      *
-     * @param object $subject Target object
-     * @param string $method Method name
+     * @param object       $subject   Target object
+     * @param string       $method    Method name
      * @param array<mixed> $arguments Method arguments
+     *
      * @return array<mixed> Modified arguments
+     *
      * @throws \Exception
      */
     public function executeBefore(object $subject, string $method, array $arguments): array
     {
-        $className = get_class($subject);
+        $className = $subject::class;
         $plugins = $this->getPluginsForMethod($className, $method);
 
         foreach ($plugins as $pluginData) {
@@ -116,10 +116,11 @@ class PluginManager
             $beforeMethod = 'before' . ucfirst($method);
 
             if (method_exists($plugin, $beforeMethod)) {
+                /** @phpstan-ignore-next-line Dynamic plugin method call needed for AOP */
                 $result = $plugin->$beforeMethod($subject, ...$arguments);
 
                 // If before plugin returns array, use as new arguments
-                if (is_array($result)) {
+                if (\is_array($result)) {
                     $arguments = $result;
                 }
             }
@@ -129,18 +130,20 @@ class PluginManager
     }
 
     /**
-     * Execute around plugins
+     * Execute around plugins.
      *
-     * @param object $subject Target object
-     * @param callable $proceed Original method
-     * @param string $method Method name
+     * @param object       $subject   Target object
+     * @param callable     $proceed   Original method
+     * @param string       $method    Method name
      * @param array<mixed> $arguments Method arguments
+     *
      * @return mixed Result
+     *
      * @throws \Exception
      */
     public function executeAround(object $subject, callable $proceed, string $method, array $arguments): mixed
     {
-        $className = get_class($subject);
+        $className = $subject::class;
         $plugins = $this->getPluginsForMethod($className, $method);
 
         if (empty($plugins)) {
@@ -156,6 +159,7 @@ class PluginManager
 
             if (method_exists($plugin, $aroundMethod)) {
                 $chain = function (...$args) use ($plugin, $aroundMethod, $subject, $chain) {
+                    // @phpstan-ignore-next-line - Dynamic method call by design
                     return $plugin->$aroundMethod($subject, $chain, ...$args);
                 };
             }
@@ -165,18 +169,20 @@ class PluginManager
     }
 
     /**
-     * Execute after plugins
+     * Execute after plugins.
      *
-     * @param object $subject Target object
-     * @param mixed $result Method result
-     * @param string $method Method name
+     * @param object       $subject   Target object
+     * @param mixed        $result    Method result
+     * @param string       $method    Method name
      * @param array<mixed> $arguments Method arguments
+     *
      * @return mixed Modified result
+     *
      * @throws \Exception
      */
     public function executeAfter(object $subject, mixed $result, string $method, array $arguments): mixed
     {
-        $className = get_class($subject);
+        $className = $subject::class;
         $plugins = $this->getPluginsForMethod($className, $method);
 
         foreach ($plugins as $pluginData) {
@@ -184,6 +190,7 @@ class PluginManager
             $afterMethod = 'after' . ucfirst($method);
 
             if (method_exists($plugin, $afterMethod)) {
+                // @phpstan-ignore-next-line - Dynamic method call by design
                 $result = $plugin->$afterMethod($subject, $result, ...$arguments);
             }
         }
@@ -192,10 +199,11 @@ class PluginManager
     }
 
     /**
-     * Get plugins for specific method
+     * Get plugins for specific method.
      *
      * @param string $className Class name
-     * @param string $method Method name
+     * @param string $method    Method name
+     *
      * @return array Plugins
      */
     private function getPluginsForMethod(string $className, string $method): array
@@ -205,7 +213,7 @@ class PluginManager
 
         foreach ($plugins as $pluginName => $pluginData) {
             // If methods array is empty, plugin applies to all methods
-            if (empty($pluginData['methods']) || in_array($method, $pluginData['methods'], true)) {
+            if (empty($pluginData['methods']) || \in_array($method, $pluginData['methods'], true)) {
                 $filtered[$pluginName] = $pluginData;
             }
         }
@@ -214,15 +222,17 @@ class PluginManager
     }
 
     /**
-     * Get plugin instance
+     * Get plugin instance.
      *
      * @param string $pluginClass Plugin class name
+     *
      * @return object Plugin instance
+     *
      * @throws \Exception If plugin class is not found
      */
     private function getPluginInstance(string $pluginClass): object
     {
-        if (!isset($this->pluginInstances[$pluginClass])) {
+        if (! isset($this->pluginInstances[$pluginClass])) {
             if ($this->container) {
                 $this->pluginInstances[$pluginClass] = $this->container->get($pluginClass);
             } else {
@@ -234,9 +244,7 @@ class PluginManager
     }
 
     /**
-     * Clear all plugins
-     *
-     * @return void
+     * Clear all plugins.
      */
     public function clear(): void
     {

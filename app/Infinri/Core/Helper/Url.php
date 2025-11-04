@@ -8,19 +8,17 @@ use Infinri\Core\Model\Url\Builder;
 
 /**
  * Template helper for generating URLs
- * Provides convenient functions for use in PHTML templates
+ * Provides convenient functions for use in PHTML templates.
  */
 class Url
 {
     /**
-     * URL Builder
-     *
-     * @var Builder
+     * URL Builder.
      */
     private Builder $builder;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Builder|null $builder URL Builder instance
      */
@@ -30,11 +28,12 @@ class Url
     }
 
     /**
-     * Generate URL
+     * Generate URL.
      *
-     * @param string $path Path or route name
+     * @param string               $path   Path or route name
      * @param array<string, mixed> $params Route parameters
-     * @param array<string, mixed> $query Query string parameters
+     * @param array<string, mixed> $query  Query string parameters
+     *
      * @return string Generated URL
      */
     public function url(string $path, array $params = [], array $query = []): string
@@ -43,11 +42,12 @@ class Url
     }
 
     /**
-     * Generate route URL
+     * Generate route URL.
      *
-     * @param string $routeName Route name
-     * @param array<string, mixed> $params Route parameters
-     * @param array<string, mixed> $query Query string parameters
+     * @param string               $routeName Route name
+     * @param array<string, mixed> $params    Route parameters
+     * @param array<string, mixed> $query     Query string parameters
+     *
      * @return string Generated URL
      */
     public function route(string $routeName, array $params = [], array $query = []): string
@@ -56,11 +56,12 @@ class Url
     }
 
     /**
-     * Generate absolute URL
+     * Generate absolute URL.
      *
-     * @param string $path Path or route name
+     * @param string               $path   Path or route name
      * @param array<string, mixed> $params Route parameters
-     * @param array<string, mixed> $query Query string parameters
+     * @param array<string, mixed> $query  Query string parameters
+     *
      * @return string Absolute URL
      */
     public function absolute(string $path, array $params = [], array $query = []): string
@@ -69,11 +70,12 @@ class Url
     }
 
     /**
-     * Generate secure (HTTPS) URL
+     * Generate secure (HTTPS) URL.
      *
-     * @param string $path Path or route name
+     * @param string               $path   Path or route name
      * @param array<string, mixed> $params Route parameters
-     * @param array<string, mixed> $query Query string parameters
+     * @param array<string, mixed> $query  Query string parameters
+     *
      * @return string Secure URL
      */
     public function secure(string $path, array $params = [], array $query = []): string
@@ -82,7 +84,7 @@ class Url
     }
 
     /**
-     * Get current URL
+     * Get current URL.
      *
      * @return string Current URL
      */
@@ -92,9 +94,10 @@ class Url
     }
 
     /**
-     * Get previous URL
+     * Get previous URL.
      *
      * @param string|null $default Default URL
+     *
      * @return string Previous URL
      */
     public function previous(?string $default = null): string
@@ -103,7 +106,7 @@ class Url
     }
 
     /**
-     * Get base URL
+     * Get base URL.
      *
      * @return string Base URL
      */
@@ -113,7 +116,7 @@ class Url
     }
 
     /**
-     * Get URL Builder instance
+     * Get URL Builder instance.
      *
      * @return Builder URL Builder
      */

@@ -1,24 +1,23 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Model\Repository;
 
 use Infinri\Core\Api\RepositoryInterface;
-use Infinri\Core\Model\User;
 use Infinri\Core\Model\ResourceModel\User as UserResource;
+use Infinri\Core\Model\User;
 
 /**
- * Repository pattern implementation for User entities
+ * Repository pattern implementation for User entities.
  */
 class UserRepository implements RepositoryInterface
 {
     public function __construct(
         private readonly UserResource $resource
-    ) {}
+    ) {
+    }
 
-    /**
-     * @inheritDoc
-     */
     public function getById(int|string $id): ?User
     {
         $user = new User($this->resource);
@@ -27,35 +26,28 @@ class UserRepository implements RepositoryInterface
         return $user->getId() ? $user : null;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function save(mixed $entity): User
     {
-        if (!$entity instanceof User) {
+        if (! $entity instanceof User) {
             throw new \InvalidArgumentException('Entity must be instance of User');
         }
 
         $entity->save();
+
         return $entity;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function delete(mixed $entity): bool
     {
-        if (!$entity instanceof User) {
+        if (! $entity instanceof User) {
             throw new \InvalidArgumentException('Entity must be instance of User');
         }
 
         $entity->delete();
+
         return true;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getList(array $criteria = []): array
     {
         $data = $this->resource->findBy($criteria);
@@ -71,16 +63,13 @@ class UserRepository implements RepositoryInterface
     }
 
     /**
-     * Find user by email
-     *
-     * @param string $email
-     * @return User|null
+     * Find user by email.
      */
     public function getByEmail(string $email): ?User
     {
         $data = $this->resource->findByEmail($email);
 
-        if ($data === false) {
+        if (false === $data) {
             return null;
         }
 

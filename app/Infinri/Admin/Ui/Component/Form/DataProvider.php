@@ -8,20 +8,21 @@ use Infinri\Admin\Model\Repository\AdminUserRepository;
 use Infinri\Core\Model\ObjectManager;
 
 /**
- * Admin User Form Data Provider
+ * Admin User Form Data Provider.
  */
 class DataProvider
 {
     /**
-     * Get form data
+     * Get form data.
      *
      * @param int|null $entityId Entity ID (null for new entity)
+     *
      * @return array<string, mixed> Form data
      */
     public function getData(?int $entityId = null): array
     {
         // New user - return defaults
-        if ($entityId === null) {
+        if (null === $entityId) {
             return $this->getDefaultData();
         }
 
@@ -32,7 +33,7 @@ class DataProvider
         // Load existing user
         $user = $repository->getById($entityId);
 
-        if (!$user) {
+        if (! $user) {
             return [];
         }
 
@@ -42,7 +43,7 @@ class DataProvider
             'email' => $user->getEmail(),
             'firstname' => $user->getData('firstname'),
             'lastname' => $user->getData('lastname'),
-            'is_active' => (bool)$user->getData('is_active'),
+            'is_active' => (bool) $user->getData('is_active'),
         ];
     }
 

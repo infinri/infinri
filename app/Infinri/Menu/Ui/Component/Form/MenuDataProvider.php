@@ -4,34 +4,27 @@ declare(strict_types=1);
 
 namespace Infinri\Menu\Ui\Component\Form;
 
-use Infinri\Menu\Model\Repository\MenuRepository;
-use Infinri\Menu\Model\Repository\MenuItemRepository;
 use Infinri\Cms\Model\Repository\PageRepository;
-use Infinri\Core\Helper\Logger;
+use Infinri\Menu\Model\Repository\MenuItemRepository;
+use Infinri\Menu\Model\Repository\MenuRepository;
 
 /**
- * Provides data for menu edit/create form including available CMS pages
+ * Provides data for menu edit/create form including available CMS pages.
  */
 class MenuDataProvider
 {
     /**
-     * Constructor
-     *
-     * @param MenuRepository $menuRepository
-     * @param MenuItemRepository $menuItemRepository
-     * @param PageRepository $pageRepository
+     * Constructor.
      */
     public function __construct(
-        private readonly MenuRepository     $menuRepository,
+        private readonly MenuRepository $menuRepository,
         private readonly MenuItemRepository $menuItemRepository,
-        private readonly PageRepository     $pageRepository
-    ) {}
+        private readonly PageRepository $pageRepository
+    ) {
+    }
 
     /**
-     * Get data for form
-     *
-     * @param int|null $menuId
-     * @return array
+     * Get data for form.
      */
     public function getData(?int $menuId = null): array
     {
@@ -40,10 +33,10 @@ class MenuDataProvider
             'identifier' => '',
             'title' => '',
             'is_active' => true,
-            'cms_pages' => $this->getAvailableCmsPages($menuId)
+            'cms_pages' => $this->getAvailableCmsPages($menuId),
         ];
 
-        if ($menuId !== null) {
+        if (null !== $menuId) {
             $menu = $this->menuRepository->getById($menuId);
 
             if ($menu) {
@@ -57,27 +50,24 @@ class MenuDataProvider
     }
 
     /**
-     * Get available CMS pages with selection status
-     *
-     * @param int|null $menuId
-     * @return array
+     * Get available CMS pages with selection status.
      */
     private function getAvailableCmsPages(?int $menuId): array
     {
         // Get all active CMS pages
         $pages = $this->pageRepository->getAll();
-        $activePages = array_filter($pages, fn($page) => $page->isActive());
+        $activePages = array_filter($pages, fn ($page) => $page->isActive());
 
         // Get currently selected pages for this menu (if editing)
         $selectedPages = [];
         if ($menuId) {
             $menuItems = $this->menuItemRepository->getByMenuId($menuId);
             foreach ($menuItems as $item) {
-                if ($item->getLinkType() === 'cms_page' && $item->getResourceId()) {
+                if ('cms_page' === $item->getLinkType() && $item->getResourceId()) {
                     $selectedPages[$item->getResourceId()] = [
                         'selected' => true,
                         'sort_order' => $item->getSortOrder(),
-                        'item_id' => $item->getItemId()
+                        'item_id' => $item->getItemId(),
                     ];
                 }
             }
@@ -93,7 +83,7 @@ class MenuDataProvider
                 'url_key' => $page->getUrlKey(),
                 'selected' => isset($selectedPages[$pageId]),
                 'sort_order' => $selectedPages[$pageId]['sort_order'] ?? 10,
-                'item_id' => $selectedPages[$pageId]['item_id'] ?? null
+                'item_id' => $selectedPages[$pageId]['item_id'] ?? null,
             ];
         }
 

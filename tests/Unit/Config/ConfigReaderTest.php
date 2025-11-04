@@ -18,9 +18,9 @@ describe('ConfigReader', function () use (&$cachedReader) {
     });
     
     it('can read Infinri_Core config.xml', function () {
-        $corePath = __DIR__ . '/../../../app/Infinri/Core';
+        $configPath = __DIR__ . '/../../../app/Infinri/Core/etc/config.xml';
         
-        $config = $this->configReader->read($corePath);
+        $config = $this->configReader->read($configPath);
         
         expect($config)->toBeArray();
         expect($config)->toHaveKey('default');
@@ -28,9 +28,9 @@ describe('ConfigReader', function () use (&$cachedReader) {
     });
     
     it('can read Infinri_Theme config.xml', function () {
-        $themePath = __DIR__ . '/../../../app/Infinri/Theme';
+        $configPath = __DIR__ . '/../../../app/Infinri/Theme/etc/config.xml';
         
-        $config = $this->configReader->read($themePath);
+        $config = $this->configReader->read($configPath);
         
         expect($config)->toBeArray();
         expect($config)->toHaveKey('default');
@@ -46,9 +46,9 @@ describe('ConfigReader', function () use (&$cachedReader) {
     });
     
     it('validates config.xml exists', function () {
-        $corePath = __DIR__ . '/../../../app/Infinri/Core';
+        $configPath = __DIR__ . '/../../../app/Infinri/Core/etc/config.xml';
         
-        $isValid = $this->configReader->validate($corePath);
+        $isValid = $this->configReader->validate($configPath);
         
         expect($isValid)->toBeTrue();
     });
@@ -69,7 +69,7 @@ describe('ConfigReader', function () use (&$cachedReader) {
         
         file_put_contents($tempDir . '/etc/config.xml', '<?xml version="1.0"?><invalid>');
         
-        $config = $this->configReader->read($tempDir);
+        $config = $this->configReader->read($tempDir . '/etc/config.xml');
         
         // Cleanup
         unlink($tempDir . '/etc/config.xml');
@@ -80,9 +80,9 @@ describe('ConfigReader', function () use (&$cachedReader) {
     });
     
     it('converts XML to nested array structure', function () {
-        $themePath = __DIR__ . '/../../../app/Infinri/Theme';
+        $configPath = __DIR__ . '/../../../app/Infinri/Theme/etc/config.xml';
         
-        $config = $this->configReader->read($themePath);
+        $config = $this->configReader->read($configPath);
         
         expect($config['default']['theme']['general']['logo'])->toBe('Infinri_Theme::images/logo.svg');
         expect($config['default']['theme']['colors']['primary'])->toBe('#0066cc');

@@ -20,8 +20,9 @@ class ContentSanitizer
      * Sanitize HTML content
      * Removes dangerous tags/attributes while preserving safe content.
      *
-     * @param string $html Raw HTML content
+     * @param string $html    Raw HTML content
      * @param string $profile Sanitization profile: 'default', 'strict', or 'rich'
+     *
      * @return string Sanitized HTML
      */
     public function sanitize(string $html, string $profile = 'default'): string
@@ -31,34 +32,26 @@ class ContentSanitizer
         }
 
         $purifier = $this->getPurifier($profile);
+
         return $purifier->purify($html);
     }
 
     /**
-     * Sanitize plain text (no HTML allowed)
-     *
-     * @param string $text
-     * @return string
+     * Sanitize plain text (no HTML allowed).
      */
     public function sanitizePlainText(string $text): string
     {
-        return htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        return htmlspecialchars($text, \ENT_QUOTES | \ENT_SUBSTITUTE, 'UTF-8');
     }
 
     /**
-     * Get or create HTMLPurifier instance with specified profile
-     *
-     * @param string $profile
-     * @return object
+     * Get or create HTMLPurifier instance with specified profile.
      */
     private function getPurifier(string $profile): object
     {
         // HTMLPurifier is REQUIRED for security - throw error if not installed
-        if (!class_exists('\HTMLPurifier')) {
-            throw new \RuntimeException(
-                'HTMLPurifier is required for XSS protection. ' .
-                'Install it with: composer require ezyang/htmlpurifier'
-            );
+        if (! class_exists('\HTMLPurifier')) {
+            throw new \RuntimeException('HTMLPurifier is required for XSS protection. Install it with: composer require ezyang/htmlpurifier');
         }
 
         // Return cached purifier for this profile if available
@@ -85,7 +78,7 @@ class ContentSanitizer
                     'img[src|alt|title|width|height]',
                     'blockquote', 'code', 'pre',
                     'table', 'thead', 'tbody', 'tr', 'th', 'td',
-                    'div[class]', 'span[class]'
+                    'div[class]', 'span[class]',
                 ]));
 
                 // Allow safe CSS properties for styling
@@ -101,14 +94,14 @@ class ContentSanitizer
                     'ul', 'ol', 'li',
                     'a[href|title]',
                     'img[src|alt|title]',
-                    'blockquote'
+                    'blockquote',
                 ]));
                 break;
         }
 
         // Enable cache for performance
         $cacheDir = __DIR__ . '/../../../../var/cache/htmlpurifier';
-        if (!is_dir($cacheDir)) {
+        if (! is_dir($cacheDir)) {
             mkdir($cacheDir, 0755, true);
         }
         $config->set('Cache.SerializerPath', $cacheDir);
@@ -129,60 +122,20 @@ class ContentSanitizer
     }
 
     /**
-     * Fallback purifier when HTMLPurifier is not installed
-     * Uses strip_tags as a basic sanitization method
-     */
-    private function getFallbackPurifier(string $profile = 'default'): object
-    {
-        // Determine allowed tags based on profile
-        $allowedTagsByProfile = [
-            'strict' => '<p><br><strong><em><u>',
-            'default' => '<p><br><strong><em><u><h1><h2><h3><h4><ul><ol><li><a><img><blockquote>',
-            'rich' => '<p><br><strong><em><u><strike><sub><sup><h1><h2><h3><h4><h5><h6><ul><ol><li><a><img><blockquote><code><pre><table><thead><tbody><tr><th><td><div><span>',
-        ];
-
-        $allowedTags = $allowedTagsByProfile[$profile] ?? $allowedTagsByProfile['default'];
-
-        return new class($allowedTags) {
-            private string $allowedTags;
-
-            public function __construct(string $allowedTags)
-            {
-                $this->allowedTags = $allowedTags;
-            }
-
-            public function purify(string $html): string
-            {
-                $cleaned = strip_tags($html, $this->allowedTags);
-
-                // Basic XSS protection - remove event handlers
-                $cleaned = preg_replace('/(<[^>]+)\s+(on\w+\s*=\s*["\'][^"\']*["\'])/i', '$1', $cleaned);
-
-                // Remove javascript: protocol from links
-                return preg_replace('/(<a[^>]+href\s*=\s*["\'])javascript:/i', '$1#', $cleaned);
-            }
-        };
-    }
-
-    /**
-     * Get base URL for URI resolution
-     *
-     * @return string
+     * Get base URL for URI resolution.
      */
     private function getBaseUrl(): string
     {
-        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+        $protocol = (! empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS']) ? 'https://' : 'http://';
         $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+
         return $protocol . $host;
     }
 
     /**
-     * Check if content contains potentially dangerous HTML
+     * Check if content contains potentially dangerous HTML.
      *
      * Returns true if the content should be sanitized
-     *
-     * @param string $html
-     * @return bool
      */
     public function needsSanitization(string $html): bool
     {
@@ -197,12 +150,12 @@ class ContentSanitizer
         }
 
         // Check for javascript: protocol
-        if (stripos($html, 'javascript:') !== false) {
+        if (false !== stripos($html, 'javascript:')) {
             return true;
         }
 
         // Check for data: URIs (can contain XSS)
-        if (stripos($html, 'data:text/html') !== false) {
+        if (false !== stripos($html, 'data:text/html')) {
             return true;
         }
 

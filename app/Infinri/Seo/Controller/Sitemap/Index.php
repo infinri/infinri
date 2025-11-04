@@ -1,22 +1,22 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Seo\Controller\Sitemap;
 
+use Infinri\Cms\Model\Repository\PageRepository;
 use Infinri\Core\App\Request;
 use Infinri\Core\App\Response;
-use Infinri\Cms\Model\Repository\PageRepository;
-use Infinri\Seo\Model\Repository\UrlRewriteRepository;
-use Infinri\Seo\Service\SitemapGenerator;
 use Infinri\Core\Model\ResourceModel\Connection;
+use Infinri\Seo\Service\SitemapGenerator;
 
 /**
- * Serves /sitemap.xml
+ * Serves /sitemap.xml.
  */
 class Index
 {
     /**
-     * Execute sitemap generation
+     * Execute sitemap generation.
      */
     public function execute(Request $request): Response
     {
@@ -26,10 +26,7 @@ class Index
         $pageResource = new \Infinri\Cms\Model\ResourceModel\Page($connection);
         $pageRepository = new PageRepository($pageResource);
 
-        $urlRewriteResource = new \Infinri\Seo\Model\ResourceModel\UrlRewrite($connection);
-        $urlRewriteRepository = new UrlRewriteRepository($urlRewriteResource);
-
-        $generator = new SitemapGenerator($pageRepository, $urlRewriteRepository);
+        $generator = new SitemapGenerator($pageRepository);
 
         // Generate sitemap
         $host = $request->getHost();
@@ -40,7 +37,7 @@ class Index
         $baseUrl = $request->getScheme() . '://' . $cleanHost;
         $port = $request->getPort();
 
-        if ($port && !in_array($port, [80, 443], true)) {
+        if ($port && ! \in_array($port, [80, 443], true)) {
             $baseUrl .= ':' . $port;
         }
 

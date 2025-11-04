@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Infinri\Core\Console;
 
-use Symfony\Component\Console\Command\Command;
-use Infinri\Core\Model\ComponentRegistrar;
 use Infinri\Core\Api\ComponentRegistrarInterface;
 use Infinri\Core\Console\Command\CacheClearCommand;
 use Infinri\Core\Console\Command\CacheInfoCommand;
@@ -15,30 +13,28 @@ use Infinri\Core\Console\Command\ModuleStatusCommand;
 use Infinri\Core\Console\Command\SchemaMigrateCommand;
 use Infinri\Core\Console\Command\SetupInstallCommand;
 use Infinri\Core\Console\Command\SetupUpgradeCommand;
+use Infinri\Core\Model\ComponentRegistrar;
+use Symfony\Component\Console\Command\Command;
 
 /**
- * Discovers and loads console commands from all modules
+ * Discovers and loads console commands from all modules.
  */
 class CommandLoader
 {
     /**
-     * Component Registrar
-     *
-     * @var ComponentRegistrarInterface
+     * Component Registrar.
      */
     private ComponentRegistrarInterface $componentRegistrar;
 
     /**
-     * Registered commands
+     * Registered commands.
      *
      * @var array<Command>
      */
     private array $commands = [];
 
     /**
-     * Constructor
-     *
-     * @param ComponentRegistrarInterface|null $componentRegistrar
+     * Constructor.
      */
     public function __construct(?ComponentRegistrarInterface $componentRegistrar = null)
     {
@@ -46,7 +42,7 @@ class CommandLoader
     }
 
     /**
-     * Load all commands from modules
+     * Load all commands from modules.
      *
      * @return array<Command> Array of command instances
      */
@@ -62,9 +58,7 @@ class CommandLoader
     }
 
     /**
-     * Load core framework commands
-     *
-     * @return void
+     * Load core framework commands.
      */
     private function loadCoreCommands(): void
     {
@@ -87,9 +81,7 @@ class CommandLoader
     }
 
     /**
-     * Discover commands from modules
-     *
-     * @return void
+     * Discover commands from modules.
      */
     private function discoverModuleCommands(): void
     {
@@ -98,14 +90,14 @@ class CommandLoader
         foreach ($modules as $moduleName => $modulePath) {
             $commandPath = $modulePath . '/Console/Command';
 
-            if (!is_dir($commandPath)) {
+            if (! is_dir($commandPath)) {
                 continue;
             }
 
             // Scan for command files
             $files = glob($commandPath . '/*Command.php');
 
-            if ($files === false) {
+            if (false === $files) {
                 continue;
             }
 
@@ -123,13 +115,14 @@ class CommandLoader
     }
 
     /**
-     * Get class name from file path
+     * Get class name from file path.
      *
-     * @param string $file File path
+     * @param string $file       File path
      * @param string $moduleName Module name
-     * @return string|null Class name or null
+     *
+     * @return string Class name
      */
-    private function getClassNameFromFile(string $file, string $moduleName): ?string
+    private function getClassNameFromFile(string $file, string $moduleName): string
     {
         $basename = basename($file, '.php');
         $namespace = str_replace('_', '\\', $moduleName);
@@ -138,7 +131,7 @@ class CommandLoader
     }
 
     /**
-     * Get loaded commands
+     * Get loaded commands.
      *
      * @return array<Command> Commands
      */
@@ -148,10 +141,9 @@ class CommandLoader
     }
 
     /**
-     * Register a command manually
+     * Register a command manually.
      *
      * @param Command $command Command instance
-     * @return void
      */
     public function registerCommand(Command $command): void
     {

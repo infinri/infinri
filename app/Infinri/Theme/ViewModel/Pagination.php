@@ -4,78 +4,55 @@ declare(strict_types=1);
 
 namespace Infinri\Theme\ViewModel;
 
-use Infinri\Core\Model\Url\Builder as UrlBuilder;
-
 /**
- * Manages pagination for list pages
+ * Manages pagination for list pages.
  */
 class Pagination
 {
     /**
-     * Current page number
-     *
-     * @var int
+     * Current page number.
      */
     private int $currentPage = 1;
 
     /**
-     * Total number of pages
-     *
-     * @var int
+     * Total number of pages.
      */
     private int $totalPages = 1;
 
     /**
-     * Items per page
-     *
-     * @var int
+     * Items per page.
      */
     private int $pageSize = 20;
 
     /**
-     * Total items count
-     *
-     * @var int
+     * Total items count.
      */
     private int $totalItems = 0;
 
     /**
-     * Base URL for pagination links
-     *
-     * @var string
+     * Base URL for pagination links.
      */
     private string $baseUrl = '';
 
     /**
-     * Constructor
-     *
-     * @param UrlBuilder $urlBuilder URL generator
-     */
-    public function __construct(
-        private UrlBuilder $urlBuilder
-    ) {}
-
-    /**
-     * Set pagination parameters
+     * Set pagination parameters.
      *
      * @param int $currentPage Current page
-     * @param int $totalItems Total items
-     * @param int $pageSize Items per page
-     * @return void
+     * @param int $totalItems  Total items
+     * @param int $pageSize    Items per page
      */
     public function setPagination(int $currentPage, int $totalItems, int $pageSize = 20): void
     {
         $this->currentPage = max(1, $currentPage);
         $this->totalItems = max(0, $totalItems);
         $this->pageSize = max(1, $pageSize);
-        $this->totalPages = (int)ceil($this->totalItems / $this->pageSize);
+        $this->totalPages = (int) ceil($this->totalItems / $this->pageSize);
     }
 
     /**
-     * Set base URL for pagination
+     * Set base URL for pagination.
      *
      * @param string $baseUrl Base URL
-     * @return void
      */
     public function setBaseUrl(string $baseUrl): void
     {
@@ -83,7 +60,7 @@ class Pagination
     }
 
     /**
-     * Get current page number
+     * Get current page number.
      *
      * @return int Current page
      */
@@ -93,7 +70,7 @@ class Pagination
     }
 
     /**
-     * Get total pages
+     * Get total pages.
      *
      * @return int Total pages
      */
@@ -103,7 +80,7 @@ class Pagination
     }
 
     /**
-     * Get page size
+     * Get page size.
      *
      * @return int Items per page
      */
@@ -113,7 +90,7 @@ class Pagination
     }
 
     /**
-     * Get total items
+     * Get total items.
      *
      * @return int Total items
      */
@@ -123,9 +100,10 @@ class Pagination
     }
 
     /**
-     * Get URL for specific page
+     * Get URL for specific page.
      *
      * @param int $page Page number
+     *
      * @return string Page URL
      */
     public function getPageUrl(int $page): string
@@ -134,7 +112,7 @@ class Pagination
     }
 
     /**
-     * Check if has previous page
+     * Check if has previous page.
      *
      * @return bool True if has previous
      */
@@ -144,7 +122,7 @@ class Pagination
     }
 
     /**
-     * Check if has next page
+     * Check if has next page.
      *
      * @return bool True if has next
      */
@@ -154,7 +132,7 @@ class Pagination
     }
 
     /**
-     * Get previous page URL
+     * Get previous page URL.
      *
      * @return string|null Previous page URL or null
      */
@@ -164,7 +142,7 @@ class Pagination
     }
 
     /**
-     * Get next page URL
+     * Get next page URL.
      *
      * @return string|null Next page URL or null
      */
@@ -174,9 +152,10 @@ class Pagination
     }
 
     /**
-     * Get page numbers to display
+     * Get page numbers to display.
      *
      * @param int $delta Number of pages before/after current
+     *
      * @return array Page numbers
      */
     public function getPages(int $delta = 2): array
@@ -193,9 +172,10 @@ class Pagination
     }
 
     /**
-     * Check if should show first page link
+     * Check if should show first page link.
      *
      * @param int $delta Delta for page range
+     *
      * @return bool True if should show
      */
     public function shouldShowFirst(int $delta = 2): bool
@@ -204,9 +184,10 @@ class Pagination
     }
 
     /**
-     * Check if should show last page link
+     * Check if should show last page link.
      *
      * @param int $delta Delta for page range
+     *
      * @return bool True if should show
      */
     public function shouldShowLast(int $delta = 2): bool

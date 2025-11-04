@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Core\Model\Config\Source;
 
 /**
- * Session Save Method Source Model
+ * Session Save Method Source Model.
  */
 class SessionSaveMethod
 {

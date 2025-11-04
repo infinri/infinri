@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Cms\Ui\Component\Form;
@@ -6,7 +7,7 @@ namespace Infinri\Cms\Ui\Component\Form;
 use Infinri\Cms\Model\Repository\PageRepository;
 
 /**
- * CMS Page Form Data Provider
+ * CMS Page Form Data Provider.
  */
 class DataProvider extends AbstractDataProvider
 {

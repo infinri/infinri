@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Infinri\Cms\Model\Repository;
 
 use Infinri\Cms\Api\PageRepositoryInterface;
+use Infinri\Cms\Model\AbstractContentEntity;
 use Infinri\Cms\Model\Page;
 use Infinri\Cms\Model\ResourceModel\Page as PageResource;
 
@@ -14,9 +15,7 @@ use Infinri\Cms\Model\ResourceModel\Page as PageResource;
 class PageRepository extends AbstractContentRepository implements PageRepositoryInterface
 {
     /**
-     * Constructor
-     *
-     * @param PageResource $resource
+     * Constructor.
      */
     public function __construct(PageResource $resource)
     {
@@ -24,20 +23,20 @@ class PageRepository extends AbstractContentRepository implements PageRepository
     }
 
     /**
-     * Create model instance (implements abstract method)
+     * Create model instance (implements abstract method).
      *
      * @param array<string, mixed> $data
-     * @return Page
      */
     protected function createModel(array $data = []): Page
     {
-        return new Page($this->resource, $data);
+        /** @var PageResource $resource */
+        $resource = $this->resource;
+
+        return new Page($resource, $data);
     }
 
     /**
-     * Get entity ID field name (implements abstract method)
-     *
-     * @return string
+     * Get entity ID field name (implements abstract method).
      */
     protected function getEntityIdField(): string
     {
@@ -46,10 +45,9 @@ class PageRepository extends AbstractContentRepository implements PageRepository
 
     /**
      * Create a new page instance
-     * Public factory method for creating empty pages
+     * Public factory method for creating empty pages.
      *
      * @param array<string, mixed> $data
-     * @return Page
      */
     public function create(array $data = []): Page
     {
@@ -57,73 +55,70 @@ class PageRepository extends AbstractContentRepository implements PageRepository
     }
 
     /**
-     * Get page by ID (override with specific return type)
-     *
-     * @param int $id
-     * @return Page|null
+     * Get page by ID (override with specific return type).
      */
-    public function getById(int $id): ?Page
+    public function getById(int $pageId): ?Page
     {
-        /** @var Page|null */
-        return parent::getById($id);
+        $result = parent::getById($pageId);
+        \assert($result instanceof Page || null === $result);
+
+        return $result;
     }
 
     /**
-     * Get all pages (override with specific return type)
+     * Get all pages (override with specific return type).
      *
-     * @param bool $activeOnly
-     * @return Page[]
+     * @return array<Page>
      */
     public function getAll(bool $activeOnly = false): array
     {
-        /** @var Page[] */
-        return parent::getAll($activeOnly);
+        $result = parent::getAll($activeOnly);
+        /** @var array<Page> $result */
+        return $result;
     }
 
     /**
-     * Save page (override with specific return type)
+     * Save page.
      *
-     * @param Page $page
-     * @return Page
+     * @param AbstractContentEntity $page Must be a Page instance
+     *
      * @throws \RuntimeException
+     * @throws \InvalidArgumentException If not a Page instance
      */
-    public function save($page): Page
+    public function save(AbstractContentEntity $page): Page
     {
-        /** @var Page */
-        return parent::save($page);
+        if (! $page instanceof Page) {
+            throw new \InvalidArgumentException('Expected Page instance');
+        }
+        $saved = parent::save($page);
+        \assert($saved instanceof Page);
+
+        return $saved;
     }
 
     /**
-     * Delete page (override with homepage protection)
+     * Delete page (override with homepage protection).
      *
-     * @param int $pageId
-     * @return bool
      * @throws \RuntimeException if trying to delete homepage
      */
     public function delete(int $pageId): bool
     {
         // Check if this is the homepage
         if ($this->isHomepage($pageId)) {
-            throw new \RuntimeException(
-                'Homepage (page_id=' . Page::HOMEPAGE_ID . ') cannot be deleted. ' .
-                'The site requires a homepage to function properly.'
-            );
+            throw new \RuntimeException('Homepage (page_id=' . Page::HOMEPAGE_ID . ') cannot be deleted. The site requires a homepage to function properly.');
         }
 
         return parent::delete($pageId);
     }
 
     /**
-     * Get page by URL key
-     *
-     * @param string $urlKey
-     * @return Page|null
+     * Get page by URL key.
      */
     public function getByUrlKey(string $urlKey): ?Page
     {
         $pageData = $this->resource->getByUrlKey($urlKey);
 
-        if (!$pageData) {
+        if (! $pageData) {
             return null;
         }
 
@@ -131,9 +126,8 @@ class PageRepository extends AbstractContentRepository implements PageRepository
     }
 
     /**
-     * Get homepage
+     * Get homepage.
      *
-     * @return Page
      * @throws \RuntimeException if homepage doesn't exist
      */
     public function getHomepage(): Page
@@ -141,20 +135,14 @@ class PageRepository extends AbstractContentRepository implements PageRepository
         $data = $this->resource->getHomepage();
 
         if (empty($data)) {
-            throw new \RuntimeException(
-                'Homepage not found! The site requires a homepage (page_id=1, is_homepage=true). ' .
-                'Please run the database setup script to create the homepage.'
-            );
+            throw new \RuntimeException('Homepage not found! The site requires a homepage (page_id=1, is_homepage=true). Please run the database setup script to create the homepage.');
         }
 
         return $this->createModel($data);
     }
 
     /**
-     * Check if page is homepage
-     *
-     * @param int $pageId
-     * @return bool
+     * Check if page is homepage.
      */
     public function isHomepage(int $pageId): bool
     {

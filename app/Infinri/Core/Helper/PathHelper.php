@@ -5,32 +5,32 @@ declare(strict_types=1);
 namespace Infinri\Core\Helper;
 
 /**
- * Centralized path calculations
+ * Centralized path calculations.
  */
 class PathHelper
 {
     /**
-     * Get application root path
+     * Get application root path.
      *
      * @return string Path to /app directory
      */
     public static function getAppPath(): string
     {
-        return dirname(__DIR__, 3);
+        return \dirname(__DIR__, 3);
     }
 
     /**
-     * Get public directory path
+     * Get public directory path.
      *
      * @return string Path to /pub directory
      */
     public static function getPubPath(): string
     {
-        return dirname(__DIR__, 4) . '/pub';
+        return \dirname(__DIR__, 4) . '/pub';
     }
 
     /**
-     * Get media directory path
+     * Get media directory path.
      *
      * @return string Path to /pub/media directory
      */
@@ -40,7 +40,7 @@ class PathHelper
     }
 
     /**
-     * Get static files directory path
+     * Get static files directory path.
      *
      * @return string Path to /pub/static directory
      */
@@ -50,17 +50,17 @@ class PathHelper
     }
 
     /**
-     * Get var directory path
+     * Get var directory path.
      *
      * @return string Path to /var directory
      */
     public static function getVarPath(): string
     {
-        return dirname(__DIR__, 4) . '/var';
+        return \dirname(__DIR__, 4) . '/var';
     }
 
     /**
-     * Get cache directory path
+     * Get cache directory path.
      *
      * @return string Path to /var/cache directory
      */
@@ -70,7 +70,7 @@ class PathHelper
     }
 
     /**
-     * Get logs directory path
+     * Get logs directory path.
      *
      * @return string Path to /var/log directory
      */

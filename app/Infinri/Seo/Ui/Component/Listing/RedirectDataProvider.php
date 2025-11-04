@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Seo\Ui\Component\Listing;
@@ -6,16 +7,17 @@ namespace Infinri\Seo\Ui\Component\Listing;
 use Infinri\Seo\Model\Repository\RedirectRepository;
 
 /**
- * Redirect Listing DataProvider
+ * Redirect Listing DataProvider.
  */
 class RedirectDataProvider
 {
     public function __construct(
         private RedirectRepository $redirectRepository
-    ) {}
+    ) {
+    }
 
     /**
-     * Get redirect data for grid
+     * Get redirect data for grid.
      */
     public function getData(): array
     {
@@ -37,8 +39,8 @@ class RedirectDataProvider
         }
 
         return [
-            'totalRecords' => count($items),
-            'items' => $items
+            'totalRecords' => \count($items),
+            'items' => $items,
         ];
     }
 }

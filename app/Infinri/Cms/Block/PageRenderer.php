@@ -1,44 +1,31 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Infinri\Cms\Block;
 
-use Infinri\Core\Block\Template;
-use Infinri\Cms\Model\Repository\WidgetRepository;
-use Infinri\Core\Helper\Logger;
 use Infinri\Cms\Block\Widget\WidgetFactory;
+use Infinri\Cms\Model\Repository\WidgetRepository;
+use Infinri\Core\Block\Template;
+use Infinri\Core\Helper\Logger;
 
 /**
- * Renders a CMS page with all its widgets in correct order
+ * Renders a CMS page with all its widgets in correct order.
  */
 class PageRenderer extends Template
 {
-    /**
-     * @var WidgetRepository
-     */
     private WidgetRepository $widgetRepository;
 
-    /**
-     * @var WidgetFactory
-     */
     private WidgetFactory $widgetFactory;
 
-    /**
-     * @param WidgetRepository $widgetRepository
-     * @param WidgetFactory $widgetFactory
-     */
     public function __construct(
         WidgetRepository $widgetRepository,
-        WidgetFactory    $widgetFactory
+        WidgetFactory $widgetFactory
     ) {
         $this->widgetRepository = $widgetRepository;
         $this->widgetFactory = $widgetFactory;
     }
 
-    /**
-     * @param int $pageId
-     * @return string
-     */
     public function renderPageWidgets(int $pageId): string
     {
         try {
@@ -59,7 +46,7 @@ class PageRenderer extends Template
                     // Log error but continue rendering other widgets
                     Logger::warning('Error rendering widget', [
                         'widget_id' => $widget->getWidgetId(),
-                        'error' => $e->getMessage()
+                        'error' => $e->getMessage(),
                     ]);
                 }
             }
@@ -68,8 +55,9 @@ class PageRenderer extends Template
         } catch (\Exception $e) {
             Logger::error('Error rendering widgets for page', [
                 'page_id' => $pageId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             return '';
         }
     }
